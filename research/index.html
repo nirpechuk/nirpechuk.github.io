@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Research | Nir Pechuk</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧋%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/assets/research/research.css" />
+    <script src="/assets/research/research.js" defer></script>
+  </head>
+  <body data-payload="manifest.json">
+    <header class="research-header">
+      <a class="home-link" href="/">Nir Pechuk</a>
+      <nav aria-label="Research navigation">
+        <a href="/research/">Research</a>
+        <button id="lock" type="button" hidden>Lock</button>
+      </nav>
+    </header>
+    <main>
+      <section id="gate" class="gate" aria-labelledby="gate-title">
+        <span class="boba" aria-hidden="true">🧋</span>
+        <h1 id="gate-title">Research</h1>
+        <p>Notes, experiments, and works in progress.</p>
+        <form id="unlock-form">
+          <label for="password">Shared password</label>
+          <div class="password-row">
+            <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
+            <button type="submit">Unlock</button>
+          </div>
+          <p id="error" role="status" aria-live="polite"></p>
+        </form>
+        <noscript>JavaScript is needed to unlock these pages.</noscript>
+      </section>
+      <section id="directory" class="directory" aria-labelledby="directory-title" hidden>
+        <h1 id="directory-title">Research</h1>
+        <p>Notes, experiments, and works in progress.</p>
+        <p id="empty" hidden>No pages yet.</p>
+        <ul id="page-list"></ul>
+      </section>
+      <section id="document" class="document" hidden>
+        <div class="document-heading">
+          <h1 id="document-title"></h1>
+          <a href="/research/">All research</a>
+        </div>
+        <iframe
+          id="research-frame"
+          title="Research page"
+          sandbox="allow-scripts allow-forms allow-popups allow-downloads"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </section>
+    </main>
+  </body>
+</html>
