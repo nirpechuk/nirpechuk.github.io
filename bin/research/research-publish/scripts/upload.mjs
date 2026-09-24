@@ -2,6 +2,7 @@
 // Standalone uploader: Node.js 20+, no packages, Git checkout, or local Git required.
 import { webcrypto } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { homedir } from "node:os";
 import path from "node:path";
@@ -218,7 +219,7 @@ async function main() {
   const { payload, ...output } = result;
   console.log(JSON.stringify(output, null, 2));
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
   main().catch((error) => {
     console.error(JSON.stringify({ error: error.message }));
     process.exitCode = 1;

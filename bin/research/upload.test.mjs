@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, mkdtemp, copyFile, symlink, rm } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import os from "node:os";
+import path from "node:path";
 import { encrypt, decrypt } from "./crypto.mjs";
 import { seal, unseal, upload, waitForPage, githubClient } from "./research-publish/scripts/upload.mjs";
 
@@ -106,4 +109,21 @@ test("wait checks exact encrypted version; API errors do not expose response bod
     githubClient("token", async () => ({ ok: false, status: 403, json: async () => ({ message: "sensitive response" }) }))("/git/trees", "POST", {}),
     (error) => !error.message.includes("sensitive response") && error.status === 403
   );
+});
+
+test("the standalone CLI runs outside a checkout and through a symlink", async () => {
+  const temp = await mkdtemp(path.join(os.tmpdir(), "nir-uploader-"));
+  try {
+    const script = path.join(temp, "upload.mjs");
+    await copyFile(new URL("./research-publish/scripts/upload.mjs", import.meta.url), script);
+    const link = path.join(temp, "linked.mjs");
+    await symlink(script, link);
+    for (const file of [script, link]) {
+      const output = execFileSync(process.execPath, [file, "--help"], { cwd: temp, encoding: "utf8" });
+      assert.match(output, /node upload.mjs/);
+      assert.match(output, /--dry-run/);
+    }
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
 });
