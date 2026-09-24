@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { encrypt, decrypt } from "./crypto.mjs";
-import { seal, unseal, upload, waitForPage, githubClient } from "./research-publish/scripts/upload.mjs";
+import { seal, unseal, upload, waitForPage, githubClient, validateInput } from "./research-publish/scripts/upload.mjs";
 
 const password = "test-password";
 const html = "<!doctype html><title>Private result</title><h1>Secret finding</h1>";
@@ -23,6 +23,7 @@ async function fixture({ existing = false, conflict = false } = {}) {
     if (route === "/contents/research/manifest.json?ref=head1") return content(JSON.stringify(manifest));
     if (route === "/contents/bin/research/page.html?ref=head1") return content(shell);
     if (route === "/git/commits/head1") return { tree: { sha: "tree1" } };
+    if (route === "/git/blobs" && method === "POST") return { sha: "large-blob" };
     if (route === "/git/trees" && method === "POST") return { sha: "tree2" };
     if (route === "/git/commits" && method === "POST") return { sha: "commit2" };
     if (route === "/git/refs/heads/main" && method === "PATCH") {
@@ -126,4 +127,27 @@ test("the standalone CLI runs outside a checkout and through a symlink", async (
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
+});
+
+test("accepts 50 MiB and rejects larger UTF-8 inputs before any API call", async () => {
+  const limit = 50 * 1024 * 1024;
+  const boundary = html + " ".repeat(limit - Buffer.byteLength(html));
+  assert.doesNotThrow(() => validateInput(boundary, "large-report"));
+  const { api, calls } = await fixture();
+  await assert.rejects(upload({ api, password, html: boundary + "é", slug: "large-report" }), /at most 50 MiB/);
+  assert.equal(calls.length, 0);
+});
+
+test("pages above the old limit use an encrypted blob referenced by the atomic tree update", async () => {
+  const largeHtml = html + " ".repeat(11 * 1024 * 1024);
+  const { api, calls } = await fixture();
+  await upload({ api, password, html: largeHtml, slug: "large-report" });
+  const blob = calls.find((call) => call.route === "/git/blobs").body;
+  assert.equal(blob.encoding, "utf-8");
+  assert.ok(!blob.content.includes("Secret finding"));
+  assert.equal((await decrypt(JSON.parse(blob.content), password)).html, largeHtml);
+  const tree = calls.find((call) => call.route === "/git/trees").body;
+  assert.deepEqual(tree.tree.at(-1), { path: "research/large-report/page.json", mode: "100644", type: "blob", sha: "large-blob" });
+  assert.ok(Buffer.byteLength(JSON.stringify(tree)) < 20000);
+  assert.deepEqual(calls.at(-1).body, { sha: "commit2", force: false });
 });

@@ -17,7 +17,7 @@ do not ask them to paste tokens into chat or print credentials in tool output.
 
 ## Publish
 
-1. Prepare one self-contained HTML file. Embed images, styles, and scripts, or
+1. Prepare one self-contained HTML file, up to 50 MiB. Embed images, styles, and scripts, or
    use absolute HTTPS assets. External assets remain public. Reports run in a
    sandboxed iframe: scripts work, but same-origin storage and backend services
    are not available. Do not upload raw sensitive images separately.

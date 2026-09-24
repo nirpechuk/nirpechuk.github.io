@@ -68,7 +68,7 @@ The uploader encrypts locally, reads the latest remote manifest and template,
 and changes four research files in a single commit through GitHub’s API.
 It preserves unrelated files and directory entries. Concurrent changes cause
 an error instead of a forced update. It accepts self-contained HTML up to
-10 MiB. Files referenced dynamically by scripts are not bundled automatically.
+50 MiB. Large encrypted files use GitHub’s blob API with a longer upload timeout. Files referenced dynamically by scripts are not bundled automatically.
 
 ## Preparing an HTML page
 

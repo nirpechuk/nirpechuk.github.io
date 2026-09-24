@@ -48,7 +48,7 @@ export async function unseal(value, password) {
 export function validateInput(html, slug) {
   if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets"].includes(slug))
     throw new Error("Use a page slug with lowercase letters, numbers, and hyphens.");
-  if (Buffer.byteLength(html) > 10 * 1024 * 1024) throw new Error("HTML must be at most 10 MiB. Compress embedded images first.");
+  if (Buffer.byteLength(html) > 50 * 1024 * 1024) throw new Error("HTML must be at most 50 MiB. Compress embedded images first.");
   if (!/<(?:html|body|head|!doctype)\b/i.test(html) || html.startsWith("---"))
     throw new Error("Provide a standalone HTML file without Jekyll front matter.");
   const refs = [...html.matchAll(/\b(?:src|poster)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)].map((m) => m[1] ?? m[2] ?? m[3]);
@@ -72,7 +72,7 @@ export function githubClient(token, fetcher = fetch) {
         "Content-Type": "application/json",
       },
       body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(method === "POST" && route === "/git/blobs" ? 180000 : 60000),
       redirect: "error",
     });
     if (!response.ok) {
@@ -126,10 +126,18 @@ export async function upload({ api, password, html, slug, title, replace = false
     [`research/${slug}/page.json`]: stringify(payload),
   };
   const base = await api(`/git/commits/${head}`);
-  const tree = await api("/git/trees", "POST", {
-    base_tree: base.tree.sha,
-    tree: Object.entries(files).map(([file, content]) => ({ path: file, mode: "100644", type: "blob", content })),
-  });
+  // Send large files through the blob API; keep the tree update small.
+  const entries = [];
+  for (const [file, content] of Object.entries(files)) {
+    const entry = { path: file, mode: "100644", type: "blob" };
+    if (Buffer.byteLength(content) > 1024 * 1024) {
+      const blob = await api("/git/blobs", "POST", { content, encoding: "utf-8" });
+      entries.push({ ...entry, sha: blob.sha });
+    } else {
+      entries.push({ ...entry, content });
+    }
+  }
+  const tree = await api("/git/trees", "POST", { base_tree: base.tree.sha, tree: entries });
   const commit = await api("/git/commits", "POST", { message: `Publish research page ${slug}`, tree: tree.sha, parents: [head] });
   try {
     await api(`/git/refs/heads/${branch}`, "PATCH", { sha: commit.sha, force: false });
@@ -149,7 +157,7 @@ export async function waitForPage(
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
-      const response = await fetcher(`${result.url}page.json?commit=${result.commit}`, { cache: "no-store", signal: AbortSignal.timeout(15000) });
+      const response = await fetcher(`${result.url}page.json?commit=${result.commit}`, { cache: "no-store", signal: AbortSignal.timeout(60000) });
       if (response.ok && (await response.json()).data === result.payload.data) return { ...result, status: "live" };
     } catch {
       /* A deployment or temporary network error may still be in progress. */
