@@ -396,12 +396,8 @@
 
     {% if entry.bibtex_show %}
       <!-- Hidden bibtex block -->
-      <!-- prettier-ignore -->
       <div class="bibtex hidden">
-        {% highlight bibtex %}
-        {{- entry.bibtex | hideCustomBibtex -}}
-
-      {% endhighlight %}
+        <pre><code class="language-bibtex">{{ entry.bibtex | hideCustomBibtex | escape }}</code></pre>
       </div>
     {% endif %}
 
