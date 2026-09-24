@@ -1,0 +1,24 @@
+<div class="project-media">
+  <a class="project-image" href="{{ include.project.url | relative_url }}" aria-label="Read about {{ include.project.title | escape }}">
+    {% if include.project.img_static %}
+      <picture>
+        <source media="(prefers-reduced-motion: reduce)" srcset="{{ include.project.img_static | relative_url }}">
+        <img src="{{ include.project.img | relative_url }}" alt="{{ include.project.image_alt | escape }}" width="480" height="270" loading="lazy">
+      </picture>
+    {% else %}
+      <img src="{{ include.project.img | relative_url }}" alt="{{ include.project.image_alt | escape }}" width="640" height="360" loading="lazy">
+    {% endif %}
+  </a>
+  {% if include.project.img_static %}
+    <button
+      class="preview-toggle"
+      type="button"
+      data-preview-label="{{ include.project.title | escape }} reaction preview"
+      data-animated="{{ include.project.img | relative_url }}"
+      data-static="{{ include.project.img_static | relative_url }}"
+      aria-label="Pause {{ include.project.title | escape }} reaction preview"
+    >
+      Pause preview
+    </button>
+  {% endif %}
+</div>

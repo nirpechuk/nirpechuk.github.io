@@ -1,7 +1,5 @@
 <article class="project-card">
-  <a class="project-image" href="{{ project.url | relative_url }}" aria-label="Read about {{ project.title | escape }}">
-    <img src="{{ project.img | relative_url }}" alt="{{ project.image_alt | escape }}" width="640" height="360" loading="lazy">
-  </a>
+  {% include project_media.liquid project=project %}
   <div class="project-body">
     <p class="project-context">{{ project.category }}</p>
     <h2>
