@@ -1,0 +1,29 @@
+# Provenance for personal content; this file is not rendered as a page.
+updated: 2026-09-23
+resume: User-provided Nir Pechuk Resume.pdf
+profile: User-provided GitHub bio and https://github.com/nirpechuk
+corrections:
+  - 10-703 Deep Reinforcement Learning replaces 15-210 in current coursework.
+  - Recently joined CMU AIRe Lab under Prof. Aviral Kumar; no start month supplied.
+publications:
+  genphri:
+    title_and_authors: https://rchi-lab.github.io/gen_phri/
+    paper: https://arxiv.org/abs/2604.08664
+    note: Use the current project-site title; arXiv metadata is awaiting an update.
+    preview: Converted from the local gensimdemo/docs/media/hero-orbit.mp4.
+    code: No public research-code repository found; the public gen_phri repository hosts the project website.
+  spill_o_not:
+    metadata: https://api.crossref.org/works/10.1088/1742-6596/3216/1/012016
+    paper: https://iopscience.iop.org/article/10.1088/1742-6596/3216/1/012016/meta
+    preview: Galina product photo from https://www.extentek.com/.
+projects:
+  phagentic: https://devpost.com/software/phagentic
+  ballotguide: https://github.com/Beckett-Munson/BallotGuide
+  truely: https://devpost.com/software/truely-7cys9i
+  verde: https://github.com/nirpechuk/verde
+  stock_ticker: https://github.com/nirpechuk/ESP8266-stock-sticker
+  canvas_orchestrator: https://github.com/nirpechuk/canvas_teams_integration
+  sockmatch: https://github.com/nirpechuk/sockmatch
+  mini_prop_shop: User-provided bio; no public repository or video supplied.
+illustrations: Original SVG concept illustrations for Mini Prop Shop, Canvas Submission Orchestrator, and Sock Match.
+resume_download: Original user-provided PDF, unchanged. Current coursework and AIRe affiliation are reflected in the web CV.

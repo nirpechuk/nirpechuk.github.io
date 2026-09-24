@@ -1,0 +1,140 @@
+// Personal content: retain al-folio's typography and theme, with room for real work.
+.profile {
+  margin-bottom: 1.5rem;
+}
+.profile img {
+  box-shadow: none !important;
+}
+.profile .more-info {
+  text-align: center;
+  font-family: inherit;
+  color: var(--global-text-color-light);
+  font-size: 0.9rem;
+}
+.profile-links,
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.1rem;
+}
+.profile-links {
+  margin: 1.6rem 0 2rem;
+}
+.profile-links a,
+.project-links a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 2rem;
+  margin: 1.5rem 0;
+}
+.project-card {
+  min-width: 0;
+}
+.project-image {
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #edf1f4;
+}
+.project-image img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+.project-body {
+  padding: 1rem 0 0;
+}
+.project-body h2 {
+  font-size: 1.45rem;
+  font-weight: 500;
+  margin: 0.3rem 0 0.55rem;
+}
+.project-body h2 a {
+  color: var(--global-text-color);
+}
+.project-body p {
+  margin-bottom: 0.65rem;
+}
+.project-context,
+.project-tech {
+  color: var(--global-text-color-light);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.project-links {
+  font-size: 0.9rem;
+}
+.home-projects {
+  margin-top: 2.75rem;
+}
+.home-projects > h2 a {
+  color: inherit;
+}
+.all-projects {
+  display: inline-block;
+  margin: 0.5rem 0 1rem;
+}
+.publications ol.bibliography li {
+  margin-bottom: 2rem;
+}
+.publications .publication-preview {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.publications .publication-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.publications .publication-summary {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0.55rem 0;
+}
+.publications .author em {
+  font-style: normal;
+  font-weight: 600;
+}
+.publications .author-note {
+  font-size: 0.8rem;
+  color: var(--global-text-color-light);
+  margin: 0.25rem 0 0.5rem;
+}
+.preview-toggle {
+  color: var(--global-text-color-light);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.2rem 0;
+  cursor: pointer;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--global-theme-color);
+  outline-offset: 4px;
+}
+@media (max-width: 575px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .profile {
+    width: 70%;
+    float: none !important;
+    margin: 0 auto 1.5rem;
+  }
+  .publications .abbr {
+    margin-bottom: 0.9rem;
+  }
+}

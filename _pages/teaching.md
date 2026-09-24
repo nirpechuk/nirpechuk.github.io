@@ -1,12 +1,11 @@
 ---
 layout: page
-permalink: /teaching/
 title: teaching
-description: Materials for courses you taught. Replace this text with your description.
+permalink: /teaching/
 nav: false
-nav_order: 6
 ---
 
-For now, this page is assumed to be a static description of your courses. You can convert it to a collection similar to `_projects/` so that you can have a dedicated page for each course.
+I'm a teaching assistant in Carnegie Mellon University's School of Computer Science.
 
-Organize your courses by years, topics, or universities, however you like!
+- **Fall 2026 — 15-213: Introduction to Computer Systems.** Systems programming and debugging in C, including memory allocators, cache simulators, and multithreaded web proxies.
+- **Spring 2026 — 15-122: Principles of Imperative Computation.** Data structures, algorithms, and imperative programming.
