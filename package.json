@@ -5,6 +5,6 @@
   },
   "scripts": {
     "research:publish": "node bin/research/cli.mjs",
-    "research:test": "node --test bin/research/research.test.mjs"
+    "research:test": "node --test bin/research/*.test.mjs"
   }
 }
