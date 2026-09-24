@@ -100,7 +100,9 @@
   line-height: 1.5;
   margin: 0.55rem 0;
 }
-.publications .author em {
+.publications ol.bibliography li .author > em {
+  border-bottom: none;
+  text-decoration: none;
   font-style: normal;
   font-weight: 600;
 }
@@ -137,4 +139,14 @@ button:focus-visible {
   .publications .abbr {
     margin-bottom: 0.9rem;
   }
+}
+
+.publications .publication-preview img[src$="spill-o-not.png"] {
+  object-fit: contain;
+  background: #fff;
+}
+
+.project-image img[src$="phagentic-setup.jpg"] {
+  object-fit: contain;
+  background: #e9e7e3;
 }

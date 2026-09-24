@@ -2,8 +2,8 @@
 layout: "page"
 title: "Phagentic"
 description: "An autonomous bioreactor built from scratch."
-img: "assets/img/projects/phagentic.png"
-image_alt: "Phagentic logo with a bacteriophage and reaction waveform"
+img: "assets/img/projects/phagentic-setup.jpg"
+image_alt: "Phagentic physical setup with its ESP32 controller, MOSFET modules, wiring, and dosing pumps"
 importance: 1
 selected: true
 category: "UC Berkeley AI Hackathon 2026"
@@ -18,7 +18,7 @@ links:
 
 {% include project_links.liquid links=page.links %}
 
-![ Phagentic logo with a bacteriophage and reaction waveform]({{ page.img | relative_url }})
+![ Phagentic physical setup with its ESP32 controller, MOSFET modules, wiring, and dosing pumps]({{ page.img | relative_url }})
 
 I built a physical bioreactor with an ESP32-driven stirrer, dosing pumps, an RGB sensor, and a 3D-printed rig. A chemistry-informed gray-box model and model predictive controller read live sensor state and actuate the hardware to sustain a reaction’s target oscillation amplitude and period. The project explores autonomous bioreactors for bacteriophage farming.
 
