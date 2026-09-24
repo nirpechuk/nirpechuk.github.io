@@ -92,13 +92,6 @@ ninja.data = [{
           window.open("https://www.linkedin.com/in/nirpechuk", "_blank");
         },
       },{
-        id: 'social-cv',
-        title: 'CV',
-        section: 'Socials',
-        handler: () => {
-          window.open("/assets/pdf/nir-pechuk-resume.pdf", "_blank");
-        },
-      },{
       id: 'light-theme',
       title: 'Change theme to light',
       description: 'Change the theme of the site to Light',
