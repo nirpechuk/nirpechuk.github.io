@@ -3,6 +3,39 @@
   const sessionKey = "research-password";
   if (document.body.dataset.payload === "page.json") document.body.classList.add("research-page");
   let payload;
+  let counterScript;
+
+  async function showViewCounter() {
+    let footer = get("research-view-footer");
+    if (!footer) {
+      footer = document.createElement("footer");
+      footer.id = "research-view-footer";
+      footer.hidden = true;
+      const count = document.createElement("span");
+      count.id = "research-view-count";
+      footer.append(count);
+      document.body.append(footer);
+    }
+    try {
+      if (!window.NirPageViews) {
+        counterScript ||= new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "/assets/js/page-views.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.append(script);
+        });
+        await counterScript;
+      }
+      const count = await window.NirPageViews.show(get("research-view-count"));
+      if (count !== null && get("gate").hidden) {
+        footer.hidden = false;
+        document.body.classList.add("has-view-count");
+      }
+    } catch {
+      // Counter outages must never prevent reading a report.
+    }
+  }
   const savedPassword = () => {
     try {
       return sessionStorage.getItem(sessionKey);
@@ -75,6 +108,7 @@
       get("password").value = "";
       get("gate").hidden = true;
       get("lock").hidden = false;
+      showViewCounter();
     } catch (error) {
       remember(null);
       get("error").textContent =
@@ -90,6 +124,8 @@
   });
   get("lock").addEventListener("click", () => {
     remember(null);
+    document.body.classList.remove("has-view-count");
+    if (get("research-view-footer")) get("research-view-footer").hidden = true;
     get("research-frame").removeAttribute("srcdoc");
     get("research-frame").src = "about:blank";
     get("page-list").replaceChildren();
