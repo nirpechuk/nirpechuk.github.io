@@ -161,7 +161,7 @@ button:focus-visible {
   }
 }
 
-.publications .publication-preview img[src$="spill-o-not.png"] {
+.publications .publication-preview-contain img {
   object-fit: contain;
   padding: 12px 28px;
   box-sizing: border-box;

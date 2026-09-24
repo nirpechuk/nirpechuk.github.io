@@ -26,7 +26,10 @@
         {% endif %}
       {% endif %}
       {% if entry.preview %}
-        <a class="publication-preview" href="{% if entry.website %}{{ entry.website }}{% else %}https://doi.org/{{ entry.doi }}{% endif %}">
+        <a
+          class="publication-preview{% if entry.preview == 'spill-o-not.png' %} publication-preview-contain{% endif %}"
+          href="{% if entry.website %}{{ entry.website }}{% else %}https://doi.org/{{ entry.doi }}{% endif %}"
+        >
           {% if entry.preview_static %}
             <picture>
               <source
