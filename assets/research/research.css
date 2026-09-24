@@ -207,21 +207,26 @@ iframe {
   border: 0;
 }
 
-#research-view-footer {
-  padding: 4px 12px;
-  text-align: right;
+.research-page-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.research-page-views {
   color: var(--muted);
-  font-size: 10px;
-  line-height: 16px;
-  background: var(--background);
+  font-size: 11px;
+  white-space: nowrap;
 }
-.document-open.has-view-count .document {
-  bottom: 24px;
-}
-.document-open #research-view-footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 24px;
+@media (max-width: 600px) {
+  .research-page-meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .research-page-meta time {
+    margin-top: 0;
+  }
 }

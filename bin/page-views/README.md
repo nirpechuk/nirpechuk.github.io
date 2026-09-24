@@ -1,8 +1,10 @@
 # Page view counters
 
-Each public page’s footer shows a small count. Research pages are counted only
-after successful unlocking, with a 24 px bottom strip that leaves the report
-unobstructed. Existing research pages automatically use this behavior; uploads
+Each public page’s footer shows a small count. Research pages are counted silently
+only after successful unlocking, and their totals appear beside each entry in
+the research directory. Reading the directory does not increment the listed
+pages’ counts. Individual reports retain their full viewport with no counter
+or footer. Existing research pages automatically use this behavior; uploads
 do not need to be regenerated.
 
 Counts started on September 24, 2026; earlier traffic cannot be recovered from

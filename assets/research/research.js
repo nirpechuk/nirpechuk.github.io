@@ -5,32 +5,25 @@
   let payload;
   let counterScript;
 
-  async function showViewCounter() {
-    let footer = get("research-view-footer");
-    if (!footer) {
-      footer = document.createElement("footer");
-      footer.id = "research-view-footer";
-      footer.hidden = true;
-      const count = document.createElement("span");
-      count.id = "research-view-count";
-      footer.append(count);
-      document.body.append(footer);
-    }
+  async function updateViewCounts(kind) {
     try {
       if (!window.NirPageViews) {
         counterScript ||= new Promise((resolve, reject) => {
           const script = document.createElement("script");
-          script.src = "/assets/js/page-views.js";
+          script.src = "/assets/js/page-views.js?v=research-menu";
           script.onload = resolve;
           script.onerror = reject;
           document.head.append(script);
         });
         await counterScript;
       }
-      const count = await window.NirPageViews.show(get("research-view-count"));
-      if (count !== null && get("gate").hidden) {
-        footer.hidden = false;
-        document.body.classList.add("has-view-count");
+      window.NirPageViews.track();
+      if (kind === "index") {
+        get("page-list")
+          .querySelectorAll("[data-view-path]")
+          .forEach((element) => {
+            window.NirPageViews.show(element, element.dataset.viewPath);
+          });
       }
     } catch {
       // Counter outages must never prevent reading a report.
@@ -89,7 +82,14 @@
           const date = document.createElement("time");
           date.dateTime = page.updated;
           date.textContent = page.updated;
-          item.append(link, date);
+          const views = document.createElement("span");
+          views.className = "research-page-views";
+          views.dataset.viewPath = link.getAttribute("href");
+          views.hidden = true;
+          const details = document.createElement("div");
+          details.className = "research-page-meta";
+          details.append(date, views);
+          item.append(link, details);
           get("page-list").append(item);
         }
         get("empty").hidden = content.pages.length > 0;
@@ -108,7 +108,7 @@
       get("password").value = "";
       get("gate").hidden = true;
       get("lock").hidden = false;
-      showViewCounter();
+      updateViewCounts(content.kind);
     } catch (error) {
       remember(null);
       get("error").textContent =
@@ -124,8 +124,6 @@
   });
   get("lock").addEventListener("click", () => {
     remember(null);
-    document.body.classList.remove("has-view-count");
-    if (get("research-view-footer")) get("research-view-footer").hidden = true;
     get("research-frame").removeAttribute("srcdoc");
     get("research-frame").src = "about:blank";
     get("page-list").replaceChildren();
@@ -139,6 +137,9 @@
     get("error").textContent = "";
     document.title = "Research | Nir Pechuk";
     get("password").focus();
+  });
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && !get("directory").hidden) updateViewCounts("index");
   });
   const password = savedPassword();
   if (password) unlock(password);
