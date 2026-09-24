@@ -7,12 +7,10 @@ nav_order: 4
 description: Education, research, experience, and teaching.
 ---
 
-[Download resume (PDF)]({{ '/assets/pdf/nir-pechuk-resume.pdf' | relative_url }})
-
 ## Education
 
 **Carnegie Mellon University — B.S. in Computer Science**<br>
-Expected May 2029 · GPA: 4.0/4.0 · Dean's List, High Honors
+GPA: 4.0/4.0 · Dean's List, High Honors
 
 **Current coursework:** Deep Reinforcement Learning (10-703, PhD), AI & ML I (07-280), Computer Vision (16-385), Probability and Computing (15-259), and Type Theory (98-317).
 

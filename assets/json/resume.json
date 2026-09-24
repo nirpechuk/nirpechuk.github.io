@@ -22,7 +22,6 @@
       "institution": "Carnegie Mellon University",
       "studyType": "B.S.",
       "area": "Computer Science",
-      "endDate": "2029-05",
       "score": "4.0/4.0",
       "courses": [
         "10-703 Deep Reinforcement Learning",
@@ -50,7 +49,7 @@
       "position": "Software Engineer Intern",
       "startDate": "2026-05",
       "endDate": "2026-08",
-      "highlights": ["Reduced memory footprint of a core service by 10\u00d7.", "Led a team of three engineers on a fleetwide service refactor."]
+      "highlights": ["Reduced memory footprint of a core service by 10×.", "Led a team of three engineers on a fleetwide service refactor."]
     },
     {
       "name": "Firebolt Inc.",
@@ -66,7 +65,7 @@
     {
       "name": "Extentek LLC",
       "position": "Co-founder & CEO",
-      "summary": "2018\u20132025"
+      "summary": "2018–2025"
     },
     {
       "name": "SEAL Lab, University of Washington",
