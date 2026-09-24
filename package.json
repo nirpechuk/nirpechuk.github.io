@@ -2,5 +2,9 @@
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "1.10.0",
     "prettier": "^3.7.4"
+  },
+  "scripts": {
+    "research:publish": "node bin/research/cli.mjs",
+    "research:test": "node --test bin/research/research.test.mjs"
   }
 }

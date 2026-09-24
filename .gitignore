@@ -12,3 +12,7 @@ node_modules/
 vendor
 .idea
 .venv
+
+# Local research inputs and shared password
+.research-password
+.research-source/
