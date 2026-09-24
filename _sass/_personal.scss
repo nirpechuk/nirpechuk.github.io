@@ -172,3 +172,22 @@ button:focus-visible {
   max-width: 640px;
   margin: 1.5rem 0;
 }
+
+#navbar .research-shortcut {
+  flex: 0 0 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  vertical-align: middle;
+  font-size: 1rem;
+  opacity: 0.25;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    text-decoration: none;
+  }
+}
