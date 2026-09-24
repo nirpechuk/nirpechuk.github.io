@@ -1,6 +1,7 @@
 (() => {
   const get = (id) => document.getElementById(id);
   const sessionKey = "research-password";
+  if (document.body.dataset.payload === "page.json") document.body.classList.add("research-page");
   let payload;
   const savedPassword = () => {
     try {
@@ -65,7 +66,8 @@
         get("research-frame").title = content.title;
         get("research-frame").srcdoc = content.html;
         get("document").hidden = false;
-        document.title = `${content.title} | Nir Pechuk`;
+        document.body.classList.add("research-page", "document-open");
+        document.title = content.title;
       } else {
         throw new Error("load");
       }
@@ -95,6 +97,7 @@
     get("research-frame").title = "Research page";
     get("directory").hidden = true;
     get("document").hidden = true;
+    document.body.classList.remove("document-open");
     get("lock").hidden = true;
     get("gate").hidden = false;
     get("error").textContent = "";

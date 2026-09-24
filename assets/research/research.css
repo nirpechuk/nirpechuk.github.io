@@ -186,3 +186,23 @@ iframe {
     --accent: #5cb9d3;
   }
 }
+
+/* Individual reports display only their own HTML, edge to edge. */
+.research-page .research-header,
+.research-page .document-heading {
+  display: none;
+}
+.document-open {
+  overflow: hidden;
+}
+.document-open .document {
+  position: fixed;
+  inset: 0;
+  padding: 0;
+}
+.document-open #research-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+}

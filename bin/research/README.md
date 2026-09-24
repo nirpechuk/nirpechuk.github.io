@@ -7,7 +7,10 @@ in the window. Publishing the same filename again updates that page.
 
 The research directory lives at <https://nirpechuk.github.io/research/>. Readers
 enter the shared password once per tab; **Lock** clears the tab’s saved password.
-The 🧋 page appears both at the directory and at direct links to individual pages.
+The 🧋 password page appears both at the directory and at direct links to individual
+pages. Once unlocked, individual reports display their own HTML edge to edge,
+without a website header, title bar, or controls. The directory and Lock button
+remain available at `/research/`.
 
 ## From a headless Linux machine (no checkout)
 
