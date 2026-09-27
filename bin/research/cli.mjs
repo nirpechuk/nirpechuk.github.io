@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { initialize, publishPage, removePage, readManifest } from "./publish.mjs";
+import { initialize, publishPage, removePage, readManifest, rotatePassword } from "./publish.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const args = process.argv.slice(2);
@@ -15,7 +15,7 @@ const git = (...params) => execFileSync("git", params, { cwd: root, encoding: "u
 try {
   if (!args.length || args.includes("--help")) {
     console.log(
-      'Publish: npm run research:publish -- /path/to/page.html [--slug page-name] [--title "Page title"] [--push]\nChoose a file: npm run research:publish -- --choose --push\nList: npm run research:publish -- --list\nRemove: npm run research:publish -- --delete page-name --push'
+      'Publish: npm run research:publish -- /path/to/page.html [--slug page-name] [--title "Page title"] [--push]\nChoose a file: npm run research:publish -- --choose --push\nList: npm run research:publish -- --list\nRemove: npm run research:publish -- --delete page-name --push\nRotate password: npm run research:publish -- --rotate-password --new-password-file /path/to/new-password.txt [--push]'
     );
     process.exit(0);
   }
@@ -39,6 +39,14 @@ try {
     for (const page of pages) console.log(`${page.title}\nhttps://nirpechuk.github.io/research/${page.slug}/\n`);
     if (!pages.length) console.log("No research pages yet.");
     process.exit(0);
+  } else if (args.includes("--rotate-password")) {
+    const passwordFile = value("--new-password-file");
+    if (!passwordFile) throw new Error("Provide --new-password-file PATH containing the new password.");
+    const newPassword = (await readFile(path.resolve(passwordFile), "utf8")).trim();
+    files = await rotatePassword(root, password, newPassword);
+    const { writeFile } = await import("node:fs/promises");
+    await writeFile(path.join(root, ".research-password"), newPassword + "\n", { mode: 0o600 });
+    message = "Rotate research password and refresh page shells";
   } else if (args.includes("--init")) {
     files = await initialize(root, password);
     message = "Initialize protected research section";

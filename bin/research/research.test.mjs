@@ -53,3 +53,35 @@ test("publish, update, and remove without exposing source or accepting invalid i
     await rm(temporary, { recursive: true, force: true });
   }
 });
+
+test("password rotation preserves reports, rejects the old password, and validates before writing", async () => {
+  const { rotatePassword } = await import("./publish.mjs");
+  const temporary = await mkdtemp(path.join(os.tmpdir(), "research-rotate-"));
+  const root = path.join(temporary, "site");
+  const source = path.join(temporary, "report.html");
+  try {
+    await mkdir(root);
+    await initialize(root, "before");
+    await writeFile(source, "<!doctype html><title>Keep this</title><h1>Original report</h1>");
+    await publishPage({ root, source, slug: "report", password: "before" });
+    const before = await readFile(path.join(root, "research/manifest.json"), "utf8");
+    const original = await decrypt(JSON.parse(await readFile(path.join(root, "research/report/page.json"), "utf8")), "before");
+    await assert.rejects(rotatePassword(root, "wrong", "after"));
+    assert.equal(await readFile(path.join(root, "research/manifest.json"), "utf8"), before);
+    const reportFile = path.join(root, "research/report/page.json");
+    const encryptedReport = await readFile(reportFile, "utf8");
+    await writeFile(reportFile, "broken");
+    await assert.rejects(rotatePassword(root, "before", "after"));
+    assert.equal(await readFile(path.join(root, "research/manifest.json"), "utf8"), before);
+    await writeFile(reportFile, encryptedReport);
+    await rotatePassword(root, "before", "after");
+    const rotated = JSON.parse(await readFile(reportFile, "utf8"));
+    assert.deepEqual(await decrypt(rotated, "after"), original);
+    await assert.rejects(decrypt(rotated, "before"));
+    assert.equal((await readManifest(root, "after")).pages[0].title, "Keep this");
+    await assert.rejects(readManifest(root, "before"));
+    assert.match(await readFile(path.join(root, "research/index.html"), "utf8"), /Admin console/);
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+});

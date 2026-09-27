@@ -5,6 +5,7 @@
   },
   "scripts": {
     "research:publish": "node bin/research/cli.mjs",
-    "research:test": "node --test bin/research/*.test.mjs"
+    "research:test": "node --test bin/research/*.test.mjs",
+    "analytics:test": "node --test bin/page-views/*.test.mjs"
   }
 }

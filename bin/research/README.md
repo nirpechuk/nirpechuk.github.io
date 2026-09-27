@@ -5,11 +5,12 @@ The shortcut encrypts it, adds it to the research directory, commits, and pushes
 GitHub Pages usually updates in a few minutes. The published address is printed
 in the window. Publishing the same filename again updates that page.
 
-The research directory lives at <https://nirpechuk.github.io/research/>. Readers
+The boba admin console lives at <https://nirpechuk.github.io/research/>. Readers
 enter the shared password once per tab; **Lock** clears the tab’s saved password.
 The 🧋 password page appears both at the directory and at direct links to individual
 pages. Once unlocked, individual reports display their own HTML edge to edge,
-without a website header, title bar, or controls. The directory and Lock button
+without a website header, title bar, or controls. The admin console includes searchable public-page and research traffic graphs,
+daily views and unique-browser counts, CSV export, and report links. The console and Lock button
 remain available at `/research/`.
 
 ## From a headless Linux machine (no checkout)
@@ -109,7 +110,18 @@ The shared password is already configured locally in `.research-password`.
 That file is ignored by Git and excluded from the built site. On another machine,
 create it with the same password, or provide `RESEARCH_PASSWORD` in the environment.
 Do not simply change this file: existing pages still require their original
-password. To rotate the password, re-create all encrypted pages from their originals.
+password. To rotate all existing encrypted reports without needing their source
+files, save the new password in a temporary private file outside the repository:
+
+```sh
+npm run research:publish -- --rotate-password --new-password-file /path/to/new-password.txt
+```
+
+This verifies and re-encrypts every report and the manifest, refreshes all page
+shells, and updates the ignored local `.research-password`. Add `--push` to publish.
+Update the saved password on other publishing machines too. Existing browser
+sessions must unlock again with the new password. The old password can still
+unlock historical encrypted versions in Git history.
 
 HTML and the directory listing are encrypted with AES-GCM and a password-derived
 key (PBKDF2-SHA-256, 250,000 iterations). The published site contains encrypted

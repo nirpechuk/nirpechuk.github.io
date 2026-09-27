@@ -91,3 +91,28 @@ export async function removePage(root, slug, password) {
   await writeIndex(root, manifest, password);
   return ["research/index.html", "research/manifest.json", `research/${slug}`];
 }
+
+export async function rotatePassword(root, oldPassword, newPassword) {
+  if (!newPassword) throw new Error("A new password is required.");
+  const manifest = await readManifest(root, oldPassword);
+  const shell = await readFile(templatePath, "utf8");
+  const changes = [];
+  // Validate and re-encrypt every payload in memory before changing any file.
+  for (const page of manifest.pages) {
+    validateSlug(page.slug);
+    const file = `research/${page.slug}/page.json`;
+    const content = await decrypt(JSON.parse(await readFile(path.join(root, file), "utf8")), oldPassword);
+    changes.push([file, JSON.stringify(await encrypt(content, newPassword), null, 2) + "\n"]);
+    changes.push([`research/${page.slug}/index.html`, shell.replace("__PAYLOAD__", "page.json")]);
+  }
+  changes.push(["research/manifest.json", JSON.stringify(await encrypt(manifest, newPassword), null, 2) + "\n"]);
+  changes.push(["research/index.html", shell.replace("__PAYLOAD__", "manifest.json")]);
+  const originals = await Promise.all(changes.map(async ([file]) => [file, await readFile(path.join(root, file))]));
+  try {
+    for (const [file, content] of changes) await writeFile(path.join(root, file), content);
+  } catch (error) {
+    for (const [file, content] of originals) await writeFile(path.join(root, file), content);
+    throw error;
+  }
+  return changes.map(([file]) => file);
+}

@@ -5,42 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="referrer" content="no-referrer" />
-    <title>Research | Nir Pechuk</title>
+    <title>Admin | Nir Pechuk</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧋%3C/text%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="/assets/research/research.css" />
-    <script src="/assets/research/research.js" defer></script>
+    <link rel="stylesheet" href="/assets/research/research.css?v=admin-2" />
+    <script src="/assets/research/research.js?v=admin-2" defer></script>
   </head>
-  <body data-payload="__PAYLOAD__">
+  <body class="locked" data-payload="__PAYLOAD__">
     <header class="research-header">
       <a class="home-link" href="/">Nir Pechuk</a>
-      <nav aria-label="Research navigation">
-        <a href="/research/">Research</a>
+      <nav aria-label="Admin navigation">
+        <a href="/research/">Admin console</a>
         <button id="lock" type="button" hidden>Lock</button>
       </nav>
     </header>
     <main>
-      <section id="gate" class="gate" aria-labelledby="gate-title">
+      <section id="gate" class="gate" aria-label="Password required">
         <span class="boba" aria-hidden="true">🧋</span>
-        <h1 id="gate-title">Research</h1>
-        <p>Notes, experiments, and works in progress.</p>
-        <form id="unlock-form">
-          <label for="password">Shared password</label>
-          <div class="password-row">
-            <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
-            <button type="submit">Unlock</button>
-          </div>
+        <form id="unlock-form" aria-label="Unlock page">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            aria-label="Password"
+            placeholder="Password"
+            autocomplete="current-password"
+            enterkeyhint="go"
+            required
+            autofocus
+          />
+          <button type="submit" hidden>Unlock</button>
           <p id="error" role="status" aria-live="polite"></p>
         </form>
-        <noscript>JavaScript is needed to unlock these pages.</noscript>
+        <noscript>JavaScript is needed to unlock this page.</noscript>
       </section>
       <section id="directory" class="directory" aria-labelledby="directory-title" hidden>
-        <h1 id="directory-title">Research</h1>
-        <p>Notes, experiments, and works in progress.</p>
-        <p id="empty" hidden>No pages yet.</p>
-        <ul id="page-list"></ul>
+        <div class="console-heading">
+          <div>
+            <h1 id="directory-title">🧋 Admin console</h1>
+            <p>A closer look at your corner of the internet.</p>
+          </div>
+          <a href="#reports">Research reports</a>
+        </div>
+        <section class="traffic" aria-labelledby="traffic-title">
+          <div class="traffic-heading">
+            <h2 id="traffic-title">Page traffic</h2>
+            <button id="refresh-traffic" class="quiet" type="button">Refresh</button>
+          </div>
+          <div class="explorer">
+            <aside class="page-picker" aria-label="Choose a page">
+              <label for="page-search">Find a page</label>
+              <input id="page-search" type="search" placeholder="Search paths" />
+              <p id="catalog-status" role="status"></p>
+              <div id="analytics-pages"></div>
+            </aside>
+            <div class="traffic-detail">
+              <div class="chart-heading">
+                <h3><a id="selected-path" href="/">/</a></h3>
+                <div>
+                  <label for="traffic-range">Date range</label
+                  ><select id="traffic-range">
+                    <option value="7">Last 7 days</option>
+                    <option value="30" selected>Last 30 days</option>
+                    <option value="90">Last 90 days</option>
+                  </select>
+                </div>
+              </div>
+              <p id="traffic-status" role="status" aria-live="polite"></p>
+              <div class="traffic-stats">
+                <div><strong id="period-views">—</strong><span>Views in this period</span></div>
+                <div><strong id="daily-unique">—</strong><span>Average daily unique viewers</span></div>
+              </div>
+              <div class="chart-legend"><span class="views-key">Total views</span><span class="unique-key">Daily unique viewers</span></div>
+              <div id="traffic-chart" class="traffic-chart"></div>
+              <p id="history-note" class="history-note"></p>
+              <p id="lifetime-counts" class="history-note"></p>
+              <details>
+                <summary>Daily counts and download</summary>
+                <button id="download-traffic" class="quiet" type="button" disabled>Download CSV</button>
+                <div class="daily-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Date (UTC)</th>
+                        <th scope="col">Total views</th>
+                        <th scope="col">Unique viewers</th>
+                      </tr>
+                    </thead>
+                    <tbody id="daily-counts"></tbody>
+                  </table>
+                </div>
+              </details>
+              <details class="measurement-note">
+                <summary>How views are counted</summary>
+                <p>
+                  A view is a page load. A unique viewer is a browser counted once per page per UTC day. Research views count only after unlocking.
+                  Clearing browser storage or using another browser can count someone again; blocked storage omits them from unique counts. Daily
+                  uniques cannot be added together to get unique people for the whole period.
+                </p>
+                <p>
+                  History starts September 27, 2026, when daily tracking was introduced. Earlier visits remain in lifetime totals only. These are
+                  approximate counts from a public counter service; blockers, outages, and automated visits can affect them.
+                </p>
+              </details>
+            </div>
+          </div>
+        </section>
+        <section id="reports" aria-labelledby="reports-title">
+          <h2 id="reports-title">Research reports</h2>
+          <p>Notes, experiments, and works in progress.</p>
+          <p id="empty" hidden>No reports yet.</p>
+          <ul id="page-list"></ul>
+        </section>
       </section>
       <section id="document" class="document" hidden>
         <div class="document-heading">

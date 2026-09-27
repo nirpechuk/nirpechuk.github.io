@@ -1,7 +1,10 @@
 (() => {
   const get = (id) => document.getElementById(id);
   const sessionKey = "research-password";
-  if (document.body.dataset.payload === "page.json") document.body.classList.add("research-page");
+  if (document.body.dataset.payload === "page.json") {
+    document.body.classList.add("research-page");
+    document.title = "Research | Nir Pechuk";
+  }
   let payload;
   let counterScript;
 
@@ -10,14 +13,17 @@
       if (!window.NirPageViews) {
         counterScript ||= new Promise((resolve, reject) => {
           const script = document.createElement("script");
-          script.src = "/assets/js/page-views.js?v=research-menu";
+          script.src = "/assets/js/page-views.js?v=analytics-1";
           script.onload = resolve;
-          script.onerror = reject;
+          script.onerror = () => {
+            counterScript = null;
+            reject(new Error("load"));
+          };
           document.head.append(script);
         });
         await counterScript;
       }
-      window.NirPageViews.track();
+      if (kind !== "index") window.NirPageViews.track();
       if (kind === "index") {
         get("page-list")
           .querySelectorAll("[data-view-path]")
@@ -27,6 +33,28 @@
       }
     } catch {
       // Counter outages must never prevent reading a report.
+    }
+  }
+  let adminScript;
+  async function openConsole(pages) {
+    try {
+      await updateViewCounts("index");
+      if (!window.NirAdmin) {
+        adminScript ||= new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "/assets/research/admin.js?v=2";
+          script.onload = resolve;
+          script.onerror = () => {
+            adminScript = null;
+            reject(new Error("load"));
+          };
+          document.head.append(script);
+        });
+        await adminScript;
+      }
+      if (!get("directory").hidden) window.NirAdmin.open(pages);
+    } catch {
+      get("traffic-status").textContent = "Traffic explorer couldn’t load. Reload this page to try again.";
     }
   }
   const savedPassword = () => {
@@ -94,6 +122,8 @@
         }
         get("empty").hidden = content.pages.length > 0;
         get("directory").hidden = false;
+        document.title = "Admin | Nir Pechuk";
+        openConsole(content.pages);
       } else if (content.kind === "page") {
         get("document-title").textContent = content.title;
         get("research-frame").title = content.title;
@@ -107,8 +137,9 @@
       remember(password);
       get("password").value = "";
       get("gate").hidden = true;
+      document.body.classList.remove("locked");
       get("lock").hidden = false;
-      updateViewCounts(content.kind);
+      if (content.kind !== "index") updateViewCounts(content.kind);
     } catch (error) {
       remember(null);
       get("error").textContent =
@@ -124,6 +155,7 @@
   });
   get("lock").addEventListener("click", () => {
     remember(null);
+    window.NirAdmin?.close();
     get("research-frame").removeAttribute("srcdoc");
     get("research-frame").src = "about:blank";
     get("page-list").replaceChildren();
@@ -134,8 +166,9 @@
     document.body.classList.remove("document-open");
     get("lock").hidden = true;
     get("gate").hidden = false;
+    document.body.classList.add("locked");
     get("error").textContent = "";
-    document.title = "Research | Nir Pechuk";
+    document.title = "Admin | Nir Pechuk";
     get("password").focus();
   });
   window.addEventListener("pageshow", (event) => {
