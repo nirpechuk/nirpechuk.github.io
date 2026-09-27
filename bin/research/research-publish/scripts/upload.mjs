@@ -120,7 +120,7 @@ export async function upload({ api, password, html, slug, title, replace = false
   manifest.pages = [{ slug, title, updated }, ...manifest.pages.filter((page) => page.slug !== slug)];
   const stringify = (value) => JSON.stringify(value, null, 2) + "\n";
   const files = {
-    "research/index.html": shell.replace("__PAYLOAD__", "manifest.json"),
+    "research/index.html": shell.replace("__PAYLOAD__", "admin.json"),
     "research/manifest.json": stringify(await seal(manifest, password)),
     [`research/${slug}/index.html`]: shell.replace("__PAYLOAD__", "page.json"),
     [`research/${slug}/page.json`]: stringify(payload),

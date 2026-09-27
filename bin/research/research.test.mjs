@@ -85,3 +85,34 @@ test("password rotation preserves reports, rejects the old password, and validat
     await rm(temporary, { recursive: true, force: true });
   }
 });
+
+test("admin and research passwords stay separate across publishing and report password rotation", async () => {
+  const { configureAdmin, rotatePassword } = await import("./publish.mjs");
+  const temporary = await mkdtemp(path.join(os.tmpdir(), "research-admin-"));
+  const root = path.join(temporary, "site");
+  const source = path.join(temporary, "report.html");
+  try {
+    await mkdir(root);
+    await initialize(root, "research-secret");
+    await configureAdmin(root, "research-secret", "admin-secret");
+    const adminFile = path.join(root, "research/admin.json");
+    const before = await readFile(adminFile, "utf8");
+    await assert.rejects(decrypt(JSON.parse(before), "research-secret"));
+    assert.deepEqual(await decrypt(JSON.parse(before), "admin-secret"), { kind: "admin", researchPassword: "research-secret" });
+    await writeFile(source, "<!doctype html><title>New report</title><p>Preserved content</p>");
+    await publishPage({ root, source, slug: "report", password: "research-secret" });
+    assert.equal(await readFile(adminFile, "utf8"), before);
+    assert.equal((await readManifest(root, "research-secret")).pages.length, 1);
+    const report = JSON.parse(await readFile(path.join(root, "research/report/page.json"), "utf8"));
+    await assert.rejects(decrypt(report, "admin-secret"));
+    assert.match((await decrypt(report, "research-secret")).html, /Preserved content/);
+    assert.match(await readFile(path.join(root, "research/index.html"), "utf8"), /data-payload="admin.json"/);
+    await assert.rejects(rotatePassword(root, "research-secret", "next-research"), /admin password is required/);
+    assert.equal((await readManifest(root, "research-secret")).pages.length, 1);
+    await rotatePassword(root, "research-secret", "next-research", "admin-secret");
+    assert.equal((await decrypt(JSON.parse(await readFile(adminFile, "utf8")), "admin-secret")).researchPassword, "next-research");
+    assert.equal((await readManifest(root, "next-research")).pages.length, 1);
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+});

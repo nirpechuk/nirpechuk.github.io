@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { initialize, publishPage, removePage, readManifest, rotatePassword } from "./publish.mjs";
+import { initialize, publishPage, removePage, readManifest, rotatePassword, configureAdmin } from "./publish.mjs";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const args = process.argv.slice(2);
@@ -43,10 +43,15 @@ try {
     const passwordFile = value("--new-password-file");
     if (!passwordFile) throw new Error("Provide --new-password-file PATH containing the new password.");
     const newPassword = (await readFile(path.resolve(passwordFile), "utf8")).trim();
-    files = await rotatePassword(root, password, newPassword);
+    const adminPassword = process.env.ADMIN_PASSWORD || (await readFile(path.join(root, ".admin-password"), "utf8").catch(() => "")).trim();
+    files = await rotatePassword(root, password, newPassword, adminPassword);
     const { writeFile } = await import("node:fs/promises");
     await writeFile(path.join(root, ".research-password"), newPassword + "\n", { mode: 0o600 });
     message = "Rotate research password and refresh page shells";
+  } else if (args.includes("--configure-admin")) {
+    const adminPassword = process.env.ADMIN_PASSWORD || (await readFile(path.join(root, ".admin-password"), "utf8").catch(() => "")).trim();
+    files = await configureAdmin(root, password, adminPassword);
+    message = "Configure separate admin access";
   } else if (args.includes("--init")) {
     files = await initialize(root, password);
     message = "Initialize protected research section";

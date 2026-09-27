@@ -33,7 +33,7 @@ async function writeEnvelope(file, value, password) {
 async function writeIndex(root, manifest, password) {
   const dir = path.join(root, "research");
   await mkdir(dir, { recursive: true });
-  const shell = (await readFile(templatePath, "utf8")).replace("__PAYLOAD__", "manifest.json");
+  const shell = (await readFile(templatePath, "utf8")).replace("__PAYLOAD__", "admin.json");
   await writeFile(path.join(dir, "index.html"), shell);
   await writeEnvelope(path.join(dir, "manifest.json"), manifest, password);
 }
@@ -92,11 +92,30 @@ export async function removePage(root, slug, password) {
   return ["research/index.html", "research/manifest.json", `research/${slug}`];
 }
 
-export async function rotatePassword(root, oldPassword, newPassword) {
+export async function configureAdmin(root, researchPassword, adminPassword) {
+  await readManifest(root, researchPassword);
+  if (!adminPassword) throw new Error("An admin password is required.");
+  await mkdir(path.join(root, "research"), { recursive: true });
+  await writeEnvelope(path.join(root, "research/admin.json"), { kind: "admin", researchPassword }, adminPassword);
+  return ["research/admin.json"];
+}
+
+export async function rotatePassword(root, oldPassword, newPassword, adminPassword) {
   if (!newPassword) throw new Error("A new password is required.");
   const manifest = await readManifest(root, oldPassword);
   const shell = await readFile(templatePath, "utf8");
   const changes = [];
+  const adminFile = path.join(root, "research/admin.json");
+  if (await exists(adminFile)) {
+    if (!adminPassword) throw new Error("The admin password is required to update report access in the console.");
+    const admin = await decrypt(JSON.parse(await readFile(adminFile, "utf8")), adminPassword);
+    if (admin.kind !== "admin" || admin.researchPassword !== oldPassword)
+      throw new Error("Admin report access does not match the current research password.");
+    changes.push([
+      "research/admin.json",
+      JSON.stringify(await encrypt({ kind: "admin", researchPassword: newPassword }, adminPassword), null, 2) + "\n",
+    ]);
+  }
   // Validate and re-encrypt every payload in memory before changing any file.
   for (const page of manifest.pages) {
     validateSlug(page.slug);
@@ -106,7 +125,7 @@ export async function rotatePassword(root, oldPassword, newPassword) {
     changes.push([`research/${page.slug}/index.html`, shell.replace("__PAYLOAD__", "page.json")]);
   }
   changes.push(["research/manifest.json", JSON.stringify(await encrypt(manifest, newPassword), null, 2) + "\n"]);
-  changes.push(["research/index.html", shell.replace("__PAYLOAD__", "manifest.json")]);
+  changes.push(["research/index.html", shell.replace("__PAYLOAD__", "admin.json")]);
   const originals = await Promise.all(changes.map(async ([file]) => [file, await readFile(path.join(root, file))]));
   try {
     for (const [file, content] of changes) await writeFile(path.join(root, file), content);

@@ -1,7 +1,8 @@
 (() => {
   const get = (id) => document.getElementById(id);
-  const sessionKey = "research-password";
-  if (document.body.dataset.payload === "page.json") {
+  const isReport = document.body.dataset.payload === "page.json";
+  const sessionKey = isReport ? "research-password" : "admin-password";
+  if (isReport) {
     document.body.classList.add("research-page");
     document.title = "Research | Nir Pechuk";
   }
@@ -64,15 +65,32 @@
       return null;
     }
   };
-  const remember = (password) => {
+  const remember = (password, key = sessionKey) => {
     try {
-      password ? sessionStorage.setItem(sessionKey, password) : sessionStorage.removeItem(sessionKey);
+      password ? sessionStorage.setItem(key, password) : sessionStorage.removeItem(key);
     } catch {
       /* Unlock still works without storage. */
     }
   };
   const bytes = (value) => Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
 
+  async function decrypt(envelope, password) {
+    if (envelope.version !== 1 || envelope.iterations !== 250000) throw new Error("load");
+    const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: bytes(envelope.salt), iterations: envelope.iterations, hash: "SHA-256" },
+      material,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["decrypt"]
+    );
+    try {
+      const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes(envelope.iv) }, key, bytes(envelope.data));
+      return JSON.parse(new TextDecoder().decode(plaintext));
+    } catch {
+      throw new Error("password");
+    }
+  }
   async function unlock(password) {
     get("error").textContent = "";
     const submit = get("unlock-form").querySelector("button");
@@ -80,25 +98,27 @@
     submit.textContent = "Unlocking…";
     try {
       if (!payload) {
-        const response = await fetch(document.body.dataset.payload, { cache: "no-store" });
+        // Old installed uploaders may still label the index as manifest.json.
+        // The directory always authenticates against the separate admin envelope.
+        const response = await fetch(isReport ? "page.json" : "admin.json", { cache: "no-store" });
         if (!response.ok) throw new Error("load");
         payload = await response.json();
       }
-      if (payload.version !== 1 || payload.iterations !== 250000) throw new Error("load");
-      const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
-      const key = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: bytes(payload.salt), iterations: payload.iterations, hash: "SHA-256" },
-        material,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"]
-      );
-      let content;
-      try {
-        const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes(payload.iv) }, key, bytes(payload.data));
-        content = JSON.parse(new TextDecoder().decode(plaintext));
-      } catch {
-        throw new Error("password");
+      let content = await decrypt(payload, password);
+      if (!isReport) {
+        if (content.kind !== "admin" || typeof content.researchPassword !== "string") throw new Error("load");
+        const researchPassword = content.researchPassword;
+        const response = await fetch("manifest.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("load");
+        try {
+          content = await decrypt(await response.json(), researchPassword);
+        } catch {
+          throw new Error("load");
+        }
+        if (content.kind !== "index") throw new Error("load");
+        remember(researchPassword, "research-password");
+      } else if (content.kind !== "page") {
+        throw new Error("load");
       }
       if (content.kind === "index") {
         get("page-list").replaceChildren();
@@ -154,7 +174,8 @@
     unlock(get("password").value);
   });
   get("lock").addEventListener("click", () => {
-    remember(null);
+    remember(null, "admin-password");
+    remember(null, "research-password");
     window.NirAdmin?.close();
     get("research-frame").removeAttribute("srcdoc");
     get("research-frame").src = "about:blank";

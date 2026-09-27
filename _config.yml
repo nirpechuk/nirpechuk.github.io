@@ -175,6 +175,7 @@ kramdown:
 include: ["_pages", "_scripts"]
 exclude:
   - .research-password
+  - .admin-password
   - .research-source/
   - Publish Research.command
   - assets/jupyter/

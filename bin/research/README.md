@@ -5,8 +5,9 @@ The shortcut encrypts it, adds it to the research directory, commits, and pushes
 GitHub Pages usually updates in a few minutes. The published address is printed
 in the window. Publishing the same filename again updates that page.
 
-The boba admin console lives at <https://nirpechuk.github.io/research/>. Readers
-enter the shared password once per tab; **Lock** clears the tab’s saved password.
+The boba admin console lives at <https://nirpechuk.github.io/research/> and uses
+its own admin password. Direct report links use the separate shared research
+password. Both are remembered per tab; **Lock** clears both saved passwords.
 The 🧋 password page appears both at the directory and at direct links to individual
 pages. Once unlocked, individual reports display their own HTML edge to edge,
 without a website header, title bar, or controls. The admin console includes searchable public-page and research traffic graphs,
@@ -106,7 +107,27 @@ resolve the Git issue and push again.
 
 ## Password and protection
 
-The shared password is already configured locally in `.research-password`.
+The research password is configured locally in `.research-password`; the separate
+admin password is in `.admin-password`. Both files are ignored by Git and excluded
+from the built site. Report publishers continue to use only the research password.
+
+The console unlocks `research/admin.json` with the admin password. This encrypted
+file contains the research password, which lets it read the latest encrypted
+manifest and open reports. Knowing the research password does not unlock the
+admin console. Publishing updates the manifest without modifying admin access,
+so the console always picks up newly published reports. Older installed uploaders
+that label the index payload `manifest.json` remain compatible: the browser always
+uses `admin.json` to authenticate the console.
+
+To create or change admin access after saving `.admin-password`, run:
+
+```sh
+npm run research:publish -- --configure-admin
+```
+
+`ADMIN_PASSWORD` can override the local admin password file.
+
+The shared research password is already configured locally in `.research-password`.
 That file is ignored by Git and excluded from the built site. On another machine,
 create it with the same password, or provide `RESEARCH_PASSWORD` in the environment.
 Do not simply change this file: existing pages still require their original
@@ -118,7 +139,9 @@ npm run research:publish -- --rotate-password --new-password-file /path/to/new-p
 ```
 
 This verifies and re-encrypts every report and the manifest, refreshes all page
-shells, and updates the ignored local `.research-password`. Add `--push` to publish.
+shells, and updates the ignored local `.research-password`. When admin access is
+configured, it also needs `.admin-password` or `ADMIN_PASSWORD` to update the
+console’s encrypted report access. Add `--push` to publish.
 Update the saved password on other publishing machines too. Existing browser
 sessions must unlock again with the new password. The old password can still
 unlock historical encrypted versions in Git history.

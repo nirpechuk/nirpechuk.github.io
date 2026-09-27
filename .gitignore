@@ -15,4 +15,5 @@ vendor
 
 # Local research inputs and shared password
 .research-password
+.admin-password
 .research-source/
