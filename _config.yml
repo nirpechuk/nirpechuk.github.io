@@ -239,10 +239,6 @@ defaults:
       path: "assets"
     values:
       sitemap: false
-  - scope:
-      path: "structs"
-    values:
-      sitemap: false
 
 sass:
   style: compressed
@@ -253,7 +249,7 @@ sass:
 
 jekyll-minifier:
   compress_javascript: false # set to false since we are using terser as the js minifier
-  exclude: ["robots.txt", "assets/js/search/*.js"]
+  exclude: ["robots.txt", "assets/js/search/*.js", "structs/index.html"]
 
 # -----------------------------------------------------------------------------
 # Terser
