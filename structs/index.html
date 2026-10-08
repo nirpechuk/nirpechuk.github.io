@@ -1,479 +1,989 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
-<title>Struct Alignment Lab</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
-<style>
-/* Layout: one card. Draggable C struct on the left, rows of 8 bytes on the right. */
-:root {
-  color-scheme: light;
-  --bg: #f4f5f8; --surface: #ffffff; --fg: #1a1d24; --muted: #5b6271; --line: #dfe2e9;
-  --accent: #2747c9; --accent-soft: #e3e8fb;
-  --pad: #eef0f4; --hatch: #c6cbd6;
-  --char: #f3d18f; --short: #9fdcc7; --int: #b7c9f4; --long: #d9c3f0; --cell-fg: #1a1d24;
-  --char-ink: #8f600c; --short-ink: #1b7259; --int-ink: #2c52b3; --long-ink: #7641ab;
-  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111318; --surface: #181b22; --fg: #e7e9ee; --muted: #9aa1ae; --line: #2a2f3a;
-    --accent: #8ea6ff; --accent-soft: #232b48;
-    --pad: #1c2029; --hatch: #3a404c;
-    --char: #5e4517; --short: #1d5446; --int: #2a3f73; --long: #4a3168; --cell-fg: #eef1f6;
-    --char-ink: #f0c46e; --short-ink: #7fd6bb; --int-ink: #9db8f5; --long-ink: #cfaef2;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #111318; --surface: #181b22; --fg: #e7e9ee; --muted: #9aa1ae; --line: #2a2f3a;
-  --accent: #8ea6ff; --accent-soft: #232b48;
-  --pad: #1c2029; --hatch: #3a404c;
-  --char: #5e4517; --short: #1d5446; --int: #2a3f73; --long: #4a3168; --cell-fg: #eef1f6;
-  --char-ink: #f0c46e; --short-ink: #7fd6bb; --int-ink: #9db8f5; --long-ink: #cfaef2;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-html { font-size: clamp(16px, 0.6rem + 0.6vw, 20px); }
-body { background: var(--bg); color: var(--fg); font: 0.95rem/1.5 var(--sans); }
-.wrap { max-width: 72rem; margin: 0 auto; padding: 2.5rem 1rem 4rem; display: grid; gap: 1.25rem; }
-header { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
-h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
-.sub { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
-button { font: inherit; color: inherit; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Struct Alignment Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" />
+    <style>
+      /* Layout: one card. Draggable C struct on the left, rows of 8 bytes on the right. */
+      :root {
+        color-scheme: light;
+        --bg: #f4f5f8;
+        --surface: #ffffff;
+        --fg: #1a1d24;
+        --muted: #5b6271;
+        --line: #dfe2e9;
+        --accent: #2747c9;
+        --accent-soft: #e3e8fb;
+        --pad: #eef0f4;
+        --hatch: #c6cbd6;
+        --char: #f3d18f;
+        --short: #9fdcc7;
+        --int: #b7c9f4;
+        --long: #d9c3f0;
+        --cell-fg: #1a1d24;
+        --char-ink: #8f600c;
+        --short-ink: #1b7259;
+        --int-ink: #2c52b3;
+        --long-ink: #7641ab;
+        --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #111318;
+          --surface: #181b22;
+          --fg: #e7e9ee;
+          --muted: #9aa1ae;
+          --line: #2a2f3a;
+          --accent: #8ea6ff;
+          --accent-soft: #232b48;
+          --pad: #1c2029;
+          --hatch: #3a404c;
+          --char: #5e4517;
+          --short: #1d5446;
+          --int: #2a3f73;
+          --long: #4a3168;
+          --cell-fg: #eef1f6;
+          --char-ink: #f0c46e;
+          --short-ink: #7fd6bb;
+          --int-ink: #9db8f5;
+          --long-ink: #cfaef2;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #111318;
+        --surface: #181b22;
+        --fg: #e7e9ee;
+        --muted: #9aa1ae;
+        --line: #2a2f3a;
+        --accent: #8ea6ff;
+        --accent-soft: #232b48;
+        --pad: #1c2029;
+        --hatch: #3a404c;
+        --char: #5e4517;
+        --short: #1d5446;
+        --int: #2a3f73;
+        --long: #4a3168;
+        --cell-fg: #eef1f6;
+        --char-ink: #f0c46e;
+        --short-ink: #7fd6bb;
+        --int-ink: #9db8f5;
+        --long-ink: #cfaef2;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        font-size: clamp(16px, 0.6rem + 0.6vw, 20px);
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font: 0.95rem/1.5 var(--sans);
+      }
+      .wrap {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 2.5rem 1rem 4rem;
+        display: grid;
+        gap: 1.25rem;
+      }
+      header {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+      .sub {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
 
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem; display: grid; gap: 1.25rem; min-width: 0; }
-.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.82rem; font-family: var(--mono); }
-.chip:hover { border-color: var(--accent); }
-.chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.25rem;
+        display: grid;
+        gap: 1.25rem;
+        min-width: 0;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--bg);
+        border-radius: 999px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.82rem;
+        font-family: var(--mono);
+      }
+      .chip:hover {
+        border-color: var(--accent);
+      }
+      .chip.on {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
 
-.lab { display: grid; grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); gap: 2rem; align-items: start; }
-@media (max-width: 780px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+      .lab {
+        display: grid;
+        grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+        gap: 2rem;
+        align-items: start;
+      }
+      @media (max-width: 780px) {
+        .lab {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
 
-/* code editor */
-.code { font-family: var(--mono); font-size: 0.92rem; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem 0; overflow-x: auto; user-select: none; -webkit-user-select: none; }
-.ln { display: flex; align-items: center; gap: 0; min-height: 1.95rem; padding: 0 0.4rem 0 calc(0.5rem + var(--d, 0) * 2.5ch); white-space: nowrap; }
-.ln[data-id] { cursor: grab; }
-.ln[data-id]:hover, .ln.hl { background: var(--accent-soft); }
-body.dragging, body.dragging * { cursor: grabbing !important; }
-.ln.drag { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
-.kw { color: var(--muted); }
-.c-char { color: var(--char-ink); } .c-short { color: var(--short-ink); } .c-int { color: var(--int-ink); } .c-long { color: var(--long-ink); }
-select.ty { appearance: none; -webkit-appearance: none; border: 0; background: transparent; font: inherit; color: inherit; padding: 0; margin: 0 1.1ch 0 0; cursor: pointer; border-radius: 0; }
-.nm { touch-action: none; }
-.arr { display: inline-flex; align-items: center; }
-.arr input { width: 2.2ch; border: 0; background: transparent; font: inherit; color: inherit; text-align: center; padding: 0; -moz-appearance: textfield; }
-.arr input::-webkit-inner-spin-button, .arr input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-.arr.scalar { opacity: 0.35; }
-.ln:not(:hover):not(:focus-within) > .arr.scalar { display: none; }
-.ctl { margin-left: auto; padding-left: 1ch; display: inline-flex; gap: 2px; flex: none; }
-.del { border: 0; background: transparent; min-width: 1.4rem; height: 1.4rem; border-radius: 4px; color: var(--muted); opacity: 0; flex: none; font-family: var(--mono); font-size: 0.8rem; }
-.note { color: var(--muted); margin-left: 2ch; display: inline-flex; align-items: center; }
-.note input { border: 0; border-bottom: 1px solid transparent; background: transparent; font: inherit; color: inherit; padding: 0; min-width: 1ch; }
-.note input:focus { outline: none; border-bottom-color: var(--line); }
-.ln:hover .del, .del:focus-visible { opacity: 1; }
-.del:hover { color: var(--fg); background: var(--surface); }
-.del:disabled { visibility: hidden; }
-.left { display: grid; gap: 0.6rem; min-width: 0; }
-.add { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; font-family: var(--mono); font-size: 0.78rem; }
-.add span { color: var(--muted); margin-right: 0.2rem; }
-.add button { border: 1px dashed var(--line); background: transparent; border-radius: 4px; padding: 0 0.45rem; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
-.add button:hover { border-color: var(--accent); color: var(--accent); }
+      /* code editor */
+      .code {
+        font-family: var(--mono);
+        font-size: 0.92rem;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.6rem 0;
+        overflow-x: auto;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .ln {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        min-height: 1.95rem;
+        padding: 0 0.4rem 0 calc(0.5rem + var(--d, 0) * 2.5ch);
+        white-space: nowrap;
+      }
+      .ln[data-id] {
+        cursor: grab;
+      }
+      .ln[data-id]:hover,
+      .ln.hl {
+        background: var(--accent-soft);
+      }
+      body.dragging,
+      body.dragging * {
+        cursor: grabbing !important;
+      }
+      .ln.drag {
+        background: var(--accent-soft);
+        box-shadow: inset 2px 0 0 var(--accent);
+      }
+      .kw {
+        color: var(--muted);
+      }
+      .c-char {
+        color: var(--char-ink);
+      }
+      .c-short {
+        color: var(--short-ink);
+      }
+      .c-int {
+        color: var(--int-ink);
+      }
+      .c-long {
+        color: var(--long-ink);
+      }
+      select.ty {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        color: inherit;
+        padding: 0;
+        margin: 0 1.1ch 0 0;
+        cursor: pointer;
+        border-radius: 0;
+      }
+      .nm {
+        touch-action: none;
+      }
+      .arr {
+        display: inline-flex;
+        align-items: center;
+      }
+      .arr input {
+        width: 2.2ch;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        color: inherit;
+        text-align: center;
+        padding: 0;
+        -moz-appearance: textfield;
+      }
+      .arr input::-webkit-inner-spin-button,
+      .arr input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .arr.scalar {
+        opacity: 0.35;
+      }
+      .ln:not(:hover):not(:focus-within) > .arr.scalar {
+        display: none;
+      }
+      .ctl {
+        margin-left: auto;
+        padding-left: 1ch;
+        display: inline-flex;
+        gap: 2px;
+        flex: none;
+      }
+      .del {
+        border: 0;
+        background: transparent;
+        min-width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 4px;
+        color: var(--muted);
+        opacity: 0;
+        flex: none;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+      .note {
+        color: var(--muted);
+        margin-left: 2ch;
+        display: inline-flex;
+        align-items: center;
+      }
+      .note input {
+        border: 0;
+        border-bottom: 1px solid transparent;
+        background: transparent;
+        font: inherit;
+        color: inherit;
+        padding: 0;
+        min-width: 1ch;
+      }
+      .note input:focus {
+        outline: none;
+        border-bottom-color: var(--line);
+      }
+      .ln:hover .del,
+      .del:focus-visible {
+        opacity: 1;
+      }
+      .del:hover {
+        color: var(--fg);
+        background: var(--surface);
+      }
+      .del:disabled {
+        visibility: hidden;
+      }
+      .left {
+        display: grid;
+        gap: 0.6rem;
+        min-width: 0;
+      }
+      .add {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+      }
+      .add span {
+        color: var(--muted);
+        margin-right: 0.2rem;
+      }
+      .add button {
+        border: 1px dashed var(--line);
+        background: transparent;
+        border-radius: 4px;
+        padding: 0 0.45rem;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .add button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
 
-/* memory view */
-.mem { display: grid; gap: 1rem; min-width: 0; }
-.stats { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
-.stat { display: grid; }
-.stat b { font-family: var(--mono); font-size: 1.6rem; font-weight: 500; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.stat span { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
-.bytes { display: grid; grid-template-columns: 2rem repeat(8, minmax(0, 1fr)); gap: 3px; font-family: var(--mono); }
-.colh { text-align: center; font-size: 0.72rem; color: var(--muted); padding-bottom: 2px; border-bottom: 2px solid transparent; font-variant-numeric: tabular-nums; transition: color .12s, border-color .12s; }
-.rowh { font-size: 0.72rem; color: var(--muted); align-self: center; text-align: right; padding-right: 0.4rem; font-variant-numeric: tabular-nums; }
-.seg { min-height: 3rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--cell-fg); overflow: hidden; white-space: nowrap; transition: opacity 0.12s, box-shadow 0.12s; }
-.t-char { background-color: var(--char); } .t-short { background-color: var(--short); } .t-int { background-color: var(--int); } .t-long { background-color: var(--long); }
-.pad { background: var(--pad) repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px); }
-.seg.nested { box-shadow: inset 0 -3px 0 var(--muted); }
-.bytes .seg:not(.pad) { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
-.bytes.hovering .seg:not(.hl) { opacity: 0.28; }
-.bytes .seg.hl { box-shadow: 0 0 0 2px var(--accent); }
-.top { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; }
-.toggle { display: inline-flex; gap: 0.4rem; align-items: center; font-family: var(--mono); font-size: 0.82rem; color: var(--muted); cursor: pointer; }
-.toggle input { accent-color: var(--accent); margin: 0; }
-.mem { position: relative; }
-.reveal { display: none; position: absolute; inset: 0; z-index: 1; border: 1.5px dashed var(--line); border-radius: 8px; background: var(--bg); color: var(--muted); font-family: var(--mono); font-size: 0.85rem; }
-.reveal:hover { border-color: var(--accent); color: var(--accent); }
-.mem.hidden .reveal { display: block; }
-.mem.hidden { min-height: 16rem; }
-.mem.hidden > :not(.reveal) { display: none; }
-.legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
-.legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; vertical-align: -0.1rem; margin-right: 0.35rem; }
-.detail { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; align-items: baseline; min-height: 1.6rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); padding-top: 0.75rem; }
-.detail code { color: var(--fg); font-weight: 600; }
-.detail b { color: var(--fg); font-weight: 500; }
-.legend i.nested { background: var(--surface); box-shadow: inset 0 -3px 0 var(--muted); border: 1px solid var(--line); }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-</style>
-<style>body { margin: 0; } [hidden] { display: none !important; }</style>
-</head>
-<body>
-<main class="wrap" id="app">
-  <header>
-    <h1>Struct alignment</h1>
-    <span class="sub">x86-64 · drag fields in the code or the grid</span>
-  </header>
+      /* memory view */
+      .mem {
+        display: grid;
+        gap: 1rem;
+        min-width: 0;
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 2rem;
+      }
+      .stat {
+        display: grid;
+      }
+      .stat b {
+        font-family: var(--mono);
+        font-size: 1.6rem;
+        font-weight: 500;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+      }
+      .stat span {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-family: var(--mono);
+      }
+      .bytes {
+        display: grid;
+        grid-template-columns: 2rem repeat(8, minmax(0, 1fr));
+        gap: 3px;
+        font-family: var(--mono);
+      }
+      .colh {
+        text-align: center;
+        font-size: 0.72rem;
+        color: var(--muted);
+        padding-bottom: 2px;
+        border-bottom: 2px solid transparent;
+        font-variant-numeric: tabular-nums;
+        transition:
+          color 0.12s,
+          border-color 0.12s;
+      }
+      .rowh {
+        font-size: 0.72rem;
+        color: var(--muted);
+        align-self: center;
+        text-align: right;
+        padding-right: 0.4rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .seg {
+        min-height: 3rem;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--cell-fg);
+        overflow: hidden;
+        white-space: nowrap;
+        transition:
+          opacity 0.12s,
+          box-shadow 0.12s;
+      }
+      .t-char {
+        background-color: var(--char);
+      }
+      .t-short {
+        background-color: var(--short);
+      }
+      .t-int {
+        background-color: var(--int);
+      }
+      .t-long {
+        background-color: var(--long);
+      }
+      .pad {
+        background: var(--pad) repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch) 5px 6px);
+      }
+      .seg.nested {
+        box-shadow: inset 0 -3px 0 var(--muted);
+      }
+      .bytes .seg:not(.pad) {
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .bytes.hovering .seg:not(.hl) {
+        opacity: 0.28;
+      }
+      .bytes .seg.hl {
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+      .top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .toggle {
+        display: inline-flex;
+        gap: 0.4rem;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .toggle input {
+        accent-color: var(--accent);
+        margin: 0;
+      }
+      .mem {
+        position: relative;
+      }
+      .reveal {
+        display: none;
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border: 1.5px dashed var(--line);
+        border-radius: 8px;
+        background: var(--bg);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.85rem;
+      }
+      .reveal:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .mem.hidden .reveal {
+        display: block;
+      }
+      .mem.hidden {
+        min-height: 16rem;
+      }
+      .mem.hidden > :not(.reveal) {
+        display: none;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 1rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-family: var(--mono);
+      }
+      .legend i {
+        display: inline-block;
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 2px;
+        vertical-align: -0.1rem;
+        margin-right: 0.35rem;
+      }
+      .detail {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1.25rem;
+        align-items: baseline;
+        min-height: 1.6rem;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        border-top: 1px solid var(--line);
+        padding-top: 0.75rem;
+      }
+      .detail code {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .detail b {
+        color: var(--fg);
+        font-weight: 500;
+      }
+      .legend i.nested {
+        background: var(--surface);
+        box-shadow: inset 0 -3px 0 var(--muted);
+        border: 1px solid var(--line);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+    <style>
+      body {
+        margin: 0;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap" id="app">
+      <header>
+        <h1>Struct alignment</h1>
+        <span class="sub">x86-64 · drag fields in the code or the grid</span>
+      </header>
 
-  <section class="card">
-    <div class="top">
-      <div class="chips" id="presets"></div>
-      <label class="toggle"><input type="checkbox" id="quiz"> hide output</label>
-    </div>
-    <div class="lab">
-      <div class="left">
-        <div class="code" id="code"></div>
-        <div class="add" id="adder"><span>+ add</span><button data-t="char">char</button><button data-t="short">short</button><button data-t="int">int</button><button data-t="long">long</button><button data-t="struct">struct</button></div>
-      </div>
-      <div class="mem" id="mem">
-        <button class="reveal" id="reveal">reveal</button>
-        <div class="stats" id="stats"></div>
-        <div class="bytes" id="bytes"></div>
-        <div class="legend">
-          <span><i class="t-char"></i>char</span><span><i class="t-short"></i>short</span><span><i class="t-int"></i>int</span><span><i class="t-long"></i>long</span><span><i class="pad"></i>padding</span><span><i class="nested"></i>nested</span>
+      <section class="card">
+        <div class="top">
+          <div class="chips" id="presets"></div>
+          <label class="toggle"><input type="checkbox" id="quiz" /> hide output</label>
         </div>
-        <div class="detail" id="detail" aria-live="polite"></div>
-      </div>
-    </div>
-  </section>
-</main>
+        <div class="lab">
+          <div class="left">
+            <div class="code" id="code"></div>
+            <div class="add" id="adder">
+              <span>+ add</span><button data-t="char">char</button><button data-t="short">short</button><button data-t="int">int</button
+              ><button data-t="long">long</button><button data-t="struct">struct</button>
+            </div>
+          </div>
+          <div class="mem" id="mem">
+            <button class="reveal" id="reveal">reveal</button>
+            <div class="stats" id="stats"></div>
+            <div class="bytes" id="bytes"></div>
+            <div class="legend">
+              <span><i class="t-char"></i>char</span><span><i class="t-short"></i>short</span><span><i class="t-int"></i>int</span
+              ><span><i class="t-long"></i>long</span><span><i class="pad"></i>padding</span><span><i class="nested"></i>nested</span>
+            </div>
+            <div class="detail" id="detail" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-<script>
-const PRIM = { char: 1, short: 2, int: 4, long: 8 };
-const TYPES = ["char", "short", "int", "long", "struct"];
-let nextId = 1;
-const F = (type, name, n = 1, fields) => ({ id: nextId++, type, name, n, fields, note: "" });
-const esc = t => t.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-let noteEdit = null;   // field whose empty note is being typed
-const whole = { id: 0, name: "s", note: "" };   // the struct itself (note only)
-const noteOwner = el => { const nid = +el.closest("[data-nid]").dataset.nid; return nid === 0 ? whole : find(nid).f; };
-const noteHTML = f => (f.note || noteEdit === f.id)
-  ? `<span class="note">//&nbsp;<input data-act="note" id="note-${f.id}" maxlength="40" size="${Math.max(1, f.note.length)}" value="${esc(f.note)}" aria-label="Note for ${f.name}"></span>` : "";
-const noteBtn = f => (f.note || noteEdit === f.id) ? "" : `<button class="del" data-act="addnote" aria-label="Add a note to ${f.name}">//</button>`;
+    <script>
+      const PRIM = { char: 1, short: 2, int: 4, long: 8 };
+      const TYPES = ["char", "short", "int", "long", "struct"];
+      let nextId = 1;
+      const F = (type, name, n = 1, fields) => ({ id: nextId++, type, name, n, fields, note: "" });
+      const esc = (t) => t.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+      let noteEdit = null; // field whose empty note is being typed
+      const whole = { id: 0, name: "s", note: "" }; // the struct itself (note only)
+      const noteOwner = (el) => {
+        const nid = +el.closest("[data-nid]").dataset.nid;
+        return nid === 0 ? whole : find(nid).f;
+      };
+      const noteHTML = (f) =>
+        f.note || noteEdit === f.id
+          ? `<span class="note">//&nbsp;<input data-act="note" id="note-${f.id}" maxlength="40" size="${Math.max(1, f.note.length)}" value="${esc(f.note)}" aria-label="Note for ${f.name}"></span>`
+          : "";
+      const noteBtn = (f) =>
+        f.note || noteEdit === f.id ? "" : `<button class="del" data-act="addnote" aria-label="Add a note to ${f.name}">//</button>`;
 
-const PRESETS = {
-  "char long char": () => [F("char", "a"), F("long", "b"), F("char", "c")],
-  "mixed": () => [F("short", "a"), F("char", "b"), F("int", "c"), F("char", "d"), F("long", "e")],
-  "arrays": () => [F("char", "a", 5), F("int", "b"), F("short", "c", 3), F("long", "d")],
-  "nested": () => [F("char", "a"), F("struct", "in", 1, [F("char", "x"), F("int", "y")]), F("short", "b")],
-  "nested trap": () => [F("char", "a"), F("struct", "in", 1, [F("long", "x"), F("char", "y")]), F("char", "b")],
-};
-let root = PRESETS.nested();
+      const PRESETS = {
+        "char long char": () => [F("char", "a"), F("long", "b"), F("char", "c")],
+        mixed: () => [F("short", "a"), F("char", "b"), F("int", "c"), F("char", "d"), F("long", "e")],
+        arrays: () => [F("char", "a", 5), F("int", "b"), F("short", "c", 3), F("long", "d")],
+        nested: () => [F("char", "a"), F("struct", "in", 1, [F("char", "x"), F("int", "y")]), F("short", "b")],
+        "nested trap": () => [F("char", "a"), F("struct", "in", 1, [F("long", "x"), F("char", "y")]), F("char", "b")],
+      };
+      let root = PRESETS.nested();
 
-const $ = id => document.getElementById(id);
-const roundUp = (x, a) => Math.ceil(x / a) * a;
+      const $ = (id) => document.getElementById(id);
+      const roundUp = (x, a) => Math.ceil(x / a) * a;
 
-/* ---------- layout ---------- */
-function lay(fields) {
-  let off = 0, K = 1;
-  const items = fields.map(f => {
-    const elem = f.type === "struct" ? lay(f.fields) : { size: PRIM[f.type], align: PRIM[f.type] };
-    const start = roundUp(off, elem.align);
-    const it = { f, elem, free: off, start, size: elem.size * f.n, align: elem.align };
-    off = start + it.size;
-    K = Math.max(K, elem.align);
-    return it;
-  });
-  return { items, size: roundUp(off, K), align: K, end: off };
-}
+      /* ---------- layout ---------- */
+      function lay(fields) {
+        let off = 0,
+          K = 1;
+        const items = fields.map((f) => {
+          const elem = f.type === "struct" ? lay(f.fields) : { size: PRIM[f.type], align: PRIM[f.type] };
+          const start = roundUp(off, elem.align);
+          const it = { f, elem, free: off, start, size: elem.size * f.n, align: elem.align };
+          off = start + it.size;
+          K = Math.max(K, elem.align);
+          return it;
+        });
+        return { items, size: roundUp(off, K), align: K, end: off };
+      }
 
-/* one record per byte; padding belongs to the field it comes after */
-function flatten(L, base, chain, prefix, out) {
-  const pad = (from, to, cause) => { for (let b = from; b < to; b++) out.push({ kind: "pad", key: `pad:${chain.join(".")}:${from}`, chain, cause, nested: chain.length > 0 }); };
-  let prev = null;
-  for (const it of L.items) {
-    pad(base + it.free, base + it.start, prev);
-    prev = String(it.f.id);
-    for (let e = 0; e < it.f.n; e++) {
-      const at = base + it.start + e * it.elem.size;
-      const name = it.f.name + (it.f.n > 1 ? `[${e}]` : "");
-      const ch = [...chain, it.f.id];
-      if (it.f.type === "struct") flatten(it.elem, at, ch, prefix + name + ".", out);
-      else for (let b = 0; b < it.elem.size; b++) out.push({ kind: it.f.type, key: `${ch.join(".")}:${e}`, label: prefix + name, chain: ch, nested: chain.length > 0 });
-    }
-  }
-  pad(base + L.end, base + L.size, prev);
-  return out;
-}
+      /* one record per byte; padding belongs to the field it comes after */
+      function flatten(L, base, chain, prefix, out) {
+        const pad = (from, to, cause) => {
+          for (let b = from; b < to; b++) out.push({ kind: "pad", key: `pad:${chain.join(".")}:${from}`, chain, cause, nested: chain.length > 0 });
+        };
+        let prev = null;
+        for (const it of L.items) {
+          pad(base + it.free, base + it.start, prev);
+          prev = String(it.f.id);
+          for (let e = 0; e < it.f.n; e++) {
+            const at = base + it.start + e * it.elem.size;
+            const name = it.f.name + (it.f.n > 1 ? `[${e}]` : "");
+            const ch = [...chain, it.f.id];
+            if (it.f.type === "struct") flatten(it.elem, at, ch, prefix + name + ".", out);
+            else
+              for (let b = 0; b < it.elem.size; b++)
+                out.push({ kind: it.f.type, key: `${ch.join(".")}:${e}`, label: prefix + name, chain: ch, nested: chain.length > 0 });
+          }
+        }
+        pad(base + L.end, base + L.size, prev);
+        return out;
+      }
 
-function segments(bytes) {
-  const segs = [];
-  bytes.forEach((b, i) => {
-    const last = segs[segs.length - 1];
-    if (last && last.key === b.key && (i >> 3) === (last.start >> 3)) last.len++;
-    else segs.push({ ...b, start: i, len: 1 });
-  });
-  return segs;
-}
+      function segments(bytes) {
+        const segs = [];
+        bytes.forEach((b, i) => {
+          const last = segs[segs.length - 1];
+          if (last && last.key === b.key && i >> 3 === last.start >> 3) last.len++;
+          else segs.push({ ...b, start: i, len: 1 });
+        });
+        return segs;
+      }
 
-/* ---------- model helpers ---------- */
-function find(id, list = root) {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].id === id) return { f: list[i], list, i };
-    if (list[i].fields) { const r = find(id, list[i].fields); if (r) return r; }
-  }
-  return null;
-}
-function freshName(list, nested, type) {
-  const used = new Set(list.map(f => f.name));
-  if (type === "struct") for (let k = 1; ; k++) { const n = k === 1 ? "in" : "in" + k; if (!used.has(n)) return n; }
-  for (const c of nested ? "xyzuvwpqrst" : "abcdefghjkmnopqrstuvw") if (!used.has(c)) return c;
-  return "f" + nextId;
-}
+      /* ---------- model helpers ---------- */
+      function find(id, list = root) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].id === id) return { f: list[i], list, i };
+          if (list[i].fields) {
+            const r = find(id, list[i].fields);
+            if (r) return r;
+          }
+        }
+        return null;
+      }
+      function freshName(list, nested, type) {
+        const used = new Set(list.map((f) => f.name));
+        if (type === "struct")
+          for (let k = 1; ; k++) {
+            const n = k === 1 ? "in" : "in" + k;
+            if (!used.has(n)) return n;
+          }
+        for (const c of nested ? "xyzuvwpqrst" : "abcdefghjkmnopqrstuvw") if (!used.has(c)) return c;
+        return "f" + nextId;
+      }
 
-/* ---------- render: code ---------- */
-let L, lastBytes = [], drag = null;
-function lineHTML(it, list, depth) {
-  const f = it.f, i = list.indexOf(f);
-  const opts = TYPES.filter(t => depth === 1 || t !== "struct").map(t => `<option${t === f.type ? " selected" : ""}>${t}</option>`).join("");
-  const sel = `<select class="ty" data-act="type" style="width:${f.type.length}ch" aria-label="Type of ${f.name}">${opts}</select>`;
-  const arr = `<span class="arr${f.n > 1 ? "" : " scalar"}" title="Array length">[<input type="number" id="n-${f.id}" min="1" max="8" value="${f.n}" data-act="n" aria-label="Array length of ${f.name}">]</span>`;
-  const note = noteHTML(f);
-  const del = `<span class="ctl">${noteBtn(f)}<button class="del" data-act="del" aria-label="Remove ${f.name}"${list.length === 1 ? " disabled" : ""}>×</button></span>`;
-  const cls = `ln${drag && drag.id === f.id ? " drag" : ""}`;
-  if (f.type !== "struct")
-    return `<div class="${cls} c-${f.type}" data-id="${f.id}" data-nid="${f.id}" style="--d:${depth}">${sel} <span class="nm">${f.name}</span>${arr};${note}${del}</div>`;
-  return `<div class="${cls}" data-id="${f.id}" data-nid="${f.id}" data-role="open" style="--d:${depth}">${sel}{${note}${del}</div>`
-    + it.elem.items.map(c => lineHTML(c, f.fields, depth + 1)).join("")
-    + `<div class="${cls}" data-id="${f.id}" data-role="close" style="--d:${depth}">}&nbsp;<span class="nm">${f.name}</span>${arr};</div>`;
-}
-/* absolute offsets and padding after each field */
-function annotate(Lx, base) {
-  Lx.items.forEach((it, k) => {
-    it.abs = base + it.start;
-    it.padAfter = (k + 1 < Lx.items.length ? Lx.items[k + 1].start : Lx.size) - (it.start + it.size);
-    if (it.f.type === "struct") annotate(it.elem, it.abs);
-  });
-}
+      /* ---------- render: code ---------- */
+      let L,
+        lastBytes = [],
+        drag = null;
+      function lineHTML(it, list, depth) {
+        const f = it.f,
+          i = list.indexOf(f);
+        const opts = TYPES.filter((t) => depth === 1 || t !== "struct")
+          .map((t) => `<option${t === f.type ? " selected" : ""}>${t}</option>`)
+          .join("");
+        const sel = `<select class="ty" data-act="type" style="width:${f.type.length}ch" aria-label="Type of ${f.name}">${opts}</select>`;
+        const arr = `<span class="arr${f.n > 1 ? "" : " scalar"}" title="Array length">[<input type="number" id="n-${f.id}" min="1" max="8" value="${f.n}" data-act="n" aria-label="Array length of ${f.name}">]</span>`;
+        const note = noteHTML(f);
+        const del = `<span class="ctl">${noteBtn(f)}<button class="del" data-act="del" aria-label="Remove ${f.name}"${list.length === 1 ? " disabled" : ""}>×</button></span>`;
+        const cls = `ln${drag && drag.id === f.id ? " drag" : ""}`;
+        if (f.type !== "struct")
+          return `<div class="${cls} c-${f.type}" data-id="${f.id}" data-nid="${f.id}" style="--d:${depth}">${sel} <span class="nm">${f.name}</span>${arr};${note}${del}</div>`;
+        return (
+          `<div class="${cls}" data-id="${f.id}" data-nid="${f.id}" data-role="open" style="--d:${depth}">${sel}{${note}${del}</div>` +
+          it.elem.items.map((c) => lineHTML(c, f.fields, depth + 1)).join("") +
+          `<div class="${cls}" data-id="${f.id}" data-role="close" style="--d:${depth}">}&nbsp;<span class="nm">${f.name}</span>${arr};</div>`
+        );
+      }
+      /* absolute offsets and padding after each field */
+      function annotate(Lx, base) {
+        Lx.items.forEach((it, k) => {
+          it.abs = base + it.start;
+          it.padAfter = (k + 1 < Lx.items.length ? Lx.items[k + 1].start : Lx.size) - (it.start + it.size);
+          if (it.f.type === "struct") annotate(it.elem, it.abs);
+        });
+      }
 
-/* ---------- render all ---------- */
-let quizSig = "", revealed = false;
-const sig = fs => fs.map(f => f.type + f.n + (f.fields ? "{" + sig(f.fields) + "}" : "")).join(",");
-function render() {
-  L = lay(root);
-  const sg = sig(root);
-  if (sg !== quizSig) { quizSig = sg; revealed = false; }
-  $("mem").classList.toggle("hidden", $("quiz").checked && !revealed);
-  annotate(L, 0);
-  $("code").innerHTML =
-    `<div class="ln" data-role="root-open" data-nid="0" style="--d:0"><span class="kw">struct</span>&nbsp;s&nbsp;{${noteHTML(whole)}<span class="ctl">${noteBtn(whole)}</span></div>`
-    + L.items.map(it => lineHTML(it, root, 1)).join("")
-    + `<div class="ln" data-role="root-close" style="--d:0">};</div>`;
+      /* ---------- render all ---------- */
+      let quizSig = "",
+        revealed = false;
+      const sig = (fs) => fs.map((f) => f.type + f.n + (f.fields ? "{" + sig(f.fields) + "}" : "")).join(",");
+      function render() {
+        L = lay(root);
+        const sg = sig(root);
+        if (sg !== quizSig) {
+          quizSig = sg;
+          revealed = false;
+        }
+        $("mem").classList.toggle("hidden", $("quiz").checked && !revealed);
+        annotate(L, 0);
+        $("code").innerHTML =
+          `<div class="ln" data-role="root-open" data-nid="0" style="--d:0"><span class="kw">struct</span>&nbsp;s&nbsp;{${noteHTML(whole)}<span class="ctl">${noteBtn(whole)}</span></div>` +
+          L.items.map((it) => lineHTML(it, root, 1)).join("") +
+          `<div class="ln" data-role="root-close" style="--d:0">};</div>`;
 
-  const bytes = lastBytes = flatten(L, 0, [], "", []);
-  const padTotal = bytes.filter(b => b.kind === "pad").length;
-  $("stats").innerHTML =
-    `<div class="stat"><b>${L.size}</b><span>sizeof</span></div>
+        const bytes = (lastBytes = flatten(L, 0, [], "", []));
+        const padTotal = bytes.filter((b) => b.kind === "pad").length;
+        $("stats").innerHTML = `<div class="stat"><b>${L.size}</b><span>sizeof</span></div>
      <div class="stat"><b>${L.align}</b><span>align</span></div>
      <div class="stat"><b>${padTotal}</b><span>padding</span></div>`;
 
-  let h = [...Array(8)].map((_, c) => `<div class="colh" data-col="${c}" style="grid-row:1;grid-column:${c + 2}">${c}</div>`).join("");
-  for (let r = 0; r * 8 < L.size; r++) h += `<div class="rowh" style="grid-row:${r + 2};grid-column:1">${r * 8}</div>`;
-  for (const s of segments(bytes)) {
-    const pad = s.kind === "pad";
-    h += `<div class="seg ${pad ? "pad" : "t-" + s.kind}${s.nested ? " nested" : ""}" data-chain="${s.chain.join(" ")}" data-cause="${pad ? s.cause : ""}" data-start="${s.start}" data-len="${s.len}" title="${pad ? "padding" : s.label} · ${s.start}${s.len > 1 ? "–" + (s.start + s.len - 1) : ""}" style="grid-row:${(s.start >> 3) + 2};grid-column:${(s.start & 7) + 2} / span ${s.len}">${pad ? "" : s.label}</div>`;
-  }
-  $("bytes").innerHTML = h;
-  highlight(drag ? String(drag.id) : hoverId);
-}
+        let h = [...Array(8)].map((_, c) => `<div class="colh" data-col="${c}" style="grid-row:1;grid-column:${c + 2}">${c}</div>`).join("");
+        for (let r = 0; r * 8 < L.size; r++) h += `<div class="rowh" style="grid-row:${r + 2};grid-column:1">${r * 8}</div>`;
+        for (const s of segments(bytes)) {
+          const pad = s.kind === "pad";
+          h += `<div class="seg ${pad ? "pad" : "t-" + s.kind}${s.nested ? " nested" : ""}" data-chain="${s.chain.join(" ")}" data-cause="${pad ? s.cause : ""}" data-start="${s.start}" data-len="${s.len}" title="${pad ? "padding" : s.label} · ${s.start}${s.len > 1 ? "–" + (s.start + s.len - 1) : ""}" style="grid-row:${(s.start >> 3) + 2};grid-column:${(s.start & 7) + 2} / span ${s.len}">${pad ? "" : s.label}</div>`;
+        }
+        $("bytes").innerHTML = h;
+        highlight(drag ? String(drag.id) : hoverId);
+      }
 
-/* ---------- hover linking ---------- */
-let hoverId = null;
-function itemOf(id) {
-  const walk = Lx => { for (const it of Lx.items) { if (String(it.f.id) === id) return it; if (it.f.type === "struct") { const r = walk(it.elem); if (r) return r; } } };
-  return id ? walk(L) : null;
-}
-function showDetail(it) {
-  if (!it) { $("detail").innerHTML = "hover a field"; return; }
-  const f = it.f, decl = (f.type === "struct" ? "struct " : f.type + " ") + f.name + (f.n > 1 ? `[${f.n}]` : "");
-  $("detail").innerHTML = `<code>${decl}</code><span>offset <b>${it.abs}</b></span><span>size <b>${it.size}</b></span><span>align <b>${it.align}</b></span><span class="pa">padding after <b>${it.padAfter}</b></span>`;
-}
-function highlight(id) {
-  const it = itemOf(id);
-  showDetail(it);
-  $("bytes").classList.toggle("hovering", !!id);
-  document.querySelectorAll(".seg").forEach(s => s.classList.toggle("hl", !!id && (s.dataset.chain.split(" ").includes(id) || s.dataset.cause === id)));
-  document.querySelectorAll("#code .ln").forEach(l => l.classList.toggle("hl", !!id && l.dataset.id === id));
-}
-function onOver(e) {
-  if (drag) return;
-  const seg = e.target.closest(".seg");
-  const ln = e.target.closest("#code .ln");
-  let id = null;
-  if (seg) id = seg.dataset.cause || seg.dataset.chain.split(" ").pop() || null;
-  else if (ln) id = ln.dataset.id || null;
-  if (id !== hoverId) { hoverId = id; highlight(id); }
-}
-$("app").addEventListener("mouseover", onOver);
-$("app").addEventListener("focusin", onOver);
-$("app").addEventListener("mouseleave", () => { hoverId = null; highlight(null); });
+      /* ---------- hover linking ---------- */
+      let hoverId = null;
+      function itemOf(id) {
+        const walk = (Lx) => {
+          for (const it of Lx.items) {
+            if (String(it.f.id) === id) return it;
+            if (it.f.type === "struct") {
+              const r = walk(it.elem);
+              if (r) return r;
+            }
+          }
+        };
+        return id ? walk(L) : null;
+      }
+      function showDetail(it) {
+        if (!it) {
+          $("detail").innerHTML = "hover a field";
+          return;
+        }
+        const f = it.f,
+          decl = (f.type === "struct" ? "struct " : f.type + " ") + f.name + (f.n > 1 ? `[${f.n}]` : "");
+        $("detail").innerHTML =
+          `<code>${decl}</code><span>offset <b>${it.abs}</b></span><span>size <b>${it.size}</b></span><span>align <b>${it.align}</b></span><span class="pa">padding after <b>${it.padAfter}</b></span>`;
+      }
+      function highlight(id) {
+        const it = itemOf(id);
+        showDetail(it);
+        $("bytes").classList.toggle("hovering", !!id);
+        document
+          .querySelectorAll(".seg")
+          .forEach((s) => s.classList.toggle("hl", !!id && (s.dataset.chain.split(" ").includes(id) || s.dataset.cause === id)));
+        document.querySelectorAll("#code .ln").forEach((l) => l.classList.toggle("hl", !!id && l.dataset.id === id));
+      }
+      function onOver(e) {
+        if (drag) return;
+        const seg = e.target.closest(".seg");
+        const ln = e.target.closest("#code .ln");
+        let id = null;
+        if (seg) id = seg.dataset.cause || seg.dataset.chain.split(" ").pop() || null;
+        else if (ln) id = ln.dataset.id || null;
+        if (id !== hoverId) {
+          hoverId = id;
+          highlight(id);
+        }
+      }
+      $("app").addEventListener("mouseover", onOver);
+      $("app").addEventListener("focusin", onOver);
+      $("app").addEventListener("mouseleave", () => {
+        hoverId = null;
+        highlight(null);
+      });
 
-/* ---------- drag and drop (pointer events, touch drags start on the field name) ---------- */
-const code = $("code");
-code.addEventListener("pointerdown", e => {
-  const ln = e.target.closest(".ln[data-id]");
-  if (!ln || e.button > 0 || e.target.closest("select, input, button")) return;
-  if (e.pointerType !== "mouse" && !e.target.closest(".nm")) return;
-  e.preventDefault();
-  drag = { id: +ln.dataset.id };
-  code.setPointerCapture(e.pointerId);
-  document.body.classList.add("dragging");
-  render();
-});
-function dropTarget(ln, y) {
-  const dragged = find(drag.id).f, isStruct = dragged.type === "struct";
-  const r = ln.getBoundingClientRect(), upper = y < r.top + r.height / 2;
-  const role = ln.dataset.role;
-  if (role === "root-open") return { list: root, idx: 0 };
-  if (role === "root-close") return { list: root, idx: root.length };
-  if (!ln.dataset.id || +ln.dataset.id === drag.id) return null;
-  const t = find(+ln.dataset.id);
-  if (role === "open") return upper || isStruct ? { list: t.list, idx: t.i } : { list: t.f.fields, idx: 0 };
-  if (role === "close") return !upper || isStruct ? { list: t.list, idx: t.i + 1 } : { list: t.f.fields, idx: t.f.fields.length };
-  if (isStruct && t.list !== root) return null;
-  return { list: t.list, idx: upper ? t.i : t.i + 1 };
-}
-function move(id, { list, idx }) {
-  const s = find(id);
-  if (s.list !== list && s.list !== root && s.list.length === 1) return false;  // keep nested structs non-empty
-  const i = s.list === list && s.i < idx ? idx - 1 : idx;
-  if (s.list === list && i === s.i) return false;
-  s.list.splice(s.i, 1);
-  list.splice(i, 0, s.f);
-  if (s.list !== list && list.some(g => g !== s.f && g.name === s.f.name))
-    s.f.name = freshName(list.filter(g => g !== s.f), list !== root, s.f.type);
-  return true;
-}
-code.addEventListener("pointermove", e => {
-  if (!drag) return;
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const ln = el && el.closest("#code .ln");
-  const tgt = ln && dropTarget(ln, e.clientY);
-  if (tgt && move(drag.id, tgt)) { setPreset(null); render(); }
-});
-const endDrag = () => { if (!drag) return; drag = null; document.body.classList.remove("dragging"); render(); };
-code.addEventListener("pointerup", endDrag);
-code.addEventListener("pointercancel", endDrag);
+      /* ---------- drag and drop (pointer events, touch drags start on the field name) ---------- */
+      const code = $("code");
+      code.addEventListener("pointerdown", (e) => {
+        const ln = e.target.closest(".ln[data-id]");
+        if (!ln || e.button > 0 || e.target.closest("select, input, button")) return;
+        if (e.pointerType !== "mouse" && !e.target.closest(".nm")) return;
+        e.preventDefault();
+        drag = { id: +ln.dataset.id };
+        code.setPointerCapture(e.pointerId);
+        document.body.classList.add("dragging");
+        render();
+      });
+      function dropTarget(ln, y) {
+        const dragged = find(drag.id).f,
+          isStruct = dragged.type === "struct";
+        const r = ln.getBoundingClientRect(),
+          upper = y < r.top + r.height / 2;
+        const role = ln.dataset.role;
+        if (role === "root-open") return { list: root, idx: 0 };
+        if (role === "root-close") return { list: root, idx: root.length };
+        if (!ln.dataset.id || +ln.dataset.id === drag.id) return null;
+        const t = find(+ln.dataset.id);
+        if (role === "open") return upper || isStruct ? { list: t.list, idx: t.i } : { list: t.f.fields, idx: 0 };
+        if (role === "close") return !upper || isStruct ? { list: t.list, idx: t.i + 1 } : { list: t.f.fields, idx: t.f.fields.length };
+        if (isStruct && t.list !== root) return null;
+        return { list: t.list, idx: upper ? t.i : t.i + 1 };
+      }
+      function move(id, { list, idx }) {
+        const s = find(id);
+        if (s.list !== list && s.list !== root && s.list.length === 1) return false; // keep nested structs non-empty
+        const i = s.list === list && s.i < idx ? idx - 1 : idx;
+        if (s.list === list && i === s.i) return false;
+        s.list.splice(s.i, 1);
+        list.splice(i, 0, s.f);
+        if (s.list !== list && list.some((g) => g !== s.f && g.name === s.f.name))
+          s.f.name = freshName(
+            list.filter((g) => g !== s.f),
+            list !== root,
+            s.f.type
+          );
+        return true;
+      }
+      code.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const ln = el && el.closest("#code .ln");
+        const tgt = ln && dropTarget(ln, e.clientY);
+        if (tgt && move(drag.id, tgt)) {
+          setPreset(null);
+          render();
+        }
+      });
+      const endDrag = () => {
+        if (!drag) return;
+        drag = null;
+        document.body.classList.remove("dragging");
+        render();
+      };
+      code.addEventListener("pointerup", endDrag);
+      code.addEventListener("pointercancel", endDrag);
 
-/* dragging in the grid: crossing another field in the direction of motion swaps past it */
-const grid = $("bytes");
-function byteAt(e) {
-  const el = document.elementFromPoint(e.clientX, e.clientY);
-  const seg = el && el.closest("#bytes .seg");
-  if (!seg) return null;
-  const r = seg.getBoundingClientRect(), len = +seg.dataset.len;
-  return +seg.dataset.start + Math.min(len - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * len)));
-}
-function gridTarget(p, forward) {
-  const b = lastBytes[p], s = find(drag.id);
-  const tid = s.f.type === "struct" ? (b.chain.length ? b.chain[0] : +b.cause)
-            : b.kind === "pad" ? +b.cause : b.chain[b.chain.length - 1];
-  if (!tid || tid === drag.id) return null;
-  const t = find(tid);
-  if (t.list === s.list) {
-    if (s.i < t.i && forward) return { list: t.list, idx: t.i + 1 };
-    if (s.i > t.i && !forward) return { list: t.list, idx: t.i };
-    return null;
-  }
-  return { list: t.list, idx: forward ? t.i : t.i + 1 };
-}
-grid.addEventListener("pointerdown", e => {
-  const seg = e.target.closest(".seg");
-  if (!seg || seg.classList.contains("pad") || e.button > 0) return;
-  e.preventDefault();
-  drag = { id: +seg.dataset.chain.split(" ").pop(), p: byteAt(e) };
-  grid.setPointerCapture(e.pointerId);
-  document.body.classList.add("dragging");
-  render();
-});
-grid.addEventListener("pointermove", e => {
-  if (!drag) return;
-  const p = byteAt(e);
-  if (p == null || p === drag.p) return;
-  const forward = drag.p == null || p > drag.p;
-  drag.p = p;
-  const tgt = gridTarget(p, forward);
-  if (tgt && move(drag.id, tgt)) { setPreset(null); render(); }
-});
-grid.addEventListener("pointerup", endDrag);
-grid.addEventListener("pointercancel", endDrag);
+      /* dragging in the grid: crossing another field in the direction of motion swaps past it */
+      const grid = $("bytes");
+      function byteAt(e) {
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const seg = el && el.closest("#bytes .seg");
+        if (!seg) return null;
+        const r = seg.getBoundingClientRect(),
+          len = +seg.dataset.len;
+        return +seg.dataset.start + Math.min(len - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * len)));
+      }
+      function gridTarget(p, forward) {
+        const b = lastBytes[p],
+          s = find(drag.id);
+        const tid = s.f.type === "struct" ? (b.chain.length ? b.chain[0] : +b.cause) : b.kind === "pad" ? +b.cause : b.chain[b.chain.length - 1];
+        if (!tid || tid === drag.id) return null;
+        const t = find(tid);
+        if (t.list === s.list) {
+          if (s.i < t.i && forward) return { list: t.list, idx: t.i + 1 };
+          if (s.i > t.i && !forward) return { list: t.list, idx: t.i };
+          return null;
+        }
+        return { list: t.list, idx: forward ? t.i : t.i + 1 };
+      }
+      grid.addEventListener("pointerdown", (e) => {
+        const seg = e.target.closest(".seg");
+        if (!seg || seg.classList.contains("pad") || e.button > 0) return;
+        e.preventDefault();
+        drag = { id: +seg.dataset.chain.split(" ").pop(), p: byteAt(e) };
+        grid.setPointerCapture(e.pointerId);
+        document.body.classList.add("dragging");
+        render();
+      });
+      grid.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const p = byteAt(e);
+        if (p == null || p === drag.p) return;
+        const forward = drag.p == null || p > drag.p;
+        drag.p = p;
+        const tgt = gridTarget(p, forward);
+        if (tgt && move(drag.id, tgt)) {
+          setPreset(null);
+          render();
+        }
+      });
+      grid.addEventListener("pointerup", endDrag);
+      grid.addEventListener("pointercancel", endDrag);
 
-/* ---------- editing ---------- */
-code.addEventListener("click", e => {
-  const b = e.target.closest("button[data-act]");
-  if (!b) return;
-  if (b.dataset.act === "addnote") {
-    const f = noteOwner(b);
-    noteEdit = f.id; render();
-    const inp = $("note-" + f.id); if (inp) inp.focus();
-    return;
-  }
-  const r = find(+b.closest("[data-id]").dataset.id);
-  if (r.list.length > 1) r.list.splice(r.i, 1);
-  hoverId = null;
-  setPreset(null); render();
-});
-code.addEventListener("input", e => {
-  if (e.target.dataset.act !== "note") return;
-  noteOwner(e.target).note = e.target.value;
-  e.target.size = Math.max(1, e.target.value.length);
-});
-code.addEventListener("keydown", e => { if (e.target.dataset.act === "note" && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });
-code.addEventListener("focusout", e => {
-  if (e.target.dataset.act !== "note") return;
-  const f = noteOwner(e.target);
-  f.note = f.note.trim();
-  if (noteEdit === f.id) noteEdit = null;
-  if (!f.note) setTimeout(render);   // an empty note disappears
-});
-/* new fields go at the end of the struct; drag them where you want */
-$("adder").addEventListener("click", e => {
-  const b = e.target.closest("button");
-  if (!b || root.length >= 12) return;
-  const t = b.dataset.t;
-  root.push(F(t, freshName(root, false, t), 1, t === "struct" ? [F("char", "x"), F("int", "y")] : undefined));
-  setPreset(null); render();
-});
-code.addEventListener("change", e => {
-  const el = e.target;
-  if (el.dataset.act === "note") return;
-  const r = find(+el.closest("[data-id]").dataset.id);
-  if (el.dataset.act === "type") {
-    const t = el.value, others = r.list.filter(f => f !== r.f);
-    if (t === "struct") { r.f.fields = [F("char", "x"), F("int", "y")]; r.f.name = freshName(others, false, t); }
-    else if (r.f.type === "struct") { delete r.f.fields; r.f.name = freshName(others, r.list !== root, t); }
-    r.f.type = t;
-  }
-  if (el.dataset.act === "n") r.f.n = Math.min(8, Math.max(1, parseInt(el.value) || 1));
-  setPreset(null); render();
-});
+      /* ---------- editing ---------- */
+      code.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-act]");
+        if (!b) return;
+        if (b.dataset.act === "addnote") {
+          const f = noteOwner(b);
+          noteEdit = f.id;
+          render();
+          const inp = $("note-" + f.id);
+          if (inp) inp.focus();
+          return;
+        }
+        const r = find(+b.closest("[data-id]").dataset.id);
+        if (r.list.length > 1) r.list.splice(r.i, 1);
+        hoverId = null;
+        setPreset(null);
+        render();
+      });
+      code.addEventListener("input", (e) => {
+        if (e.target.dataset.act !== "note") return;
+        noteOwner(e.target).note = e.target.value;
+        e.target.size = Math.max(1, e.target.value.length);
+      });
+      code.addEventListener("keydown", (e) => {
+        if (e.target.dataset.act === "note" && (e.key === "Enter" || e.key === "Escape")) e.target.blur();
+      });
+      code.addEventListener("focusout", (e) => {
+        if (e.target.dataset.act !== "note") return;
+        const f = noteOwner(e.target);
+        f.note = f.note.trim();
+        if (noteEdit === f.id) noteEdit = null;
+        if (!f.note) setTimeout(render); // an empty note disappears
+      });
+      /* new fields go at the end of the struct; drag them where you want */
+      $("adder").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b || root.length >= 12) return;
+        const t = b.dataset.t;
+        root.push(F(t, freshName(root, false, t), 1, t === "struct" ? [F("char", "x"), F("int", "y")] : undefined));
+        setPreset(null);
+        render();
+      });
+      code.addEventListener("change", (e) => {
+        const el = e.target;
+        if (el.dataset.act === "note") return;
+        const r = find(+el.closest("[data-id]").dataset.id);
+        if (el.dataset.act === "type") {
+          const t = el.value,
+            others = r.list.filter((f) => f !== r.f);
+          if (t === "struct") {
+            r.f.fields = [F("char", "x"), F("int", "y")];
+            r.f.name = freshName(others, false, t);
+          } else if (r.f.type === "struct") {
+            delete r.f.fields;
+            r.f.name = freshName(others, r.list !== root, t);
+          }
+          r.f.type = t;
+        }
+        if (el.dataset.act === "n") r.f.n = Math.min(8, Math.max(1, parseInt(el.value) || 1));
+        setPreset(null);
+        render();
+      });
 
-/* ---------- presets ---------- */
-function setPreset(name) { document.querySelectorAll("#presets .chip").forEach(c => c.classList.toggle("on", c.textContent === name)); }
-for (const name of Object.keys(PRESETS)) {
-  const b = document.createElement("button");
-  b.className = "chip"; b.textContent = name;
-  b.onclick = () => { root = PRESETS[name](); setPreset(name); render(); };
-  $("presets").appendChild(b);
-}
-$("quiz").onchange = () => { revealed = false; render(); };
-$("reveal").onclick = () => { revealed = true; render(); };
-setPreset("nested");
-render();
-</script>
-</body>
+      /* ---------- presets ---------- */
+      function setPreset(name) {
+        document.querySelectorAll("#presets .chip").forEach((c) => c.classList.toggle("on", c.textContent === name));
+      }
+      for (const name of Object.keys(PRESETS)) {
+        const b = document.createElement("button");
+        b.className = "chip";
+        b.textContent = name;
+        b.onclick = () => {
+          root = PRESETS[name]();
+          setPreset(name);
+          render();
+        };
+        $("presets").appendChild(b);
+      }
+      $("quiz").onchange = () => {
+        revealed = false;
+        render();
+      };
+      $("reveal").onclick = () => {
+        revealed = true;
+        render();
+      };
+      setPreset("nested");
+      render();
+    </script>
+  </body>
 </html>
