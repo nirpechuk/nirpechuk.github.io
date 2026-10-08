@@ -239,6 +239,10 @@ defaults:
       path: "assets"
     values:
       sitemap: false
+  - scope:
+      path: "structs"
+    values:
+      sitemap: false
 
 sass:
   style: compressed
