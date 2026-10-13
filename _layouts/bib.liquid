@@ -60,7 +60,8 @@
             type="button"
             data-animated="{{ entry.preview | prepend: '/assets/img/publication_preview/' | relative_url }}"
             data-static="{{ entry.preview_static | prepend: '/assets/img/publication_preview/' | relative_url }}"
-            aria-label="Pause GenPHRI orbit preview"
+            data-preview-label="{{ entry.title | escape }} preview"
+            aria-label="Pause {{ entry.title | escape }} preview"
           >
             Pause preview
           </button>
