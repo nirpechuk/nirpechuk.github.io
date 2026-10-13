@@ -27,7 +27,7 @@
       {% endif %}
       {% if entry.preview %}
         <a
-          class="publication-preview{% if entry.preview == 'spill-o-not.png' %} publication-preview-contain{% endif %}"
+          class="publication-preview{% if entry.preview == 'spill-o-not.png' or entry.preview == 'container-guidance-patent.png' %} publication-preview-contain{% endif %}"
           href="{% if entry.website %}{{ entry.website }}{% else %}https://doi.org/{{ entry.doi }}{% endif %}"
         >
           {% if entry.preview_static %}
@@ -179,6 +179,8 @@
       {% capture entrytype %}<em>In {{ entry.booktitle }}</em>{% endcapture %}
     {% elsif thesis contains entry.type %}
       {% capture entrytype %}<em>{{ entry.school }}</em>{% endcapture %}
+    {% elsif entry.howpublished %}
+      {% capture entrytype %}<em>{{ entry.howpublished }}</em>{% endcapture %}
     {% else %}
       {% capture entrytype %}{% endcapture %}
     {% endif %}
