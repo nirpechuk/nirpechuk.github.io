@@ -12,7 +12,7 @@ description: Education, research, experience, and teaching.
 **Carnegie Mellon University — B.S. in Computer Science**<br>
 GPA: 4.0/4.0 · Dean's List, High Honors
 
-**Current coursework:** Deep Reinforcement Learning (10-703, PhD), AI & ML I (07-280), Computer Vision (16-385), Probability and Computing (15-259), and Type Theory (98-317).
+**Current coursework:** Deep Reinforcement Learning (10-703, PhD), AI & ML I (07-280), Computer Vision (16-385), and Probability and Computing (15-259).
 
 **Completed coursework:** Introduction to Computer Systems (15-213), Principles of Imperative Computation (15-122), Functional Programming (15-150), Mathematical Foundations for Computer Science (15-151), Matrices and Linear Transformations (21-241), Vector Calculus (21-266), and Introduction to Mathematical Finance (21-270). Sat in on Inference Algorithms for Language Modeling (11-763).
 
