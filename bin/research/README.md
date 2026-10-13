@@ -7,7 +7,9 @@ in the window. Publishing the same filename again updates that page.
 
 The boba admin console lives at <https://nirpechuk.github.io/research/> and uses
 its own admin password. Direct report links use the separate shared research
-password. Both are remembered per tab; **Lock** clears both saved passwords.
+password. The research password is remembered in this browser across tabs and visits, and the admin
+password for the current tab; **Lock** clears both saved passwords. Report pages may navigate the whole
+window when clicked, so links between reports keep the saved password.
 The 🧋 password page appears both at the directory and at direct links to individual
 pages. Once unlocked, individual reports display their own HTML edge to edge,
 without a website header, title bar, or controls. The admin console includes searchable public-page and research traffic graphs,

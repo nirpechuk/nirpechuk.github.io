@@ -58,18 +58,23 @@
       get("traffic-status").textContent = "Traffic explorer couldn’t load. Reload this page to try again.";
     }
   }
+  // The research password persists in this browser, so every report opens without asking again;
+  // the admin password stays per tab.
+  const persistentKey = "research-password";
   const savedPassword = () => {
     try {
-      return sessionStorage.getItem(sessionKey);
+      return sessionStorage.getItem(sessionKey) || (sessionKey === persistentKey ? localStorage.getItem(persistentKey) : null);
     } catch {
       return null;
     }
   };
   const remember = (password, key = sessionKey) => {
-    try {
-      password ? sessionStorage.setItem(key, password) : sessionStorage.removeItem(key);
-    } catch {
-      /* Unlock still works without storage. */
+    for (const storage of key === persistentKey ? ["sessionStorage", "localStorage"] : ["sessionStorage"]) {
+      try {
+        password ? window[storage].setItem(key, password) : window[storage].removeItem(key);
+      } catch {
+        /* Unlock still works without storage. */
+      }
     }
   };
   const bytes = (value) => Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
