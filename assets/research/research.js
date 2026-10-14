@@ -77,6 +77,54 @@
       }
     }
   };
+  // A top progress bar for reports, which can be tens of megabytes: download, decrypt, then render in the frame.
+  function showProgress() {
+    const bar = document.createElement("div");
+    bar.className = "load-progress";
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-label", "Loading report");
+    bar.innerHTML = '<div class="track"><div class="fill"></div></div><p></p>';
+    document.body.append(bar);
+    get("gate").classList.add("loading");
+    return {
+      set(fraction, text) {
+        bar.querySelector(".fill").style.width = `${Math.round(100 * Math.min(fraction, 1))}%`;
+        bar.setAttribute("aria-valuenow", String(Math.round(100 * fraction)));
+        bar.querySelector("p").textContent = text;
+      },
+      remove() {
+        bar.remove();
+        get("gate").classList.remove("loading");
+      },
+    };
+  }
+  const megabytes = (count) => `${(count / 1e6).toFixed(1)} MB`;
+  async function fetchPayload(url, onProgress) {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error("load");
+    const sent = Number(response.headers.get("content-length")) || 0;
+    if (!response.body || !sent) return response.json();
+    // GitHub Pages gzips the JSON and reports the compressed length, while the stream yields decompressed
+    // bytes; base64 payloads compress to about three quarters, so scale the estimate and cap it below 100%.
+    const expected = response.headers.get("content-encoding") ? sent / 0.76 : sent;
+    const reader = response.body.getReader();
+    const chunks = [];
+    let received = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.length;
+      onProgress(Math.min(received / expected, 0.99), `Loading ${megabytes(received)} of about ${megabytes(expected)}`);
+    }
+    const body = new Uint8Array(received);
+    let offset = 0;
+    for (const chunk of chunks) {
+      body.set(chunk, offset);
+      offset += chunk.length;
+    }
+    return JSON.parse(new TextDecoder().decode(body));
+  }
   const bytes = (value) => Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
 
   async function decrypt(envelope, password) {
@@ -101,14 +149,15 @@
     const submit = get("unlock-form").querySelector("button");
     submit.disabled = true;
     submit.textContent = "Unlocking…";
+    const progress = isReport ? showProgress() : null;
     try {
+      progress?.set(0.02, "Loading report");
       if (!payload) {
         // Old installed uploaders may still label the index as manifest.json.
         // The directory always authenticates against the separate admin envelope.
-        const response = await fetch(isReport ? "page.json" : "admin.json", { cache: "no-store" });
-        if (!response.ok) throw new Error("load");
-        payload = await response.json();
+        payload = await fetchPayload(isReport ? "page.json" : "admin.json", (fraction, text) => progress?.set(0.02 + 0.83 * fraction, text));
       }
+      progress?.set(0.88, "Decrypting");
       let content = await decrypt(payload, password);
       if (!isReport) {
         if (content.kind !== "admin" || typeof content.researchPassword !== "string") throw new Error("load");
@@ -152,6 +201,15 @@
       } else if (content.kind === "page") {
         get("document-title").textContent = content.title;
         get("research-frame").title = content.title;
+        progress?.set(0.94, "Rendering");
+        get("research-frame").addEventListener(
+          "load",
+          () => {
+            progress?.set(1, "Ready");
+            setTimeout(() => progress?.remove(), 250);
+          },
+          { once: true }
+        );
         get("research-frame").srcdoc = content.html;
         get("document").hidden = false;
         document.body.classList.add("research-page", "document-open");
@@ -166,6 +224,7 @@
       get("lock").hidden = false;
       if (content.kind !== "index") updateViewCounts(content.kind);
     } catch (error) {
+      progress?.remove();
       remember(null);
       get("error").textContent =
         error.message === "password" ? "That password didn’t work. Try again." : "This page couldn’t be unlocked. Please reload and try again.";
