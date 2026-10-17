@@ -157,6 +157,43 @@ a page does not erase older encrypted versions from Git history.
 
 ## Maintenance
 
+### Deployment and retired reports
+
+The `Deploy site` workflow builds the site once and publishes `_site` directly
+with GitHub's Pages artifact actions. Repository Settings → Pages must use
+**GitHub Actions** as its publishing source. Production runs are serialized;
+an active deployment finishes while later pushes coalesce into the latest
+pending run. Pull requests build for validation without uploading or deploying.
+Publishing commands, credentials, and the `--wait` live-payload check are unchanged,
+including the installed uploader and Claude skill on pc0.
+
+The local branch `codex/research-archive-2026-10-17` preserves the full site at
+commit `dc865a3e1b212c604a78ad6e5484bd69a0c2fd78`, before retiring 17 reports.
+The active site keeps the October 9 and both October 16 progress reports, plus
+the four LoRA evaluation reports. Retired report directories and their encrypted
+manifest entries are removed from the active site. Their old URLs will stop
+working after deployment; the archive is a Git snapshot, not another website.
+Archive files remain encrypted with the research password used at that time.
+
+To retrieve a retired report without restoring it to the deployed site:
+
+```sh
+# Run from the repository; choose a retired slug and an output directory outside it.
+mkdir -p ../retired-reports
+git archive codex/research-archive-2026-10-17 research/REPORT-SLUG | tar -x -C ../retired-reports
+```
+
+For a fresh checkout after the archive branch has been pushed, fetch it and use
+`origin/codex/research-archive-2026-10-17` in that command. Do not merge the archive
+branch back into the active site to restore a single report. Recover and decrypt
+its payload locally, then publish the intended report through the normal uploader.
+
+Rollout order: push the archive branch first, set the Pages publishing source to
+GitHub Actions, then land the deployment and retirement changes on `main`. Neither
+the archive nor the implementation branch is published by the deployment workflow.
+The legacy `bin/deploy` helper and `Prettify gh-pages` workflow target the old
+branch-based pipeline; do not use them for the direct Pages deployment.
+
 The page shell is `bin/research/page.html`; the browser UI lives in
 `assets/research/`. Run `npm run research:test` to check encryption and publishing.
 After editing the shell, run `npm run research:publish -- --init` to update the
