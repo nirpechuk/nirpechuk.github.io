@@ -350,12 +350,14 @@
       const result = await response.json();
       if (token !== generation) return;
       residents = result;
+      const activeResidents = residents.filter((p) => !p.deletedAt);
+      const buildingCount = new Set(activeResidents.map((p) => p.groupCode)).size;
       get("flats-status").textContent =
         action === "delete"
           ? "Resident deleted. Turn on “Show deleted residents” to restore them."
           : action === "restore"
             ? "Resident restored."
-            : `${residents.filter((p) => !p.deletedAt).length} residents`;
+            : `${activeResidents.length} resident${activeResidents.length === 1 ? "" : "s"} across ${buildingCount} building${buildingCount === 1 ? "" : "s"}`;
     } catch (error) {
       if (token === generation && !active.signal.aborted) get("flats-status").textContent = error.message || "Couldn't reach Flats. Try Refresh.";
     } finally {

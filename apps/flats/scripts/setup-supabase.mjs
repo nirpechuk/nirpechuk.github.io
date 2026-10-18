@@ -1,5 +1,5 @@
 /** Apply the schema and refresh game metadata. Secrets are read from a private connection file. */
-import { readFile, writeFile, rename } from "node:fs/promises";
+import { readFile, writeFile, rename, readdir } from "node:fs/promises";
 import { randomBytes, createHash } from "node:crypto";
 import pg from "pg";
 import { encrypt, decrypt } from "../../../bin/research/crypto.mjs";
@@ -22,7 +22,10 @@ const token = admin.flats?.url === config.url ? admin.flats.token : randomBytes(
 await db.connect();
 try {
   await db.query("begin");
-  await db.query(await readFile(new URL("../supabase/migrations/001_flats.sql", import.meta.url), "utf8"));
+  const migrations = new URL("../supabase/migrations/", import.meta.url);
+  for (const file of (await readdir(migrations)).filter((name) => name.endsWith(".sql")).sort()) {
+    await db.query(await readFile(new URL(file, migrations), "utf8"));
+  }
   const catalog = JSON.parse(await readFile(new URL("../src/game/catalog.json", import.meta.url), "utf8"));
   for (const [ordinal, entry] of [...catalog.items, ...catalog.surfaces].entries()) {
     const { id, tier, rarity, season, kind, zones, size, palettes } = entry;

@@ -122,7 +122,7 @@ function FlatWindow({
       <FlowerBox count={weekCount} />
       <div className="name-tag">
         <span className="name-tag-string" aria-hidden="true" />
-        <strong>{isMe ? "You" : player.name}</strong>
+        <strong>{isMe ? `${player.name} · You` : player.name}</strong>
         {player.demo && <span className="name-tag-demo">demo</span>}
       </div>
     </div>

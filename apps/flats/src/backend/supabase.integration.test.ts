@@ -87,6 +87,17 @@ describe.skipIf(!live)("Live Supabase contract", () => {
     );
     expect(permissions.rows[0]).toEqual({ exposed: false, readable: false });
   });
+  it("keeps older invites pointing to a consolidated building", async () => {
+    const alias = "Z" + randomUUID().replaceAll("-", "").slice(0, 5).toUpperCase();
+    groups.add(alias);
+    await db.query("insert into flats_private.groups(code,name,redirect_code) values($1,$2,$3)", [alias, "Old building", a.groupCode]);
+    expect(await alice.groupName(alias)).toBe("Test Alice's building");
+    const newcomer = new SupabaseBackend(store());
+    const movedIn = remember(await newcomer.createPlayer({ name: "Test Invite", petKind: "cat", petName: "Bean", groupCode: alias }));
+    expect(movedIn.groupCode).toBe(a.groupCode);
+    expect((await newcomer.fetchGroup(movedIn)).players.some((player) => player.id === a.playerId)).toBe(true);
+    await rpc("flats_admin", { p_token: adminToken, p_action: "delete", p_player_id: movedIn.playerId });
+  });
   it("serializes duplicate workouts and only accepts an offered present", async () => {
     const results = await Promise.allSettled([alice.logWorkout(a, DAY), alice.logWorkout(a, DAY)]);
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);

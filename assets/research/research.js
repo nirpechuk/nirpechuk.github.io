@@ -43,7 +43,7 @@
       if (!window.NirAdmin) {
         adminScript ||= new Promise((resolve, reject) => {
           const script = document.createElement("script");
-          script.src = "/assets/research/admin.js?v=flats-1";
+          script.src = "/assets/research/admin.js?v=flats-2";
           script.onload = resolve;
           script.onerror = () => {
             adminScript = null;

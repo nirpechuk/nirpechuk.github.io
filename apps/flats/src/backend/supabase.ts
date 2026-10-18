@@ -161,8 +161,24 @@ export class SupabaseBackend implements Backend {
   groupName(code: string): Promise<string | null> {
     return this.rpc("rpc/flats_group_name", { p_code: normalizeGroupCode(code) });
   }
-  fetchGroup(session: Session): Promise<GroupSnapshot> {
-    return this.rpc("rpc/flats_fetch_group", this.credentials(session));
+  async fetchGroup(session: Session): Promise<GroupSnapshot> {
+    const snapshot = await this.rpc<GroupSnapshot>("rpc/flats_fetch_group", this.credentials(session));
+    const resident = snapshot.players.find((player) => player.id === session.playerId);
+    const saved = this.rooms.profiles[session.playerId];
+    // Admin corrections and moves must also update this device's saved profile.
+    if (resident && saved) {
+      const details = { name: resident.name, petName: resident.petName, petKind: resident.petKind, groupCode: snapshot.group.code };
+      if (
+        saved.name !== details.name ||
+        saved.petName !== details.petName ||
+        saved.petKind !== details.petKind ||
+        saved.groupCode !== details.groupCode
+      ) {
+        Object.assign(saved, details);
+        this.persist();
+      }
+    }
+    return snapshot;
   }
   private update(session: Session, action: string, day: string, value: unknown = null): Promise<Player> {
     return this.rpc("rpc/flats_update_player", { ...this.credentials(session), p_action: action, p_day: day, p_value: value });

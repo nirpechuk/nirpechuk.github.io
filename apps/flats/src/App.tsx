@@ -373,7 +373,7 @@ export function App() {
           }}
           onAddPlayer={() => {
             setSheet(null);
-            setJoinCode(session.groupCode);
+            setJoinCode(snapshot.group.code);
             setJoinGroupName(snapshot.group.name);
             setVisit(null);
             backend.signOut();

@@ -68,7 +68,7 @@ export function InviteSheet({ group, mode, onClose }: { group: Group; mode: "loc
   const [copied, setCopied] = useState(false);
   const link = inviteLink(group.code);
   return (
-    <Sheet onClose={onClose}>
+    <Sheet title={group.name} onClose={onClose}>
       <p className="invite-code">{group.code}</p>
       <button
         type="button"
