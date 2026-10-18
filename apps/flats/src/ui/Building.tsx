@@ -133,7 +133,7 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
         <div className="brownstone-world" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
           <img
             className="street-architecture"
-            src={`${import.meta.env.BASE_URL}brownstone/street.svg`}
+            src={`${import.meta.env.BASE_URL}brownstone/street.svg?v=2`}
             width="1440"
             height="800"
             alt=""

@@ -104,7 +104,7 @@
 <rect x="686" y="480" width="68" height="125" fill="#6A4636" />
 <path d="M694 605 L694 505 A26 22 0 0 1 746 505 L746 605 Z" fill="#1E120C" />
 <path d="M696 503 A24 20 0 0 1 744 503 Z" fill="#F0C27A" opacity="0.85" />
-<text x="720" y="499" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="8" font-weight="600" fill="#5A3416" letter-spacing="1">THE FLATS</text>
+<text x="720" y="499" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="6.5" font-weight="600" fill="#5A3416" letter-spacing="0.6" textLength="36" lengthAdjust="spacingAndGlyphs">THE FLATS</text>
 <rect x="697" y="507" width="21" height="96" fill="#2E1A10" /><rect x="722" y="507" width="21" height="96" fill="#2E1A10" />
 <g fill="none" stroke="#4A2E1C" stroke-width="1"><rect x="700" y="514" width="15" height="34" /><rect x="725" y="514" width="15" height="34" /><rect x="700" y="556" width="15" height="40" /><rect x="725" y="556" width="15" height="40" /></g>
 <circle cx="716" cy="560" r="1.6" fill="url(#bsBrass)" /><circle cx="724" cy="560" r="1.6" fill="url(#bsBrass)" />

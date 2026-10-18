@@ -133,6 +133,11 @@ street=board('Brownstone-Street')[0]
 for index in sorted([41,45,46,47,48,49,50,52,53,70,71,76,83],reverse=True):
  street.remove(list(street)[index])
 street.attrib={'xmlns':'http://www.w3.org/2000/svg','viewBox':'0 0 1440 800','fill':'none'}
+# External SVG images use fallback fonts. Bound the door inscription to the
+# arch's narrow upper portion so lettering never crosses the glass edge.
+for label in street.iter('text'):
+ if label.text == 'THE FLATS':
+  label.attrib.update({'font-size':'6.5','letter-spacing':'0.6','textLength':'36','lengthAdjust':'spacingAndGlyphs'})
 # Texture is cached as part of the static asset, not recalculated for each live room.
 public=ROOT/'public/brownstone';public.mkdir(exist_ok=True)
 (public/'street.svg').write_text(ET.tostring(street,encoding='unicode'))
