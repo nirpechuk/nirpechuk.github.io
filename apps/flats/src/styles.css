@@ -1259,19 +1259,17 @@ h3 {
 }
 
 /*
- * The building and the street share one perspective transform so the pavement and road
- * recede with the facade instead of meeting it at a flat, mismatched edge.
+ * The pavement and road live inside the building so they share its perspective and meet the
+ * facade's base at the same angle. The pivot stays at the facade's vertical centre (the street
+ * below doesn't shift it), which keeps the building's look unchanged.
  */
-.street-block {
-  position: relative;
-  transform: perspective(1500px) rotateY(-12deg);
-  transform-origin: 6% 100%;
-}
-
 .building {
+  --street-height: 97px;
   position: relative;
   width: min(82%, 380px);
   margin: 0 auto 0 6%;
+  transform: perspective(1500px) rotateY(-12deg);
+  transform-origin: 0 calc(50% - var(--street-height) / 2);
 }
 
 /*
@@ -1281,7 +1279,7 @@ h3 {
 .building-side {
   position: absolute;
   top: 74px;
-  bottom: 0;
+  bottom: var(--street-height);
   left: 100%;
   width: 54px;
   clip-path: polygon(0 0, 100% 3%, 100% 100%, 0 100%);
@@ -1799,7 +1797,7 @@ h3 {
 
 .street-tree {
   position: absolute;
-  left: 31%;
+  left: 27%;
   bottom: 30px;
   width: 44px;
   height: 64px;
@@ -1820,7 +1818,7 @@ h3 {
 
 .street-lamp {
   position: absolute;
-  right: 31%;
+  right: 24%;
   bottom: 30px;
   width: 3px;
   height: 72px;
