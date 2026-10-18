@@ -1,9 +1,8 @@
-/** Shared UI pieces: embers, hints, toasts, sheets and tags. */
+/** Shared UI pieces: embers, toasts, sheets and tags. */
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
-import { usePersistentFlag } from "./hooks";
 
 const EMBER_COLORS = ["#ffb35c", "#ffd38a", "#ff8a5c", "#f0c97a", "#ffe6b0"];
 
@@ -43,35 +42,6 @@ export function Embers({ burstKey, reducedMotion }: { burstKey: number; reducedM
         />
       ))}
     </div>
-  );
-}
-
-/** A tiny first-time tooltip. Shows once per `hintKey`, until tapped or `done` becomes true. */
-export function Hint({
-  hintKey,
-  show = true,
-  done = false,
-  placement = "above",
-  children,
-}: {
-  hintKey: string;
-  show?: boolean;
-  done?: boolean;
-  placement?: "above" | "below";
-  children: ReactNode;
-}) {
-  const [seen, markSeen] = usePersistentFlag(`hint-${hintKey}`);
-  useEffect(() => {
-    if (done && !seen) markSeen();
-  }, [done, seen, markSeen]);
-  if (seen || !show || done) return null;
-  return (
-    <button type="button" className={`hint hint-${placement}`} onClick={markSeen}>
-      {children}
-      <span className="hint-close" aria-hidden="true">
-        ✕
-      </span>
-    </button>
   );
 }
 
@@ -125,9 +95,3 @@ export function Sheet({
     </div>
   );
 }
-
-export function Tag({ children, tone = "butter" }: { children: ReactNode; tone?: "butter" | "blush" | "mint" | "sky" }) {
-  return <span className={`tag tone-${tone}`}>{children}</span>;
-}
-
-export const TIER_LABELS: Record<number, string> = { 1: "Basic", 2: "Fine", 3: "Luxe" };

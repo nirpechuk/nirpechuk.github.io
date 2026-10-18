@@ -10,7 +10,7 @@ import type { NewPlayerInput, Session } from "./backend/types";
 import { GameRuleError } from "./backend/types";
 import { addDays, today, weekStart } from "./game/dates";
 import type { Present, WeekRecap } from "./game/progression";
-import { joinNames, nextPresent, petMood, weekRecap, workoutsInWeekOf } from "./game/progression";
+import { nextPresent, petMood, weekRecap } from "./game/progression";
 import type { GroupSnapshot, Layout, ReactionKind, WorkoutType } from "./game/types";
 import { Building } from "./ui/Building";
 import type { ToastMessage } from "./ui/common";
@@ -157,12 +157,7 @@ export function App() {
   }
 
   const mood = petMood(me, day);
-  const lastWeekRecap = weekRecap(snapshot.players, addDays(weekStart(day), -7));
   const byId = new Map(snapshot.players.map((player) => [player.id, player]));
-  const recapBanner =
-    lastWeekRecap.total > 0
-      ? `Every flat got a little warmer last week. ${joinNames(lastWeekRecap.stars.map((id) => byId.get(id)?.name ?? "A neighbour"))} kept the brightest window.`
-      : null;
   const visitedPlayer = visit ? byId.get(visit.playerId) ?? null : null;
 
   const log = async () => {
@@ -172,14 +167,10 @@ export function App() {
     playChime();
     setConfettiKey((count) => count + 1);
     setCelebrateKey((count) => count + 1);
-    const weekCount = workoutsInWeekOf(updated, day);
-    const cheer = weekCount >= 4 ? "A luxe present is waiting." : weekCount >= 2 ? "A finer present is waiting." : "A present is waiting.";
-    toast(`Logged. ${me.petName} perked right up. ${cheer}`, "✦");
   };
 
   return (
     <div className={`app tab-${tab}${reducedMotion ? " reduced-motion" : ""}`}>
-      {backend.mode === "local" && <div className="mode-ribbon">device-only preview</div>}
 
       {tab === "home" ? (
         <Home
@@ -201,7 +192,6 @@ export function App() {
           }}
           onOpenPresent={() => setUnpackPresent(nextPresent(me))}
           onOpenSettings={() => setSheet("settings")}
-          toast={toast}
         />
       ) : (
         <Building
@@ -210,7 +200,6 @@ export function App() {
           day={day}
           lighting={lighting}
           reducedMotion={reducedMotion}
-          recapBanner={recapBanner}
           onOpenFlat={(playerId, fromRect) => setVisit({ playerId, fromRect })}
           onInvite={() => setSheet("invite")}
         />
@@ -272,7 +261,6 @@ export function App() {
       {sheet === "settings" && (
         <SettingsSheet
           me={me}
-          mode={backend.mode}
           profiles={backend.localProfiles()}
           hasDemoNeighbours={snapshot.players.some((player) => player.demo)}
           onSwitchProfile={(playerId) => {

@@ -11,7 +11,7 @@ import { itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
 import { plantStage } from "../game/progression";
 import type { Slot } from "../game/room";
-import { BACK_ITEM_SCALE, FLOOR_Y, ITEM_SCALE, PET_FLOOR, project, ROOM_HEIGHT, ROOM_WIDTH, slotById, SLOTS, WINDOW_FRAME } from "../game/room";
+import { BACK_ITEM_SCALE, FLOOR_Y, ITEM_SCALE, itemScale, PET_FLOOR, project, ROOM_HEIGHT, ROOM_WIDTH, slotById, SLOTS, WINDOW_FRAME } from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
 import { ItemArt } from "./ItemArt";
 import type { Lighting } from "./lighting";
@@ -71,21 +71,22 @@ const BOX_DEPTH = 0.1;
 
 function slotTransform(item: ItemDef, slot: Slot, flip: boolean): string {
   const anchorOffset = slot.anchor === "top" ? 0 : slot.anchor === "bottom" ? -item.h : -item.h / 2;
-  const scaleX = flip ? -slot.scale : slot.scale;
-  return `translate(${slot.x} ${slot.y}) scale(${scaleX} ${slot.scale}) translate(${-item.w / 2} ${anchorOffset})`;
+  const scale = itemScale(item, slot);
+  return `translate(${slot.x} ${slot.y}) scale(${flip ? -scale : scale} ${scale}) translate(${-item.w / 2} ${anchorOffset})`;
 }
 
 function napSpot(item: ItemDef, slot: Slot, placement: Placement): PetSpot | null {
   if (!item.tags?.includes("nap") || !slot.world) return null;
-  const seatX = (item.seatX ?? 0) * (placement.flip ? -1 : 1) * ITEM_SCALE;
+  const realSize = ITEM_SCALE * (item.scale ?? 1);
+  const seatX = (item.seatX ?? 0) * (placement.flip ? -1 : 1) * realSize;
   const depth = Math.min(slot.world.depth, PET_FLOOR.maxDepth + 0.12);
   if (slot.zone === "rug") return floorSpot(slot.world.x + seatX, depth);
-  return { x: slot.world.x + seatX, depth: slot.world.depth - 0.02, lift: (item.seat ?? 0) * ITEM_SCALE, order: slot.depth + 0.5 };
+  return { x: slot.world.x + seatX, depth: slot.world.depth - 0.02, lift: (item.seat ?? 0) * realSize, order: slot.depth + 0.5 };
 }
 
 function playSpot(item: ItemDef, slot: Slot): PetSpot | null {
   if (!item.tags?.includes("play") || !slot.world) return null;
-  const besideDistance = (item.w / 2) * ITEM_SCALE + 20;
+  const besideDistance = (item.w / 2) * ITEM_SCALE * (item.scale ?? 1) + 20;
   const side = slot.world.x > 180 ? -besideDistance : besideDistance;
   const depth = Math.max(PET_FLOOR.minDepth, Math.min(PET_FLOOR.maxDepth, slot.world.depth - 0.04));
   return floorSpot(slot.world.x + side, depth);
@@ -311,7 +312,7 @@ export function RoomScene(props: RoomSceneProps) {
             onPointerDown={onItemPointerDown ? (event) => onItemPointerDown(event, slot.id) : undefined}
           >
             {slot.zone === "floor" && (
-              <ellipse cx={slot.x} cy={slot.y - 1} rx={item.w * 0.42 * slot.scale} ry="3.4" fill="rgba(12,6,16,0.3)" />
+              <ellipse cx={slot.x} cy={slot.y - 1} rx={item.w * 0.42 * itemScale(item, slot)} ry="3.4" fill="rgba(12,6,16,0.3)" />
             )}
             <g transform={slotTransform(item, slot, placement.flip)}>
               <g className={freshItemId === item.id ? "item-enter" : undefined}>
@@ -431,8 +432,8 @@ export function RoomScene(props: RoomSceneProps) {
       {heldItem && (
         <g className="slot-markers">
           {SLOTS.filter((slot) => validSlotIds.has(slot.id)).map((slot) => {
-            const width = Math.min(heldItem.w, 150) * slot.scale + 10;
-            const height = Math.min(heldItem.h, 130) * slot.scale + 10;
+            const width = Math.min(heldItem.w * itemScale(heldItem, slot), 190) + 10;
+            const height = Math.min(heldItem.h * itemScale(heldItem, slot), 170) + 10;
             const y = slot.anchor === "top" ? slot.y - 4 : slot.anchor === "bottom" ? slot.y - height + 5 : slot.y - height / 2;
             const occupied = Boolean(player.layout.slots[slot.id]);
             return (

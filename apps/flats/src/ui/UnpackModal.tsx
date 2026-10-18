@@ -9,7 +9,7 @@ import { CATALOG } from "../game/catalog";
 import type { CatalogEntry, Present } from "../game/progression";
 import { drawChoices, isSurface } from "../game/progression";
 import type { Player } from "../game/types";
-import { Embers, TIER_LABELS } from "./common";
+import { Embers } from "./common";
 import { playChime, playPop, playRustle } from "./sound";
 
 interface UnpackModalProps {
@@ -23,12 +23,6 @@ interface UnpackModalProps {
 }
 
 type Stage = "box" | "opening" | "choices" | "picked";
-
-function entryLabel(entry: CatalogEntry): string {
-  if (entry.rarity === "seasonal") return "Seasonal";
-  if (entry.rarity === "surprise") return "Rare find";
-  return TIER_LABELS[entry.tier];
-}
 
 function EntryArt({ entry, size }: { entry: CatalogEntry; size: number }) {
   return isSurface(entry) ? <SurfaceThumb surface={entry} size={size} /> : <ItemThumb item={entry} size={size} />;
@@ -69,8 +63,8 @@ export function UnpackModal({ player, present, day, reducedMotion, onPick, onPla
   return (
     <div className="unpack-backdrop" role="dialog" aria-modal="true" aria-label="Unpack your present">
       {stage !== "picked" && (
-        <button type="button" className="unpack-later" onClick={onClose}>
-          Later
+        <button type="button" className="unpack-later" onClick={onClose} aria-label="Close">
+          ✕
         </button>
       )}
       {(stage === "box" || stage === "opening") && (
@@ -90,14 +84,12 @@ export function UnpackModal({ player, present, day, reducedMotion, onPick, onPla
               </g>
             </g>
           </svg>
-          <span className="unpack-prompt">{stage === "box" ? `A ${TIER_LABELS[present.tier].toLowerCase()} present. Tap to open` : "…"}</span>
         </button>
       )}
 
       {stage === "choices" && (
         <div className="unpack-choices">
           <Embers burstKey={1} reducedMotion={reducedMotion} />
-          <h2 className="unpack-title">Choose one to keep</h2>
           <div className="choice-row">
             {choices.map((entry, index) => (
               <button
@@ -108,10 +100,8 @@ export function UnpackModal({ player, present, day, reducedMotion, onPick, onPla
                 onClick={() => void pick(entry)}
                 disabled={busy}
               >
-                <span className="choice-ribbon">{entryLabel(entry)}</span>
                 <EntryArt entry={entry} size={92} />
                 <strong>{entry.name}</strong>
-                <span className="choice-blurb">{entry.blurb}</span>
               </button>
             ))}
           </div>
@@ -123,13 +113,12 @@ export function UnpackModal({ player, present, day, reducedMotion, onPick, onPla
           <div className="picked-glow" aria-hidden="true" />
           <EntryArt entry={picked} size={140} />
           <h2>{picked.name}</h2>
-          <p>{isSurface(picked) ? "Your walls and floors have a new look." : "It's yours. Where should it go?"}</p>
           <div className="picked-actions">
             <button type="button" className="big-button" onClick={() => onPlaceNow(picked.id)}>
-              {isSurface(picked) ? "Try it on" : "Place it now"}
+              {isSurface(picked) ? "Use it" : "Place it"}
             </button>
             <button type="button" className="text-button" onClick={onClose}>
-              Keep it in storage
+              Later
             </button>
           </div>
         </div>

@@ -9,9 +9,8 @@ import { useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
-import { petMood, weekStreak, workoutsInWeekOf } from "../game/progression";
+import { petMood, workoutsInWeekOf } from "../game/progression";
 import type { GroupSnapshot, Player } from "../game/types";
-import { Hint, Tag } from "./common";
 import { playPop } from "./sound";
 
 const FLATS_PER_FLOOR = 2;
@@ -32,7 +31,6 @@ interface BuildingProps {
   day: string;
   lighting: Lighting;
   reducedMotion: boolean;
-  recapBanner: string | null;
   onOpenFlat: (playerId: string, fromRect: DOMRect) => void;
   onInvite: () => void;
 }
@@ -72,7 +70,6 @@ function FlatWindow({
 }) {
   const [opening, setOpening] = useState(false);
   const weekCount = workoutsInWeekOf(player, day);
-  const streak = weekStreak(player, day);
   return (
     <div className={`flat-slot${isMe ? " is-me" : ""}`}>
       <button
@@ -112,9 +109,6 @@ function FlatWindow({
       <div className="name-tag">
         <span className="name-tag-string" aria-hidden="true" />
         <strong>{isMe ? "You" : player.name}</strong>
-        <span>& {player.petName}</span>
-        <span className="name-tag-count">{weekCount} this week</span>
-        {streak > 1 && <span className="name-tag-streak">★ {streak} wk</span>}
         {player.demo && <span className="name-tag-demo">demo</span>}
       </div>
     </div>
@@ -126,9 +120,8 @@ function Vacancy({ onInvite }: { onInvite: () => void }) {
     <div className="flat-slot">
       <button type="button" className="flat-window is-vacant" onClick={onInvite} aria-label="Invite a friend">
         <div className="window-glass vacancy-glass">
-          <span className="for-rent">
-            Vacant
-            <small>Invite a friend</small>
+          <span className="for-rent" aria-hidden="true">
+            +
           </span>
         </div>
         <span className="window-lintel" aria-hidden="true" />
@@ -150,7 +143,7 @@ function Curtained() {
   );
 }
 
-export function Building({ snapshot, meId, day, lighting, reducedMotion, recapBanner, onOpenFlat, onInvite }: BuildingProps) {
+export function Building({ snapshot, meId, day, lighting, reducedMotion, onOpenFlat, onInvite }: BuildingProps) {
   const slots: WindowSlot[] = [
     ...snapshot.players.map((player) => ({ kind: "flat" as const, player })),
     { kind: "vacancy" as const },
@@ -158,20 +151,9 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, recapBa
   if (slots.length % FLATS_PER_FLOOR !== 0) slots.push({ kind: "curtained" });
   const floors: WindowSlot[][] = [];
   for (let index = 0; index < slots.length; index += FLATS_PER_FLOOR) floors.push(slots.slice(index, index + FLATS_PER_FLOOR));
-  const groupTotal = snapshot.players.reduce((sum, player) => sum + workoutsInWeekOf(player, day), 0);
 
   return (
     <main className={`building-screen phase-${lighting.phase}`}>
-      <header className="building-header">
-        <h1 className="flat-title">{snapshot.group.name}</h1>
-        <div className="flat-tags">
-          <Tag tone="mint">{groupTotal} workouts this week</Tag>
-          <button type="button" className="tag tone-sky code-tag" onClick={onInvite}>
-            Invite · {snapshot.group.code}
-          </button>
-        </div>
-      </header>
-      {recapBanner && <p className="recap-banner card">{recapBanner}</p>}
 
       <div className="street-scene">
         <div className="sky-layer" aria-hidden="true">
@@ -233,9 +215,6 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, recapBa
           <span className="street-tree" />
           <span className="street-lamp" />
         </div>
-      </div>
-      <div className="building-hint">
-        <Hint hintKey="building">Tap any window to pop in and visit. The busier someone's week, the brighter their window glows.</Hint>
       </div>
     </main>
   );

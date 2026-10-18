@@ -5,7 +5,6 @@ import { useState } from "react";
 import { PetPortrait } from "../art/Pet";
 import type { ProfileSummary } from "../backend/types";
 import type { WeekRecap } from "../game/progression";
-import { joinNames } from "../game/progression";
 import type { Group, Player } from "../game/types";
 import { Sheet } from "./common";
 import { setSoundEnabled, soundEnabled } from "./sound";
@@ -66,8 +65,7 @@ export function InviteSheet({ group, mode, onClose }: { group: Group; mode: "loc
   const [copied, setCopied] = useState(false);
   const link = inviteLink(group.code);
   return (
-    <Sheet title="Invite a neighbour" onClose={onClose}>
-      <p>Share this code or link with friends, family or coworkers:</p>
+    <Sheet onClose={onClose}>
       <p className="invite-code">{group.code}</p>
       <button
         type="button"
@@ -82,19 +80,13 @@ export function InviteSheet({ group, mode, onClose }: { group: Group; mode: "loc
       >
         {copied ? "Link copied!" : "Share invite link"}
       </button>
-      {mode === "local" && (
-        <p className="fine-print">
-          Flats is in device-only mode for now: flats are saved in this browser, so friends on other phones can
-          move in once the online building opens. Housemates can join on this device from Settings → Add a player.
-        </p>
-      )}
+      {mode === "local" && <p className="fine-print">Saved on this device for now. Housemates can join from Settings.</p>}
     </Sheet>
   );
 }
 
 interface SettingsSheetProps {
   me: Player;
-  mode: "local" | "online";
   profiles: ProfileSummary[];
   hasDemoNeighbours: boolean;
   onSwitchProfile: (playerId: string) => void;
@@ -105,7 +97,7 @@ interface SettingsSheetProps {
 }
 
 export function SettingsSheet(props: SettingsSheetProps) {
-  const { me, mode, profiles, hasDemoNeighbours, onSwitchProfile, onAddPlayer, onRemoveDemo, onInvite, onClose } = props;
+  const { me, profiles, hasDemoNeighbours, onSwitchProfile, onAddPlayer, onRemoveDemo, onInvite, onClose } = props;
   const [sound, setSound] = useState(soundEnabled);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [reminderTime, setReminderTime] = useState("18:00");
@@ -127,7 +119,6 @@ export function SettingsSheet(props: SettingsSheetProps) {
 
       <section className="settings-section">
         <h3>Gentle reminder</h3>
-        <p className="fine-print">Off unless you add it. It lands in your calendar, so it works even when the app is closed.</p>
         {reminderOpen ? (
           <div className="reminder-row">
             <input className="field" type="time" value={reminderTime} onChange={(event) => setReminderTime(event.target.value)} />
@@ -167,7 +158,6 @@ export function SettingsSheet(props: SettingsSheetProps) {
           Add a player
         </button>
       </section>
-      {mode === "local" && <p className="fine-print">Your flat is saved in this browser.</p>}
     </Sheet>
   );
 }
@@ -175,13 +165,8 @@ export function SettingsSheet(props: SettingsSheetProps) {
 export function RecapSheet({ recap, players, onClose }: { recap: WeekRecap; players: Player[]; onClose: () => void }) {
   const byId = new Map(players.map((player) => [player.id, player]));
   const active = recap.counts.filter((entry) => entry.count > 0);
-  const starNames = recap.stars.map((id) => byId.get(id)?.name ?? "Someone");
   return (
-    <Sheet title="Last week in the building" onClose={onClose} className="recap-sheet">
-      <p className="recap-lede">Every flat got a little warmer.</p>
-      <p className="recap-total">
-        Together: <strong>{recap.total}</strong> workout{recap.total === 1 ? "" : "s"}
-      </p>
+    <Sheet title="Last week" onClose={onClose} className="recap-sheet">
       <div className="recap-row">
         {active.map((entry) => {
           const player = byId.get(entry.playerId);
@@ -194,13 +179,8 @@ export function RecapSheet({ recap, players, onClose }: { recap: WeekRecap; play
           );
         })}
       </div>
-      {starNames.length > 0 && (
-        <p className="recap-star">
-          Brightest window{starNames.length > 1 ? "s" : ""}: {joinNames(starNames)}
-        </p>
-      )}
       <button type="button" className="big-button" onClick={onClose}>
-        Onwards
+        ✓
       </button>
     </Sheet>
   );

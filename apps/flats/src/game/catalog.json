@@ -70,7 +70,8 @@
           "fill": "a",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.08
     },
     {
       "id": "succulent-pot",
@@ -472,7 +473,8 @@
           "r": 1,
           "fill": "a"
         }
-      ]
+      ],
+      "scale": 1.1
     },
     {
       "id": "woven-rug",
@@ -556,7 +558,8 @@
           "fill": "s",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.3
     },
     {
       "id": "mountain-poster",
@@ -954,7 +957,8 @@
           "r": 2,
           "fill": "#bcd8b2"
         }
-      ]
+      ],
+      "scale": 1.3
     },
     {
       "id": "side-table",
@@ -1139,7 +1143,8 @@
           "fill": "a",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.16
     },
     {
       "id": "eucalyptus-garland",
@@ -1457,7 +1462,8 @@
           "r": 8,
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.36
     },
     {
       "id": "armchair",
@@ -1605,7 +1611,8 @@
           "sw": 1,
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.25
     },
     {
       "id": "monstera",
@@ -1739,7 +1746,8 @@
           "r": 2,
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.25
     },
     {
       "id": "hanging-pothos",
@@ -2603,7 +2611,8 @@
           "sw": 1,
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.43
     },
     {
       "id": "arc-lamp",
@@ -2683,7 +2692,8 @@
           "fill": "a",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.23
     },
     {
       "id": "striped-rug",
@@ -2798,7 +2808,8 @@
           "fill": "s",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.2
     },
     {
       "id": "tiny-tv",
@@ -2935,7 +2946,8 @@
           "fill": "s",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.15
     },
     {
       "id": "pet-bed",
@@ -2997,7 +3009,8 @@
           "d": "M1 14 C1 23 47 23 47 14 C40 20 8 20 1 14Z",
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.05
     },
     {
       "id": "wall-shelf",
@@ -3462,11 +3475,12 @@
           "flat": true,
           "anim": "float"
         }
-      ]
+      ],
+      "scale": 1.2
     },
     {
       "id": "tiny-aquarium",
-      "name": "Tiny aquarium",
+      "name": "Aquarium",
       "blurb": "Two fish named after your best workouts.",
       "category": "whimsy",
       "tier": 3,
@@ -3630,7 +3644,8 @@
           "r": 1.5,
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.55
     },
     {
       "id": "canopy-bed",
@@ -3842,7 +3857,8 @@
           "r": 3,
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.12
     },
     {
       "id": "fairy-lights",
@@ -4216,7 +4232,8 @@
           "fill": "#ffe08a",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.4
     },
     {
       "id": "lava-lamp",
@@ -4328,7 +4345,8 @@
           ],
           "fill": "a"
         }
-      ]
+      ],
+      "scale": 0.75
     },
     {
       "id": "fireplace",
@@ -4642,7 +4660,8 @@
           "r": 1,
           "fill": "p"
         }
-      ]
+      ],
+      "scale": 1.15
     },
     {
       "id": "egg-chair",
@@ -4748,7 +4767,8 @@
           "fill": "a",
           "anim": "drift"
         }
-      ]
+      ],
+      "scale": 1.38
     },
     {
       "id": "telescope",
@@ -4885,7 +4905,8 @@
           "flat": true,
           "anim": "twinkle"
         }
-      ]
+      ],
+      "scale": 1.37
     },
     {
       "id": "pumpkin",
@@ -4967,7 +4988,7 @@
     },
     {
       "id": "tiny-tree",
-      "name": "Tiny twinkly tree",
+      "name": "Little fir tree",
       "blurb": "Winter only. Smells faintly of pine and joy.",
       "category": "plants",
       "tier": 1,
@@ -5114,7 +5135,8 @@
           "fill": "#ffd166",
           "anim": "twinkle"
         }
-      ]
+      ],
+      "scale": 1.6
     },
     {
       "id": "dried-roses",
@@ -5456,7 +5478,8 @@
           "fill": "a",
           "flat": true
         }
-      ]
+      ],
+      "scale": 1.4
     },
     {
       "id": "neon-moon",
@@ -5981,7 +6004,8 @@
           "r": 4,
           "fill": "s"
         }
-      ]
+      ],
+      "scale": 1.17
     }
   ],
   "surfaces": [

@@ -3,11 +3,9 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
-import { petSpec } from "../art/pets";
 import { RoomScene } from "../art/RoomScene";
-import { cosinessTitle, petMood, weekStreak, workoutsInWeekOf } from "../game/progression";
+import { petMood } from "../game/progression";
 import type { Player, Reaction, ReactionKind } from "../game/types";
-import { Tag } from "./common";
 import { playChime, playPop } from "./sound";
 
 export const STICKERS = ["✦", "♥", "☾", "❀", "★", "✧"];
@@ -48,7 +46,6 @@ export function Visit(props: VisitProps) {
   const [treatKey, setTreatKey] = useState(0);
   const [flying, setFlying] = useState<{ id: number; emoji: string } | null>(null);
   const [closing, setClosing] = useState(false);
-  const pet = petSpec(player.petKind);
 
   useLayoutEffect(() => {
     const room = roomRef.current;
@@ -86,8 +83,6 @@ export function Visit(props: VisitProps) {
     .filter((reaction) => reaction.kind === "sticker")
     .slice(-6)
     .map((reaction) => STICKERS[(reaction.variant ?? 0) % STICKERS.length]);
-  const heartsCount = received.filter((reaction) => reaction.kind === "heart").length;
-  const treatsCount = received.filter((reaction) => reaction.kind === "treat").length;
 
   const send = async (kind: ReactionKind) => {
     const variant = kind === "sticker" ? Math.floor(Math.random() * STICKERS.length) : undefined;
@@ -108,26 +103,11 @@ export function Visit(props: VisitProps) {
       <div className="visit-backdrop" ref={backdropRef} />
       <div className="visit-content">
         <header className="visit-header">
-          <button type="button" className="back-button" onClick={close}>
-            ← Building
+          <button type="button" className="back-button" onClick={close} aria-label="Back to the building">
+            ←
           </button>
-          <div>
-            <h1 className="flat-title">{isMe ? "Your flat" : `${player.name}'s flat`}</h1>
-            <p className="flat-subtitle">
-              {cosinessTitle(Object.keys(player.layout.slots).length)} · {player.petName} the {pet.label.toLowerCase()}
-            </p>
-          </div>
+          <h1 className="visit-name">{isMe ? "You" : player.name}</h1>
         </header>
-        <div className="flat-tags visit-tags">
-          <Tag tone="butter">{workoutsInWeekOf(player, day)} this week</Tag>
-          {weekStreak(player, day) > 1 && <Tag tone="blush">★ {weekStreak(player, day)}-week streak</Tag>}
-          {(heartsCount > 0 || treatsCount > 0) && (
-            <Tag tone="mint">
-              {heartsCount > 0 && `♥ ${heartsCount}  `}
-              {treatsCount > 0 && `❖ ${treatsCount}`}
-            </Tag>
-          )}
-        </div>
         <div className="visit-room" ref={roomRef}>
           <RoomScene
             player={player}
@@ -147,26 +127,39 @@ export function Visit(props: VisitProps) {
         </div>
         {isMe ? (
           <div className="reaction-bar">
-            <p className="visit-note">This is you. Friends can leave hearts, stars and treats here.</p>
             <button type="button" className="big-button" onClick={onGoHome}>
-              Go decorate
+              Decorate
             </button>
           </div>
         ) : (
           <div className="reaction-bar">
-            <p className="visit-note">Leave a little something</p>
             <div className="reaction-buttons">
-              <button type="button" className="reaction-button tone-blush" disabled={sentToday("heart")} onClick={() => void send("heart")}>
-                <span className="reaction-emoji">♥</span>
-                {sentToday("heart") ? "Sent" : "Leave a heart"}
+              <button
+                type="button"
+                className="reaction-button tone-blush"
+                disabled={sentToday("heart")}
+                onClick={() => void send("heart")}
+                aria-label="Leave a heart"
+              >
+                ♥
               </button>
-              <button type="button" className="reaction-button tone-butter" disabled={sentToday("sticker")} onClick={() => void send("sticker")}>
-                <span className="reaction-emoji">✦</span>
-                {sentToday("sticker") ? "Left" : "Leave a star"}
+              <button
+                type="button"
+                className="reaction-button tone-butter"
+                disabled={sentToday("sticker")}
+                onClick={() => void send("sticker")}
+                aria-label="Leave a star"
+              >
+                ✦
               </button>
-              <button type="button" className="reaction-button tone-mint" disabled={sentToday("treat")} onClick={() => void send("treat")}>
-                <span className="reaction-emoji">❖</span>
-                {sentToday("treat") ? "Enjoyed" : `Treat for ${player.petName}`}
+              <button
+                type="button"
+                className="reaction-button tone-mint"
+                disabled={sentToday("treat")}
+                onClick={() => void send("treat")}
+                aria-label={`Give ${player.petName} a treat`}
+              >
+                ❖
               </button>
             </div>
           </div>

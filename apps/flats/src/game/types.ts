@@ -78,6 +78,8 @@ export interface ItemDef {
   seat?: number;
   /** Horizontal offset of the nap spot from the item's centre. */
   seatX?: number;
+  /** Real-world size multiplier applied to the art (furniture is drawn at true scale). */
+  scale?: number;
 }
 
 export type PatternKind =

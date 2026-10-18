@@ -110,10 +110,10 @@ export const SLOTS: Slot[] = [
   floorSlot("floorBL", "floor", 72, 0.9, 2),
   floorSlot("floorBC", "floor", 180, 0.93, 3),
   floorSlot("floorBR", "floor", 288, 0.9, 2),
-  floorSlot("floorML", "floor", 34, 0.5, 2),
-  floorSlot("floorMR", "floor", 326, 0.5, 2),
-  floorSlot("floorFL", "floor", 44, 0.08, 2),
-  floorSlot("floorFR", "floor", 316, 0.08, 2),
+  floorSlot("floorML", "floor", 52, 0.52, 2),
+  floorSlot("floorMR", "floor", 308, 0.52, 2),
+  floorSlot("floorFL", "floor", 58, 0.14, 2),
+  floorSlot("floorFR", "floor", 302, 0.14, 2),
 ];
 
 const SLOT_BY_ID = new Map(SLOTS.map((slot) => [slot.id, slot]));
@@ -122,6 +122,11 @@ export function slotById(slotId: string): Slot {
   const slot = SLOT_BY_ID.get(slotId);
   if (!slot) throw new Error(`Unknown slot: ${slotId}`);
   return slot;
+}
+
+/** Screen scale of an item's art in a slot: perspective scale times the item's real size. */
+export function itemScale(item: ItemDef, slot: Slot): number {
+  return slot.scale * (item.scale ?? 1);
 }
 
 export function canPlace(item: ItemDef, slot: Slot): boolean {

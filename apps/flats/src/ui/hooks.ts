@@ -26,18 +26,6 @@ export function useReducedMotion(): boolean {
   return reduced;
 }
 
-/** A boolean flag persisted in localStorage (first-time hints, recap seen, and so on). */
-export function usePersistentFlag(key: string): [boolean, () => void] {
-  const storageKey = `flats:flag:${key}`;
-  const [value, setValue] = useState(() => localStorage.getItem(storageKey) === "1");
-  useEffect(() => setValue(localStorage.getItem(storageKey) === "1"), [storageKey]);
-  const set = () => {
-    localStorage.setItem(storageKey, "1");
-    setValue(true);
-  };
-  return [value, set];
-}
-
 export function readNumber(key: string, fallback: number): number {
   const raw = localStorage.getItem(`flats:${key}`);
   return raw === null ? fallback : Number(raw);

@@ -52,14 +52,12 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
       {step === "welcome" && (
         <section className="onboarding-card welcome-card card enter-flutter">
           <h1 className="logo">Flats</h1>
-          <p className="lede">A warm little flat that glows brighter every time you move.</p>
-          {joinGroupName && <p className="join-note">You're invited to <strong>{joinGroupName}</strong>.</p>}
+          {joinGroupName && <p className="join-note">{joinGroupName}</p>}
           <button type="button" className="big-button" onClick={() => setStep("name")}>
-            {joinGroupName ? "Move in next door" : "Move in"}
+            Move in
           </button>
           {profiles.length > 0 && (
             <div className="profile-switch">
-              <p>Already live here?</p>
               {profiles.map((profile) => (
                 <button key={profile.playerId} type="button" className="chip" onClick={() => onSwitchProfile(profile.playerId)}>
                   {profile.name} & {profile.petName}
@@ -78,7 +76,6 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
             if (name.trim()) setStep("pet");
           }}
         >
-          <h2>What should the neighbours call you?</h2>
           <input
             className="field"
             autoFocus
@@ -95,13 +92,13 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
 
       {step === "pet" && (
         <section className="onboarding-card card enter-flutter">
-          <h2>Pick a roommate</h2>
           <div className="pet-picker" role="radiogroup" aria-label="Pet">
             {PETS.map((pet) => (
               <button
                 key={pet.kind}
                 type="button"
                 role="radio"
+                aria-label={pet.label}
                 aria-checked={petKind === pet.kind}
                 className={`pet-option${petKind === pet.kind ? " is-selected" : ""}`}
                 onClick={() => {
@@ -110,12 +107,11 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
                 }}
               >
                 <PetPortrait kind={pet.kind} action={petKind === pet.kind ? "happy" : "idle"} size={78} />
-                <span>{pet.label}</span>
               </button>
             ))}
           </div>
           <button type="button" className="big-button" onClick={() => setStep("petName")}>
-            This one
+            Next
           </button>
         </section>
       )}
@@ -129,23 +125,16 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
           }}
         >
           <PetPortrait kind={petKind} action="happy" size={120} />
-          <h2>And their name?</h2>
           <input
             className="field"
             autoFocus
             maxLength={16}
+            placeholder="Their name"
             value={petName}
             onChange={(event) => setPetName(event.target.value)}
           />
-          <div className="name-ideas">
-            {PET_NAME_IDEAS.slice(0, 6).map((idea) => (
-              <button key={idea} type="button" className="chip" onClick={() => setPetName(idea)}>
-                {idea}
-              </button>
-            ))}
-          </div>
           <button type="submit" className="big-button" disabled={!petName.trim() || busy}>
-            Let's go home
+            Move in
           </button>
         </form>
       )}
