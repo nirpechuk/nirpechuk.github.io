@@ -79,6 +79,12 @@ def board(name):
 def fragment(name, index, start, end, bounds, unwrap=False):
     svgs=board(name)
     nodes=list(svgs[index])[start:end]
+    if name == 'Decor-Textiles-Art' and index == 21 and start == 17:
+        # The board's moonlit comparison swatch is not part of the boxes.
+        group = nodes[0]
+        for child in list(group):
+            if child.get('style') == 'mix-blend-mode: multiply' or child.get('points') == '4,106 44,106 36,128 -6,128':
+                group.remove(child)
     if unwrap:
         nodes[0].attrib.pop('transform',None)
     lookup={node.get('id'):node for svg in svgs for node in svg.iter() if node.get('id')}
@@ -141,6 +147,31 @@ for label in street.iter('text'):
 # Texture is cached as part of the static asset, not recalculated for each live room.
 public=ROOT/'public/brownstone';public.mkdir(exist_ok=True)
 (public/'street.svg').write_text(ET.tostring(street,encoding='unicode'))
+
+# Separate the approved facade into reusable storeys. Never scale windows or
+# duplicate the doorway/roof when the building grows.
+import copy
+children=list(street)
+assert children[29].get('x')=='500' and children[29].get('height')=='530'
+assert children[48].text=='THE FLATS'
+def fragments(indices):
+ return ''.join(ET.tostring(children[i],encoding='unicode') for i in indices)
+floor=[]
+for index,count in [(41,2),(42,2),(43,4),(44,2)]:
+ group=copy.deepcopy(children[index])
+ for child in list(group)[count:]: group.remove(child)
+ floor.append(ET.tostring(group,encoding='unicode'))
+street_parts={
+ 'defs': ''.join(ET.tostring(e,encoding='unicode') for e in children[0]),
+ 'sky': fragments(range(2,6)),
+ 'neighbours': fragments(range(6,29)),
+ 'facade': fragments([29,30,32,33]),
+ 'roof': fragments(range(34,41)),
+ 'floor': ''.join(floor),
+ 'ground': fragments([31,*range(45,71)]),
+}
+(ROOT/'src/art/brownstone/streetParts.json').write_text(json.dumps(street_parts,separators=(',',':'))+'\n')
+
 
 import random, struct, zlib
 rng=random.Random(47)

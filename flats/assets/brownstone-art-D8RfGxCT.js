@@ -117,7 +117,6 @@ var e={"present-1":[{bounds:[68,78,130,94],svg:`<defs><filter id="__ID__pr1Blur"
 `}],"moving-boxes":[{bounds:[16,26,96,92],svg:`<defs><filter id="__ID__dtBlur2"><feGaussianBlur stdDeviation="2" /></filter>
 <linearGradient id="__ID__dtKraft" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8A6A40" /><stop offset="0.35" stop-color="#C49C68" /><stop offset="1" stop-color="#7A5A34" /></linearGradient>
 </defs><g>
-<polygon points="4,106 44,106 36,128 -6,128" fill="#A9BEE6" opacity="0.18" />
 <ellipse cx="64" cy="115" rx="46" ry="4" fill="#000" opacity="0.5" filter="url(#__ID__dtBlur2)" />
 <polygon points="30,77 88,77 92,82 26,82" fill="#C9A472" />
 <path d="M28 79.5 L90 79.5" stroke="#8A6A40" stroke-width="0.5" />
@@ -140,7 +139,6 @@ var e={"present-1":[{bounds:[68,78,130,94],svg:`<defs><filter id="__ID__pr1Blur"
 <polygon points="96,97 112,97 114,100 94,100" fill="#C9A472" />
 <rect x="94" y="100" width="20" height="14" fill="url(#__ID__dtKraft)" />
 <rect x="94" y="104" width="20" height="3" fill="#A83A30" opacity="0.8" />
-<rect x="0" y="0" width="122.7" height="148" fill="#22304E" opacity="0.35" style="mix-blend-mode: multiply" />
 </g>
 
 

@@ -9,7 +9,9 @@ import "./brownstone.css";
 const container = document.getElementById("root");
 if (!container) throw new Error("Missing #root element.");
 const root = createRoot(container);
-if (import.meta.env.DEV && new URLSearchParams(location.search).has("studio")) {
+if (import.meta.env.DEV && new URLSearchParams(location.search).has("streetStudio")) {
+  void import("./dev/StreetStudio").then(({ StreetStudio }) => root.render(<StreetStudio />));
+} else if (import.meta.env.DEV && new URLSearchParams(location.search).has("studio")) {
   void import("./dev/Studio").then(({ Studio }) => root.render(<Studio />));
 } else {
   root.render(

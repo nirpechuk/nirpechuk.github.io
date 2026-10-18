@@ -1,4 +1,4 @@
-/** The Brownstone street. Architecture is static; every resident, window and flower is live. */
+/** A Brownstone that gains a matching storey for every two new neighbours. */
 import type { CSSProperties } from "react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Lighting } from "../art/lighting";
@@ -7,6 +7,8 @@ import { RoomScene } from "../art/RoomScene";
 import { petMood, workoutsInWeekOf } from "../game/progression";
 import type { GroupSnapshot, Player } from "../game/types";
 import { playPop } from "./sound";
+import { StreetArchitecture } from "../art/brownstone/StreetArchitecture";
+import { buildingLayout, streetViewport, windowPosition } from "../game/building";
 
 export function windowGlow(weekCount: number): number {
   return [0.08, 0.32, 0.45, 0.58, 0.7, 0.8, 0.9, 1][Math.max(0, Math.min(7, Math.floor(weekCount)))];
@@ -99,28 +101,42 @@ function ResidentWindow({
 
 export function Building({ snapshot, meId, day, lighting, reducedMotion, openPlayerId, onOpenFlat, onInvite }: BuildingProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  const [page, setPage] = useState(0);
-  const pages = Math.max(1, Math.ceil(snapshot.players.length / 6));
-  const activePage = Math.min(page, pages - 1);
+  const layout = buildingLayout(snapshot.players.length);
+  const [viewport, setViewport] = useState(() => ({ ...streetViewport(1440, 800, layout.floors), measured: false }));
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const previousHeight = useRef(0);
+  const people = snapshot.players;
   useLayoutEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
-    const fit = () => {
-      const { clientWidth: width, clientHeight: height } = scene;
-      // Fill laptop/desktop viewports edge to edge; keep the whole building visible on phones.
-      setScale(width >= 768 ? Math.max(width / 1440, height / 800) : Math.max(0.25, Math.min((height - 80) / 800, (width - 22) / 470, 1.6)));
-    };
+    const fit = () => setViewport({ ...streetViewport(scene.clientWidth, scene.clientHeight, layout.floors), measured: true });
     const observer = new ResizeObserver(fit);
     observer.observe(scene);
     fit();
     return () => observer.disconnect();
-  }, []);
+  }, [layout.floors]);
+  useLayoutEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    if (!viewport.measured) return;
+    if (previousHeight.current) {
+      // New floors grow above existing residents; keep the viewed storey in place.
+      scene.scrollTop += viewport.contentHeight - previousHeight.current;
+    } else {
+      const ownIndex = Math.max(
+        0,
+        people.findIndex((player) => player.id === meId)
+      );
+      scene.scrollTop = viewport.top + windowPosition(ownIndex, layout.floors).y * viewport.scale - scene.clientHeight * 0.55;
+    }
+    previousHeight.current = viewport.contentHeight;
+    setCanScrollUp(scene.scrollTop > 8);
+  }, [viewport, layout.floors, meId]);
+  const scrollable = viewport.contentHeight > (sceneRef.current?.clientHeight ?? viewport.contentHeight) + 2;
   const atmosphere = streetAtmosphere(day, new Date().getHours());
-  const people = snapshot.players.slice(activePage * 6, activePage * 6 + 6);
   return (
     <main className={`building-screen brownstone-street phase-${lighting.phase}`}>
-      <div className="street-scene" ref={sceneRef}>
+      <div className="street-scene">
         <header className="street-header">
           <div>
             <h1>{snapshot.group.name}</h1>
@@ -130,80 +146,103 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
             Invite a friend
           </button>
         </header>
-        <div className="brownstone-world" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-          <img
-            className="street-architecture"
-            src={`${import.meta.env.BASE_URL}brownstone/street.svg?v=2`}
-            width="1440"
-            height="800"
-            alt=""
-            draggable="false"
-          />
-          <div
-            className={`street-atmosphere weather-${atmosphere.weather}${atmosphere.dusk ? " is-dusk" : ""}${reducedMotion ? " is-still" : ""}`}
-            aria-hidden="true"
-          >
-            {atmosphere.weather !== "clear" &&
-              Array.from({ length: atmosphere.weather === "rain" ? 28 : 14 }, (_, i) => (
-                <i
-                  key={i}
-                  style={
-                    { "--i": i, left: `${(i * 137 + 91) % 1440}px`, top: `${(i * 97) % 760}px`, animationDelay: `${-i * 0.73}s` } as CSSProperties
-                  }
-                />
-              ))}
-          </div>
-          {Array.from({ length: 6 }, (_, i) => {
-            const player = people[i];
-            // Start on the lower storey and fill upwards, as friends move in.
-            const x = 560 + (i % 2) * 210;
-            const y = 495 - Math.floor(i / 2) * 145;
-            return (
-              <div key={player?.id ?? `empty-${i}`} className="brownstone-unit" style={{ left: x, top: y }}>
-                {player ? (
-                  <ResidentWindow
-                    player={player}
-                    day={day}
-                    lighting={lighting}
-                    reducedMotion={reducedMotion}
-                    isMe={player.id === meId}
-                    isOpen={openPlayerId === player.id}
-                    stars={snapshot.reactions.filter((r) => r.to === player.id && r.kind === "sticker").length}
-                    onOpen={(rect, glow) => onOpenFlat(player.id, rect, glow)}
-                  />
-                ) : (
-                  <button className="brownstone-vacancy" onClick={onInvite} aria-label="Empty flat — invite a friend">
-                    <span>
-                      Room for
-                      <br />a friend
-                    </span>
-                  </button>
-                )}
+        <div
+          className="street-scroll"
+          ref={sceneRef}
+          onScroll={(event) => setCanScrollUp(event.currentTarget.scrollTop > 8)}
+          aria-label="Building floors"
+        >
+          <div className="street-canvas" style={{ height: viewport.contentHeight }}>
+            <div
+              className="brownstone-world"
+              style={{ height: layout.height, top: viewport.top, transform: `translateX(-50%) scale(${viewport.scale})` }}
+            >
+              <StreetArchitecture floors={layout.floors} overflow={viewport.overflow} />
+              <div
+                className={`street-atmosphere weather-${atmosphere.weather}${atmosphere.dusk ? " is-dusk" : ""}${reducedMotion ? " is-still" : ""}`}
+                aria-hidden="true"
+              >
+                {atmosphere.weather !== "clear" &&
+                  Array.from({ length: atmosphere.weather === "rain" ? 28 : 14 }, (_, i) => (
+                    <i
+                      key={i}
+                      style={
+                        {
+                          "--i": i,
+                          left: `${(i * 137 + 91) % 1440}px`,
+                          top: `${(i * 193) % (layout.height - 40)}px`,
+                          animationDelay: `${-i * 0.73}s`,
+                        } as CSSProperties
+                      }
+                    />
+                  ))}
               </div>
-            );
-          })}
-          <button className="brass-invite" onClick={onInvite} aria-label={`Invite code ${snapshot.group.code}`}>
-            {snapshot.group.code}
-          </button>
-          <div className="street-reflections" aria-hidden="true">
-            {people.map((player, i) => (
-              <span key={player.id} style={{ left: 560 + (i % 2) * 210, opacity: 0.07 + windowGlow(workoutsInWeekOf(player, day)) * 0.12 }} />
-            ))}
+              {Array.from({ length: layout.capacity }, (_, i) => {
+                const player = people[i];
+                // Start on the lower storey and fill upwards, as friends move in.
+                const { x, y } = windowPosition(i, layout.floors);
+                return (
+                  <div key={player?.id ?? `empty-${i}`} className="brownstone-unit" style={{ left: x, top: y }}>
+                    {player ? (
+                      <ResidentWindow
+                        player={player}
+                        day={day}
+                        lighting={lighting}
+                        reducedMotion={reducedMotion}
+                        isMe={player.id === meId}
+                        isOpen={openPlayerId === player.id}
+                        stars={snapshot.reactions.filter((r) => r.to === player.id && r.kind === "sticker").length}
+                        onOpen={(rect, glow) => onOpenFlat(player.id, rect, glow)}
+                      />
+                    ) : (
+                      <button className="brownstone-vacancy" onClick={onInvite} aria-label="Empty flat — invite a friend">
+                        <span>
+                          Room for
+                          <br />a friend
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+              <button
+                className="brass-invite"
+                style={{ top: 632 + layout.extraHeight }}
+                onClick={onInvite}
+                aria-label={`Invite code ${snapshot.group.code}`}
+              >
+                {snapshot.group.code}
+              </button>
+              <div className="street-reflections" aria-hidden="true">
+                {people.slice(0, 2).map((player, i) => (
+                  <span
+                    key={player.id}
+                    style={{
+                      top: 742 + layout.extraHeight,
+                      left: 560 + (i % 2) * 210,
+                      opacity: 0.07 + windowGlow(workoutsInWeekOf(player, day)) * 0.12,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-        <footer className="street-footer">
-          {pages > 1 && (
-            <nav className="building-pages" aria-label="More neighbours">
-              <button className="chip" disabled={activePage === 0} onClick={() => setPage(activePage - 1)}>
-                Previous
-              </button>
-              <span>
-                Windows {activePage * 6 + 1}–{Math.min((activePage + 1) * 6, snapshot.players.length)}
-              </span>
-              <button className="chip" disabled={activePage === pages - 1} onClick={() => setPage(activePage + 1)}>
-                Next
-              </button>
-            </nav>
+        <footer className={`street-footer${scrollable ? " is-scrollable" : ""}`}>
+          {scrollable && (
+            <button
+              className="chip more-floors"
+              onClick={() => {
+                const scene = sceneRef.current;
+                if (!scene) return;
+                scene.scrollTo({
+                  top: canScrollUp ? Math.max(0, scene.scrollTop - scene.clientHeight * 0.75) : scene.scrollHeight,
+                  behavior: reducedMotion ? "instant" : "smooth",
+                });
+              }}
+            >
+              {canScrollUp ? "↑ More floors" : "↓ Back to the street"}
+            </button>
           )}
           <p>Pick a window. Come on in.</p>
           <span>Every workout makes the street a little brighter.</span>

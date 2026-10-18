@@ -40,6 +40,7 @@ const MATERIALS: Record<string, string> = {
   "eucalyptus-garland": "Euc",
 };
 const SOLIDS: Record<string, string[]> = {
+  "wingback-chair": ["#5E9E96", "#3E7A74", "#1F4A48", "#143634", "#2E5E5A", "#2A5E5A", "#4E8A84", "#163A38"],
   "snail-terrarium": ["#B88A5A", "#8A6038", "#6A4428"],
   "pleated-pendant": ["#E9D3A8", "#C9A87A"],
   "comfy-sofa": ["#6E3418", "#4E2410", "#D08A50", "#8C4422", "#A2582C", "#5A2A12", "#B56A38", "#C88050"],

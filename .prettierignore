@@ -22,3 +22,4 @@ apps/flats/design/
 # Reproducible, compiled Brownstone art
 apps/flats/src/art/brownstone/assets.json
 apps/flats/public/brownstone/street.svg
+apps/flats/src/art/brownstone/streetParts.json

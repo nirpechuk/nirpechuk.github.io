@@ -122,6 +122,23 @@ describe("Brownstone artwork and migration", () => {
         expect.soft(recolorMaterial(art, item.id, item.palettes[i], i), `${item.id} ${i}`).not.toBe(original);
     }
   });
+  it("recolours the whole wingback upholstery while preserving its throw and hardware", () => {
+    const item = itemById("wingback-chair");
+    const art = assets["wingback-chair"][0].svg;
+    const upholstery = ["#2E6A66", "#1A4442", "#0E2A2A", "#5E9E96", "#3E7A74", "#1F4A48", "#143634", "#2E5E5A", "#2A5E5A", "#4E8A84", "#163A38"];
+    for (let i = 1; i < item.palettes.length; i++) {
+      const recoloured = recolorMaterial(art, item.id, item.palettes[i], i);
+      for (const colour of upholstery) expect(recoloured).not.toContain(colour);
+      for (const accent of ["#E8C27A", "#C89A3A", "#B5893F", "#5A3820"]) expect(recoloured).toContain(accent);
+    }
+  });
+  it("exports moving boxes without the board's rectangular lighting overlay", () => {
+    const boxes = assets["moving-boxes"][0].svg;
+    expect(boxes).toContain("BOOKS?");
+    expect(boxes).not.toContain("mix-blend-mode");
+    expect(boxes).not.toContain("#22304E");
+    expect(boxes).not.toContain("#A9BEE6");
+  });
   it("keeps the server catalogue in exactly the client draw order, with identical gameplay metadata", () => {
     const sql = readFileSync(new URL("../../../supabase/migrations/003_brownstone_catalog.sql", import.meta.url), "utf8");
     const rows = sql.split("$catalog$")[1].split("\n");

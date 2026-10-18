@@ -61,7 +61,7 @@ button:disabled {
   line-height: 1.6;
 }
 
-/* The kit's architecture, with real windows placed in its six openings. */
+/* The kit's architecture grows by one matching storey per pair of neighbours. */
 .brownstone-street .street-scene {
   background: linear-gradient(#0a0b1c, #18172a 65%, #15121b);
 }
@@ -71,12 +71,13 @@ button:disabled {
   top: 50%;
   width: 1440px;
   height: 800px;
-  transform-origin: center;
+  transform-origin: top center;
 }
 .street-architecture {
   display: block;
   width: 1440px;
-  height: 800px;
+  height: auto;
+  overflow: visible;
   pointer-events: none;
 }
 .street-header {
@@ -1451,4 +1452,52 @@ dialog::backdrop {
 }
 .home-panel .drawer-card {
   height: 142px;
+}
+
+.street-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #755439 #10101d;
+}
+.street-canvas {
+  position: relative;
+  width: 100%;
+}
+.street-header {
+  pointer-events: none;
+}
+.street-header button {
+  pointer-events: auto;
+}
+.street-footer {
+  pointer-events: none;
+  z-index: 2;
+  text-shadow: 0 2px 8px #08080f;
+}
+.street-footer button {
+  pointer-events: auto;
+}
+.more-floors {
+  margin-bottom: 10px;
+  background: #15111bea;
+  border-color: #b99b624d;
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+
+.street-footer.is-scrollable {
+  left: auto;
+  right: 20px;
+  bottom: 18px;
+}
+.street-footer.is-scrollable p,
+.street-footer.is-scrollable > span {
+  display: none;
+}
+.street-footer.is-scrollable .more-floors {
+  margin: 0;
 }
