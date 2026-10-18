@@ -164,17 +164,19 @@ function RoofSign() {
         </text>
       </defs>
       <g className="roof-sign-supports" fill="#42332e" stroke="#201c20" strokeWidth="1">
-        <path d="M57 34h6v76h-6zM146 30h7v80h-7zM239 34h6v76h-6z" />
+        <path d="M57 34h6v76h-6zM239 34h6v76h-6z" />
+        <path className="roof-sign-center-support" d="M146 30h7v80h-7z" />
         <path d="M36 47h229v6H36zM38 86h225v5H38z" />
         <path d="m61 106 33-24 3 4-34 25zM212 83l31 24-3 4-31-24z" />
       </g>
       <g stroke="#89705a" strokeWidth="1" opacity="0.42">
-        <path d="M59 38v62m90-65v67m92-63v62M41 49h217M42 88h216" />
+        <path d="M59 38v62m182-63v62M41 49h217M42 88h216" />
+        <path className="roof-sign-center-support" d="M149 35v67" />
       </g>
       <path d="M244 69q14 14 3 27t9 15" stroke="#211c22" strokeWidth="1.5" fill="none" />
       <g fill="#b99771" opacity="0.65">
         {[60, 149, 242].map((x) => (
-          <circle key={x} cx={x} cy="50" r="1.3" />
+          <circle key={x} className={x === 149 ? "roof-sign-center-support" : undefined} cx={x} cy="50" r="1.3" />
         ))}
       </g>
       <g className="roof-neon">

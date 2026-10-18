@@ -3577,6 +3577,9 @@ h3 {
   }
 }
 @media (max-width: 600px) {
+  .roof-sign-center-support {
+    display: none;
+  }
   .street-details {
     opacity: 0.6;
   }
