@@ -1302,6 +1302,7 @@ h3 {
 
 /* Flat layers keep the illustrated depth without interfering with window hit testing. */
 .building {
+  --roof-height: 108px;
   position: relative;
   width: 380px;
   margin: 0;
@@ -1315,7 +1316,7 @@ h3 {
  */
 .building-side {
   position: absolute;
-  top: 74px;
+  top: var(--roof-height);
   bottom: 0;
   left: 100%;
   width: 54px;
@@ -1328,7 +1329,7 @@ h3 {
 
 .roof {
   position: relative;
-  height: 74px;
+  height: var(--roof-height);
 }
 
 .roof-garden {
@@ -1336,15 +1337,15 @@ h3 {
   left: 8px;
   right: 8px;
   bottom: 0;
-  height: 52px;
-  background: linear-gradient(#3a2725, #2e1f1e);
+  height: 8px;
+  background: linear-gradient(#55413a, #302325);
   border-radius: 4px 4px 0 0;
   box-shadow: 0 -3px 0 #4e3430 inset;
 }
 
 .roof-plant {
   position: absolute;
-  bottom: 48px;
+  bottom: 8px;
   width: 24px;
   height: 20px;
   border-radius: 50% 50% 40% 40%;
@@ -1382,8 +1383,8 @@ h3 {
 
 .water-tower {
   position: absolute;
-  right: 30px;
-  bottom: 48px;
+  right: 8px;
+  bottom: 8px;
   width: 32px;
   height: 38px;
   border-radius: 5px 5px 3px 3px;
@@ -1403,8 +1404,8 @@ h3 {
 
 .chimney {
   position: absolute;
-  right: 80px;
-  bottom: 48px;
+  right: 55px;
+  bottom: 8px;
   width: 16px;
   height: 26px;
   background: #4a2a26;
@@ -1430,20 +1431,40 @@ h3 {
 .roof-sign {
   position: absolute;
   left: 50%;
-  bottom: 9px;
+  bottom: 3px;
+  width: 300px;
+  height: 112px;
+  overflow: visible;
   transform: translateX(-50%);
-  padding: 3px 16px 4px;
+  pointer-events: none;
   font-family: var(--serif);
   font-style: italic;
   font-weight: 600;
-  font-size: 1.15rem;
-  letter-spacing: 0.04em;
-  color: #ffd2b0;
-  text-shadow:
-    0 0 6px #ff7a59,
-    0 0 16px rgba(255, 122, 89, 0.8),
-    0 0 30px rgba(255, 122, 89, 0.5);
-  animation: neon 6s linear infinite;
+  font-size: 86px;
+  letter-spacing: 0.025em;
+}
+.roof-neon {
+  fill: none;
+  stroke-linejoin: round;
+  animation: roof-neon-breathe 8s ease-in-out infinite;
+}
+.roof-neon-tube {
+  stroke: #ff9c78;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 3px #ff9472) drop-shadow(0 0 9px #ff80576b);
+}
+.roof-neon-core {
+  stroke: #ffe5bb;
+  stroke-width: 0.85px;
+}
+@keyframes roof-neon-breathe {
+  0%,
+  100% {
+    opacity: 0.94;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .facade {
@@ -3609,6 +3630,7 @@ h3 {
   .window-warm,
   .window-glass,
   .roof-sign,
+  .roof-neon,
   .door-window,
   .logo {
     animation: none !important;

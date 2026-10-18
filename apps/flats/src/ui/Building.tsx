@@ -5,7 +5,7 @@
  */
 
 import type { CSSProperties } from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
@@ -153,6 +153,38 @@ function Curtained() {
   );
 }
 
+/** A freestanding neon wordmark: warm glass tubing on a few weathered roof planks. */
+function RoofSign() {
+  const lettering = useId();
+  return (
+    <svg className="roof-sign" viewBox="0 0 300 112" aria-hidden="true">
+      <defs>
+        <text id={lettering} x="150" y="79" textAnchor="middle">
+          Flats
+        </text>
+      </defs>
+      <g className="roof-sign-supports" fill="#42332e" stroke="#201c20" strokeWidth="1">
+        <path d="M57 34h6v76h-6zM146 30h7v80h-7zM239 34h6v76h-6z" />
+        <path d="M36 47h229v6H36zM38 86h225v5H38z" />
+        <path d="m61 106 33-24 3 4-34 25zM212 83l31 24-3 4-31-24z" />
+      </g>
+      <g stroke="#89705a" strokeWidth="1" opacity="0.42">
+        <path d="M59 38v62m90-65v67m92-63v62M41 49h217M42 88h216" />
+      </g>
+      <path d="M244 69q14 14 3 27t9 15" stroke="#211c22" strokeWidth="1.5" fill="none" />
+      <g fill="#b99771" opacity="0.65">
+        {[60, 149, 242].map((x) => (
+          <circle key={x} cx={x} cy="50" r="1.3" />
+        ))}
+      </g>
+      <g className="roof-neon">
+        <use href={`#${lettering}`} className="roof-neon-tube" />
+        <use href={`#${lettering}`} className="roof-neon-core" />
+      </g>
+    </svg>
+  );
+}
+
 export function Building({ snapshot, meId, day, lighting, reducedMotion, openPlayerId, onOpenFlat, onInvite }: BuildingProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const buildingRef = useRef<HTMLDivElement>(null);
@@ -290,7 +322,7 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
                   <span className="smoke smoke-2" />
                 </span>
               </div>
-              <div className="roof-sign">Flats</div>
+              <RoofSign />
             </div>
             <div className="facade">
               {[...floors].reverse().map((floor, reversedIndex) => (
