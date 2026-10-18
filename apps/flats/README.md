@@ -5,10 +5,14 @@ your flat, and watch your window glow brighter in the shared building. Live at
 [nirpechuk.github.io/flats](https://nirpechuk.github.io/flats/). Design notes are in
 [DESIGN.md](DESIGN.md).
 
-Right now the app runs in **device-only mode**: everything is saved in the browser's
-localStorage, and three labelled demo neighbours keep the building lively. Several
-people can share one device (Settings → Add a player). Cross-device groups arrive with
-the online backend (see below).
+The app connects to Supabase for shared buildings, progress, room layouts, and
+reactions. Existing device-only players migrate automatically; their original local
+save stays as a backup. Demo neighbours are not uploaded. Buildings refresh every
+eight seconds and when you return to the app.
+
+Settings → Copy room key lets you move a player to another device using “Already
+moved in?” on the welcome screen. Keep that key private: it grants access to your
+player. Several players can still share one device.
 
 ## Run it
 
@@ -18,6 +22,17 @@ npm install
 npm run dev        # http://localhost:5173/flats/
 npm test           # game rules, catalogue validation, local backend
 ```
+
+The building fills the viewport. Open your window to log a workout or decorate;
+use the back arrow to return. Opening a window moves the whole street toward the
+room, then reveals its controls against softly shaded brickwork; going back reverses
+the camera move. Reduced motion skips the travel. A present drops in only after
+earning it with a workout.
+Tap room objects for small, individually authored reactions: lamps flicker, books tip,
+leaves rustle, cushions squish, and more. Tap your pet to say hello. Reactions also
+work with Enter or Space and respect reduced motion. The layer choreography lives
+in `src/art/interactions.ts`.
+In neighbours' flats, treats fly to the pet before it eats them.
 
 Add `?hour=21` to the URL to preview night lighting (any hour 0–23 works).
 
@@ -30,8 +45,8 @@ npm run build      # type-checks, builds into ../../flats/, adds Jekyll front ma
 
 Commit `apps/flats` and the rebuilt `flats/` folder and push to `main`; the site's
 normal GitHub Pages workflow publishes it. `apps/` is excluded from Jekyll, and
-`flats/index.html` carries front matter (`nav: true`) so the page appears in the site
-header.
+`flats/index.html` carries front matter (`nav: false`); the site header links to Flats and Structs through the
+“frivolities” menu.
 
 ## Add an item
 
@@ -39,22 +54,23 @@ Items live in [`src/game/catalog.json`](src/game/catalog.json); no code changes 
 
 ```jsonc
 {
-  "id": "brass-lamp",              // unique
+  "id": "brass-lamp", // unique
   "name": "Brass desk lamp",
   "blurb": "One line of personality.",
-  "category": "lighting",          // furniture, plants, lighting, wallart, rugs, tech, whimsy, textiles
-  "tier": 2,                       // 1 basic, 2 fine, 3 luxe
-  "rarity": "standard",            // or "seasonal" (+ "season": {"from": 12, "to": 1}) or "surprise"
-  "zones": ["floor", "sill"],      // ceiling, wall, wallTop, window, sill, floor, rug
-  "size": 1,                       // must fit a slot's capacity (see SLOTS in src/game/room.ts)
-  "w": 30, "h": 40,                // art box in room units (the room is 360 × 420)
-  "tags": ["light"],               // nap, play, light, grow
+  "category": "lighting", // furniture, plants, lighting, wallart, rugs, tech, whimsy, textiles
+  "tier": 2, // 1 basic, 2 fine, 3 luxe
+  "rarity": "standard", // or "seasonal" (+ "season": {"from": 12, "to": 1}) or "surprise"
+  "zones": ["floor", "sill"], // ceiling, wall, wallTop, window, sill, floor, rug
+  "size": 1, // must fit a slot's capacity (see SLOTS in src/game/room.ts)
+  "w": 30,
+  "h": 40, // art box in room units (the room is 360 × 420)
+  "tags": ["light"], // nap, play, light, grow
   "palettes": [{ "name": "Brass", "p": "#c9a050", "s": "#8a6a32", "a": "#fff0c8" }],
   "layers": [
     { "t": "circle", "cx": 15, "cy": 12, "r": 24, "fill": "#ffb865", "o": 0.5, "glow": true, "flat": true },
     { "t": "rect", "x": 12, "y": 14, "w": 6, "h": 24, "fill": "s" },
-    { "t": "path", "d": "M4 14 L26 14 L20 2 L10 2Z", "fill": "p" }
-  ]
+    { "t": "path", "d": "M4 14 L26 14 L20 2 L10 2Z", "fill": "p" },
+  ],
 }
 ```
 
@@ -92,16 +108,40 @@ happy and eat animations come for free from `styles.css`.
 
 - `src/game/`: rules (`progression.ts`), room slots and placement (`room.ts`),
   dates, types, catalogue.
-- `src/backend/`: the `Backend` interface, `LocalBackend`, demo neighbours.
+- `src/backend/`: the `Backend` interface, `SupabaseBackend`, and an optional offline backend.
 - `src/art/`: SVG rendering: `RoomScene`, `ItemArt`, `Pet`, surfaces, lighting, the pet
   behaviour loop.
 - `src/ui/`: screens (onboarding, home, building, visit, unpacking, sheets).
 
-## Going online (next step)
+## Supabase setup
 
-Shared groups across devices need a small backend. The plan is Supabase (free tier):
-tables for groups, players, workouts, unlocks, layouts and reactions; row-level
-security denying direct access; and `SECURITY DEFINER` functions that check each
-player's secret token and enforce one log per day and the present rules. A
-`SupabaseBackend` implementing `src/backend/types.ts` then replaces `LocalBackend` in
-`src/backend/index.ts`.
+The public project URL and publishable key live in `src/backend/config.json`.
+Player keys are generated on the device and stored only as hashes in the database.
+Tables are private; narrowly scoped database functions authorize each operation and
+validate workout, present, layout, and reaction rules.
+
+To apply the schema or sync changed catalogue metadata, use Node 24 and a private
+JSON file outside the repository containing `connectionString` (the Supabase
+session-pooler URL with its password) and `caFile` (the trusted Supabase CA path):
+
+```bash
+node apps/flats/scripts/setup-supabase.mjs /private/path/connection.json
+```
+
+The setup script also adds a private Flats administration key to the existing
+encrypted `research/admin.json`, using the local `.admin-password`. It preserves the
+research configuration. The website admin panel can delete and restore residents;
+deleted residents disappear from buildings and their room keys stop working until
+restored. No database password or admin key is included in the app bundle.
+
+Flats uses the website's existing page-view tracker, without a visible counter or
+footer. Local previews do not count toward published page views.
+
+Run the opt-in live integration suite with a dedicated disposable fixture set:
+
+```bash
+FLATS_LIVE_TEST=1 FLATS_CONNECTION_FILE=/private/path/connection.json npm test --prefix apps/flats
+```
+
+The suite removes its fixtures afterward. Ordinary `npm test` skips live tests.
+For explicit device-only development, start Vite with `VITE_FLATS_OFFLINE=true`.

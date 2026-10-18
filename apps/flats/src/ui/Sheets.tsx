@@ -18,7 +18,10 @@ function reminderCalendar(petName: string, time: string): string {
   const now = new Date();
   const pad = (value: number) => String(value).padStart(2, "0");
   const startDay = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const stamp = now
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
   const message = `${petName} is waiting by the door…`;
   return [
     "BEGIN:VCALENDAR",
@@ -86,6 +89,7 @@ export function InviteSheet({ group, mode, onClose }: { group: Group; mode: "loc
 }
 
 interface SettingsSheetProps {
+  roomKey?: string;
   me: Player;
   profiles: ProfileSummary[];
   hasDemoNeighbours: boolean;
@@ -98,6 +102,7 @@ interface SettingsSheetProps {
 
 export function SettingsSheet(props: SettingsSheetProps) {
   const { me, profiles, hasDemoNeighbours, onSwitchProfile, onAddPlayer, onRemoveDemo, onInvite, onClose } = props;
+  const [keyCopied, setKeyCopied] = useState(false);
   const [sound, setSound] = useState(soundEnabled);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [reminderTime, setReminderTime] = useState("18:00");
@@ -117,6 +122,15 @@ export function SettingsSheet(props: SettingsSheetProps) {
         )}
       </section>
 
+      {props.roomKey && (
+        <section className="settings-section">
+          <h3>Your room key</h3>
+          <p className="fine-print">Keep this to come home on another device. It's just for you.</p>
+          <button type="button" className="chip chip-large" onClick={async () => setKeyCopied(await copyText(props.roomKey!))}>
+            {keyCopied ? "Key copied" : "Copy my room key"}
+          </button>
+        </section>
+      )}
       <section className="settings-section">
         <h3>Gentle reminder</h3>
         {reminderOpen ? (

@@ -263,9 +263,125 @@
       if (currentData && selected) chart(currentData.rows);
     }
   }).observe(get("traffic-chart"));
+  let flatsConfig = null;
+  let residents = [];
+  let flatsController;
+  let flatsBusy = false;
+  function renderResidents() {
+    const container = get("flats-residents");
+    container.replaceChildren();
+    const visible = residents.filter((p) => !p.deletedAt || get("show-deleted-flats").checked);
+    for (const resident of visible) {
+      const row = document.createElement("tr");
+      const name = document.createElement("td");
+      const title = document.createElement("strong");
+      title.textContent = resident.name;
+      const pet = document.createElement("small");
+      pet.textContent = `${resident.petName} · ${resident.petKind}${resident.deletedAt ? " · deleted" : ""}`;
+      name.append(title, pet);
+      const building = document.createElement("td");
+      building.textContent = resident.building;
+      const code = document.createElement("small");
+      code.textContent = resident.groupCode;
+      building.append(code);
+      const workouts = document.createElement("td");
+      workouts.textContent = String(resident.workouts);
+      const actions = document.createElement("td");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "quiet";
+      button.textContent = resident.deletedAt ? "Restore" : "Delete";
+      button.setAttribute("aria-label", `${button.textContent} ${resident.name}`);
+      button.disabled = flatsBusy;
+      button.addEventListener("click", () => {
+        if (resident.deletedAt) {
+          void updateResidents("restore", resident.id);
+          return;
+        }
+        const confirmation = document.createElement("span");
+        confirmation.textContent = `Delete ${resident.name}? `;
+        const yes = document.createElement("button");
+        yes.type = "button";
+        yes.className = "quiet";
+        yes.textContent = "Confirm delete";
+        yes.addEventListener("click", () => {
+          void updateResidents("delete", resident.id);
+        });
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "quiet";
+        cancel.textContent = "Cancel";
+        cancel.addEventListener("click", renderResidents);
+        actions.replaceChildren(confirmation, yes, cancel);
+        yes.focus();
+      });
+      actions.append(button);
+      row.append(name, building, workouts, actions);
+      container.append(row);
+    }
+    if (!visible.length) {
+      const row = document.createElement("tr"),
+        cell = document.createElement("td");
+      cell.colSpan = 4;
+      cell.textContent = "No residents to show yet.";
+      row.append(cell);
+      container.append(row);
+    }
+  }
+  async function updateResidents(action = "list", playerId = null) {
+    if (!flatsConfig || flatsBusy) return;
+    const token = generation;
+    const active = new AbortController();
+    flatsController = active;
+    flatsBusy = true;
+    get("refresh-flats").disabled = true;
+    renderResidents();
+    get("flats-status").textContent = action === "list" ? "Loading residents…" : "Saving…";
+    try {
+      const response = await fetch(`${flatsConfig.url}/rest/v1/rpc/flats_admin`, {
+        method: "POST",
+        credentials: "omit",
+        referrerPolicy: "no-referrer",
+        headers: { apikey: flatsConfig.publishableKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_token: flatsConfig.token, p_action: action, p_player_id: playerId }),
+        signal: AbortSignal.any([active.signal, AbortSignal.timeout(15000)]),
+      });
+      if (!response.ok) throw new Error("Residents couldn't load. Try Refresh.");
+      const result = await response.json();
+      if (token !== generation) return;
+      residents = result;
+      get("flats-status").textContent =
+        action === "delete"
+          ? "Resident deleted. Turn on “Show deleted residents” to restore them."
+          : action === "restore"
+            ? "Resident restored."
+            : `${residents.filter((p) => !p.deletedAt).length} residents`;
+    } catch (error) {
+      if (token === generation && !active.signal.aborted) get("flats-status").textContent = error.message || "Couldn't reach Flats. Try Refresh.";
+    } finally {
+      if (token === generation) {
+        flatsBusy = false;
+        get("refresh-flats").disabled = false;
+        renderResidents();
+      }
+    }
+  }
+  get("refresh-flats").addEventListener("click", () => {
+    void updateResidents();
+  });
+  get("show-deleted-flats").addEventListener("change", renderResidents);
   window.NirAdmin = {
-    async open(reports) {
+    async open(reports, configuration) {
       const token = ++generation;
+      flatsController?.abort();
+      flatsBusy = false;
+      flatsConfig = configuration ?? null;
+      residents = [];
+      get("show-deleted-flats").checked = false;
+      get("flats-status").textContent = flatsConfig ? "" : "Flats management hasn't been connected yet.";
+      get("refresh-flats").disabled = !flatsConfig;
+      renderResidents();
+      void updateResidents();
       catalogController?.abort();
       catalogController = new AbortController();
       pages = [{ title: "Home", path: "/" }, ...reports.map((page) => ({ title: page.title, path: `/research/${encodeURIComponent(page.slug)}/` }))];
@@ -307,6 +423,12 @@
     },
     close() {
       generation++;
+      flatsController?.abort();
+      flatsConfig = null;
+      residents = [];
+      flatsBusy = false;
+      get("flats-residents").replaceChildren();
+      get("flats-status").textContent = "";
       controller?.abort();
       catalogController?.abort();
       pages = [];

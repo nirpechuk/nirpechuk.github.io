@@ -20,14 +20,16 @@ interface OnboardingProps {
   joinGroupName: string | null;
   profiles: ProfileSummary[];
   onSwitchProfile: (playerId: string) => void;
+  onRestore?: (key: string) => Promise<void>;
   onDone: (input: NewPlayerInput) => Promise<void>;
 }
 
-export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile, onDone }: OnboardingProps) {
+export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile, onDone, onRestore }: OnboardingProps) {
   const [step, setStep] = useState<Step>("welcome");
   const [name, setName] = useState("");
   const [petKind, setPetKind] = useState<PetKind>("cat");
   const [petName, setPetName] = useState(() => PET_NAME_IDEAS[Math.floor(Math.random() * PET_NAME_IDEAS.length)]);
+  const [roomKey, setRoomKey] = useState("");
   const [busy, setBusy] = useState(false);
   const hour = useHour();
   const reducedMotion = useReducedMotion();
@@ -56,6 +58,34 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
           <button type="button" className="big-button" onClick={() => setStep("name")}>
             Move in
           </button>
+          {onRestore && (
+            <details className="room-key-entry">
+              <summary>Already moved in?</summary>
+              <form
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  setBusy(true);
+                  try {
+                    await onRestore(roomKey);
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                <input
+                  className="field"
+                  aria-label="Room key"
+                  placeholder="Your room key"
+                  value={roomKey}
+                  onChange={(event) => setRoomKey(event.target.value)}
+                  autoComplete="off"
+                />
+                <button className="chip" disabled={busy || !roomKey.trim()}>
+                  Come home
+                </button>
+              </form>
+            </details>
+          )}
           {profiles.length > 0 && (
             <div className="profile-switch">
               {profiles.map((profile) => (
@@ -76,14 +106,7 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
             if (name.trim()) setStep("pet");
           }}
         >
-          <input
-            className="field"
-            autoFocus
-            maxLength={20}
-            placeholder="Your name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
+          <input className="field" autoFocus maxLength={20} placeholder="Your name" value={name} onChange={(event) => setName(event.target.value)} />
           <button type="submit" className="big-button" disabled={!name.trim()}>
             Next
           </button>

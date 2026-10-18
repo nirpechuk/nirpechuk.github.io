@@ -4,7 +4,14 @@ import vm from "node:vm";
 import { readFile } from "node:fs/promises";
 import { webcrypto } from "node:crypto";
 const source = await readFile(new URL("../../assets/js/page-views.js", import.meta.url), "utf8");
-function fixture({ storage = new Map(), hostname = "nirpechuk.github.io", pathname = "/projects/", fetcher, day = "2026-10-01" } = {}) {
+function fixture({
+  storage = new Map(),
+  hostname = "nirpechuk.github.io",
+  pathname = "/projects/",
+  fetcher,
+  day = "2026-10-01",
+  trackPage = false,
+} = {}) {
   const calls = [];
   const context = {
     window: {},
@@ -13,7 +20,7 @@ function fixture({ storage = new Map(), hostname = "nirpechuk.github.io", pathna
     TextEncoder,
     URL,
     AbortSignal,
-    document: { querySelectorAll: () => [] },
+    document: { querySelectorAll: (selector) => (trackPage && selector === "[data-page-track]" ? [{}] : []) },
     navigator: {},
     Date: class extends Date {
       constructor(...args) {
@@ -119,4 +126,15 @@ test("invalid service values stay unavailable", async () => {
   const data = await api.history("/", 7);
   assert.equal(data.lifetime, null);
   assert.ok(data.rows.every((row) => row.views === null && row.unique === null));
+});
+
+test("fullscreen Flats tracks a page load without a visible counter or double counting", async () => {
+  const { api, calls } = fixture({ pathname: "/flats/", trackPage: true });
+  await api.track();
+  assert.equal(calls.length, 4);
+  const markup = await readFile(new URL("../../apps/flats/index.html", import.meta.url), "utf8");
+  assert.match(markup, /<body data-page-track>/);
+  assert.doesNotMatch(markup, /data-page-views/);
+  const plugin = await readFile(new URL("../../_plugins/analytics-pages.rb", import.meta.url), "utf8");
+  assert.match(plugin, /data-page-track/);
 });

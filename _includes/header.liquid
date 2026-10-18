@@ -122,6 +122,19 @@
               {% endif %}
             {% endif %}
           {% endfor %}
+          <li class="nav-item frivolities-item">
+            <details class="frivolities-menu">
+              <summary class="nav-link">frivolities <span class="frivolities-twinkle" aria-hidden="true">✧</span></summary>
+              <div class="frivolities-links">
+                <a href="{{ '/structs/' | relative_url }}"
+                  ><span aria-hidden="true">⌘</span> structs <span class="link-flourish" aria-hidden="true">⟡</span></a
+                >
+                <a href="{{ '/flats/' | relative_url }}"
+                  ><span aria-hidden="true">⌂</span> flats <span class="link-flourish" aria-hidden="true">✦</span></a
+                >
+              </div>
+            </details>
+          </li>
           {% if site.search_enabled %}
             <!-- Search -->
             <li class="nav-item">
@@ -153,3 +166,5 @@
     </progress>
   {% endif %}
 </header>
+
+<script src="{{ '/assets/js/frivolities.js' | relative_url }}" defer></script>

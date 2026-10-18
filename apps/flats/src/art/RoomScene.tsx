@@ -4,14 +4,26 @@
  * and the miniature windows of the building view.
  */
 
-import type { PointerEvent as ReactPointerEvent, ReactNode, Ref } from "react";
-import { useId, useMemo, useState } from "react";
+import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode, Ref } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
 import { plantStage } from "../game/progression";
 import type { Slot } from "../game/room";
-import { BACK_ITEM_SCALE, FLOOR_Y, ITEM_SCALE, itemScale, PET_FLOOR, project, ROOM_HEIGHT, ROOM_WIDTH, slotById, SLOTS, WINDOW_FRAME } from "../game/room";
+import {
+  BACK_ITEM_SCALE,
+  FLOOR_Y,
+  ITEM_SCALE,
+  itemScale,
+  PET_FLOOR,
+  project,
+  ROOM_HEIGHT,
+  ROOM_WIDTH,
+  slotById,
+  SLOTS,
+  WINDOW_FRAME,
+} from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
 import { ItemArt } from "./ItemArt";
 import type { Lighting } from "./lighting";
@@ -29,7 +41,7 @@ export interface EditingState {
   hiddenItemId: string | null;
 }
 
-export type BoxState = "present" | "teaser" | null;
+export type BoxState = "present" | null;
 
 interface RoomSceneProps {
   player: Player;
@@ -166,15 +178,37 @@ function WindowView({ lighting, idPrefix, animate }: { lighting: Lighting; idPre
               [195, 148],
               [211, 142],
               [216, 156],
-            ].map(([x, y], index) => <rect key={index} x={x} y={y} width="2.6" height="3" fill="#ffcf7a" className={animate && index % 3 === 0 ? "anim anim-flicker-soft" : undefined} />)}
+            ].map(([x, y], index) => (
+              <rect
+                key={index}
+                x={x}
+                y={y}
+                width="2.6"
+                height="3"
+                fill="#ffcf7a"
+                className={animate && index % 3 === 0 ? "anim anim-flicker-soft" : undefined}
+              />
+            ))}
         </g>
       </g>
       <rect x={left - 4} y={top - 4} width={width + 8} height={height + 8} rx="5" fill="none" stroke="#2b2228" strokeWidth="7" />
-      <rect x={left - 7.5} y={top - 7.5} width={width + 15} height={height + 15} rx="7" fill="none" stroke="rgba(255,220,170,0.1)" strokeWidth="1.2" />
+      <rect
+        x={left - 7.5}
+        y={top - 7.5}
+        width={width + 15}
+        height={height + 15}
+        rx="7"
+        fill="none"
+        stroke="rgba(255,220,170,0.1)"
+        strokeWidth="1.2"
+      />
       <line x1={left + width / 2} y1={top} x2={left + width / 2} y2={bottom} stroke="#2b2228" strokeWidth="4" />
       <line x1={left} y1={top + height * 0.46} x2={left + width} y2={top + height * 0.46} stroke="#2b2228" strokeWidth="4" />
       <rect x={left} y={top} width={width} height={height} rx="3" fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="5" />
-      <path d={`M${left - 10} ${bottom + 3} L${left + width + 10} ${bottom + 3} L${left + width + 16} ${bottom + 9} L${left - 16} ${bottom + 9} Z`} fill="#3d3038" />
+      <path
+        d={`M${left - 10} ${bottom + 3} L${left + width + 10} ${bottom + 3} L${left + width + 16} ${bottom + 9} L${left - 16} ${bottom + 9} Z`}
+        fill="#3d3038"
+      />
       <rect x={left - 16} y={bottom + 9} width={width + 32} height="4" fill="#271e24" />
       <rect x={left - 16} y={bottom + 13} width={width + 32} height="2" fill="rgba(0,0,0,0.35)" />
       {isNight && <rect x={left} y={top} width={width} height={height} fill={windowGlow} opacity="0.05" />}
@@ -182,16 +216,13 @@ function WindowView({ lighting, idPrefix, animate }: { lighting: Lighting; idPre
   );
 }
 
-function BareBulb({ glowPass, glow }: { glowPass: boolean; glow: number }) {
+function BareBulb({ glowPass, glow, glowFill, reactionKey = 0 }: { glowPass: boolean; glow: number; glowFill?: string; reactionKey?: number }) {
   const slot = slotById("ceilC");
-  const pool = project(180, FLOOR_Y, 0.55);
   if (glowPass) {
     return (
       <g className="bulb-glow">
-        <ellipse cx={pool.x} cy={pool.y} rx="125" ry="30" fill="#ffb865" opacity={0.14 + glow * 0.16} />
         <g transform={`translate(${slot.x} ${slot.y}) scale(${slot.scale})`}>
-          <circle cx="0" cy="48" r="70" fill="#ffb865" opacity={0.18 + glow * 0.22} />
-          <circle cx="0" cy="48" r="24" fill="#ffd89a" opacity={0.35 + glow * 0.4} />
+          <circle cx="0" cy="48" r="95" fill={glowFill} opacity={0.3 + glow * 0.25} />
         </g>
       </g>
     );
@@ -201,41 +232,55 @@ function BareBulb({ glowPass, glow }: { glowPass: boolean; glow: number }) {
       <g className="anim anim-sway-top bare-bulb">
         <line x1="0" y1="0" x2="0" y2="38" stroke="#6b5548" strokeWidth="1.2" />
         <rect x="-3.5" y="36" width="7" height="6" rx="1" fill="#8a8f9a" />
-        <circle cx="0" cy="48" r="6.5" fill="#ffe6b0" className="bulb-core" />
+        <g key={reactionKey} className={reactionKey ? "item-reaction reaction-flicker" : undefined}>
+          <circle cx="0" cy="48" r="6.5" fill="#ffe6b0" className="bulb-core" />
+        </g>
         <path d="M-2 46 Q0 50 2 46" stroke="#ff9d3a" strokeWidth="0.9" fill="none" />
       </g>
     </g>
   );
 }
 
-const boxPoint = project(180, FLOOR_Y, BOX_DEPTH);
+const boxPoint = project(265, FLOOR_Y, BOX_DEPTH);
 const sunbeamFar = { left: project(105, FLOOR_Y, 0.22), right: project(255, FLOOR_Y, 0.22) };
 
-function PresentBox({ state, onTap }: { state: Exclude<BoxState, null>; onTap?: () => void }) {
+function PresentBox({ onTap }: { onTap?: () => void }) {
   return (
     <g
-      className={`present-box ${state === "present" ? "is-ready" : "is-teaser"}`}
+      className="present-box is-ready"
       transform={`translate(${boxPoint.x} ${boxPoint.y}) scale(${boxPoint.k * ITEM_SCALE * 0.95})`}
       onClick={onTap}
       role="button"
-      aria-label={state === "present" ? "Unpack your present" : "Your first box"}
+      aria-label="Unpack your present"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onTap?.();
+        }
+      }}
     >
-      <ellipse cx="0" cy="0" rx="24" ry="3.5" fill="rgba(12,6,16,0.35)" />
-      <g className="present-box-body">
-        <path d="M-21 -30 L21 -30 L22 0 L-22 0Z" fill="#9a7048" />
-        <path d="M-21 -30 L21 -30 L21 -24 L-21 -24Z" fill="#7f5b39" />
-        <path d="M-21 -30 L-27 -38 L-4 -38 L0 -30Z" fill="#ad8256" className="flap flap-left" />
-        <path d="M21 -30 L27 -38 L4 -38 L0 -30Z" fill="#ad8256" className="flap flap-right" />
-        <rect x="-4" y="-30" width="8" height="30" fill={state === "present" ? "#8c3a4b" : "#c9b08c"} opacity="0.95" />
-        {state === "present" ? (
+      <g className="present-arrival">
+        <g className="present-sparkles" aria-hidden="true">
+          {[-32, 30, -18, 21].map((x, i) => (
+            <text key={x} x={x} y={-28 - (i % 3) * 15} style={{ "--i": i } as CSSProperties}>
+              ✦
+            </text>
+          ))}
+        </g>
+        <ellipse cx="0" cy="0" rx="24" ry="3.5" fill="rgba(12,6,16,0.35)" />
+        <g className="present-box-body">
+          <path d="M-21 -30 L21 -30 L22 0 L-22 0Z" fill="#9a7048" />
+          <path d="M-21 -30 L21 -30 L21 -24 L-21 -24Z" fill="#7f5b39" />
+          <path d="M-21 -30 L-27 -38 L-4 -38 L0 -30Z" fill="#ad8256" className="flap flap-left" />
+          <path d="M21 -30 L27 -38 L4 -38 L0 -30Z" fill="#ad8256" className="flap flap-right" />
+          <rect x="-4" y="-30" width="8" height="30" fill="#8c3a4b" opacity="0.95" />
           <g transform="translate(0 -32)">
             <path d="M0 0 C-10 -10 -14 -2 -8 1 Z" fill="#8c3a4b" />
             <path d="M0 0 C10 -10 14 -2 8 1 Z" fill="#8c3a4b" />
             <circle cx="0" cy="0" r="2.6" fill="#a8485a" />
           </g>
-        ) : (
-          <text x="12" y="-10" className="box-label">?</text>
-        )}
+        </g>
       </g>
     </g>
   );
@@ -262,8 +307,49 @@ export function RoomScene(props: RoomSceneProps) {
   } = props;
   const idPrefix = `room${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const [pokes, setPokes] = useState(0);
-  const interactive = variant !== "mini";
+  const interactive = variant !== "mini" && !editing;
   const animate = !reducedMotion && variant !== "mini";
+  const [activeObjects, setActiveObjects] = useState<Record<string, number>>({});
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  useEffect(
+    () => () => {
+      timers.current.forEach(clearTimeout);
+    },
+    []
+  );
+  const energize = (key: string) => {
+    if (!interactive) return;
+    clearTimeout(timers.current.get(key));
+    setActiveObjects((current) => ({ ...current, [key]: (current[key] ?? 0) + 1 }));
+    timers.current.set(
+      key,
+      setTimeout(() => {
+        setActiveObjects((current) => ({ ...current, [key]: 0 }));
+        timers.current.delete(key);
+      }, 3200)
+    );
+  };
+  const motionStyle = (_key: string, level = 1): CSSProperties =>
+    ({
+      "--energy": [0.18, 0.32, 0.5][level % 3],
+      "--tempo": [1.6, 1.2, 1][level % 3],
+    }) as CSSProperties;
+  const interaction = (key: string, label: string, level = 1) => ({
+    style: motionStyle(key, level),
+    "data-motion-level": activeObjects[key] ? "max" : ["quiet", "gentle", "lively"][level % 3],
+    role: interactive ? "button" : undefined,
+    tabIndex: interactive ? 0 : undefined,
+    "aria-label": interactive ? label : undefined,
+    onClick: interactive ? () => energize(key) : undefined,
+    onKeyDown: interactive
+      ? (event: ReactKeyboardEvent<SVGGElement>) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            energize(key);
+          }
+        }
+      : undefined,
+  });
 
   const placed: PlacedEntry[] = useMemo(() => {
     const unlockById = new Map(player.unlocks.map((unlock) => [unlock.id, unlock]));
@@ -297,7 +383,7 @@ export function RoomScene(props: RoomSceneProps) {
   type Drawable = { depth: number; key: string; node: ReactNode };
   const drawables: Drawable[] = placed
     .filter(({ item }) => item.id !== editing?.hiddenItemId)
-    .map(({ slot, item, placement, stage }) => {
+    .map(({ slot, item, placement, stage }, index) => {
       const isStaticWallArt = (slot.zone === "wall" || slot.zone === "wallTop") && !item.anim && !item.layers.some((layer) => layer.anim);
       const swayClass = item.anim ? `anim anim-${item.anim}${slot.anchor === "top" ? "-top" : ""}` : undefined;
       return {
@@ -306,7 +392,8 @@ export function RoomScene(props: RoomSceneProps) {
         node: (
           <g
             key={`item-${slot.id}-${item.id}`}
-            className={`placed-item${interactive && onItemPointerDown ? " is-grabbable" : ""}`}
+            {...interaction(item.id, `Play with ${item.name}`, index)}
+            className={`placed-item${onItemPointerDown ? " is-grabbable" : ""}${activeObjects[item.id] ? " is-energized" : ""}`}
             data-slot={slot.id}
             data-item={item.id}
             onPointerDown={onItemPointerDown ? (event) => onItemPointerDown(event, slot.id) : undefined}
@@ -317,7 +404,14 @@ export function RoomScene(props: RoomSceneProps) {
             <g transform={slotTransform(item, slot, placement.flip)}>
               <g className={freshItemId === item.id ? "item-enter" : undefined}>
                 <g className={swayClass} filter={isStaticWallArt ? `url(#${idPrefix}-lift)` : undefined}>
-                  <ItemArt item={item} paletteIndex={placement.palette} stage={stage} glowStrength={lighting.glow} pass="body" />
+                  <ItemArt
+                    item={item}
+                    paletteIndex={placement.palette}
+                    stage={stage}
+                    glowStrength={lighting.glow}
+                    pass="body"
+                    reactionKey={animate ? activeObjects[item.id] : 0}
+                  />
                 </g>
               </g>
             </g>
@@ -327,10 +421,18 @@ export function RoomScene(props: RoomSceneProps) {
     });
 
   if (ceilingCentreEmpty) {
-    drawables.push({ depth: slotById("ceilC").depth, key: "bulb", node: <BareBulb key="bulb" glowPass={false} glow={lighting.glow} /> });
+    drawables.push({
+      depth: slotById("ceilC").depth,
+      key: "bulb",
+      node: (
+        <g key="bulb" {...interaction("bulb", "Play with the light")}>
+          <BareBulb glowPass={false} glow={lighting.glow} reactionKey={animate ? activeObjects.bulb : 0} />
+        </g>
+      ),
+    });
   }
   if (box && variant === "home") {
-    drawables.push({ depth: 100 + (1 - BOX_DEPTH) * 1000, key: "box", node: <PresentBox key="box" state={box} onTap={onBoxTap} /> });
+    drawables.push({ depth: 100 + (1 - BOX_DEPTH) * 1000, key: "box", node: <PresentBox key="box" onTap={onBoxTap} /> });
   }
   drawables.push({
     depth: pose.order,
@@ -345,18 +447,40 @@ export function RoomScene(props: RoomSceneProps) {
         }}
       >
         <g
+          role={interactive ? "button" : undefined}
+          tabIndex={interactive ? 0 : undefined}
+          aria-label={interactive ? `Pet ${player.petName}` : undefined}
+          onKeyDown={
+            interactive
+              ? (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setPokes((n) => n + 1);
+                    energize("pet");
+                    onPetTap?.();
+                  }
+                }
+              : undefined
+          }
           className="pet-facing"
           style={{ transform: `scale(${pose.facing}, 1)` }}
           onClick={
             interactive
               ? () => {
                   setPokes((count) => count + 1);
+                  energize("pet");
                   onPetTap?.();
                 }
               : undefined
           }
         >
-          <PetFigure kind={player.petKind} action={pose.action} sleepy={mood === "sleepy"} />
+          <rect x="-25" y="-50" width="50" height="56" fill="transparent" />
+          {!!activeObjects.pet && (
+            <text key={pokes} className="pet-love" x="-4" y="-50" fill="#f3a4b3" fontSize="18" aria-hidden="true">
+              ♥
+            </text>
+          )}
+          <PetFigure key={pokes} kind={player.petKind} action={pose.action} sleepy={mood === "sleepy"} />
         </g>
       </g>
     ),
@@ -364,7 +488,7 @@ export function RoomScene(props: RoomSceneProps) {
   drawables.sort((a, b) => a.depth - b.depth);
 
   const validSlotIds = new Set(
-    heldItem ? SLOTS.filter((slot) => heldItem.zones.includes(slot.zone) && heldItem.size <= slot.capacity).map((slot) => slot.id) : [],
+    heldItem ? SLOTS.filter((slot) => heldItem.zones.includes(slot.zone) && heldItem.size <= slot.capacity).map((slot) => slot.id) : []
   );
 
   return (
@@ -372,29 +496,43 @@ export function RoomScene(props: RoomSceneProps) {
       ref={svgRef}
       className={`room-scene room-${variant} phase-${lighting.phase}${animate ? " is-animated" : ""}`}
       viewBox={`${-FRAME} ${-FRAME} ${ROOM_WIDTH + FRAME * 2} ${ROOM_HEIGHT + FRAME * 2}`}
-      role="img"
+      role={interactive ? "group" : "img"}
       aria-label={`${player.name}'s flat with ${player.petName} the ${player.petKind}`}
     >
       <defs>
         <radialGradient id={`${idPrefix}-vignette`} cx="0.5" cy="0.45" r="0.75">
           <stop offset="0.45" stopColor="#0c0610" stopOpacity="0" />
-          <stop offset="1" stopColor="#0c0610" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#0c0610" stopOpacity="0.22" />
+        </radialGradient>
+        <radialGradient id={`${idPrefix}-ambient`} cx="0.48" cy="0.4" r="0.8">
+          <stop offset="0" stopColor="#ffdaa0" stopOpacity="0.18" />
+          <stop offset="0.55" stopColor="#ffdaa0" stopOpacity="0.12" />
+          <stop offset="1" stopColor="#ffdaa0" stopOpacity="0.025" />
+        </radialGradient>
+        <radialGradient id={`${idPrefix}-bulb-halo`}>
+          <stop offset="0" stopColor="#ffdaa0" stopOpacity="0.78" />
+          <stop offset="0.45" stopColor="#ffdaa0" stopOpacity="0.264" />
+          <stop offset="1" stopColor="#ffdaa0" stopOpacity="0" />
         </radialGradient>
         <linearGradient id={`${idPrefix}-beam`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffe2b0" stopOpacity="0.28" />
           <stop offset="1" stopColor="#ffe2b0" stopOpacity="0" />
         </linearGradient>
         <filter id={`${idPrefix}-soft`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="7" />
+          <feGaussianBlur stdDeviation="8" />
         </filter>
         <filter id={`${idPrefix}-lift`} x="-20%" y="-20%" width="140%" height="150%">
           <feDropShadow dx="1.2" dy="2.2" stdDeviation="1.1" floodColor="#0c0610" floodOpacity="0.4" />
         </filter>
       </defs>
 
-      <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
+      <g {...interaction("surfaces", "Play with the room", 0)} className={activeObjects.surfaces ? "surface-response" : undefined}>
+        <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
+      </g>
       <g className="room-openings">
-        <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
+        <g {...interaction("window", "Play with the window", 0)}>
+          <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
+        </g>
         {(lighting.phase === "day" || lighting.phase === "dawn") && (
           <g className="sunbeam" pointerEvents="none">
             <polygon
@@ -416,14 +554,46 @@ export function RoomScene(props: RoomSceneProps) {
 
       <rect x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT} fill="#120a1c" opacity={lighting.dim} className="night-dim" pointerEvents="none" />
       <rect x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT} fill={`url(#${idPrefix}-vignette)`} pointerEvents="none" />
+      <rect
+        className="ambient-light"
+        x="0"
+        y="0"
+        width={ROOM_WIDTH}
+        height={ROOM_HEIGHT}
+        fill={`url(#${idPrefix}-ambient)`}
+        opacity={(0.45 + lighting.glow * 0.4) * 1.1}
+        pointerEvents="none"
+      />
       <g className="glow-pass" pointerEvents="none" filter={`url(#${idPrefix}-soft)`}>
-        {ceilingCentreEmpty && <BareBulb glowPass glow={lighting.glow} />}
+        {ceilingCentreEmpty && (
+          <g
+            key={`bulb-glow-${activeObjects.bulb ?? 0}`}
+            style={motionStyle("bulb")}
+            className={animate && activeObjects.bulb ? "item-reaction reaction-flicker" : undefined}
+          >
+            <BareBulb glowPass glow={lighting.glow} glowFill={`url(#${idPrefix}-bulb-halo)`} />
+          </g>
+        )}
         {placed
           .filter(({ item }) => item.layers.some((layer) => layer.glow) && item.id !== editing?.hiddenItemId)
           .map(({ slot, item, placement, stage }) => (
-            <g key={`glow-${slot.id}`} transform={slotTransform(item, slot, placement.flip)}>
+            <g
+              key={`glow-${slot.id}`}
+              style={motionStyle(
+                item.id,
+                placed.findIndex((entry) => entry.item.id === item.id)
+              )}
+              transform={slotTransform(item, slot, placement.flip)}
+            >
               <g className={item.anim ? `anim anim-${item.anim}${slot.anchor === "top" ? "-top" : ""}` : undefined}>
-                <ItemArt item={item} paletteIndex={placement.palette} stage={stage} glowStrength={lighting.glow} pass="glow" />
+                <ItemArt
+                  item={item}
+                  paletteIndex={placement.palette}
+                  stage={stage}
+                  glowStrength={lighting.glow}
+                  pass="glow"
+                  reactionKey={animate ? activeObjects[item.id] : 0}
+                />
               </g>
             </g>
           ))}
@@ -444,7 +614,9 @@ export function RoomScene(props: RoomSceneProps) {
                 onClick={onSlotTap ? () => onSlotTap(slot.id) : undefined}
               >
                 <rect x={slot.x - width / 2} y={y} width={width} height={height} rx="10" />
-                <text x={slot.x} y={y + height / 2 + 4}>{occupied ? "swap" : "+"}</text>
+                <text x={slot.x} y={y + height / 2 + 4}>
+                  {occupied ? "swap" : "+"}
+                </text>
               </g>
             );
           })}

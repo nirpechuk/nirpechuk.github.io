@@ -628,3 +628,26 @@ td:first-child {
 .gate.loading form {
   visibility: hidden;
 }
+
+.flats-admin {
+  margin: 3rem 0;
+}
+.flats-admin small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+}
+.flats-deleted-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.flats-deleted-toggle input {
+  width: auto;
+}
+.flats-admin td:last-child {
+  min-width: 8rem;
+}
+.flats-admin td button {
+  margin: 0.2rem;
+}

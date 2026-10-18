@@ -112,7 +112,8 @@ export function usePetBehaviour(input: BehaviourInput): PetPose {
     };
 
     const celebrate = async (action: PetAction, milliseconds: number) => {
-      update({ action, moveMs: 0 });
+      // Keep an in-flight position transition smooth when a treat arrives mid-walk.
+      update({ action });
       await wait(milliseconds);
     };
 

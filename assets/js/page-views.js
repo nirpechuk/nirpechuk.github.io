@@ -125,5 +125,6 @@
   }
   history.cache = new Map();
   window.NirPageViews = { show, track, history, normalize, historyStart };
+  document.querySelectorAll("[data-page-track]").forEach(() => track());
   document.querySelectorAll("[data-page-views]").forEach((element) => show(element));
 })();

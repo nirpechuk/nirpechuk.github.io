@@ -109,7 +109,13 @@ test("admin and research passwords stay separate across publishing and report pa
     assert.match(await readFile(path.join(root, "research/index.html"), "utf8"), /data-payload="admin.json"/);
     await assert.rejects(rotatePassword(root, "research-secret", "next-research"), /admin password is required/);
     assert.equal((await readManifest(root, "research-secret")).pages.length, 1);
+    const enriched = await decrypt(JSON.parse(await readFile(adminFile, "utf8")), "admin-secret");
+    enriched.flats = { token: "fixture-admin-capability", url: "https://example.supabase.co" };
+    await writeFile(adminFile, JSON.stringify(await encrypt(enriched, "admin-secret")));
+    await configureAdmin(root, "research-secret", "admin-secret");
+    assert.deepEqual((await decrypt(JSON.parse(await readFile(adminFile, "utf8")), "admin-secret")).flats, enriched.flats);
     await rotatePassword(root, "research-secret", "next-research", "admin-secret");
+    assert.deepEqual((await decrypt(JSON.parse(await readFile(adminFile, "utf8")), "admin-secret")).flats, enriched.flats);
     assert.equal((await decrypt(JSON.parse(await readFile(adminFile, "utf8")), "admin-secret")).researchPassword, "next-research");
     assert.equal((await readManifest(root, "next-research")).pages.length, 1);
   } finally {

@@ -39,15 +39,7 @@ function Part({ layers, spec, keyPrefix }: { layers: Layer[]; spec: PetSpec; key
                 strokeLinecap="round"
               />
             )}
-            <path
-              d={path}
-              fill={fill}
-              stroke={stroke}
-              strokeWidth={layer.sw}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity={layer.o}
-            />
+            <path d={path} fill={fill} stroke={stroke} strokeWidth={layer.sw} strokeLinecap="round" strokeLinejoin="round" opacity={layer.o} />
           </g>
         );
       })}
@@ -95,6 +87,7 @@ function PetFigureInner({ kind, action, sleepy = false }: PetFigureProps) {
             <g className="pet-eyes-closed">
               <Part layers={parts.eyesClosed} spec={spec} keyPrefix="eyesClosed" />
             </g>
+            <circle className="pet-mouth" cx={pivots.head[0] + 6} cy={pivots.head[1] + 6} r="1" fill="transparent" pointerEvents="none" />
             <Part layers={parts.face} spec={spec} keyPrefix="face" />
             <g className="pet-happy-face">
               <Part layers={parts.happy} spec={spec} keyPrefix="happy" />
@@ -103,9 +96,15 @@ function PetFigureInner({ kind, action, sleepy = false }: PetFigureProps) {
         </g>
       </g>
       <g className="pet-zzz" transform={`translate(10 ${spec.top - 2})`}>
-        <text className="zzz zzz-1" x="0" y="0">z</text>
-        <text className="zzz zzz-2" x="6" y="-6">z</text>
-        <text className="zzz zzz-3" x="13" y="-13">Z</text>
+        <text className="zzz zzz-1" x="0" y="0">
+          z
+        </text>
+        <text className="zzz zzz-2" x="6" y="-6">
+          z
+        </text>
+        <text className="zzz zzz-3" x="13" y="-13">
+          Z
+        </text>
       </g>
       <g className="pet-crumbs">
         <circle cx="18" cy="-3" r="1" fill="#d9a066" />

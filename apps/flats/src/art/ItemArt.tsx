@@ -1,10 +1,11 @@
 /** Renders a catalogue item from its JSON layers in the shared illustrated style. */
 
 import type { CSSProperties } from "react";
-import { memo } from "react";
+import { memo, useId } from "react";
 
 import type { ItemDef, Layer, Palette } from "../game/types";
 import { layerCenter, layerPath } from "./paper";
+import { OBJECT_REACTIONS } from "./interactions";
 
 /** A soft contact shadow under every layer, giving furniture depth in the dim rooms. */
 const LAYER_SHADOW_OFFSET = "translate(0.5 0.9)";
@@ -34,12 +35,13 @@ interface LayerProps {
   seedKey: string;
   palette: Palette;
   glowStrength: number;
+  glowFill?: string;
 }
 
-function PaperLayer({ layer, seedKey, palette, glowStrength }: LayerProps) {
+function PaperLayer({ layer, seedKey, palette, glowStrength, glowFill }: LayerProps) {
   const path = layerPath(layer, seedKey);
   const isStrokeOnly = layer.t === "line" || layer.fill === "none" || (layer.t === "path" && !layer.fill);
-  const fill = isStrokeOnly ? "none" : resolveColor(layer.fill, palette) ?? palette.p;
+  const fill = isStrokeOnly ? "none" : (resolveColor(layer.fill, palette) ?? palette.p);
   const stroke = resolveColor(layer.stroke, palette);
   const strokeWidth = layer.sw ?? (stroke ? 1 : undefined);
   const baseOpacity = layer.o ?? 1;
@@ -51,8 +53,9 @@ function PaperLayer({ layer, seedKey, palette, glowStrength }: LayerProps) {
     rotation = `rotate(${layer.rot} ${pivotX} ${pivotY})`;
   }
 
+  const [glowX, glowY] = layerCenter(layer);
   const shape = (
-    <g transform={rotation}>
+    <g transform={rotation} opacity={layer.glow ? opacity : undefined}>
       {!layer.flat && !layer.glow && (
         <path
           d={path}
@@ -65,12 +68,13 @@ function PaperLayer({ layer, seedKey, palette, glowStrength }: LayerProps) {
       )}
       <path
         d={path}
-        fill={fill}
+        fill={layer.glow ? glowFill : fill}
+        transform={layer.glow ? `translate(${glowX} ${glowY}) scale(1.65) translate(${-glowX} ${-glowY})` : undefined}
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity={opacity}
+        opacity={layer.glow ? undefined : opacity}
         className={layer.glow ? "glow-layer" : undefined}
       />
     </g>
@@ -91,24 +95,57 @@ export interface ItemArtProps {
   /** 0..1, how strongly glow layers show (lamps glow warmer in the evening). */
   glowStrength?: number;
   pass?: ItemPass;
+  /** Changes on each tap, so a repeated tap starts the response again. */
+  reactionKey?: number;
 }
 
-function ItemArtInner({ item, paletteIndex, stage = 0, glowStrength = 0.6, pass = "all" }: ItemArtProps) {
+function ItemArtInner({ item, paletteIndex, stage = 0, glowStrength = 0.6, pass = "all", reactionKey = 0 }: ItemArtProps) {
   const palette = item.palettes[paletteIndex % item.palettes.length];
+  const glowId = useId();
   return (
     <>
+      {pass !== "body" && (
+        <defs>
+          {item.layers.map(
+            (layer, index) =>
+              layer.glow && (
+                <radialGradient key={index} id={`${glowId}-${index}`}>
+                  <stop offset="0" stopColor={resolveColor(layer.fill, palette) ?? palette.p} stopOpacity="0.78" />
+                  <stop offset="0.45" stopColor={resolveColor(layer.fill, palette) ?? palette.p} stopOpacity="0.336" />
+                  <stop offset="1" stopColor={resolveColor(layer.fill, palette) ?? palette.p} stopOpacity="0" />
+                </radialGradient>
+              )
+          )}
+        </defs>
+      )}
       {item.layers.map((layer, index) => {
         if (!visibleAtStage(layer, stage)) return null;
         if (pass === "body" && layer.glow) return null;
         if (pass === "glow" && !layer.glow) return null;
+        const reaction = reactionKey ? OBJECT_REACTIONS[item.id]?.find((part) => part.layers.includes(index)) : undefined;
         return (
-          <PaperLayer
-            key={index}
-            layer={layer}
-            seedKey={`${item.id}:${index}`}
-            palette={palette}
-            glowStrength={glowStrength}
-          />
+          <g
+            key={`${index}:${reaction ? reactionKey : 0}`}
+            className={reaction ? `item-reaction reaction-${reaction.effect}` : undefined}
+            data-layer={index}
+            style={
+              reaction
+                ? {
+                    transformBox: reaction.origin ? "view-box" : "fill-box",
+                    transformOrigin: reaction.origin ? `${reaction.origin[0]}px ${reaction.origin[1]}px` : "50% 100%",
+                    animationDelay: `${reaction.delay}s`,
+                  }
+                : undefined
+            }
+          >
+            <PaperLayer
+              layer={layer}
+              seedKey={`${item.id}:${index}`}
+              palette={palette}
+              glowStrength={glowStrength}
+              glowFill={`url(#${glowId}-${index})`}
+            />
+          </g>
         );
       })}
     </>
@@ -118,24 +155,13 @@ function ItemArtInner({ item, paletteIndex, stage = 0, glowStrength = 0.6, pass 
 export const ItemArt = memo(ItemArtInner);
 
 /** A standalone square SVG thumbnail of an item, for cards and the inventory. */
-export function ItemThumb({ item, paletteIndex = 0, stage = 2, size = 64 }: {
-  item: ItemDef;
-  paletteIndex?: number;
-  stage?: number;
-  size?: number;
-}) {
+export function ItemThumb({ item, paletteIndex = 0, stage = 2, size = 64 }: { item: ItemDef; paletteIndex?: number; stage?: number; size?: number }) {
   const padding = 6;
   const span = Math.max(item.w, item.h) + padding * 2;
   const offsetX = (span - item.w) / 2;
   const offsetY = (span - item.h) / 2;
   return (
-    <svg
-      className="item-thumb"
-      width={size}
-      height={size}
-      viewBox={`0 0 ${span} ${span}`}
-      aria-hidden="true"
-    >
+    <svg className="item-thumb" width={size} height={size} viewBox={`0 0 ${span} ${span}`} aria-hidden="true">
       <g transform={`translate(${offsetX} ${offsetY})`}>
         <ItemArt item={item} paletteIndex={paletteIndex} stage={stage} pass="body" />
       </g>

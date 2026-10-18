@@ -1,3 +1,4 @@
+import "../../../assets/js/page-views.js";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

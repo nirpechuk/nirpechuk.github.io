@@ -37,13 +37,13 @@
     }
   }
   let adminScript;
-  async function openConsole(pages) {
+  async function openConsole(pages, flatsConfig) {
     try {
       await updateViewCounts("index");
       if (!window.NirAdmin) {
         adminScript ||= new Promise((resolve, reject) => {
           const script = document.createElement("script");
-          script.src = "/assets/research/admin.js?v=2";
+          script.src = "/assets/research/admin.js?v=flats-1";
           script.onload = resolve;
           script.onerror = () => {
             adminScript = null;
@@ -53,7 +53,7 @@
         });
         await adminScript;
       }
-      if (!get("directory").hidden) window.NirAdmin.open(pages);
+      if (!get("directory").hidden) window.NirAdmin.open(pages, flatsConfig);
     } catch {
       get("traffic-status").textContent = "Traffic explorer couldn’t load. Reload this page to try again.";
     }
@@ -159,6 +159,7 @@
       }
       progress?.set(0.88, "Decrypting");
       let content = await decrypt(payload, password);
+      const flatsConfig = !isReport ? content.flats : null;
       if (!isReport) {
         if (content.kind !== "admin" || typeof content.researchPassword !== "string") throw new Error("load");
         const researchPassword = content.researchPassword;
@@ -197,7 +198,7 @@
         get("empty").hidden = content.pages.length > 0;
         get("directory").hidden = false;
         document.title = "Admin | Nir Pechuk";
-        openConsole(content.pages);
+        openConsole(content.pages, flatsConfig);
       } else if (content.kind === "page") {
         get("document-title").textContent = content.title;
         get("research-frame").title = content.title;

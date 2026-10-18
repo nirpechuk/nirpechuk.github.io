@@ -1,4 +1,4 @@
-/** The storage contract the UI talks to. Implementations: LocalBackend (device-only) and, later, Supabase. */
+/** The storage contract the UI talks to. Implementations: LocalBackend (device-only) and SupabaseBackend (shared rooms). */
 
 import type { GroupSnapshot, Layout, PetKind, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
 
@@ -26,6 +26,9 @@ export interface Backend {
   /** "local" keeps everything in this browser; "online" shares groups across devices. */
   readonly mode: "local" | "online";
   currentSession(): Session | null;
+  initialize?(): Promise<Session | null>;
+  roomKey?(session: Session): string;
+  restorePlayer?(key: string): Promise<Session>;
   createPlayer(input: NewPlayerInput): Promise<Session>;
   /** Name of the group with this invite code, or null if there is none. */
   groupName(groupCode: string): Promise<string | null>;
@@ -43,3 +46,5 @@ export interface Backend {
 }
 
 export class GameRuleError extends Error {}
+
+export class SessionUnavailableError extends GameRuleError {}

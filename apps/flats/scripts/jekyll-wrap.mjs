@@ -9,7 +9,7 @@ const frontMatter = [
   "layout: null",
   "title: flats",
   "permalink: /flats/",
-  "nav: true",
+  "nav: false",
   "nav_order: 5",
   "sitemap: false",
   "---",

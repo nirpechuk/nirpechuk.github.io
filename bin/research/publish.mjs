@@ -96,7 +96,9 @@ export async function configureAdmin(root, researchPassword, adminPassword) {
   await readManifest(root, researchPassword);
   if (!adminPassword) throw new Error("An admin password is required.");
   await mkdir(path.join(root, "research"), { recursive: true });
-  await writeEnvelope(path.join(root, "research/admin.json"), { kind: "admin", researchPassword }, adminPassword);
+  const adminFile = path.join(root, "research/admin.json");
+  const previous = (await exists(adminFile)) ? await decrypt(JSON.parse(await readFile(adminFile, "utf8")), adminPassword) : {};
+  await writeEnvelope(adminFile, { ...previous, kind: "admin", researchPassword }, adminPassword);
   return ["research/admin.json"];
 }
 
@@ -111,10 +113,7 @@ export async function rotatePassword(root, oldPassword, newPassword, adminPasswo
     const admin = await decrypt(JSON.parse(await readFile(adminFile, "utf8")), adminPassword);
     if (admin.kind !== "admin" || admin.researchPassword !== oldPassword)
       throw new Error("Admin report access does not match the current research password.");
-    changes.push([
-      "research/admin.json",
-      JSON.stringify(await encrypt({ kind: "admin", researchPassword: newPassword }, adminPassword), null, 2) + "\n",
-    ]);
+    changes.push(["research/admin.json", JSON.stringify(await encrypt({ ...admin, researchPassword: newPassword }, adminPassword), null, 2) + "\n"]);
   }
   // Validate and re-encrypt every payload in memory before changing any file.
   for (const page of manifest.pages) {

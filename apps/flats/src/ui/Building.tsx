@@ -5,7 +5,7 @@
  */
 
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
@@ -75,6 +75,8 @@ function FlatWindow({
   isOpen: boolean;
   onOpen: (fromRect: DOMRect, glow: number) => void;
 }) {
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
   const [opening, setOpening] = useState(false);
   const weekCount = workoutsInWeekOf(player, day);
   const glow = windowGlow(weekCount);
@@ -95,7 +97,10 @@ function FlatWindow({
           const room = event.currentTarget.querySelector(".window-glass .room-scene");
           if (!room) throw new Error("Window room element missing.");
           setOpening(true);
-          window.setTimeout(() => onOpen(room.getBoundingClientRect(), glow), reducedMotion ? 0 : PANE_OPEN_MS + PAUSE_BEFORE_ZOOM_MS);
+          timer.current = window.setTimeout(
+            () => onOpen(room.getBoundingClientRect(), glow),
+            reducedMotion ? 0 : PANE_OPEN_MS + PAUSE_BEFORE_ZOOM_MS
+          );
         }}
       >
         <div className="window-glass">
@@ -149,79 +154,181 @@ function Curtained() {
 }
 
 export function Building({ snapshot, meId, day, lighting, reducedMotion, openPlayerId, onOpenFlat, onInvite }: BuildingProps) {
-  const slots: WindowSlot[] = [
-    ...snapshot.players.map((player) => ({ kind: "flat" as const, player })),
-    { kind: "vacancy" as const },
-  ];
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const buildingRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [streetHeight, setStreetHeight] = useState(700);
+  useLayoutEffect(() => {
+    const scene = sceneRef.current;
+    const building = buildingRef.current;
+    if (!scene || !building) return;
+    const fit = () => {
+      const nextScale = Math.min(1.15, (scene.clientWidth - 72) / 434, (scene.clientHeight - 180) / building.offsetHeight);
+      setScale(nextScale);
+      setStreetHeight(building.offsetHeight * nextScale);
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(scene);
+    observer.observe(building);
+    fit();
+    return () => observer.disconnect();
+  }, []);
+  const slots: WindowSlot[] = [...snapshot.players.map((player) => ({ kind: "flat" as const, player })), { kind: "vacancy" as const }];
   if (slots.length % FLATS_PER_FLOOR !== 0) slots.push({ kind: "curtained" });
   const floors: WindowSlot[][] = [];
   for (let index = 0; index < slots.length; index += FLATS_PER_FLOOR) floors.push(slots.slice(index, index + FLATS_PER_FLOOR));
 
   return (
     <main className={`building-screen phase-${lighting.phase}`}>
-
-      <div className="street-scene">
+      <div
+        className="street-scene"
+        ref={sceneRef}
+        style={
+          {
+            "--neighbour-height": `${streetHeight}px`,
+            "--building-left": `${190 * scale + 16}px`,
+            "--building-right": `${244 * scale - 16}px`,
+          } as CSSProperties
+        }
+      >
         <div className="sky-layer" aria-hidden="true">
           <span className="sky-cloud cloud-a" />
           <span className="sky-cloud cloud-b" />
           <span className="sky-cloud cloud-c" />
           <span className="sky-orb" />
         </div>
-        <div className="building">
-          <span className="building-side" aria-hidden="true" />
-          <div className="roof" aria-hidden="true">
-            <div className="roof-garden">
-              <span className="roof-plant plant-a" />
-              <span className="roof-plant plant-b" />
-              <span className="roof-plant plant-c" />
-              <span className="water-tower" />
-              <span className="chimney">
-                <span className="smoke smoke-1" />
-                <span className="smoke smoke-2" />
-              </span>
-            </div>
-            <div className="roof-sign">Flats</div>
-          </div>
-          <div className="facade">
-            {[...floors].reverse().map((floor, reversedIndex) => (
-              <div className="floor" key={floors.length - reversedIndex}>
-                {floor.map((slot, index) => {
-                  if (slot.kind === "vacancy") return <Vacancy key="vacancy" onInvite={onInvite} />;
-                  if (slot.kind === "curtained") return <Curtained key={`curtained-${index}`} />;
-                  return (
-                    <FlatWindow
-                      key={slot.player.id}
-                      player={slot.player}
-                      isMe={slot.player.id === meId}
-                      day={day}
-                      lighting={lighting}
-                      reducedMotion={reducedMotion}
-                      isOpen={openPlayerId === slot.player.id}
-                      onOpen={(rect, glow) => onOpenFlat(slot.player.id, rect, glow)}
-                    />
-                  );
-                })}
-                <span className="floor-ledge" aria-hidden="true" />
+        <div className="neighbourhood" aria-hidden="true">
+          <div className="townhouses">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className={`townhouse townhouse-${i}`}>
+                <div className="townhouse-roof">
+                  <span className="little-chimney" />
+                </div>
+                <div className="neighbour-facade">
+                  <div className="neighbour-windows">
+                    {Array.from({ length: i === 1 ? 8 : 6 }, (_, n) => (
+                      <span key={n} className={`neighbour-window window-${n % 4}`}>
+                        <i />
+                      </span>
+                    ))}
+                  </div>
+                  <div className="neighbour-door">
+                    <span />
+                  </div>
+                  <div className="neighbour-stoop" />
+                  <span className="neighbour-planter" />
+                </div>
+                <span className="neighbour-side" />
               </div>
             ))}
-            <div className="lobby">
-              <div className="awning" aria-hidden="true" />
-              <div className="front-door" aria-hidden="true">
-                <span className="door-window" />
-                <span className="door-knob" />
+          </div>
+          <div className="neighbour-apartments">
+            {[0, 1].map((i) => (
+              <div key={i} className={`neighbour-apartment apartment-${i}`}>
+                <span className="apartment-cornice" />
+                <span className="little-chimney" />
+                <div className="neighbour-facade">
+                  <div className="neighbour-windows">
+                    {Array.from({ length: i ? 9 : 12 }, (_, n) => (
+                      <span key={n} className={`neighbour-window window-${n % 4}`}>
+                        <i />
+                      </span>
+                    ))}
+                  </div>
+                  <div className="neighbour-door">
+                    <span />
+                  </div>
+                  <span className="neighbour-planter" />
+                </div>
+                <span className="neighbour-side" />
               </div>
-              <div className="mailbox" aria-hidden="true">
-                <span>{snapshot.group.code}</span>
+            ))}
+          </div>
+        </div>
+        <div className="street-ground" aria-hidden="true" />
+        <svg className="street-details" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <g fill="#172b2c">
+            <path d="M50 190L78 23 111 190Z M1120 190L1165 3 1210 190Z" />
+            <path d="M218 190L248 53 280 190Z M1280 190L1316 30 1358 190Z" />
+          </g>
+          <g stroke="#564440" strokeWidth="7" fill="none">
+            <path d="M335 160V210 M475 160V210 M325 168H485 M325 181H485 M330 147H480" />
+            <path d="M1010 184h65m-52-28 24 28 20-39m-18 0h27" />
+          </g>
+          <g fill="none" stroke="#9c8a78" strokeWidth="3">
+            <circle cx="1012" cy="188" r="24" />
+            <circle cx="1084" cy="188" r="24" />
+            <path d="M1012 188l21-32 19 32h-40l48-34 24 34m-24-34-6-17h13" />
+          </g>
+          <g fill="#c19c74">
+            <ellipse cx="300" cy="211" rx="4" ry="2" />
+            <ellipse cx="932" cy="214" rx="5" ry="2" />
+            <ellipse cx="1142" cy="226" rx="3" ry="2" />
+          </g>
+          <g stroke="#59484c" strokeWidth="5" fill="none">
+            <path d="M178 210V62q0-12 12-12h18 M1244 210V62q0-12-12-12h-18" />
+          </g>
+          <g fill="#ffda96">
+            <path d="M198 48h20l-4 18h-12Z M1204 48h20l-4 18h-12Z" />
+          </g>
+          <g fill="#ffda96" opacity=".06">
+            <ellipse cx="208" cy="165" rx="60" ry="80" />
+            <ellipse cx="1214" cy="165" rx="60" ry="80" />
+          </g>
+        </svg>
+        <div className="building-anchor">
+          <div className="building" ref={buildingRef} style={{ "--building-scale": scale } as CSSProperties}>
+            <span className="building-side" aria-hidden="true" />
+            <div className="roof" aria-hidden="true">
+              <div className="roof-garden">
+                <span className="roof-plant plant-a" />
+                <span className="roof-plant plant-b" />
+                <span className="roof-plant plant-c" />
+                <span className="water-tower" />
+                <span className="chimney">
+                  <span className="smoke smoke-1" />
+                  <span className="smoke smoke-2" />
+                </span>
               </div>
-              <span className="lobby-plant" aria-hidden="true" />
+              <div className="roof-sign">Flats</div>
+            </div>
+            <div className="facade">
+              {[...floors].reverse().map((floor, reversedIndex) => (
+                <div className="floor" key={floors.length - reversedIndex}>
+                  {floor.map((slot, index) => {
+                    if (slot.kind === "vacancy") return <Vacancy key="vacancy" onInvite={onInvite} />;
+                    if (slot.kind === "curtained") return <Curtained key={`curtained-${index}`} />;
+                    return (
+                      <FlatWindow
+                        key={slot.player.id}
+                        player={slot.player}
+                        isMe={slot.player.id === meId}
+                        day={day}
+                        lighting={lighting}
+                        reducedMotion={reducedMotion}
+                        isOpen={openPlayerId === slot.player.id}
+                        onOpen={(rect, glow) => onOpenFlat(slot.player.id, rect, glow)}
+                      />
+                    );
+                  })}
+                  <span className="floor-ledge" aria-hidden="true" />
+                </div>
+              ))}
+              <div className="lobby">
+                <div className="awning" aria-hidden="true" />
+                <div className="front-door" aria-hidden="true">
+                  <span className="door-window" />
+                  <span className="door-knob" />
+                </div>
+                <div className="mailbox" aria-hidden="true">
+                  <span>{snapshot.group.code}</span>
+                </div>
+                <span className="lobby-plant" aria-hidden="true" />
+              </div>
             </div>
           </div>
-          <div className="sidewalk" aria-hidden="true">
-            <span className="street-tree" />
-            <span className="street-lamp" />
-          </div>
-          <div className="road" aria-hidden="true" />
         </div>
+        <p className="building-hint">Pick a window. Come on in.</p>
       </div>
     </main>
   );

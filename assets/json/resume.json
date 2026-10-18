@@ -23,12 +23,7 @@
       "studyType": "B.S.",
       "area": "Computer Science",
       "score": "4.0/4.0",
-      "courses": [
-        "10-703 Deep Reinforcement Learning",
-        "07-280 AI & ML I",
-        "16-385 Computer Vision",
-        "15-259 Probability and Computing"
-      ]
+      "courses": ["10-703 Deep Reinforcement Learning", "07-280 AI & ML I", "16-385 Computer Vision", "15-259 Probability and Computing"]
     }
   ],
   "work": [

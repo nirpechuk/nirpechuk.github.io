@@ -7,7 +7,7 @@ import { petSpec } from "./art/pets";
 import { createBackend } from "./backend";
 import { normalizeGroupCode } from "./backend/local";
 import type { NewPlayerInput, Session } from "./backend/types";
-import { GameRuleError } from "./backend/types";
+import { GameRuleError, SessionUnavailableError } from "./backend/types";
 import { addDays, today, weekStart } from "./game/dates";
 import type { Present, WeekRecap } from "./game/progression";
 import { nextPresent, petMood, weekRecap } from "./game/progression";
@@ -23,8 +23,6 @@ import { playChime } from "./ui/sound";
 import { UnpackModal } from "./ui/UnpackModal";
 import { Visit } from "./ui/Visit";
 
-type Tab = "home" | "building";
-
 function joinCodeFromUrl(): string | null {
   const code = new URLSearchParams(window.location.search).get("join");
   return code ? normalizeGroupCode(code) : null;
@@ -39,8 +37,12 @@ function clearJoinCodeFromUrl(): void {
 export function App() {
   const backend = useMemo(() => createBackend(), []);
   const [session, setSession] = useState<Session | null>(() => backend.currentSession());
+  const [ready, setReady] = useState(false);
+  const [startupAttempt, setStartupAttempt] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const refreshVersion = useRef(0);
+  const syncFailed = useRef(false);
   const [snapshot, setSnapshot] = useState<GroupSnapshot | null>(null);
-  const [tab, setTab] = useState<Tab>("home");
   const [visit, setVisit] = useState<{ playerId: string; fromRect: DOMRect | null; glow: number } | null>(null);
   const [unpackPresent, setUnpackPresent] = useState<Present | null>(null);
   const [placeRequest, setPlaceRequest] = useState<string | null>(null);
@@ -66,9 +68,14 @@ export function App() {
 
   const refresh = useCallback(
     async (activeSession: Session) => {
-      setSnapshot(await backend.fetchGroup(activeSession));
+      const version = ++refreshVersion.current;
+      const next = await backend.fetchGroup(activeSession);
+      if (version === refreshVersion.current && backend.currentSession()?.playerId === activeSession.playerId) {
+        setSnapshot(next);
+        setLoadError(null);
+      }
     },
-    [backend],
+    [backend]
   );
 
   const run = useCallback(
@@ -76,6 +83,14 @@ export function App() {
       try {
         return await action();
       } catch (error) {
+        if (error instanceof SessionUnavailableError) {
+          backend.signOut();
+          setSession(null);
+          setSnapshot(null);
+          setVisit(null);
+          setSheet(null);
+          setUnpackPresent(null);
+        }
         if (error instanceof GameRuleError) {
           toast(error.message, "·");
           return undefined;
@@ -85,24 +100,85 @@ export function App() {
         return undefined;
       }
     },
-    [toast],
+    [backend, toast]
   );
 
   useEffect(() => {
-    if (session) void run(() => refresh(session));
-  }, [session, refresh, run]);
+    let cancelled = false;
+    setLoadError(null);
+    Promise.resolve(backend.initialize ? backend.initialize() : backend.currentSession())
+      .then((active) => {
+        if (!cancelled) {
+          setSession(active);
+          setReady(true);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) setLoadError(error.message);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [backend, startupAttempt]);
+
+  useEffect(() => {
+    if (!ready || !session) return;
+    let stopped = false;
+    let fetching = false;
+    const sync = async () => {
+      if (stopped || fetching) return;
+      fetching = true;
+      try {
+        await refresh(session);
+        syncFailed.current = false;
+      } catch (error) {
+        if (!stopped) {
+          setLoadError(error instanceof Error ? error.message : "Couldn't reach your building.");
+          if (!syncFailed.current || error instanceof SessionUnavailableError)
+            await run(async () => {
+              throw error;
+            });
+          syncFailed.current = true;
+        }
+      } finally {
+        fetching = false;
+      }
+    };
+    void sync();
+    const visibleSync = () => {
+      if (!document.hidden) void sync();
+    };
+    const interval = backend.mode === "online" ? window.setInterval(visibleSync, 8000) : undefined;
+    window.addEventListener("focus", visibleSync);
+    window.addEventListener("online", visibleSync);
+    document.addEventListener("visibilitychange", visibleSync);
+    return () => {
+      stopped = true;
+      ++refreshVersion.current;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", visibleSync);
+      window.removeEventListener("online", visibleSync);
+      document.removeEventListener("visibilitychange", visibleSync);
+    };
+  }, [backend, ready, session, refresh, run]);
 
   useEffect(() => {
     if (!joinCode) return;
-    void backend.groupName(joinCode).then((name) => {
+    let cancelled = false;
+    void run(async () => {
+      const name = await backend.groupName(joinCode);
+      if (cancelled) return;
       if (name) setJoinGroupName(name);
       else {
-        toast("That invite is for the online building, which opens soon. Start your own for now.", "·");
+        toast("That invite code doesn't match a building.", "·");
         setJoinCode(null);
         clearJoinCodeFromUrl();
       }
     });
-  }, [backend, joinCode, toast]);
+    return () => {
+      cancelled = true;
+    };
+  }, [backend, joinCode, toast, run]);
 
   const me = snapshot?.players.find((player) => player.id === session?.playerId) ?? null;
 
@@ -120,7 +196,7 @@ export function App() {
       const from = names.get(reaction.from) ?? "A neighbour";
       if (reaction.kind === "heart") toast(`${from} left you a heart`, "♥");
       if (reaction.kind === "sticker") toast(`${from} left a star on your door`, "✦");
-      if (reaction.kind === "treat") toast(`${from} sent ${me.petName} a ${treat.name}`, "❖");
+      if (reaction.kind === "treat") toast(`${from} sent ${me.petName} a ${treat.name}`, "🍬");
     }
     if (fresh.some((reaction) => reaction.kind === "treat")) window.setTimeout(() => setTreatKey((count) => count + 1), 900);
   }, [snapshot, me, toast]);
@@ -136,64 +212,75 @@ export function App() {
     else writeValue(recapKey, thisWeek);
   }, [snapshot, me, day]);
 
-  if (!session || !snapshot || !me) {
-    if (session && !snapshot) return <div className="loading">Unfolding your flat…</div>;
+  if (!ready || (session && !snapshot))
     return (
-      <Onboarding
-        joinCode={joinGroupName ? joinCode : null}
-        joinGroupName={joinGroupName}
-        profiles={backend.localProfiles()}
-        onSwitchProfile={(playerId) => setSession(backend.switchProfile(playerId))}
-        onDone={async (input: NewPlayerInput) => {
-          const created = await run(() => backend.createPlayer(input));
-          if (!created) return;
-          clearJoinCodeFromUrl();
-          setJoinCode(null);
-          setTab("home");
-          setSession(created);
-        }}
-      />
+      <div className="loading">
+        {loadError ? (
+          <>
+            <p>{loadError}</p>
+            <button
+              className="chip"
+              onClick={() => {
+                setReady(false);
+                setStartupAttempt((n) => n + 1);
+              }}
+            >
+              Try again
+            </button>
+          </>
+        ) : (
+          "Unfolding your flat…"
+        )}
+      </div>
+    );
+  if (!session || !snapshot || !me) {
+    return (
+      <>
+        <Onboarding
+          joinCode={joinGroupName ? joinCode : null}
+          joinGroupName={joinGroupName}
+          profiles={backend.localProfiles()}
+          onRestore={
+            backend.restorePlayer
+              ? async (key) => {
+                  const restored = await run(() => backend.restorePlayer!(key));
+                  if (restored) {
+                    setSnapshot(null);
+                    setSession(restored);
+                  }
+                }
+              : undefined
+          }
+          onSwitchProfile={(playerId) => setSession(backend.switchProfile(playerId))}
+          onDone={async (input: NewPlayerInput) => {
+            const created = await run(() => backend.createPlayer(input));
+            if (!created) return;
+            clearJoinCodeFromUrl();
+            setJoinCode(null);
+            setSession(created);
+          }}
+        />
+        <Toasts toasts={toasts} onDismiss={(id) => setToasts((current) => current.filter((t) => t.id !== id))} />
+      </>
     );
   }
 
   const mood = petMood(me, day);
   const byId = new Map(snapshot.players.map((player) => [player.id, player]));
-  const visitedPlayer = visit ? byId.get(visit.playerId) ?? null : null;
+  const visitedPlayer = visit ? (byId.get(visit.playerId) ?? null) : null;
 
   const log = async () => {
     const updated = await run(() => backend.logWorkout(session, day));
     if (!updated) return;
-    await refresh(session);
+    await run(() => refresh(session));
     playChime();
     setConfettiKey((count) => count + 1);
     setCelebrateKey((count) => count + 1);
   };
 
   return (
-    <div className={`app tab-${tab}${reducedMotion ? " reduced-motion" : ""}`}>
-
-      {tab === "home" ? (
-        <Home
-          me={me}
-          day={day}
-          lighting={lighting}
-          mood={mood}
-          reducedMotion={reducedMotion}
-          celebrateKey={celebrateKey}
-          treatKey={treatKey}
-          placeRequest={placeRequest}
-          onPlaceRequestHandled={() => setPlaceRequest(null)}
-          onLog={log}
-          onSetType={async (type: WorkoutType) => {
-            if (await run(() => backend.setWorkoutType(session, day, type))) await refresh(session);
-          }}
-          onSaveLayout={async (layout: Layout) => {
-            if (await run(() => backend.saveLayout(session, layout))) await refresh(session);
-          }}
-          onOpenPresent={() => setUnpackPresent(nextPresent(me))}
-          onOpenSettings={() => setSheet("settings")}
-        />
-      ) : (
+    <div className={`app tab-building${reducedMotion ? " reduced-motion" : ""}`}>
+      <div className="building-camera" inert={visit ? true : undefined}>
         <Building
           snapshot={snapshot}
           meId={me.id}
@@ -204,16 +291,7 @@ export function App() {
           onOpenFlat={(playerId, fromRect, glow) => setVisit({ playerId, fromRect, glow })}
           onInvite={() => setSheet("invite")}
         />
-      )}
-
-      <nav className="tab-bar" aria-label="Sections">
-        <button type="button" className={tab === "home" ? "is-active" : ""} onClick={() => setTab("home")}>
-          My flat
-        </button>
-        <button type="button" className={tab === "building" ? "is-active" : ""} onClick={() => setTab("building")}>
-          Building
-        </button>
-      </nav>
+      </div>
 
       {visit && visitedPlayer && (
         <Visit
@@ -225,18 +303,40 @@ export function App() {
           reducedMotion={reducedMotion}
           reactions={snapshot.reactions}
           fromRect={visit.fromRect}
-          fromGlow={visit.glow}
           onReact={async (kind: ReactionKind, variant?: number) => {
             const sent = await run(() => backend.react(session, visitedPlayer.id, kind, day, variant));
             if (!sent) return false;
-            await refresh(session);
+            await run(() => refresh(session));
             return true;
           }}
           onClose={() => setVisit(null)}
-          onGoHome={() => {
-            setVisit(null);
-            setTab("home");
-          }}
+          ownFlat={
+            visitedPlayer.id === me.id
+              ? (onBack) => (
+                  <Home
+                    onBack={onBack}
+                    me={me}
+                    day={day}
+                    lighting={lighting}
+                    mood={mood}
+                    reducedMotion={reducedMotion}
+                    celebrateKey={celebrateKey}
+                    treatKey={treatKey}
+                    placeRequest={placeRequest}
+                    onPlaceRequestHandled={() => setPlaceRequest(null)}
+                    onLog={log}
+                    onSetType={async (type: WorkoutType) => {
+                      if (await run(() => backend.setWorkoutType(session, day, type))) await run(() => refresh(session));
+                    }}
+                    onSaveLayout={async (layout: Layout) => {
+                      if (await run(() => backend.saveLayout(session, layout))) await run(() => refresh(session));
+                    }}
+                    onOpenPresent={() => setUnpackPresent(nextPresent(me))}
+                    onOpenSettings={() => setSheet("settings")}
+                  />
+                )
+              : undefined
+          }
         />
       )}
 
@@ -249,11 +349,10 @@ export function App() {
           onPick={async (entryId) => {
             const updated = await run(() => backend.unpack(session, entryId, day));
             if (!updated) throw new Error("Unpacking failed.");
-            await refresh(session);
+            await run(() => refresh(session));
           }}
           onPlaceNow={(entryId) => {
             setUnpackPresent(null);
-            setTab("home");
             setPlaceRequest(entryId);
           }}
           onClose={() => setUnpackPresent(null)}
@@ -263,10 +362,12 @@ export function App() {
       {sheet === "settings" && (
         <SettingsSheet
           me={me}
+          roomKey={backend.roomKey?.(session)}
           profiles={backend.localProfiles()}
           hasDemoNeighbours={snapshot.players.some((player) => player.demo)}
           onSwitchProfile={(playerId) => {
             setSheet(null);
+            setVisit(null);
             setSnapshot(null);
             setSession(backend.switchProfile(playerId));
           }}
@@ -274,6 +375,7 @@ export function App() {
             setSheet(null);
             setJoinCode(session.groupCode);
             setJoinGroupName(snapshot.group.name);
+            setVisit(null);
             backend.signOut();
             setSnapshot(null);
             setSession(null);
@@ -282,7 +384,7 @@ export function App() {
             setSheet(null);
             await run(async () => {
               await backend.removeDemoNeighbours?.(session);
-              await refresh(session);
+              await run(() => refresh(session));
             });
             toast("The demo neighbours moved out", "·");
           }}
