@@ -40,10 +40,13 @@ render time. It also exports the street and a fixed, deterministic grain texture
 Raw exports remain untouched. The runtime never accepts player-supplied markup.
 
 Rooms use the kit's tall 390×600 proportion, expressed as 360×554 scene units.
-The scene layers architecture and objects, cool multiply tint, a shared darkness
-mask with holes at actual emitters, warm screen-blended light, treatment-specific
-moonlight and mullions, vignette, then cached grain. Light coordinates follow the
-same projection, scale and flip as their objects. Source patterns include dapple,
+The scene layers architecture, rugs, treatment-specific moonlight, furniture and
+pets, then cool multiply tint, a shared darkness mask with holes at actual emitters,
+warm screen-blended light, vignette and cached grain. Floor moonlight now fades to
+zero at Homey, following the product review; the moon stays visible in the window.
+The floor patch is drawn above rugs but below solid furnishings and pets, and its
+mullion shadows subtract light instead of painting a dark cross over the scene.
+Light coordinates follow the same projection, scale and flip as their objects. Source patterns include dapple,
 stars, stripes, cones and candle flicker. Reduced motion disables ambient animation
 and camera travel. Miniature street rooms don't run pet movement timers.
 

@@ -28,6 +28,7 @@ import {
 } from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
 import { today } from "../game/dates";
+import { Moonlight } from "./brownstone/Moonlight";
 import { BrownstoneLight } from "./brownstone/RoomLight";
 import { placedLight, roomAtmosphere, type RoomLight } from "./brownstone/lightModel";
 import { KitArt } from "./brownstone/KitArt";
@@ -573,6 +574,20 @@ export function RoomScene(props: RoomSceneProps) {
       </g>
     ),
   });
+  // Floor light falls on the rug but stays behind solid furniture and the pet.
+  drawables.push({
+    depth: 51,
+    key: "moonlight",
+    node: (
+      <Moonlight
+        key="moonlight"
+        id={idPrefix}
+        player={player}
+        moonShape={placed.find(({ slot }) => slot.zone === "window")?.item.moonShape ?? "bare"}
+        hasSillPlant={placed.some(({ slot, item }) => slot.zone === "sill" && item.category === "plants")}
+      />
+    ),
+  });
   drawables.sort((a, b) => a.depth - b.depth);
 
   const validSlotIds = new Set(
@@ -648,8 +663,6 @@ export function RoomScene(props: RoomSceneProps) {
         id={idPrefix}
         player={player}
         lights={lights}
-        moonShape={placed.find(({ slot }) => slot.zone === "window")?.item.moonShape ?? "bare"}
-        hasSillPlant={placed.some(({ slot, item }) => slot.zone === "sill" && item.category === "plants")}
         freshItemId={freshItemId}
         celebrateKey={celebrateKey}
         editing={Boolean(editing)}

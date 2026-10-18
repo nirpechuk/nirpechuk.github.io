@@ -1,15 +1,13 @@
-import type { MoonShape, Player } from "../../game/types";
-import { BACK_WALL, ROOM_HEIGHT, ROOM_WIDTH, WINDOW_FRAME, windowOffsetFor } from "../../game/room";
+import type { Player } from "../../game/types";
+import { ROOM_HEIGHT, ROOM_WIDTH, WINDOW_FRAME, windowOffsetFor } from "../../game/room";
 import { today } from "../../game/dates";
 import { lightColor, roomAtmosphere, type RoomLight } from "./lightModel";
 
-/** A single darkness mask, real emitters, shaped moonlight, then a quiet vignette. */
+/** A single darkness mask, real emitters, then a quiet vignette. */
 export function BrownstoneLight({
   id,
   player,
   lights,
-  moonShape,
-  hasSillPlant,
   freshItemId,
   celebrateKey,
   editing,
@@ -18,8 +16,6 @@ export function BrownstoneLight({
   id: string;
   player: Player;
   lights: RoomLight[];
-  moonShape: MoonShape;
-  hasSillPlant: boolean;
   freshItemId?: string | null;
   celebrateKey: number;
   editing: boolean;
@@ -28,11 +24,7 @@ export function BrownstoneLight({
   const atmosphere = roomAtmosphere(player, today());
   const cx = WINDOW_FRAME.cx + windowOffsetFor(player.id);
   const visible = lights.slice(0, 12);
-  const half = moonShape === "curtains" ? 20 : 35;
-  const nearY = BACK_WALL.bottom + 12;
-  const farY = moonShape === "blind" ? 436 : 497;
   const shift = (180 - cx) * 0.5;
-  const patch = `${cx - half},${nearY} ${cx + half},${nearY} ${cx + shift + half * 1.7},${farY} ${cx + shift - half * 1.7},${farY}`;
   return (
     <g pointerEvents="none" className="brownstone-light">
       <defs>
@@ -45,17 +37,10 @@ export function BrownstoneLight({
           <stop offset=".5" stopColor="#080504" stopOpacity="0" />
           <stop offset="1" stopColor="#080504" stopOpacity=".7" />
         </radialGradient>
-        <linearGradient id={`${id}-moon`} x1="0" y1="0" x2="0" y2="1">
-          <stop stopColor="#c0d0f3" stopOpacity=".25" />
-          <stop offset="1" stopColor="#9fb6e8" stopOpacity=".11" />
-        </linearGradient>
-        <clipPath id={`${id}-moon-clip`}>
-          <polygon points={patch} />
-        </clipPath>
         <mask id={`${id}-dark`} maskUnits="userSpaceOnUse" x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT}>
           <rect width={ROOM_WIDTH} height={ROOM_HEIGHT} fill="white" />
           <ellipse cx={cx} cy={244} rx="60" ry="100" fill={`url(#${id}-hole)`} opacity=".85" />
-          <ellipse cx={cx + shift / 2} cy="426" rx="72" ry="90" fill={`url(#${id}-hole)`} opacity=".45" />
+          <ellipse cx={cx + shift / 2} cy="426" rx="72" ry="90" fill={`url(#${id}-hole)`} opacity={0.45 * atmosphere.moonlight} />
           {visible.map((light) => (
             <circle key={light.id} cx={light.x} cy={light.y} r={light.radius} fill={`url(#${id}-hole)`} opacity={light.strength} />
           ))}
@@ -110,41 +95,6 @@ export function BrownstoneLight({
             </g>
           </g>
         ))}
-      </g>
-      <polygon
-        points={`${cx - 32},${WINDOW_FRAME.top + WINDOW_FRAME.height} ${cx + 32},${WINDOW_FRAME.top + WINDOW_FRAME.height} ${cx + shift + half * 1.7},${farY} ${cx + shift - half * 1.7},${farY}`}
-        fill={`url(#${id}-moon)`}
-        opacity=".18"
-      />
-      <g clipPath={`url(#${id}-moon-clip)`}>
-        <polygon points={patch} fill={`url(#${id}-moon)`} />
-        <path
-          d={`M${cx} ${nearY}L${cx + shift} ${farY}M${cx - 65} ${nearY + (farY - nearY) * 0.47}h160`}
-          stroke="#1b2337"
-          strokeWidth="4"
-          opacity=".75"
-        />
-        {moonShape === "shutters" &&
-          Array.from({ length: 12 }, (_, i) => (
-            <path key={i} d={`M${cx - 70} ${nearY + i * 10}h180`} stroke="#18202c" strokeWidth="5" opacity=".85" />
-          ))}
-        {moonShape === "lace" &&
-          Array.from({ length: 20 }, (_, i) => (
-            <circle key={i} cx={cx - 35 + (i % 5) * 17} cy={nearY + 15 + Math.floor(i / 5) * 22} r="3" fill="#23304a" opacity=".5" />
-          ))}
-        {hasSillPlant &&
-          Array.from({ length: 5 }, (_, i) => (
-            <ellipse
-              key={i}
-              cx={cx + shift + (i - 2) * 9}
-              cy={farY - 25 - (i % 2) * 13}
-              rx="7"
-              ry="17"
-              transform={`rotate(${(i - 2) * 20} ${cx + shift + (i - 2) * 9} ${farY - 25 - (i % 2) * 13})`}
-              fill="#22304e"
-              opacity=".45"
-            />
-          ))}
       </g>
       <rect width={ROOM_WIDTH} height={ROOM_HEIGHT} fill={`url(#${id}-vig)`} />
       <image

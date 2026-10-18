@@ -36,6 +36,43 @@ describe("Brownstone atmosphere", () => {
     expect(roomAtmosphere({ ...furnished, workouts: [{ day: "2026-10-22" }] }, "2026-10-22").strength).toBe(1);
     expect(furnished).toEqual(before);
   });
+  it("fades floor moonlight through the cozy stages and keeps Homey rooms free of it, even after quiet weeks", () => {
+    const at = (count: number) => ({
+      ...player,
+      layout: {
+        ...player.layout,
+        slots: Object.fromEntries(SLOTS.slice(0, count).map((slot) => [slot.id, { itemId: "candle-cluster", palette: 0, flip: false }])),
+      },
+    });
+    const levels = [0, 6, 14, 20].map((count) => roomAtmosphere(at(count), "2026-10-01").moonlight);
+    expect(levels[0]).toBe(1);
+    expect(levels[1]).toBeLessThan(levels[0]);
+    expect(levels[2]).toBeLessThan(levels[1]);
+    expect(levels[3]).toBe(0);
+    expect(roomAtmosphere(at(20), "2026-11-01").moonlight).toBe(0);
+  });
+
+  it("layers early moonlight over rugs but behind furniture and pets, and omits it at Homey", () => {
+    const furnished = buildDemoNeighbours("2026-10-18")[0];
+    const render = (p: Player) =>
+      renderToStaticMarkup(<RoomScene player={p} variant="mini" lighting={lightingForHour(21)} mood="sleepy" reducedMotion />);
+    const html = render(furnished);
+    const moon = html.indexOf('class="room-moonlight"');
+    expect(moon).toBeGreaterThan(html.indexOf('data-item="striped-rug"'));
+    expect(moon).toBeLessThan(html.indexOf('data-item="comfy-sofa"'));
+    expect(moon).toBeLessThan(html.indexOf('class="pet-body"'));
+    expect(html).toContain("-moon-shadows");
+    const full = structuredClone(furnished);
+    const used = new Set(Object.values(full.layout.slots).map((p) => p.itemId));
+    for (const slot of SLOTS) {
+      if (full.layout.slots[slot.id]) continue;
+      const item = CATALOG.items.find((item) => !used.has(item.id) && item.zones.includes(slot.zone) && item.size <= slot.capacity)!;
+      used.add(item.id);
+      full.layout.slots[slot.id] = { itemId: item.id, palette: 0, flip: false };
+    }
+    expect(render(full)).not.toContain('class="room-moonlight"');
+  });
+
   it("projects emitters with the furniture, including flipped side-wall sconces", () => {
     const item = { ...itemById("wall-sconce"), light: { ...itemById("wall-sconce").light!, x: 0.2 } };
     const slot = roomSlots("test").find((s) => s.id === "sideWallL")!;
