@@ -1,0 +1,6148 @@
+{
+ "items": [
+  {
+   "id": "floor-cushion",
+   "name": "Squishy floor cushion",
+   "blurb": "A plump little seat. Pets adore it.",
+   "category": "furniture",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 46,
+   "h": 22,
+   "tags": [
+    "nap"
+   ],
+   "seat": 14,
+   "palettes": [
+    {
+     "name": "Oxblood velvet",
+     "p": "#7a2f3a",
+     "s": "#5c222b",
+     "a": "#d9b07a"
+    },
+    {
+     "name": "Emerald velvet",
+     "p": "#2f6b57",
+     "s": "#234f41",
+     "a": "#d9b07a"
+    },
+    {
+     "name": "Ochre linen",
+     "p": "#c08a3e",
+     "s": "#9a6c2c",
+     "a": "#3a2a2a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 23,
+     "cy": 15,
+     "rx": 22,
+     "ry": 7,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 23,
+     "cy": 11,
+     "rx": 21,
+     "ry": 8,
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M10 10 Q23 15 36 10",
+     "stroke": "s",
+     "sw": 1,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 23,
+     "cy": 11.5,
+     "r": 2.2,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "succulent-pot",
+   "name": "Tiny succulent",
+   "blurb": "Grows a flower if you keep showing up.",
+   "category": "plants",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "sill",
+    "floor"
+   ],
+   "size": 1,
+   "w": 26,
+   "h": 32,
+   "tags": [
+    "grow"
+   ],
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Terracotta",
+     "p": "#a85a3c",
+     "s": "#8a4730",
+     "a": "#e8a0a8"
+    },
+    {
+     "name": "Ink glaze",
+     "p": "#2b3346",
+     "s": "#1f2533",
+     "a": "#e8a0a8"
+    },
+    {
+     "name": "Bone",
+     "p": "#d8cbb6",
+     "s": "#b9aa92",
+     "a": "#e0b45a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M13 17 C5 18 2 14 3 12 C7 12 11 14 13 17Z",
+     "fill": "#6fa676",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M13 17 C21 18 24 14 23 12 C19 12 15 14 13 17Z",
+     "fill": "#6fa676",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M13 17 C6 15 5 9 8 7 C11 10 13 13 13 17Z",
+     "fill": "#86b98a"
+    },
+    {
+     "t": "path",
+     "d": "M13 17 C20 15 21 9 18 7 C15 10 13 13 13 17Z",
+     "fill": "#86b98a"
+    },
+    {
+     "t": "path",
+     "d": "M13 17 C10 11 11 6 13 3 C15 6 16 11 13 17Z",
+     "fill": "#9cc89a"
+    },
+    {
+     "t": "circle",
+     "cx": 13,
+     "cy": 3.5,
+     "r": 2.8,
+     "fill": "a",
+     "minStage": 2
+    },
+    {
+     "t": "circle",
+     "cx": 13,
+     "cy": 3.5,
+     "r": 1.1,
+     "fill": "#ffe28a",
+     "minStage": 2,
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      5,
+      18,
+      21,
+      18,
+      19,
+      32,
+      7,
+      32
+     ],
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 4,
+     "y": 16,
+     "w": 18,
+     "h": 4,
+     "r": 1.5,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "wooden-stool",
+   "name": "Little wooden stool",
+   "blurb": "Perfect for a mug, a plant, or a cat.",
+   "category": "furniture",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 34,
+   "h": 34,
+   "tags": [
+    "nap"
+   ],
+   "seat": 28,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4f3322",
+     "a": "#8a5d40"
+    },
+    {
+     "name": "Black oak",
+     "p": "#2e2622",
+     "s": "#1f1916",
+     "a": "#463a33"
+    },
+    {
+     "name": "Teak",
+     "p": "#8a5a36",
+     "s": "#6b4428",
+     "a": "#a4734a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "poly",
+     "pts": [
+      7,
+      10,
+      11,
+      10,
+      8,
+      34,
+      4,
+      34
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      23,
+      10,
+      27,
+      10,
+      30,
+      34,
+      26,
+      34
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 22,
+     "w": 18,
+     "h": 3,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 6,
+     "w": 30,
+     "h": 6,
+     "r": 3,
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 17,
+     "cy": 6.5,
+     "rx": 13,
+     "ry": 2.5,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "plain-curtains",
+   "name": "Linen curtains",
+   "blurb": "They drift a little when the window's open.",
+   "category": "textiles",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "window"
+   ],
+   "size": 3,
+   "w": 130,
+   "h": 128,
+   "palettes": [
+    {
+     "name": "Oatmeal linen",
+     "p": "#cdbb9f",
+     "s": "#a99778",
+     "a": "#3b2b22"
+    },
+    {
+     "name": "Midnight",
+     "p": "#2a3350",
+     "s": "#1d243b",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Rust",
+     "p": "#9a4a32",
+     "s": "#7a3826",
+     "a": "#3b2b22"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M6 7 L32 7 C30 40 26 80 34 120 L6 122 C8 80 4 40 6 7Z",
+     "fill": "p",
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M14 9 C13 50 12 90 14 120",
+     "stroke": "s",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true,
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M124 7 L98 7 C100 40 104 80 96 120 L124 122 C122 80 126 40 124 7Z",
+     "fill": "p",
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M116 9 C117 50 118 90 116 120",
+     "stroke": "s",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true,
+     "anim": "drift"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 3,
+     "w": 126,
+     "h": 4,
+     "r": 2,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 3,
+     "cy": 5,
+     "r": 3.5,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 127,
+     "cy": 5,
+     "r": 3.5,
+     "fill": "a"
+    }
+   ]
+  },
+  {
+   "id": "paper-lantern",
+   "name": "Paper lantern",
+   "blurb": "A soft round glow. Very you.",
+   "category": "lighting",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "ceiling"
+   ],
+   "size": 1,
+   "w": 40,
+   "h": 76,
+   "tags": [
+    "light"
+   ],
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Rice paper",
+     "p": "#f4dfb8",
+     "s": "#d8bf92",
+     "a": "#2a1f1c"
+    },
+    {
+     "name": "Amber",
+     "p": "#e2a35c",
+     "s": "#c08440",
+     "a": "#2a1f1c"
+    },
+    {
+     "name": "Rose",
+     "p": "#d99a8c",
+     "s": "#b87a6c",
+     "a": "#2a1f1c"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 52,
+     "r": 30,
+     "fill": "#ffb865",
+     "o": 0.4,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      0,
+      20,
+      31
+     ],
+     "stroke": "a",
+     "sw": 1.2,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 15,
+     "y": 30,
+     "w": 10,
+     "h": 4,
+     "r": 1,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 52,
+     "r": 18,
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M3.5 46 Q20 50 36.5 46",
+     "stroke": "s",
+     "sw": 1,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M2 53 Q20 57 38 53",
+     "stroke": "s",
+     "sw": 1,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M4 60 Q20 64 36 60",
+     "stroke": "s",
+     "sw": 1,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 16,
+     "y": 69,
+     "w": 8,
+     "h": 3,
+     "r": 1,
+     "fill": "a"
+    }
+   ]
+  },
+  {
+   "id": "woven-rug",
+   "name": "Round woven rug",
+   "blurb": "Warm toes, happy heart.",
+   "category": "rugs",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "rug"
+   ],
+   "size": 3,
+   "w": 150,
+   "h": 40,
+   "tags": [
+    "nap"
+   ],
+   "seat": 22,
+   "palettes": [
+    {
+     "name": "Jute & rust",
+     "p": "#b08a5c",
+     "s": "#7a5432",
+     "a": "#9a4a32"
+    },
+    {
+     "name": "Ink & gold",
+     "p": "#2b3346",
+     "s": "#1d2333",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Plum",
+     "p": "#5a3a5e",
+     "s": "#432a46",
+     "a": "#c48a6a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 75,
+     "cy": 20,
+     "rx": 74,
+     "ry": 19,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 75,
+     "cy": 20,
+     "rx": 64,
+     "ry": 15,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 75,
+     "cy": 20,
+     "rx": 48,
+     "ry": 11,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 75,
+     "cy": 20,
+     "rx": 33,
+     "ry": 7.5,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 75,
+     "cy": 20,
+     "rx": 16,
+     "ry": 3.6,
+     "fill": "s",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "mountain-poster",
+   "name": "Framed mountain print",
+   "blurb": "A quiet view for slow mornings.",
+   "category": "wallart",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "wall"
+   ],
+   "size": 1,
+   "w": 46,
+   "h": 58,
+   "palettes": [
+    {
+     "name": "Dusk",
+     "p": "#3f4d63",
+     "s": "#c98f6d",
+     "a": "#e8b46a"
+    },
+    {
+     "name": "Moss",
+     "p": "#46624f",
+     "s": "#d8c8a8",
+     "a": "#c9763e"
+    },
+    {
+     "name": "Plum",
+     "p": "#5a3a5e",
+     "s": "#e3b7a0",
+     "a": "#e0b45a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 2,
+     "w": 42,
+     "h": 54,
+     "fill": "#1c1a1d"
+    },
+    {
+     "t": "rect",
+     "x": 5,
+     "y": 5,
+     "w": 36,
+     "h": 48,
+     "fill": "#efe6d8",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 9,
+     "y": 9,
+     "w": 28,
+     "h": 34,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 29,
+     "cy": 17,
+     "r": 4.5,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      9,
+      43,
+      19,
+      24,
+      26,
+      35,
+      31,
+      28,
+      37,
+      43
+     ],
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      14,
+      48,
+      32,
+      48
+     ],
+     "stroke": "#9a8a78",
+     "sw": 1,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "wall-clock",
+   "name": "Wall clock",
+   "blurb": "Tick, tock, time for a cosy break.",
+   "category": "wallart",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "wall"
+   ],
+   "size": 1,
+   "w": 40,
+   "h": 40,
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#8a6a32",
+     "a": "#7a2f3a"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#151213",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Emerald",
+     "p": "#2f6b57",
+     "s": "#234f41",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 20,
+     "r": 19,
+     "fill": "p"
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 20,
+     "r": 15,
+     "fill": "#fffaf2"
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 7.5,
+     "r": 1.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 32.5,
+     "cy": 20,
+     "r": 1.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 32.5,
+     "r": 1.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 7.5,
+     "cy": 20,
+     "r": 1.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      20,
+      25,
+      15
+     ],
+     "stroke": "#5a463c",
+     "sw": 2.2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      20,
+      20,
+      9.5
+     ],
+     "stroke": "#5a463c",
+     "sw": 1.5,
+     "flat": true,
+     "anim": "tick",
+     "at": [
+      20,
+      20
+     ]
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 20,
+     "r": 1.7,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "crate-shelf",
+   "name": "Low bookcase",
+   "blurb": "Paperbacks, a plant, a basket of odds and ends.",
+   "category": "furniture",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 60,
+   "h": 50,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4a3022",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Black oak",
+     "p": "#2e2622",
+     "s": "#1d1714",
+     "a": "#a87b4f"
+    },
+    {
+     "name": "Forest",
+     "p": "#2f4f43",
+     "s": "#223a31",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 4,
+     "w": 56,
+     "h": 46,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 8,
+     "w": 22,
+     "h": 17,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 32,
+     "y": 8,
+     "w": 22,
+     "h": 17,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 29,
+     "w": 22,
+     "h": 17,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 32,
+     "y": 29,
+     "w": 22,
+     "h": 17,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 12,
+     "w": 4,
+     "h": 13,
+     "fill": "#e07a5f"
+    },
+    {
+     "t": "rect",
+     "x": 12.5,
+     "y": 10,
+     "w": 4,
+     "h": 15,
+     "fill": "#81b29a"
+    },
+    {
+     "t": "rect",
+     "x": 17,
+     "y": 13,
+     "w": 4,
+     "h": 12,
+     "fill": "#f2cc8f"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      21.5,
+      25,
+      25,
+      13,
+      27.5,
+      14,
+      24.5,
+      25
+     ],
+     "fill": "#7a9cc6"
+    },
+    {
+     "t": "ellipse",
+     "cx": 43,
+     "cy": 16,
+     "rx": 5,
+     "ry": 4.5,
+     "fill": "#7fb27a"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      38,
+      25,
+      48,
+      25,
+      47,
+      19,
+      39,
+      19
+     ],
+     "fill": "#d98a62"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 36,
+     "w": 18,
+     "h": 10,
+     "r": 2,
+     "fill": "a"
+    },
+    {
+     "t": "line",
+     "pts": [
+      9,
+      40,
+      25,
+      40
+     ],
+     "stroke": "s",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 34,
+     "y": 40,
+     "w": 18,
+     "h": 6,
+     "r": 2,
+     "fill": "#f4b6b0"
+    },
+    {
+     "t": "rect",
+     "x": 35,
+     "y": 34,
+     "w": 16,
+     "h": 6,
+     "r": 2,
+     "fill": "#bcd8b2"
+    }
+   ]
+  },
+  {
+   "id": "side-table",
+   "name": "Side table & mug",
+   "blurb": "The mug is always warm. Somehow.",
+   "category": "furniture",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 32,
+   "h": 46,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4f3322",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Black marble",
+     "p": "#2c2a2e",
+     "s": "#1c1a1d",
+     "a": "#d8cbb6"
+    },
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#8a6a32",
+     "a": "#7a2f3a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 20,
+     "w": 3,
+     "h": 26,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 23,
+     "y": 20,
+     "w": 3,
+     "h": 26,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 34,
+     "w": 20,
+     "h": 3,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 1,
+     "y": 16,
+     "w": 30,
+     "h": 6,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M19 9 Q24 11.5 19 14",
+     "stroke": "a",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 7,
+     "w": 9,
+     "h": 9,
+     "r": 1.5,
+     "fill": "a"
+    },
+    {
+     "t": "path",
+     "d": "M13.5 6 Q11.5 4 13.5 2.5 Q15.5 1 13.5 0",
+     "stroke": "#ffffff",
+     "sw": 1.4,
+     "o": 0.85,
+     "fill": "none",
+     "flat": true,
+     "anim": "float"
+    }
+   ]
+  },
+  {
+   "id": "floor-lamp",
+   "name": "Floor lamp",
+   "blurb": "Glows warmer as the evening rolls in.",
+   "category": "lighting",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 30,
+   "h": 110,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Linen & brass",
+     "p": "#e9d4ad",
+     "s": "#8a6a32",
+     "a": "#fff0c8"
+    },
+    {
+     "name": "Emerald & black",
+     "p": "#2f6b57",
+     "s": "#1c1a1d",
+     "a": "#fff0c8"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#7a2f3a",
+     "s": "#2a2426",
+     "a": "#fff0c8"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 15,
+     "cy": 40,
+     "rx": 28,
+     "ry": 24,
+     "fill": "#ffb865",
+     "o": 0.4,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 15,
+     "cy": 107,
+     "rx": 11,
+     "ry": 3.5,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 13.8,
+     "y": 30,
+     "w": 2.4,
+     "h": 77,
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      3,
+      30,
+      27,
+      30,
+      22,
+      6,
+      8,
+      6
+     ],
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 15,
+     "cy": 30,
+     "rx": 9,
+     "ry": 2.2,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "eucalyptus-garland",
+   "name": "Eucalyptus garland",
+   "blurb": "Smells like a spa on a rainy day.",
+   "category": "plants",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "wallTop"
+   ],
+   "size": 3,
+   "w": 200,
+   "h": 26,
+   "palettes": [
+    {
+     "name": "Silver dollar",
+     "p": "#7f9c8a",
+     "s": "#5f7d6c",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Deep olive",
+     "p": "#5d6b45",
+     "s": "#46522f",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M2 6 Q100 50 198 6",
+     "stroke": "#5a4a3a",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 9.5,
+     "cy": 10.6,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "s",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 24.6,
+     "cy": 13.5,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 39.7,
+     "cy": 15.8,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 54.8,
+     "cy": 17.7,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "s",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 69.8,
+     "cy": 19.0,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 84.9,
+     "cy": 19.7,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 100.0,
+     "cy": 20.0,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "s",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 115.1,
+     "cy": 19.7,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 130.2,
+     "cy": 19.0,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 145.2,
+     "cy": 17.7,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "s",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 160.3,
+     "cy": 15.8,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": 35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 175.4,
+     "cy": 13.5,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "p",
+     "rot": -35,
+     "anim": "wag"
+    },
+    {
+     "t": "ellipse",
+     "cx": 190.5,
+     "cy": 10.6,
+     "rx": 5,
+     "ry": 2.8,
+     "fill": "s",
+     "rot": 35,
+     "anim": "wag"
+    }
+   ]
+  },
+  {
+   "id": "comfy-sofa",
+   "name": "Comfy sofa",
+   "blurb": "Sink in. Stay a while. Nap, probably.",
+   "category": "furniture",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 3,
+   "w": 118,
+   "h": 62,
+   "tags": [
+    "nap"
+   ],
+   "seat": 30,
+   "palettes": [
+    {
+     "name": "Emerald velvet",
+     "p": "#2f6b57",
+     "s": "#234f41",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Oxblood velvet",
+     "p": "#7a2f3a",
+     "s": "#5c222b",
+     "a": "#d9b07a"
+    },
+    {
+     "name": "Midnight velvet",
+     "p": "#2a3350",
+     "s": "#1d243b",
+     "a": "#c08a3e"
+    },
+    {
+     "name": "Cognac leather",
+     "p": "#8a4f2e",
+     "s": "#6b3b21",
+     "a": "#d8cbb6"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 54,
+     "w": 6,
+     "h": 8,
+     "r": 1,
+     "fill": "#8a6448"
+    },
+    {
+     "t": "rect",
+     "x": 102,
+     "y": 54,
+     "w": 6,
+     "h": 8,
+     "r": 1,
+     "fill": "#8a6448"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 4,
+     "w": 102,
+     "h": 36,
+     "r": 12,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 4,
+     "y": 30,
+     "w": 110,
+     "h": 26,
+     "r": 8,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 14,
+     "y": 8,
+     "w": 43,
+     "h": 26,
+     "r": 9,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 61,
+     "y": 8,
+     "w": 43,
+     "h": 26,
+     "r": 9,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 14,
+     "y": 30,
+     "w": 44,
+     "h": 12,
+     "r": 5,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 60,
+     "y": 30,
+     "w": 44,
+     "h": 12,
+     "r": 5,
+     "fill": "p"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      20,
+      18,
+      37,
+      14,
+      40,
+      30,
+      23,
+      33
+     ],
+     "fill": "a"
+    },
+    {
+     "t": "rect",
+     "x": 0,
+     "y": 22,
+     "w": 18,
+     "h": 34,
+     "r": 8,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 100,
+     "y": 22,
+     "w": 18,
+     "h": 34,
+     "r": 8,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "armchair",
+   "name": "Reading armchair",
+   "blurb": "Comes with a knitted blanket. Mandatory.",
+   "category": "furniture",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 62,
+   "h": 58,
+   "tags": [
+    "nap"
+   ],
+   "seat": 27,
+   "palettes": [
+    {
+     "name": "Cognac",
+     "p": "#8a4f2e",
+     "s": "#6b3b21",
+     "a": "#d8c3a0"
+    },
+    {
+     "name": "Teal velvet",
+     "p": "#2c5f6b",
+     "s": "#204650",
+     "a": "#c48a6a"
+    },
+    {
+     "name": "Plum",
+     "p": "#5a3a5e",
+     "s": "#432a46",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 50,
+     "w": 5,
+     "h": 8,
+     "fill": "#8a6448"
+    },
+    {
+     "t": "rect",
+     "x": 49,
+     "y": 50,
+     "w": 5,
+     "h": 8,
+     "fill": "#8a6448"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 2,
+     "w": 46,
+     "h": 38,
+     "r": 14,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 13,
+     "y": 7,
+     "w": 36,
+     "h": 28,
+     "r": 10,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 30,
+     "w": 50,
+     "h": 22,
+     "r": 7,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 12,
+     "y": 29,
+     "w": 38,
+     "h": 11,
+     "r": 5,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 0,
+     "y": 22,
+     "w": 14,
+     "h": 30,
+     "r": 7,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 48,
+     "y": 22,
+     "w": 14,
+     "h": 30,
+     "r": 7,
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      47,
+      20,
+      61,
+      23,
+      60,
+      47,
+      49,
+      44
+     ],
+     "fill": "a"
+    },
+    {
+     "t": "line",
+     "pts": [
+      48.5,
+      28,
+      60.5,
+      30
+     ],
+     "stroke": "s",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      49,
+      36,
+      60.3,
+      38
+     ],
+     "stroke": "s",
+     "sw": 1,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "monstera",
+   "name": "Monstera",
+   "blurb": "Unfurls new leaves as you keep moving.",
+   "category": "plants",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 52,
+   "h": 90,
+   "tags": [
+    "grow"
+   ],
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Terracotta",
+     "p": "#a85a3c",
+     "s": "#8a4730",
+     "a": "#6fae73"
+    },
+    {
+     "name": "Black glaze",
+     "p": "#26222a",
+     "s": "#17141a",
+     "a": "#6fae73"
+    },
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#8a6a32",
+     "a": "#6fae73"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M20 44 C6 46 1 34 6 28 C12 24 20 32 20 44Z",
+     "fill": "#5aa063",
+     "minStage": 2
+    },
+    {
+     "t": "path",
+     "d": "M32 40 C46 42 51 30 46 24 C40 20 32 28 32 40Z",
+     "fill": "#86c487",
+     "minStage": 2
+    },
+    {
+     "t": "path",
+     "d": "M26 66 C24 50 18 40 12 30",
+     "stroke": "#5c9a63",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M26 66 C27 48 32 36 40 26",
+     "stroke": "#5c9a63",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M26 66 C26 50 26 38 26 22",
+     "stroke": "#5c9a63",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M26 62 C12 62 6 52 10 46 C16 42 24 50 26 62Z",
+     "fill": "#78b87b",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M26 60 C40 60 47 50 43 44 C37 40 28 48 26 60Z",
+     "fill": "#68a86f",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M12 30 C2 26 0 14 8 10 C14 8 20 16 18 24 C17 27 15 29 12 30Z",
+     "fill": "#6fae73"
+    },
+    {
+     "t": "path",
+     "d": "M40 26 C50 22 52 10 44 6 C38 4 32 12 34 20 C35 23 37 25 40 26Z",
+     "fill": "#7fbf80"
+    },
+    {
+     "t": "path",
+     "d": "M26 24 C16 18 17 4 26 2 C35 4 36 18 26 24Z",
+     "fill": "#5f9f68"
+    },
+    {
+     "t": "path",
+     "d": "M26 22 L26 6 M26 12 L21 9 M26 16 L31 13",
+     "stroke": "#4f8a57",
+     "sw": 0.9,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      14,
+      70,
+      38,
+      70,
+      35,
+      90,
+      17,
+      90
+     ],
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 12,
+     "y": 66,
+     "w": 28,
+     "h": 6,
+     "r": 2,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "hanging-pothos",
+   "name": "Hanging pothos",
+   "blurb": "Its vines get longer every week you work out.",
+   "category": "plants",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "ceiling"
+   ],
+   "size": 1,
+   "w": 46,
+   "h": 92,
+   "tags": [
+    "grow"
+   ],
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Macram\u00e9",
+     "p": "#d8cbb6",
+     "s": "#b3a48b",
+     "a": "#8a7660"
+    },
+    {
+     "name": "Terracotta",
+     "p": "#a85a3c",
+     "s": "#8a4730",
+     "a": "#8a7660"
+    },
+    {
+     "name": "Smoke glass",
+     "p": "#5a5560",
+     "s": "#45414b",
+     "a": "#8a7660"
+    }
+   ],
+   "layers": [
+    {
+     "t": "line",
+     "pts": [
+      23,
+      0,
+      8,
+      37
+     ],
+     "stroke": "a",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      23,
+      0,
+      38,
+      37
+     ],
+     "stroke": "a",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      23,
+      0,
+      23,
+      37
+     ],
+     "stroke": "a",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M23 54 C21 64 25 72 23 90",
+     "stroke": "#5c9a63",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true,
+     "minStage": 2
+    },
+    {
+     "t": "ellipse",
+     "cx": 22,
+     "cy": 63,
+     "rx": 3.5,
+     "ry": 2.6,
+     "fill": "#79b77c",
+     "minStage": 2
+    },
+    {
+     "t": "ellipse",
+     "cx": 25,
+     "cy": 72,
+     "rx": 3.5,
+     "ry": 2.6,
+     "fill": "#62a46a",
+     "minStage": 2
+    },
+    {
+     "t": "ellipse",
+     "cx": 22,
+     "cy": 81,
+     "rx": 3.5,
+     "ry": 2.6,
+     "fill": "#79b77c",
+     "minStage": 2
+    },
+    {
+     "t": "heart",
+     "cx": 23.5,
+     "cy": 89,
+     "r": 3,
+     "fill": "#f7a6c1",
+     "minStage": 2
+    },
+    {
+     "t": "path",
+     "d": "M12 46 C8 56 10 62 7 70",
+     "stroke": "#5c9a63",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M7 70 C5 76 8 80 6 86",
+     "stroke": "#5c9a63",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true,
+     "minStage": 1
+    },
+    {
+     "t": "ellipse",
+     "cx": 8,
+     "cy": 58,
+     "rx": 3.5,
+     "ry": 2.6,
+     "fill": "#79b77c"
+    },
+    {
+     "t": "ellipse",
+     "cx": 9,
+     "cy": 66,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#62a46a"
+    },
+    {
+     "t": "ellipse",
+     "cx": 7,
+     "cy": 76,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#79b77c",
+     "minStage": 1
+    },
+    {
+     "t": "ellipse",
+     "cx": 6,
+     "cy": 84,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#62a46a",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M34 46 C38 54 36 60 39 66",
+     "stroke": "#5c9a63",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M39 66 C41 72 38 76 40 80",
+     "stroke": "#5c9a63",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true,
+     "minStage": 1
+    },
+    {
+     "t": "ellipse",
+     "cx": 38,
+     "cy": 56,
+     "rx": 3.4,
+     "ry": 2.5,
+     "fill": "#62a46a"
+    },
+    {
+     "t": "ellipse",
+     "cx": 38,
+     "cy": 64,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#79b77c"
+    },
+    {
+     "t": "ellipse",
+     "cx": 40,
+     "cy": 72,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#62a46a",
+     "minStage": 1
+    },
+    {
+     "t": "ellipse",
+     "cx": 39,
+     "cy": 79,
+     "rx": 3.2,
+     "ry": 2.4,
+     "fill": "#79b77c",
+     "minStage": 1
+    },
+    {
+     "t": "path",
+     "d": "M8 38 L38 38 C37 50 30 54 23 54 C16 54 9 50 8 38Z",
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 15,
+     "cy": 35,
+     "rx": 6,
+     "ry": 3.2,
+     "fill": "#6fae73"
+    },
+    {
+     "t": "ellipse",
+     "cx": 30,
+     "cy": 34.5,
+     "rx": 6.5,
+     "ry": 3.4,
+     "fill": "#5f9f68"
+    },
+    {
+     "t": "ellipse",
+     "cx": 22,
+     "cy": 33,
+     "rx": 4.5,
+     "ry": 3,
+     "fill": "#86c487"
+    },
+    {
+     "t": "rect",
+     "x": 7,
+     "y": 36,
+     "w": 32,
+     "h": 5,
+     "r": 2,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "floral-curtains",
+   "name": "Floral curtains",
+   "blurb": "Tied back with a bow. Little flowers everywhere.",
+   "category": "textiles",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "window"
+   ],
+   "size": 3,
+   "w": 130,
+   "h": 128,
+   "palettes": [
+    {
+     "name": "Dark floral",
+     "p": "#2b2f3f",
+     "s": "#5a3a5e",
+     "a": "#d99a6c"
+    },
+    {
+     "name": "Moss floral",
+     "p": "#2f4a3f",
+     "s": "#6b8f6a",
+     "a": "#e0a07a"
+    },
+    {
+     "name": "Wine floral",
+     "p": "#5c222b",
+     "s": "#8c3a4b",
+     "a": "#e8c28a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M6 7 L36 7 C34 30 24 56 21 72 C26 90 30 108 31 122 L6 122 C8 80 4 40 6 7Z",
+     "fill": "p",
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M124 7 L94 7 C96 30 106 56 109 72 C104 90 100 108 99 122 L124 122 C122 80 126 40 124 7Z",
+     "fill": "p",
+     "anim": "drift"
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 24,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 24,
+     "cy": 34,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 13,
+     "cy": 46,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 11,
+     "cy": 66,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 16,
+     "cy": 92,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 24,
+     "cy": 106,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 114,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 118,
+     "cy": 24,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 106,
+     "cy": 34,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 117,
+     "cy": 46,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 119,
+     "cy": 66,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 114,
+     "cy": 92,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 106,
+     "cy": 106,
+     "r": 2.3,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 118,
+     "cy": 114,
+     "r": 2.3,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 18,
+     "cy": 72,
+     "rx": 10,
+     "ry": 3.5,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 112,
+     "cy": 72,
+     "rx": 10,
+     "ry": 3.5,
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M2 4 L128 4 L128 14 Q120 22 112 14 Q104 22 96 14 Q88 22 80 14 Q72 22 64 14 Q56 22 48 14 Q40 22 32 14 Q24 22 16 14 Q8 22 2 14Z",
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "gallery-trio",
+   "name": "Little gallery wall",
+   "blurb": "A sun, a heart, and the sea.",
+   "category": "wallart",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "wall"
+   ],
+   "size": 2,
+   "w": 74,
+   "h": 58,
+   "palettes": [
+    {
+     "name": "Gilt",
+     "p": "#5a3a5e",
+     "s": "#b8904a",
+     "a": "#c9763e"
+    },
+    {
+     "name": "Black frames",
+     "p": "#2f6b57",
+     "s": "#1c1a1d",
+     "a": "#e0b45a"
+    },
+    {
+     "name": "Walnut",
+     "p": "#7a2f3a",
+     "s": "#6b4630",
+     "a": "#8ab0c4"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 4,
+     "w": 26,
+     "h": 34,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 5,
+     "y": 7,
+     "w": 20,
+     "h": 28,
+     "fill": "#fffaf0",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 15,
+     "cy": 17,
+     "r": 5,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      5,
+      35,
+      12,
+      26,
+      18,
+      31,
+      25,
+      24,
+      25,
+      35
+     ],
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 32,
+     "y": 2,
+     "w": 22,
+     "h": 22,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 35,
+     "y": 5,
+     "w": 16,
+     "h": 16,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "heart",
+     "cx": 43,
+     "cy": 13,
+     "r": 5,
+     "fill": "#fffaf0",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 34,
+     "y": 28,
+     "w": 38,
+     "h": 27,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 37,
+     "y": 31,
+     "w": 32,
+     "h": 21,
+     "fill": "#fffaf0",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M39 45 Q45 39 51 45 T63 45 T69 45",
+     "stroke": "a",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 61,
+     "cy": 37,
+     "r": 3,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 15,
+     "cy": 48,
+     "r": 7.5,
+     "fill": "s"
+    },
+    {
+     "t": "circle",
+     "cx": 15,
+     "cy": 48,
+     "r": 5,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "tall-bookshelf",
+   "name": "Tall bookshelf",
+   "blurb": "A globe, a candle, and too many books.",
+   "category": "furniture",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 56,
+   "h": 112,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#5c3c28",
+     "s": "#3e281b",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Black oak",
+     "p": "#2a2320",
+     "s": "#18130f",
+     "a": "#a87b4f"
+    },
+    {
+     "name": "Forest",
+     "p": "#2f4f43",
+     "s": "#1f362d",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 2,
+     "w": 52,
+     "h": 110,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 6,
+     "w": 44,
+     "h": 102,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 12,
+     "w": 5,
+     "h": 18,
+     "fill": "#e07a5f"
+    },
+    {
+     "t": "rect",
+     "x": 13.5,
+     "y": 10,
+     "w": 6,
+     "h": 20,
+     "fill": "#f2cc8f"
+    },
+    {
+     "t": "rect",
+     "x": 20,
+     "y": 14,
+     "w": 4,
+     "h": 16,
+     "fill": "#81b29a"
+    },
+    {
+     "t": "rect",
+     "x": 24.5,
+     "y": 11,
+     "w": 5,
+     "h": 19,
+     "fill": "#7a9cc6"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      30,
+      30,
+      35,
+      14,
+      38,
+      15,
+      33.5,
+      30
+     ],
+     "fill": "#b56576"
+    },
+    {
+     "t": "ellipse",
+     "cx": 44,
+     "cy": 21,
+     "rx": 5,
+     "ry": 4.5,
+     "fill": "#7fb27a"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      40,
+      30,
+      48,
+      30,
+      47,
+      24,
+      41,
+      24
+     ],
+     "fill": "#d98a62"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 30,
+     "w": 44,
+     "h": 3,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 16,
+     "cy": 45,
+     "r": 7,
+     "fill": "#8ecae6"
+    },
+    {
+     "t": "path",
+     "d": "M11 43 Q14 40 17 44 T21 46",
+     "stroke": "#7fb27a",
+     "sw": 2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 13,
+     "y": 51.5,
+     "w": 6,
+     "h": 4.5,
+     "fill": "#9a6a44"
+    },
+    {
+     "t": "rect",
+     "x": 28,
+     "y": 38,
+     "w": 5,
+     "h": 18,
+     "fill": "#f4a261"
+    },
+    {
+     "t": "rect",
+     "x": 33.5,
+     "y": 36,
+     "w": 5,
+     "h": 20,
+     "fill": "#5fa8a0"
+    },
+    {
+     "t": "rect",
+     "x": 39,
+     "y": 39,
+     "w": 4,
+     "h": 17,
+     "fill": "#e9c46a"
+    },
+    {
+     "t": "rect",
+     "x": 43.5,
+     "y": 37,
+     "w": 5,
+     "h": 19,
+     "fill": "#e88b6e"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 56,
+     "w": 44,
+     "h": 3,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 75,
+     "w": 20,
+     "h": 7,
+     "fill": "#a3c4bc"
+    },
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 68,
+     "w": 16,
+     "h": 7,
+     "fill": "#f2a7a0"
+    },
+    {
+     "t": "rect",
+     "x": 36,
+     "y": 70,
+     "w": 9,
+     "h": 12,
+     "r": 2,
+     "fill": "#fbe3a1"
+    },
+    {
+     "t": "ellipse",
+     "cx": 40.5,
+     "cy": 66.5,
+     "rx": 1.6,
+     "ry": 2.6,
+     "fill": "#f6a04d",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 82,
+     "w": 44,
+     "h": 3,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 9,
+     "y": 91,
+     "w": 38,
+     "h": 15,
+     "r": 3,
+     "fill": "a"
+    },
+    {
+     "t": "line",
+     "pts": [
+      10,
+      96,
+      46,
+      96
+     ],
+     "stroke": "s",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      10,
+      101,
+      46,
+      101
+     ],
+     "stroke": "s",
+     "sw": 1,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "arc-lamp",
+   "name": "Arc floor lamp",
+   "blurb": "Leans over to see what you're reading.",
+   "category": "lighting",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 70,
+   "h": 130,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#c9a050",
+     "s": "#8a6a32",
+     "a": "#fff0c8"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#1a1617",
+     "a": "#fff0c8"
+    },
+    {
+     "name": "Copper",
+     "p": "#b86a42",
+     "s": "#7a4428",
+     "a": "#fff0c8"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 56,
+     "cy": 72,
+     "rx": 30,
+     "ry": 34,
+     "fill": "#ffb865",
+     "o": 0.35,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 14,
+     "cy": 126,
+     "rx": 12,
+     "ry": 4,
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M14 124 C10 60 20 18 56 26",
+     "stroke": "s",
+     "sw": 3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M42 42 C42 24 70 24 70 42Z",
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 56,
+     "cy": 42,
+     "rx": 10,
+     "ry": 2.5,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "striped-rug",
+   "name": "Striped runner rug",
+   "blurb": "Fringed at the ends, sunny in the middle.",
+   "category": "rugs",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "rug"
+   ],
+   "size": 3,
+   "w": 160,
+   "h": 40,
+   "tags": [
+    "nap"
+   ],
+   "seat": 22,
+   "palettes": [
+    {
+     "name": "Kilim",
+     "p": "#7a2f3a",
+     "s": "#c9a96b",
+     "a": "#2c5f6b"
+    },
+    {
+     "name": "Indigo",
+     "p": "#2a3350",
+     "s": "#c08a3e",
+     "a": "#8c3a4b"
+    },
+    {
+     "name": "Moss",
+     "p": "#46624f",
+     "s": "#d8c3a0",
+     "a": "#9a4a32"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M16 8 L12 8 M13 14 L9 14 M10 20 L6 20 M7 26 L3 26 M4 32 L0 32",
+     "stroke": "s",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M144 8 L148 8 M147 14 L151 14 M150 20 L154 20 M153 26 L157 26 M156 32 L160 32",
+     "stroke": "s",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      18,
+      4,
+      142,
+      4,
+      158,
+      36,
+      2,
+      36
+     ],
+     "fill": "p"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      15,
+      10,
+      145,
+      10,
+      147,
+      14,
+      13,
+      14
+     ],
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      11,
+      18,
+      149,
+      18,
+      151,
+      22,
+      9,
+      22
+     ],
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      7,
+      26,
+      153,
+      26,
+      155,
+      30,
+      5,
+      30
+     ],
+     "fill": "s",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "tiny-tv",
+   "name": "Old CRT",
+   "blurb": "Plays the same soft static every night.",
+   "category": "tech",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 40,
+   "h": 50,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4a3022",
+     "a": "#c9763e"
+    },
+    {
+     "name": "Cream",
+     "p": "#d8cbb6",
+     "s": "#a99778",
+     "a": "#7a2f3a"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#151213",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "line",
+     "pts": [
+      10,
+      40,
+      6,
+      50
+     ],
+     "stroke": "#6b5548",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      30,
+      40,
+      34,
+      50
+     ],
+     "stroke": "#6b5548",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      9,
+      12,
+      2
+     ],
+     "stroke": "#6b5548",
+     "sw": 1.2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      9,
+      28,
+      1.5
+     ],
+     "stroke": "#6b5548",
+     "sw": 1.2,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 2,
+     "r": 1.6,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 8,
+     "w": 36,
+     "h": 32,
+     "r": 6,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 12,
+     "w": 24,
+     "h": 24,
+     "r": 4,
+     "fill": "#bfe3e0",
+     "anim": "flicker"
+    },
+    {
+     "t": "path",
+     "d": "M8 26 Q12 21 16 26 T24 26 T30 26",
+     "stroke": "#ffffff",
+     "sw": 1.5,
+     "o": 0.85,
+     "fill": "none",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "circle",
+     "cx": 34,
+     "cy": 18,
+     "r": 2,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 34,
+     "cy": 26,
+     "r": 2,
+     "fill": "s",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "pet-bed",
+   "name": "Plush pet bed",
+   "blurb": "Exactly pet-sized. Suspiciously popular.",
+   "category": "furniture",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 48,
+   "h": 24,
+   "tags": [
+    "nap"
+   ],
+   "seat": 12,
+   "palettes": [
+    {
+     "name": "Wool",
+     "p": "#d8c3a0",
+     "s": "#9a8466",
+     "a": "#efe3cc"
+    },
+    {
+     "name": "Moss",
+     "p": "#5d7a5a",
+     "s": "#3f5a3e",
+     "a": "#efe3cc"
+    },
+    {
+     "name": "Rust",
+     "p": "#9a4a32",
+     "s": "#7a3826",
+     "a": "#efe3cc"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 24,
+     "cy": 14,
+     "rx": 23,
+     "ry": 10,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 24,
+     "cy": 12.5,
+     "rx": 16,
+     "ry": 6,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M1 14 C1 23 47 23 47 14 C40 20 8 20 1 14Z",
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "wall-shelf",
+   "name": "Plant shelf",
+   "blurb": "A cactus, some books, a trailing friend.",
+   "category": "wallart",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "wall"
+   ],
+   "size": 2,
+   "w": 70,
+   "h": 50,
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4a3022",
+     "a": "#c9763e"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#151213",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#8a6a32",
+     "a": "#7a2f3a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "poly",
+     "pts": [
+      12,
+      36,
+      20,
+      36,
+      12,
+      44
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      58,
+      36,
+      50,
+      36,
+      58,
+      44
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 14,
+     "cy": 21,
+     "rx": 6,
+     "ry": 4,
+     "fill": "#6fae73"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      8,
+      32,
+      20,
+      32,
+      19,
+      24,
+      9,
+      24
+     ],
+     "fill": "#d98a62"
+    },
+    {
+     "t": "rect",
+     "x": 26,
+     "y": 16,
+     "w": 5,
+     "h": 16,
+     "fill": "#e07a5f"
+    },
+    {
+     "t": "rect",
+     "x": 31.5,
+     "y": 14,
+     "w": 5,
+     "h": 18,
+     "fill": "a"
+    },
+    {
+     "t": "rect",
+     "x": 37,
+     "y": 18,
+     "w": 4,
+     "h": 14,
+     "fill": "#7a9cc6"
+    },
+    {
+     "t": "path",
+     "d": "M52 22 L48 22 L48 16",
+     "stroke": "#7fb27a",
+     "sw": 3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 52,
+     "y": 10,
+     "w": 7,
+     "h": 20,
+     "r": 3.5,
+     "fill": "#7fb27a"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      48,
+      32,
+      63,
+      32,
+      62,
+      25,
+      49,
+      25
+     ],
+     "fill": "#f3e6cf"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 32,
+     "w": 66,
+     "h": 5,
+     "r": 1.5,
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M10 27 C5 33 8 39 6 46",
+     "stroke": "#5c9a63",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true,
+     "anim": "sway"
+    },
+    {
+     "t": "ellipse",
+     "cx": 7,
+     "cy": 39,
+     "rx": 2.6,
+     "ry": 2,
+     "fill": "#79b77c",
+     "anim": "sway"
+    },
+    {
+     "t": "ellipse",
+     "cx": 6,
+     "cy": 45,
+     "rx": 2.6,
+     "ry": 2,
+     "fill": "#62a46a",
+     "anim": "sway"
+    }
+   ]
+  },
+  {
+   "id": "yarn-basket",
+   "name": "Knitting basket",
+   "blurb": "For the scarf you've been knitting since March.",
+   "category": "whimsy",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 34,
+   "h": 30,
+   "tags": [
+    "play"
+   ],
+   "palettes": [
+    {
+     "name": "Seagrass",
+     "p": "#9a7d52",
+     "s": "#7a6038",
+     "a": "#9a4a32"
+    },
+    {
+     "name": "Dark wicker",
+     "p": "#5c4530",
+     "s": "#433121",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Pale",
+     "p": "#c9b48c",
+     "s": "#a8936a",
+     "a": "#2c5f6b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 13,
+     "r": 7,
+     "fill": "a"
+    },
+    {
+     "t": "path",
+     "d": "M7 10 Q12 15 17 10 M6 14 Q12 19 18 14",
+     "stroke": "#ffffff",
+     "sw": 1,
+     "o": 0.6,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 22,
+     "cy": 11,
+     "r": 6,
+     "fill": "#9fc0dc"
+    },
+    {
+     "t": "path",
+     "d": "M18 9 Q22 13 26 9",
+     "stroke": "#ffffff",
+     "sw": 1,
+     "o": 0.6,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M3 15 L31 15 L28 30 L6 30Z",
+     "fill": "p"
+    },
+    {
+     "t": "line",
+     "pts": [
+      4,
+      20,
+      30,
+      20
+     ],
+     "stroke": "s",
+     "sw": 1.2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      5,
+      25,
+      29,
+      25
+     ],
+     "stroke": "s",
+     "sw": 1.2,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M22 17 C24 24 30 22 33 29",
+     "stroke": "a",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "record-player",
+   "name": "Record player",
+   "blurb": "Plays lo-fi beats to relax and stretch to.",
+   "category": "tech",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 44,
+   "h": 48,
+   "tags": [
+    "play"
+   ],
+   "palettes": [
+    {
+     "name": "Walnut",
+     "p": "#6b4630",
+     "s": "#4a3022",
+     "a": "#c9763e"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#7a2f3a",
+     "s": "#5c222b",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Teal",
+     "p": "#2c5f6b",
+     "s": "#204650",
+     "a": "#e0a07a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "poly",
+     "pts": [
+      4,
+      16,
+      40,
+      16,
+      37,
+      4,
+      7,
+      4
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      7.5,
+      15,
+      36.5,
+      15,
+      34.5,
+      6.5,
+      9.5,
+      6.5
+     ],
+     "fill": "#fffaf0",
+     "o": 0.35,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 16,
+     "w": 40,
+     "h": 8,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 18,
+     "cy": 17,
+     "rx": 12,
+     "ry": 3.4,
+     "fill": "#3d3330"
+    },
+    {
+     "t": "ellipse",
+     "cx": 18,
+     "cy": 17,
+     "rx": 3.5,
+     "ry": 1,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M9 16.5 Q18 14.6 27 16.5",
+     "stroke": "#ffffff",
+     "sw": 0.8,
+     "o": 0.3,
+     "fill": "none",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "line",
+     "pts": [
+      37,
+      14,
+      27,
+      17
+     ],
+     "stroke": "#d8d2cb",
+     "sw": 1.5,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 4,
+     "y": 24,
+     "w": 36,
+     "h": 24,
+     "r": 2,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 7,
+     "y": 28,
+     "w": 3,
+     "h": 17,
+     "fill": "#f28482",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 11,
+     "y": 28,
+     "w": 3,
+     "h": 17,
+     "fill": "#84a59d",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 15,
+     "y": 28,
+     "w": 3,
+     "h": 17,
+     "fill": "#f6bd60",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 19,
+     "y": 28,
+     "w": 3,
+     "h": 17,
+     "fill": "#7a9cc6",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 40,
+     "cy": 6.5,
+     "r": 1.7,
+     "fill": "#5a463c",
+     "flat": true,
+     "anim": "float"
+    },
+    {
+     "t": "line",
+     "pts": [
+      41.5,
+      6.5,
+      41.5,
+      1
+     ],
+     "stroke": "#5a463c",
+     "sw": 0.9,
+     "flat": true,
+     "anim": "float"
+    }
+   ]
+  },
+  {
+   "id": "tiny-aquarium",
+   "name": "Tiny aquarium",
+   "blurb": "Two fish named after your best workouts.",
+   "category": "whimsy",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 46,
+   "h": 50,
+   "tags": [
+    "play"
+   ],
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#e0a050",
+     "s": "#3e3030",
+     "a": "#d96a5a"
+    },
+    {
+     "name": "Black",
+     "p": "#f0c070",
+     "s": "#1f1a1c",
+     "a": "#e58a5a"
+    },
+    {
+     "name": "Walnut",
+     "p": "#e8b070",
+     "s": "#5c3c28",
+     "a": "#c95a6a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 34,
+     "w": 34,
+     "h": 16,
+     "r": 2,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 6,
+     "w": 42,
+     "h": 28,
+     "r": 3,
+     "fill": "#bfe6ee"
+    },
+    {
+     "t": "path",
+     "d": "M2 30 Q12 26 22 30 T44 29 L44 34 L2 34Z",
+     "fill": "#f3dfb0",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M10 32 C7 26 12 22 9 14",
+     "stroke": "#6fae73",
+     "sw": 2.4,
+     "fill": "none",
+     "flat": true,
+     "anim": "sway"
+    },
+    {
+     "t": "path",
+     "d": "M36 32 C39 26 34 20 37 15",
+     "stroke": "#5f9f68",
+     "sw": 2.4,
+     "fill": "none",
+     "flat": true,
+     "anim": "sway"
+    },
+    {
+     "t": "ellipse",
+     "cx": 22,
+     "cy": 19,
+     "rx": 5,
+     "ry": 3.2,
+     "fill": "a",
+     "flat": true,
+     "anim": "swim"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      17.5,
+      19,
+      13.5,
+      16,
+      13.5,
+      22
+     ],
+     "fill": "a",
+     "flat": true,
+     "anim": "swim"
+    },
+    {
+     "t": "circle",
+     "cx": 24.5,
+     "cy": 18.4,
+     "r": 0.8,
+     "fill": "#3d3330",
+     "flat": true,
+     "anim": "swim"
+    },
+    {
+     "t": "ellipse",
+     "cx": 31,
+     "cy": 25,
+     "rx": 3.4,
+     "ry": 2,
+     "fill": "p",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      34,
+      25,
+      37,
+      23,
+      37,
+      27
+     ],
+     "fill": "p",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "circle",
+     "cx": 28,
+     "cy": 13,
+     "r": 1.2,
+     "fill": "#ffffff",
+     "o": 0.85,
+     "flat": true,
+     "anim": "float"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 6,
+     "w": 42,
+     "h": 4,
+     "r": 2,
+     "fill": "#e6f6f8",
+     "o": 0.8,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 1,
+     "y": 4,
+     "w": 44,
+     "h": 3,
+     "r": 1.5,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "canopy-bed",
+   "name": "Canopy bed",
+   "blurb": "For the dreamiest naps in the whole building.",
+   "category": "furniture",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 3,
+   "w": 124,
+   "h": 112,
+   "tags": [
+    "nap"
+   ],
+   "seat": 30,
+   "palettes": [
+    {
+     "name": "Midnight",
+     "p": "#2a3350",
+     "s": "#1b2036",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#6b2a33",
+     "s": "#4a1d24",
+     "a": "#e3cfae"
+    },
+    {
+     "name": "Moss",
+     "p": "#3f5a48",
+     "s": "#2b3f32",
+     "a": "#e3cfae"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 4,
+     "y": 8,
+     "w": 5,
+     "h": 104,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 115,
+     "y": 8,
+     "w": 5,
+     "h": 104,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 14,
+     "y": 44,
+     "w": 96,
+     "h": 42,
+     "r": 14,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 20,
+     "y": 50,
+     "w": 84,
+     "h": 32,
+     "r": 10,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 40,
+     "cy": 62,
+     "r": 1.6,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 62,
+     "cy": 62,
+     "r": 1.6,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 84,
+     "cy": 62,
+     "r": 1.6,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 22,
+     "y": 68,
+     "w": 30,
+     "h": 14,
+     "r": 6,
+     "fill": "#fffaf2"
+    },
+    {
+     "t": "rect",
+     "x": 72,
+     "y": 68,
+     "w": 30,
+     "h": 14,
+     "r": 6,
+     "fill": "#fffaf2"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 78,
+     "w": 108,
+     "h": 20,
+     "r": 6,
+     "fill": "#fffaf2"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 86,
+     "w": 108,
+     "h": 22,
+     "r": 6,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 84,
+     "w": 108,
+     "h": 7,
+     "r": 3.5,
+     "fill": "#fffaf2"
+    },
+    {
+     "t": "circle",
+     "cx": 30,
+     "cy": 99,
+     "r": 1.6,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 62,
+     "cy": 101,
+     "r": 1.6,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 94,
+     "cy": 99,
+     "r": 1.6,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 106,
+     "w": 6,
+     "h": 6,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 110,
+     "y": 106,
+     "w": 6,
+     "h": 6,
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M8 10 C20 10 24 14 22 30 C20 50 14 70 10 84 L8 84Z",
+     "fill": "a",
+     "o": 0.9,
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M116 10 C104 10 100 14 102 30 C104 50 110 70 114 84 L116 84Z",
+     "fill": "a",
+     "o": 0.9,
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M6 10 L118 10 L118 16 Q110 24 102 16 Q94 24 86 16 Q78 24 70 16 Q62 24 54 16 Q46 24 38 16 Q30 24 22 16 Q14 24 6 16Z",
+     "fill": "a"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 4,
+     "w": 120,
+     "h": 7,
+     "r": 3,
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "fairy-lights",
+   "name": "Fairy lights",
+   "blurb": "Twinkle twinkle, you did great.",
+   "category": "lighting",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "wallTop"
+   ],
+   "size": 3,
+   "w": 200,
+   "h": 40,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Warm",
+     "p": "#ffd38a",
+     "s": "#ffb870",
+     "a": "#ffe6b0"
+    },
+    {
+     "name": "Ember",
+     "p": "#ffb26b",
+     "s": "#ff8f6b",
+     "a": "#ffd38a"
+    },
+    {
+     "name": "Starlight",
+     "p": "#fff0c8",
+     "s": "#ffe2a0",
+     "a": "#fff6dc"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M2 6 Q50 30 100 10 Q150 30 198 6",
+     "stroke": "#6b8f5e",
+     "sw": 1,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 16.4,
+     "cy": 15.2,
+     "r": 6,
+     "fill": "#ffb865",
+     "o": 0.45,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 55.4,
+     "cy": 22.1,
+     "r": 6,
+     "fill": "#ffb865",
+     "o": 0.45,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 92,
+     "cy": 15.9,
+     "r": 6,
+     "fill": "#ffb865",
+     "o": 0.45,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 124.9,
+     "cy": 20.25,
+     "r": 6,
+     "fill": "#ffb865",
+     "o": 0.45,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 164.2,
+     "cy": 20.4,
+     "r": 6,
+     "fill": "#ffb865",
+     "o": 0.45,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 16.4,
+     "cy": 15.2,
+     "r": 2.7,
+     "fill": "p",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 35.8,
+     "cy": 20.4,
+     "r": 2.7,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 55.4,
+     "cy": 22.1,
+     "r": 2.7,
+     "fill": "a",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 75.1,
+     "cy": 20.25,
+     "r": 2.7,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 92,
+     "cy": 15.9,
+     "r": 2.7,
+     "fill": "s",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 108,
+     "cy": 15.9,
+     "r": 2.7,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 124.9,
+     "cy": 20.25,
+     "r": 2.7,
+     "fill": "p",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 144.6,
+     "cy": 22.1,
+     "r": 2.7,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 164.2,
+     "cy": 20.4,
+     "r": 2.7,
+     "fill": "a",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 183.6,
+     "cy": 15.2,
+     "r": 2.7,
+     "fill": "p",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "garden-door",
+   "name": "Rooftop garden door",
+   "blurb": "Where does it go? Somewhere sunny.",
+   "category": "whimsy",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 58,
+   "h": 120,
+   "palettes": [
+    {
+     "name": "Forest",
+     "p": "#2f4f43",
+     "s": "#c9b48c",
+     "a": "#223a31"
+    },
+    {
+     "name": "Midnight",
+     "p": "#2a3350",
+     "s": "#c9b48c",
+     "a": "#1d243b"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#6b2a33",
+     "s": "#c9b48c",
+     "a": "#4a1d24"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M4 120 L4 34 C4 10 54 10 54 34 L54 120Z",
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M9 120 L9 36 C9 16 49 16 49 36 L49 120Z",
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M15 52 L15 38 C15 24 43 24 43 38 L43 52Z",
+     "fill": "#cfeaf5",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 35,
+     "cy": 37,
+     "r": 4,
+     "fill": "#ffe08a",
+     "flat": true,
+     "anim": "glow"
+    },
+    {
+     "t": "path",
+     "d": "M15 52 L15 46 Q24 40 31 46 T43 44 L43 52Z",
+     "fill": "#8fc78f",
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      29,
+      26,
+      29,
+      52
+     ],
+     "stroke": "s",
+     "sw": 1.5,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      15,
+      40,
+      43,
+      40
+     ],
+     "stroke": "s",
+     "sw": 1.5,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 15,
+     "y": 62,
+     "w": 28,
+     "h": 22,
+     "r": 3,
+     "fill": "a",
+     "o": 0.55,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 15,
+     "y": 90,
+     "w": 28,
+     "h": 22,
+     "r": 3,
+     "fill": "a",
+     "o": 0.55,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 43,
+     "cy": 88,
+     "r": 2.3,
+     "fill": "#e8c36a"
+    },
+    {
+     "t": "path",
+     "d": "M6 112 C2 80 10 60 6 40 C4 28 12 16 26 12",
+     "stroke": "#5c9a63",
+     "sw": 1.6,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 5,
+     "cy": 96,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#79b77c"
+    },
+    {
+     "t": "ellipse",
+     "cx": 8,
+     "cy": 78,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#62a46a"
+    },
+    {
+     "t": "ellipse",
+     "cx": 5,
+     "cy": 60,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#79b77c"
+    },
+    {
+     "t": "ellipse",
+     "cx": 7,
+     "cy": 44,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#62a46a"
+    },
+    {
+     "t": "ellipse",
+     "cx": 12,
+     "cy": 24,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#79b77c"
+    },
+    {
+     "t": "ellipse",
+     "cx": 21,
+     "cy": 14,
+     "rx": 3,
+     "ry": 2,
+     "fill": "#62a46a"
+    },
+    {
+     "t": "circle",
+     "cx": 8,
+     "cy": 69,
+     "r": 2,
+     "fill": "#f7a6c1",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 9,
+     "cy": 32,
+     "r": 2,
+     "fill": "#ffe08a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "lava-lamp",
+   "name": "Lava lamp",
+   "blurb": "Bloop. Bloop. Very calming.",
+   "category": "lighting",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor",
+    "sill"
+   ],
+   "size": 1,
+   "w": 22,
+   "h": 52,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Ember",
+     "p": "#ff7a59",
+     "s": "#5a2a40",
+     "a": "#2a2426"
+    },
+    {
+     "name": "Rose",
+     "p": "#ff8fa8",
+     "s": "#3a2a4a",
+     "a": "#2a2426"
+    },
+    {
+     "name": "Amber",
+     "p": "#ffae4a",
+     "s": "#4a2a20",
+     "a": "#2a2426"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 11,
+     "cy": 26,
+     "rx": 18,
+     "ry": 22,
+     "fill": "p",
+     "o": 0.22,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M7 40 L15 40 L18 22 L14 8 L8 8 L4 22Z",
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 11,
+     "cy": 30,
+     "rx": 4,
+     "ry": 5,
+     "fill": "p",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "circle",
+     "cx": 10,
+     "cy": 18,
+     "r": 2.6,
+     "fill": "p",
+     "flat": true,
+     "anim": "float"
+    },
+    {
+     "t": "ellipse",
+     "cx": 11,
+     "cy": 37,
+     "rx": 4.5,
+     "ry": 2,
+     "fill": "p",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      3,
+      52,
+      19,
+      52,
+      15,
+      39,
+      7,
+      39
+     ],
+     "fill": "a"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      8,
+      8.5,
+      14,
+      8.5,
+      13,
+      2,
+      9,
+      2
+     ],
+     "fill": "a"
+    }
+   ]
+  },
+  {
+   "id": "fireplace",
+   "name": "Tiled fireplace",
+   "blurb": "Crackles softly. Everyone gravitates here.",
+   "category": "furniture",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 3,
+   "w": 110,
+   "h": 98,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Emerald tile",
+     "p": "#2f6b57",
+     "s": "#d8cbb6",
+     "a": "#1c1a1d"
+    },
+    {
+     "name": "Oxblood tile",
+     "p": "#6b2a33",
+     "s": "#d8cbb6",
+     "a": "#1c1a1d"
+    },
+    {
+     "name": "Plaster",
+     "p": "#c9b8a0",
+     "s": "#8a7660",
+     "a": "#1c1a1d"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 55,
+     "cy": 76,
+     "rx": 60,
+     "ry": 40,
+     "fill": "#ff9a4a",
+     "o": 0.6,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 8,
+     "w": 106,
+     "h": 90,
+     "r": 3,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 0,
+     "y": 2,
+     "w": 110,
+     "h": 9,
+     "r": 2,
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M24 98 L24 52 C24 34 86 34 86 52 L86 98Z",
+     "fill": "a"
+    },
+    {
+     "t": "path",
+     "d": "M38 98 C34 86 44 80 42 70 C50 78 48 66 55 60 C58 70 66 72 64 82 C70 80 72 88 70 98Z",
+     "fill": "#ff8a3a",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "path",
+     "d": "M46 98 C44 90 50 86 50 80 C55 86 54 78 58 74 C60 82 64 86 62 98Z",
+     "fill": "#ffc65a",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "rect",
+     "x": 32,
+     "y": 92,
+     "w": 46,
+     "h": 5,
+     "r": 2.5,
+     "fill": "#5a3a28"
+    },
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 16,
+     "w": 8,
+     "h": 8,
+     "fill": "s",
+     "o": 0.25,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 92,
+     "y": 16,
+     "w": 8,
+     "h": 8,
+     "fill": "s",
+     "o": 0.25,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 60,
+     "w": 8,
+     "h": 8,
+     "fill": "s",
+     "o": 0.25,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 92,
+     "y": 60,
+     "w": 8,
+     "h": 8,
+     "fill": "s",
+     "o": 0.25,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 14,
+     "y": -0.5,
+     "w": 10,
+     "h": 3,
+     "fill": "#d8b46a",
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      80,
+      2,
+      86,
+      2,
+      85,
+      -0.0,
+      81,
+      -0.0
+     ],
+     "fill": "#c9a96b",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "globe-chandelier",
+   "name": "Globe chandelier",
+   "blurb": "Three warm moons on a brass branch.",
+   "category": "lighting",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "ceiling"
+   ],
+   "size": 2,
+   "w": 84,
+   "h": 70,
+   "tags": [
+    "light"
+   ],
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#c9a050",
+     "s": "#fff0c8",
+     "a": "#ffd38a"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#fff0c8",
+     "a": "#ffd38a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 42,
+     "cy": 56,
+     "r": 40,
+     "fill": "#ffcf8a",
+     "o": 0.55,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      42,
+      0,
+      42,
+      40
+     ],
+     "stroke": "p",
+     "sw": 1.6,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M12 40 Q42 52 72 40",
+     "stroke": "p",
+     "sw": 2.2,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      42,
+      40,
+      42,
+      48
+     ],
+     "stroke": "p",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 50,
+     "r": 9,
+     "fill": "s",
+     "o": 0.95
+    },
+    {
+     "t": "circle",
+     "cx": 42,
+     "cy": 57,
+     "r": 10,
+     "fill": "s",
+     "o": 0.95
+    },
+    {
+     "t": "circle",
+     "cx": 72,
+     "cy": 50,
+     "r": 9,
+     "fill": "s",
+     "o": 0.95
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 51,
+     "r": 4,
+     "fill": "a",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "circle",
+     "cx": 42,
+     "cy": 58,
+     "r": 4.5,
+     "fill": "a",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "circle",
+     "cx": 72,
+     "cy": 51,
+     "r": 4,
+     "fill": "a",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 38,
+     "w": 8,
+     "h": 4,
+     "r": 1,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 38,
+     "y": 45,
+     "w": 8,
+     "h": 4,
+     "r": 1,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 68,
+     "y": 38,
+     "w": 8,
+     "h": 4,
+     "r": 1,
+     "fill": "p"
+    }
+   ]
+  },
+  {
+   "id": "egg-chair",
+   "name": "Hanging cane chair",
+   "blurb": "Sway gently with a book and a glass of something.",
+   "category": "furniture",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 66,
+   "h": 110,
+   "tags": [
+    "nap"
+   ],
+   "seat": 30,
+   "seatX": 11,
+   "palettes": [
+    {
+     "name": "Rattan",
+     "p": "#9a7240",
+     "s": "#2a2426",
+     "a": "#7a2f3a"
+    },
+    {
+     "name": "Black cane",
+     "p": "#2e2622",
+     "s": "#8a6a32",
+     "a": "#c08a3e"
+    },
+    {
+     "name": "Natural",
+     "p": "#c9a670",
+     "s": "#3a3236",
+     "a": "#2f6b57"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 22,
+     "cy": 106,
+     "rx": 18,
+     "ry": 4,
+     "fill": "s"
+    },
+    {
+     "t": "path",
+     "d": "M22 106 C12 60 18 6 46 6 L46 12",
+     "stroke": "s",
+     "sw": 3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      46,
+      8,
+      46,
+      28
+     ],
+     "stroke": "s",
+     "sw": 1.4,
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 44,
+     "cy": 62,
+     "rx": 21,
+     "ry": 34,
+     "fill": "p",
+     "anim": "drift"
+    },
+    {
+     "t": "path",
+     "d": "M25 50 Q44 42 63 50 M23 64 Q44 56 65 64 M25 78 Q44 70 63 78",
+     "stroke": "#000000",
+     "o": 0.12,
+     "sw": 1,
+     "fill": "none",
+     "flat": true,
+     "anim": "drift"
+    },
+    {
+     "t": "ellipse",
+     "cx": 44,
+     "cy": 66,
+     "rx": 15,
+     "ry": 24,
+     "fill": "#f7ead4",
+     "anim": "drift"
+    },
+    {
+     "t": "ellipse",
+     "cx": 44,
+     "cy": 82,
+     "rx": 14,
+     "ry": 7,
+     "fill": "a",
+     "anim": "drift"
+    }
+   ]
+  },
+  {
+   "id": "telescope",
+   "name": "Brass telescope",
+   "blurb": "Points at the stars. And the neighbours' flats.",
+   "category": "tech",
+   "tier": 3,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 40,
+   "h": 70,
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#2a2426",
+     "a": "#d8b46a"
+    },
+    {
+     "name": "Navy",
+     "p": "#2a3350",
+     "s": "#2a2426",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#6b2a33",
+     "s": "#2a2426",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "line",
+     "pts": [
+      20,
+      40,
+      8,
+      70
+     ],
+     "stroke": "s",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      40,
+      32,
+      70
+     ],
+     "stroke": "s",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      20,
+      40,
+      20,
+      70
+     ],
+     "stroke": "s",
+     "sw": 2,
+     "flat": true
+    },
+    {
+     "t": "poly",
+     "pts": [
+      8,
+      30,
+      34,
+      10,
+      37.5,
+      15,
+      11.5,
+      35
+     ],
+     "fill": "p"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      32.5,
+      8,
+      38,
+      4.5,
+      41,
+      12,
+      36,
+      15.5
+     ],
+     "fill": "a"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      5.5,
+      31,
+      9,
+      28.5,
+      11.5,
+      33,
+      8,
+      35.5
+     ],
+     "fill": "s"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      19.5,
+      21.5,
+      23,
+      19,
+      25.5,
+      23.5,
+      22,
+      26
+     ],
+     "fill": "a"
+    },
+    {
+     "t": "star",
+     "cx": 6,
+     "cy": 8,
+     "r": 3,
+     "fill": "#ffe08a",
+     "flat": true,
+     "anim": "twinkle"
+    }
+   ]
+  },
+  {
+   "id": "pumpkin",
+   "name": "Heirloom gourds",
+   "blurb": "Autumn only. Very harvest-table.",
+   "category": "whimsy",
+   "tier": 1,
+   "rarity": "seasonal",
+   "season": {
+    "from": 9,
+    "to": 11
+   },
+   "zones": [
+    "floor",
+    "sill"
+   ],
+   "size": 1,
+   "w": 30,
+   "h": 26,
+   "palettes": [
+    {
+     "name": "Rust",
+     "p": "#c06a32",
+     "s": "#9a5226",
+     "a": "#5a3a24"
+    },
+    {
+     "name": "Ghost",
+     "p": "#d8cbb6",
+     "s": "#b3a48b",
+     "a": "#5a4a3a"
+    },
+    {
+     "name": "Sage",
+     "p": "#7f9c6b",
+     "s": "#5f7a50",
+     "a": "#4a3a2a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 8.5,
+     "cy": 16,
+     "rx": 7.5,
+     "ry": 9.5,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 21.5,
+     "cy": 16,
+     "rx": 7.5,
+     "ry": 9.5,
+     "fill": "s"
+    },
+    {
+     "t": "ellipse",
+     "cx": 15,
+     "cy": 16,
+     "rx": 8,
+     "ry": 10,
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M15 7 C15 3 17 2 19 2",
+     "stroke": "#7a5a3a",
+     "sw": 2.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M16 6 C20 2 25 4 24 7 C21 8 18 8 16 6Z",
+     "fill": "#7fb27a"
+    }
+   ]
+  },
+  {
+   "id": "tiny-tree",
+   "name": "Tiny twinkly tree",
+   "blurb": "Winter only. Smells faintly of pine and joy.",
+   "category": "plants",
+   "tier": 1,
+   "rarity": "seasonal",
+   "season": {
+    "from": 12,
+    "to": 1
+   },
+   "zones": [
+    "floor"
+   ],
+   "size": 1,
+   "w": 40,
+   "h": 62,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Classic",
+     "p": "#7a2f3a",
+     "s": "#c9a96b",
+     "a": "#e0b45a"
+    },
+    {
+     "name": "Frost",
+     "p": "#2a3350",
+     "s": "#d8cbb6",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 30,
+     "r": 26,
+     "fill": "#ffb865",
+     "o": 0.3,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 18,
+     "y": 46,
+     "w": 4,
+     "h": 6,
+     "fill": "#8a6448"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      20,
+      26,
+      39,
+      48,
+      1,
+      48
+     ],
+     "fill": "#4f8a57"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      20,
+      14,
+      37,
+      36,
+      3,
+      36
+     ],
+     "fill": "#5f9f68"
+    },
+    {
+     "t": "poly",
+     "pts": [
+      20,
+      4,
+      34,
+      24,
+      6,
+      24
+     ],
+     "fill": "#6fae73"
+    },
+    {
+     "t": "circle",
+     "cx": 14,
+     "cy": 22,
+     "r": 2,
+     "fill": "s",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 25,
+     "cy": 30,
+     "r": 2,
+     "fill": "a",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 12,
+     "cy": 40,
+     "r": 2,
+     "fill": "a",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "circle",
+     "cx": 28,
+     "cy": 44,
+     "r": 2,
+     "fill": "s",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 20,
+     "cy": 37,
+     "r": 2,
+     "fill": "s",
+     "flat": true,
+     "anim": "twinkle"
+    },
+    {
+     "t": "rect",
+     "x": 13,
+     "y": 50,
+     "w": 14,
+     "h": 12,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "star",
+     "cx": 20,
+     "cy": 4.5,
+     "r": 4.5,
+     "fill": "#ffd166",
+     "anim": "twinkle"
+    }
+   ]
+  },
+  {
+   "id": "dried-roses",
+   "name": "Dried roses",
+   "blurb": "February only. Romantic, a little gothic.",
+   "category": "plants",
+   "tier": 1,
+   "rarity": "seasonal",
+   "season": {
+    "from": 2,
+    "to": 2
+   },
+   "zones": [
+    "sill",
+    "floor"
+   ],
+   "size": 1,
+   "w": 30,
+   "h": 50,
+   "palettes": [
+    {
+     "name": "Wine",
+     "p": "#7a2f3a",
+     "s": "#2a2426",
+     "a": "#a8485a"
+    },
+    {
+     "name": "Blush",
+     "p": "#b8707a",
+     "s": "#d8cbb6",
+     "a": "#d898a0"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M15 30 C13 20 8 14 6 8",
+     "stroke": "#5a5040",
+     "sw": 1.3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M15 30 C16 20 22 14 25 6",
+     "stroke": "#5a5040",
+     "sw": 1.3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M15 30 C15 22 15 14 15 4",
+     "stroke": "#5a5040",
+     "sw": 1.3,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 6,
+     "cy": 8,
+     "r": 3.6,
+     "fill": "p"
+    },
+    {
+     "t": "circle",
+     "cx": 25,
+     "cy": 6,
+     "r": 3.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 15,
+     "cy": 4,
+     "r": 3.8,
+     "fill": "p"
+    },
+    {
+     "t": "ellipse",
+     "cx": 10,
+     "cy": 18,
+     "rx": 2.6,
+     "ry": 1.4,
+     "fill": "#5d6b45",
+     "rot": -30
+    },
+    {
+     "t": "ellipse",
+     "cx": 20,
+     "cy": 16,
+     "rx": 2.6,
+     "ry": 1.4,
+     "fill": "#5d6b45",
+     "rot": 30
+    },
+    {
+     "t": "path",
+     "d": "M8 50 L22 50 C25 42 24 34 20 30 L10 30 C6 34 5 42 8 50Z",
+     "fill": "s"
+    }
+   ]
+  },
+  {
+   "id": "blossom-vase",
+   "name": "Blossom branches",
+   "blurb": "Spring only. Petals included.",
+   "category": "plants",
+   "tier": 1,
+   "rarity": "seasonal",
+   "season": {
+    "from": 3,
+    "to": 5
+   },
+   "zones": [
+    "sill",
+    "floor"
+   ],
+   "size": 1,
+   "w": 34,
+   "h": 56,
+   "anim": "sway",
+   "palettes": [
+    {
+     "name": "Celadon",
+     "p": "#5d7a6a",
+     "s": "#46624f",
+     "a": "#e8b6bf"
+    },
+    {
+     "name": "Black",
+     "p": "#26222a",
+     "s": "#17141a",
+     "a": "#efc8cf"
+    },
+    {
+     "name": "Cobalt",
+     "p": "#2a3350",
+     "s": "#1d243b",
+     "a": "#f0d0d6"
+    }
+   ],
+   "layers": [
+    {
+     "t": "path",
+     "d": "M17 32 C15 22 8 16 4 8",
+     "stroke": "#7a5a3a",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M17 32 C19 20 26 14 30 4",
+     "stroke": "#7a5a3a",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M17 32 C17 22 18 14 16 6",
+     "stroke": "#7a5a3a",
+     "sw": 1.5,
+     "fill": "none",
+     "flat": true
+    },
+    {
+     "t": "circle",
+     "cx": 5,
+     "cy": 9,
+     "r": 2.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 9,
+     "cy": 15,
+     "r": 2.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 13,
+     "cy": 21,
+     "r": 2.4,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 29,
+     "cy": 5,
+     "r": 2.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 26,
+     "cy": 12,
+     "r": 2.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 22,
+     "cy": 18,
+     "r": 2.4,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 16,
+     "cy": 7,
+     "r": 2.6,
+     "fill": "a"
+    },
+    {
+     "t": "circle",
+     "cx": 18,
+     "cy": 14,
+     "r": 2.4,
+     "fill": "a"
+    },
+    {
+     "t": "path",
+     "d": "M11 56 L23 56 C27 48 26 40 21 36 L21 32 L13 32 L13 36 C8 40 7 48 11 56Z",
+     "fill": "p"
+    },
+    {
+     "t": "path",
+     "d": "M10 46 Q17 49 24 46",
+     "stroke": "s",
+     "sw": 1.2,
+     "fill": "none",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "summer-fan",
+   "name": "Breezy desk fan",
+   "blurb": "Summer only. Whirrs cheerfully.",
+   "category": "tech",
+   "tier": 1,
+   "rarity": "seasonal",
+   "season": {
+    "from": 6,
+    "to": 8
+   },
+   "zones": [
+    "floor",
+    "sill"
+   ],
+   "size": 1,
+   "w": 34,
+   "h": 56,
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#c9a050",
+     "s": "#8a6a32",
+     "a": "#2a2426"
+    },
+    {
+     "name": "Black",
+     "p": "#3a3438",
+     "s": "#1a1617",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "ellipse",
+     "cx": 17,
+     "cy": 53,
+     "rx": 12,
+     "ry": 3.5,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 15.5,
+     "y": 30,
+     "w": 3,
+     "h": 23,
+     "fill": "s"
+    },
+    {
+     "t": "circle",
+     "cx": 17,
+     "cy": 18,
+     "r": 16,
+     "fill": "#ffffff",
+     "o": 0.55,
+     "stroke": "s",
+     "sw": 1.5
+    },
+    {
+     "t": "path",
+     "d": "M17 18 C13 12 14 4 17 4 C20 4 21 12 17 18Z",
+     "fill": "p",
+     "flat": true,
+     "anim": "spin",
+     "at": [
+      17,
+      18
+     ]
+    },
+    {
+     "t": "path",
+     "d": "M17 18 C13 12 14 4 17 4 C20 4 21 12 17 18Z",
+     "fill": "p",
+     "flat": true,
+     "rot": 120,
+     "anim": "spin",
+     "at": [
+      17,
+      18
+     ]
+    },
+    {
+     "t": "path",
+     "d": "M17 18 C13 12 14 4 17 4 C20 4 21 12 17 18Z",
+     "fill": "p",
+     "flat": true,
+     "rot": 240,
+     "anim": "spin",
+     "at": [
+      17,
+      18
+     ]
+    },
+    {
+     "t": "circle",
+     "cx": 17,
+     "cy": 18,
+     "r": 2.5,
+     "fill": "a",
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "neon-moon",
+   "name": "Neon moon",
+   "blurb": "A rare find. Hums a little, glows a lot.",
+   "category": "lighting",
+   "tier": 3,
+   "rarity": "surprise",
+   "zones": [
+    "wall"
+   ],
+   "size": 1,
+   "w": 44,
+   "h": 44,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Rose neon",
+     "p": "#ff7aa8",
+     "s": "#ffc2d6",
+     "a": "#3a2a3a"
+    },
+    {
+     "name": "Amber neon",
+     "p": "#ffb35c",
+     "s": "#ffe2b0",
+     "a": "#3a2a3a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 22,
+     "cy": 22,
+     "r": 22,
+     "fill": "p",
+     "o": 0.5,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 2,
+     "w": 40,
+     "h": 40,
+     "r": 6,
+     "fill": "a",
+     "o": 0.35,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M26 8 A14 14 0 1 0 34 34 A11 11 0 1 1 26 8Z",
+     "stroke": "p",
+     "sw": 2.6,
+     "fill": "none",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "path",
+     "d": "M26 8 A14 14 0 1 0 34 34 A11 11 0 1 1 26 8Z",
+     "stroke": "s",
+     "sw": 0.9,
+     "fill": "none",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "star",
+     "cx": 33,
+     "cy": 15,
+     "r": 2.6,
+     "fill": "s",
+     "flat": true,
+     "anim": "twinkle"
+    }
+   ]
+  },
+  {
+   "id": "snail-terrarium",
+   "name": "Snail terrarium",
+   "blurb": "A surprise friend called Gerald. Slow and steady.",
+   "category": "whimsy",
+   "tier": 3,
+   "rarity": "surprise",
+   "zones": [
+    "sill",
+    "floor"
+   ],
+   "size": 1,
+   "w": 30,
+   "h": 36,
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#b8904a",
+     "s": "#8a6a32",
+     "a": "#a87050"
+    },
+    {
+     "name": "Copper",
+     "p": "#b86a42",
+     "s": "#7a4428",
+     "a": "#c99a8a"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 3,
+     "y": 7,
+     "w": 24,
+     "h": 29,
+     "r": 6,
+     "fill": "#e3f4f1",
+     "o": 0.85
+    },
+    {
+     "t": "path",
+     "d": "M3 27 Q10 21 16 26 T27 25 L27 30 Q27 36 22 36 L8 36 Q3 36 3 31Z",
+     "fill": "#8fc78f",
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 8,
+     "y": 21,
+     "w": 2,
+     "h": 5,
+     "fill": "#fff6e8",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 9,
+     "cy": 21,
+     "rx": 3.5,
+     "ry": 2,
+     "fill": "#f28482",
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 19,
+     "cy": 25.5,
+     "rx": 6,
+     "ry": 1.6,
+     "fill": "#f3d9b1",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "line",
+     "pts": [
+      24,
+      25,
+      25.5,
+      21
+     ],
+     "stroke": "#f3d9b1",
+     "sw": 0.8,
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "circle",
+     "cx": 18,
+     "cy": 22,
+     "r": 3.8,
+     "fill": "a",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "path",
+     "d": "M18 22 m-1.6 0 a1.6 1.6 0 1 1 1.6 1.6",
+     "stroke": "#ffffff",
+     "sw": 0.7,
+     "o": 0.7,
+     "fill": "none",
+     "flat": true,
+     "anim": "bob"
+    },
+    {
+     "t": "rect",
+     "x": 5,
+     "y": 3,
+     "w": 20,
+     "h": 5,
+     "r": 2,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 6,
+     "y": 8,
+     "w": 3,
+     "h": 18,
+     "r": 1.5,
+     "fill": "#ffffff",
+     "o": 0.45,
+     "flat": true
+    }
+   ]
+  },
+  {
+   "id": "candle-cluster",
+   "name": "Candle cluster",
+   "blurb": "Three pillars, three little flames.",
+   "category": "lighting",
+   "tier": 1,
+   "rarity": "standard",
+   "zones": [
+    "sill",
+    "floor"
+   ],
+   "size": 1,
+   "w": 30,
+   "h": 34,
+   "tags": [
+    "light"
+   ],
+   "palettes": [
+    {
+     "name": "Ivory",
+     "p": "#efe3cc",
+     "s": "#d8c8aa",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Black",
+     "p": "#2e2a2e",
+     "s": "#1e1b1e",
+     "a": "#c9a96b"
+    },
+    {
+     "name": "Oxblood",
+     "p": "#7a2f3a",
+     "s": "#5c222b",
+     "a": "#c9a96b"
+    }
+   ],
+   "layers": [
+    {
+     "t": "circle",
+     "cx": 15,
+     "cy": 14,
+     "r": 18,
+     "fill": "#ffc070",
+     "o": 0.6,
+     "glow": true,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 18,
+     "w": 8,
+     "h": 16,
+     "r": 1.5,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 11,
+     "y": 10,
+     "w": 9,
+     "h": 24,
+     "r": 1.5,
+     "fill": "s"
+    },
+    {
+     "t": "rect",
+     "x": 21,
+     "y": 20,
+     "w": 7,
+     "h": 14,
+     "r": 1.5,
+     "fill": "p"
+    },
+    {
+     "t": "line",
+     "pts": [
+      6,
+      18,
+      6,
+      16
+     ],
+     "stroke": "#2a2020",
+     "sw": 0.8,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      15.5,
+      10,
+      15.5,
+      8
+     ],
+     "stroke": "#2a2020",
+     "sw": 0.8,
+     "flat": true
+    },
+    {
+     "t": "line",
+     "pts": [
+      24.5,
+      20,
+      24.5,
+      18
+     ],
+     "stroke": "#2a2020",
+     "sw": 0.8,
+     "flat": true
+    },
+    {
+     "t": "ellipse",
+     "cx": 6,
+     "cy": 14.5,
+     "rx": 1.6,
+     "ry": 2.8,
+     "fill": "#ffb347",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "ellipse",
+     "cx": 15.5,
+     "cy": 6.5,
+     "rx": 1.7,
+     "ry": 3,
+     "fill": "#ffb347",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "ellipse",
+     "cx": 24.5,
+     "cy": 16.5,
+     "rx": 1.5,
+     "ry": 2.6,
+     "fill": "#ffb347",
+     "flat": true,
+     "anim": "flicker"
+    },
+    {
+     "t": "rect",
+     "x": 0,
+     "y": 32,
+     "w": 30,
+     "h": 2.5,
+     "r": 1,
+     "fill": "a"
+    }
+   ]
+  },
+  {
+   "id": "bar-cart",
+   "name": "Brass bar cart",
+   "blurb": "A nightcap within arm's reach.",
+   "category": "furniture",
+   "tier": 2,
+   "rarity": "standard",
+   "zones": [
+    "floor"
+   ],
+   "size": 2,
+   "w": 60,
+   "h": 58,
+   "palettes": [
+    {
+     "name": "Brass",
+     "p": "#c9a050",
+     "s": "#8a6a32",
+     "a": "#7a2f3a"
+    },
+    {
+     "name": "Black",
+     "p": "#2a2426",
+     "s": "#151213",
+     "a": "#2f6b57"
+    }
+   ],
+   "layers": [
+    {
+     "t": "rect",
+     "x": 4,
+     "y": 14,
+     "w": 3,
+     "h": 36,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 53,
+     "y": 14,
+     "w": 3,
+     "h": 36,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 28,
+     "w": 56,
+     "h": 3,
+     "r": 1,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 2,
+     "y": 46,
+     "w": 56,
+     "h": 3,
+     "r": 1,
+     "fill": "p"
+    },
+    {
+     "t": "rect",
+     "x": 12,
+     "y": 10,
+     "w": 7,
+     "h": 18,
+     "r": 2,
+     "fill": "a"
+    },
+    {
+     "t": "rect",
+     "x": 14,
+     "y": 5,
+     "w": 3,
+     "h": 6,
+     "fill": "a"
+    },
+    {
+     "t": "rect",
+     "x": 22,
+     "y": 14,
+     "w": 8,
+     "h": 14,
+     "r": 2,
+     "fill": "#c98a3a",
+     "o": 0.9
+    },
+    {
+     "t": "rect",
+     "x": 24.5,
+     "y": 9,
+     "w": 3,
+     "h": 6,
+     "fill": "#c98a3a"
+    },
+    {
+     "t": "path",
+     "d": "M36 18 L44 18 L41 24 L39 24Z",
+     "fill": "#e8dcc8",
+     "o": 0.8
+    },
+    {
+     "t": "line",
+     "pts": [
+      40,
+      24,
+      40,
+      28
+     ],
+     "stroke": "#e8dcc8",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "path",
+     "d": "M46 20 L52 20 L50 25 L48 25Z",
+     "fill": "#e8dcc8",
+     "o": 0.8
+    },
+    {
+     "t": "line",
+     "pts": [
+      49,
+      25,
+      49,
+      28
+     ],
+     "stroke": "#e8dcc8",
+     "sw": 1,
+     "flat": true
+    },
+    {
+     "t": "rect",
+     "x": 10,
+     "y": 36,
+     "w": 20,
+     "h": 10,
+     "r": 2,
+     "fill": "#5c3c28"
+    },
+    {
+     "t": "circle",
+     "cx": 42,
+     "cy": 41,
+     "r": 5,
+     "fill": "#7a2f3a"
+    },
+    {
+     "t": "circle",
+     "cx": 8,
+     "cy": 53,
+     "r": 4,
+     "fill": "s"
+    },
+    {
+     "t": "circle",
+     "cx": 52,
+     "cy": 53,
+     "r": 4,
+     "fill": "s"
+    }
+   ]
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "plain-paper",
+   "name": "Bare plaster",
+   "blurb": "Unfinished, honest, a bit echoey.",
+   "kind": "wallpaper",
+   "tier": 1,
+   "rarity": "starter",
+   "pattern": "plain",
+   "colors": [
+    "#4a3f45"
+   ]
+  },
+  {
+   "id": "bare-boards",
+   "name": "Bare boards",
+   "blurb": "Scuffed old floorboards.",
+   "kind": "flooring",
+   "tier": 1,
+   "rarity": "starter",
+   "pattern": "plain",
+   "colors": [
+    "#3b2f2a",
+    "#30261f"
+   ]
+  },
+  {
+   "id": "soft-stripes",
+   "name": "Oxblood stripe",
+   "blurb": "Deep red stripes, like an old library.",
+   "kind": "wallpaper",
+   "tier": 1,
+   "rarity": "standard",
+   "pattern": "stripes",
+   "colors": [
+    "#5a2a30",
+    "#4c2328"
+   ]
+  },
+  {
+   "id": "warm-planks",
+   "name": "Walnut planks",
+   "blurb": "Warm, dark, freshly oiled.",
+   "kind": "flooring",
+   "tier": 1,
+   "rarity": "standard",
+   "pattern": "planks",
+   "colors": [
+    "#6b4a35",
+    "#5c3f2d",
+    "#4e3526"
+   ]
+  },
+  {
+   "id": "polka-dots",
+   "name": "Midnight dots",
+   "blurb": "Tiny gold dots on navy.",
+   "kind": "wallpaper",
+   "tier": 2,
+   "rarity": "standard",
+   "pattern": "dots",
+   "colors": [
+    "#23304a",
+    "#c9a96b"
+   ]
+  },
+  {
+   "id": "mint-gingham",
+   "name": "Moss tweed",
+   "blurb": "Woven greens, very country house.",
+   "kind": "wallpaper",
+   "tier": 2,
+   "rarity": "standard",
+   "pattern": "gingham",
+   "colors": [
+    "#33473b",
+    "#2a3c31"
+   ]
+  },
+  {
+   "id": "checker-tiles",
+   "name": "Bistro tiles",
+   "blurb": "Black and bone checkerboard.",
+   "kind": "flooring",
+   "tier": 2,
+   "rarity": "standard",
+   "pattern": "checker",
+   "colors": [
+    "#2a2526",
+    "#c9b9a3"
+   ]
+  },
+  {
+   "id": "starry-night",
+   "name": "Night sky",
+   "blurb": "Gold stars on deep indigo.",
+   "kind": "wallpaper",
+   "tier": 3,
+   "rarity": "standard",
+   "pattern": "stars",
+   "colors": [
+    "#1d2340",
+    "#e0c07a"
+   ]
+  },
+  {
+   "id": "scallop-shells",
+   "name": "Plum scallop",
+   "blurb": "Moody plum fans.",
+   "kind": "wallpaper",
+   "tier": 3,
+   "rarity": "standard",
+   "pattern": "scallop",
+   "colors": [
+    "#3d2a40",
+    "#57405a"
+   ]
+  },
+  {
+   "id": "vine-trellis",
+   "name": "Botanical",
+   "blurb": "Dark leaves and terracotta buds.",
+   "kind": "wallpaper",
+   "tier": 3,
+   "rarity": "standard",
+   "pattern": "vines",
+   "colors": [
+    "#1f3a32",
+    "#4f7a5e",
+    "#c98f6d"
+   ]
+  },
+  {
+   "id": "herringbone",
+   "name": "Herringbone parquet",
+   "blurb": "Grand old apartment floors.",
+   "kind": "flooring",
+   "tier": 3,
+   "rarity": "standard",
+   "pattern": "herringbone",
+   "colors": [
+    "#7a5236",
+    "#5e3f2a"
+   ]
+  },
+  {
+   "id": "terrazzo",
+   "name": "Dark terrazzo",
+   "blurb": "Speckled with brass and garnet.",
+   "kind": "flooring",
+   "tier": 3,
+   "rarity": "standard",
+   "pattern": "terrazzo",
+   "colors": [
+    "#3a3236",
+    "#c9a96b",
+    "#8c3a4b",
+    "#2f6b57"
+   ]
+  }
+ ]
+}
