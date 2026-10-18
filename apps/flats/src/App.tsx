@@ -41,7 +41,7 @@ export function App() {
   const [session, setSession] = useState<Session | null>(() => backend.currentSession());
   const [snapshot, setSnapshot] = useState<GroupSnapshot | null>(null);
   const [tab, setTab] = useState<Tab>("home");
-  const [visit, setVisit] = useState<{ playerId: string; fromRect: DOMRect | null } | null>(null);
+  const [visit, setVisit] = useState<{ playerId: string; fromRect: DOMRect | null; glow: number } | null>(null);
   const [unpackPresent, setUnpackPresent] = useState<Present | null>(null);
   const [placeRequest, setPlaceRequest] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"settings" | "invite" | null>(null);
@@ -200,7 +200,8 @@ export function App() {
           day={day}
           lighting={lighting}
           reducedMotion={reducedMotion}
-          onOpenFlat={(playerId, fromRect) => setVisit({ playerId, fromRect })}
+          openPlayerId={visit?.playerId ?? null}
+          onOpenFlat={(playerId, fromRect, glow) => setVisit({ playerId, fromRect, glow })}
           onInvite={() => setSheet("invite")}
         />
       )}
@@ -224,6 +225,7 @@ export function App() {
           reducedMotion={reducedMotion}
           reactions={snapshot.reactions}
           fromRect={visit.fromRect}
+          fromGlow={visit.glow}
           onReact={async (kind: ReactionKind, variant?: number) => {
             const sent = await run(() => backend.react(session, visitedPlayer.id, kind, day, variant));
             if (!sent) return false;

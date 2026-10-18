@@ -9,8 +9,14 @@ import type { Player, Reaction, ReactionKind } from "../game/types";
 import { playChime, playPop } from "./sound";
 
 export const STICKERS = ["✦", "♥", "☾", "❀", "★", "✧"];
-const ZOOM_MS = 520;
-const ZOOM_EASING = "cubic-bezier(0.2, 0.9, 0.25, 1.08)";
+const ZOOM_IN_MS = 720;
+const ZOOM_OUT_MS = 560;
+/** Ease-out-quint for zooming in (fast start, long gentle landing); ease-in-out for zooming out. */
+const ZOOM_IN_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const ZOOM_OUT_EASING = "cubic-bezier(0.65, 0, 0.35, 1)";
+/** Match the building window's tint (see .window-dim / .window-warm) so the zoom starts seamlessly. */
+const windowDimOpacity = (glow: number) => (1 - glow) * 0.72;
+const windowWarmOpacity = (glow: number) => glow * 0.3;
 
 interface VisitProps {
   player: Player;
@@ -21,27 +27,34 @@ interface VisitProps {
   reducedMotion: boolean;
   reactions: Reaction[];
   fromRect: DOMRect | null;
+  /** Brightness of the building window we zoom out of, so its tint can fade away smoothly. */
+  fromGlow: number;
   onReact: (kind: ReactionKind, variant?: number) => Promise<boolean>;
   onClose: () => void;
   onGoHome: () => void;
 }
 
-/** Transform that maps `target`'s final box onto `source`, for FLIP-style zooms. */
+/**
+ * Transform that maps `target`'s final box onto `source` (FLIP). Scales uniformly so the room
+ * never squashes, centring vertically if the aspect ratios differ slightly.
+ */
 function flipTransform(source: DOMRect, target: DOMRect): string {
-  const scaleX = source.width / target.width;
-  const scaleY = source.height / target.height;
-  return `translate(${source.left - target.left}px, ${source.top - target.top}px) scale(${scaleX}, ${scaleY})`;
+  const scale = source.width / target.width;
+  const offsetY = source.top + (source.height - target.height * scale) / 2 - target.top;
+  return `translate(${source.left - target.left}px, ${offsetY}px) scale(${scale})`;
 }
 
 function windowRectFor(playerId: string): DOMRect | null {
-  const glass = document.querySelector(`.flat-window[data-player="${playerId}"] .window-glass`);
-  return glass ? glass.getBoundingClientRect() : null;
+  const room = document.querySelector(`.flat-window[data-player="${playerId}"] .window-glass .room-scene`);
+  return room ? room.getBoundingClientRect() : null;
 }
 
 export function Visit(props: VisitProps) {
-  const { player, isMe, meId, day, lighting, reducedMotion, reactions, fromRect, onReact, onClose, onGoHome } = props;
+  const { player, isMe, meId, day, lighting, reducedMotion, reactions, fromRect, fromGlow, onReact, onClose, onGoHome } = props;
   const roomRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const dimVeilRef = useRef<HTMLDivElement>(null);
+  const warmVeilRef = useRef<HTMLDivElement>(null);
   const [celebrateKey, setCelebrateKey] = useState(0);
   const [treatKey, setTreatKey] = useState(0);
   const [flying, setFlying] = useState<{ id: number; emoji: string } | null>(null);
@@ -50,12 +63,12 @@ export function Visit(props: VisitProps) {
   useLayoutEffect(() => {
     const room = roomRef.current;
     if (!room || !fromRect || reducedMotion) return;
-    room.animate([{ transform: flipTransform(fromRect, room.getBoundingClientRect()) }, { transform: "none" }], {
-      duration: ZOOM_MS,
-      easing: ZOOM_EASING,
-    });
-    backdropRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ZOOM_MS * 0.6, easing: "ease-out" });
-  }, [fromRect, reducedMotion]);
+    const timing = { duration: ZOOM_IN_MS, easing: ZOOM_IN_EASING, fill: "both" as const };
+    room.animate([{ transform: flipTransform(fromRect, room.getBoundingClientRect()), borderRadius: "3px" }, { transform: "none", borderRadius: "12px" }], timing);
+    dimVeilRef.current?.animate([{ opacity: windowDimOpacity(fromGlow) }, { opacity: 0 }], timing);
+    warmVeilRef.current?.animate([{ opacity: windowWarmOpacity(fromGlow) }, { opacity: 0 }], timing);
+    backdropRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ZOOM_IN_MS * 0.75, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "both" });
+  }, [fromRect, fromGlow, reducedMotion]);
 
   const close = () => {
     if (closing) return;
@@ -66,12 +79,14 @@ export function Visit(props: VisitProps) {
       return;
     }
     setClosing(true);
-    const animation = room.animate([{ transform: "none" }, { transform: flipTransform(target, room.getBoundingClientRect()) }], {
-      duration: ZOOM_MS * 0.8,
-      easing: "cubic-bezier(0.5, 0, 0.75, 0)",
-      fill: "forwards",
-    });
-    backdropRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ZOOM_MS * 0.8, fill: "forwards" });
+    const timing = { duration: ZOOM_OUT_MS, easing: ZOOM_OUT_EASING, fill: "forwards" as const };
+    const animation = room.animate(
+      [{ transform: "none", borderRadius: "12px" }, { transform: flipTransform(target, room.getBoundingClientRect()), borderRadius: "3px" }],
+      timing,
+    );
+    dimVeilRef.current?.animate([{ opacity: 0 }, { opacity: windowDimOpacity(fromGlow) }], timing);
+    warmVeilRef.current?.animate([{ opacity: 0 }, { opacity: windowWarmOpacity(fromGlow) }], timing);
+    backdropRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], { ...timing, easing: "cubic-bezier(0.32, 0, 0.67, 0)" });
     animation.onfinish = onClose;
   };
 
@@ -119,6 +134,8 @@ export function Visit(props: VisitProps) {
             treatKey={treatKey}
             stickers={stickers}
           />
+          <div className="visit-veil visit-veil-dim" ref={dimVeilRef} aria-hidden="true" />
+          <div className="visit-veil visit-veil-warm" ref={warmVeilRef} aria-hidden="true" />
           {flying && (
             <span key={flying.id} className="flying-reaction" aria-hidden="true">
               {flying.emoji}

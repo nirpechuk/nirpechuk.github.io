@@ -5,7 +5,7 @@
  */
 
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
@@ -14,7 +14,8 @@ import type { GroupSnapshot, Player } from "../game/types";
 import { playPop } from "./sound";
 
 const FLATS_PER_FLOOR = 2;
-const PANE_SWING_MS = 380;
+/** The zoom starts while the panes are still swinging, so opening reads as one motion. */
+const ZOOM_START_DELAY_MS = 150;
 const FLOWER_COLORS = ["#d9707a", "#e8a050", "#b08ad0", "#d98a9a", "#8ab0d8"];
 /** Window brightness by workouts this week: a quiet week is a dim window, a busy one glows. */
 const GLOW_BY_WEEKLY_COUNT = [0.08, 0.42, 0.62, 0.8, 1];
@@ -31,7 +32,9 @@ interface BuildingProps {
   day: string;
   lighting: Lighting;
   reducedMotion: boolean;
-  onOpenFlat: (playerId: string, fromRect: DOMRect) => void;
+  /** Player whose flat is open in the visit view; their window stays open meanwhile. */
+  openPlayerId: string | null;
+  onOpenFlat: (playerId: string, fromRect: DOMRect, glow: number) => void;
   onInvite: () => void;
 }
 
@@ -59,6 +62,7 @@ function FlatWindow({
   day,
   lighting,
   reducedMotion,
+  isOpen,
   onOpen,
 }: {
   player: Player;
@@ -66,31 +70,30 @@ function FlatWindow({
   day: string;
   lighting: Lighting;
   reducedMotion: boolean;
-  onOpen: (fromRect: DOMRect) => void;
+  isOpen: boolean;
+  onOpen: (fromRect: DOMRect, glow: number) => void;
 }) {
   const [opening, setOpening] = useState(false);
   const weekCount = workoutsInWeekOf(player, day);
+  const glow = windowGlow(weekCount);
+  useEffect(() => {
+    if (isOpen) setOpening(false);
+  }, [isOpen]);
   return (
     <div className={`flat-slot${isMe ? " is-me" : ""}`}>
       <button
         type="button"
-        className={`flat-window${opening ? " is-opening" : ""}`}
-        style={{ "--glow": windowGlow(weekCount) } as CSSProperties}
+        className={`flat-window${opening || isOpen ? " is-opening" : ""}`}
+        style={{ "--glow": glow } as CSSProperties}
         data-player={player.id}
         aria-label={`Visit ${player.name}'s flat`}
         onClick={(event) => {
-          if (opening) return;
+          if (opening || isOpen) return;
           playPop();
-          const glass = event.currentTarget.querySelector(".window-glass");
-          if (!glass) throw new Error("Window glass element missing.");
+          const room = event.currentTarget.querySelector(".window-glass .room-scene");
+          if (!room) throw new Error("Window room element missing.");
           setOpening(true);
-          window.setTimeout(
-            () => {
-              onOpen(glass.getBoundingClientRect());
-              setOpening(false);
-            },
-            reducedMotion ? 0 : PANE_SWING_MS,
-          );
+          window.setTimeout(() => onOpen(room.getBoundingClientRect(), glow), reducedMotion ? 0 : ZOOM_START_DELAY_MS);
         }}
       >
         <div className="window-glass">
@@ -143,7 +146,7 @@ function Curtained() {
   );
 }
 
-export function Building({ snapshot, meId, day, lighting, reducedMotion, onOpenFlat, onInvite }: BuildingProps) {
+export function Building({ snapshot, meId, day, lighting, reducedMotion, openPlayerId, onOpenFlat, onInvite }: BuildingProps) {
   const slots: WindowSlot[] = [
     ...snapshot.players.map((player) => ({ kind: "flat" as const, player })),
     { kind: "vacancy" as const },
@@ -192,7 +195,8 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, onOpenF
                       day={day}
                       lighting={lighting}
                       reducedMotion={reducedMotion}
-                      onOpen={(rect) => onOpenFlat(slot.player.id, rect)}
+                      isOpen={openPlayerId === slot.player.id}
+                      onOpen={(rect, glow) => onOpenFlat(slot.player.id, rect, glow)}
                     />
                   );
                 })}

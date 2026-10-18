@@ -1875,7 +1875,7 @@ h3 {
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-  animation: fade-in 0.5s 0.25s ease both;
+  animation: fade-in 0.45s 0.5s ease both;
 }
 
 .back-button {
@@ -1890,23 +1890,51 @@ h3 {
   white-space: nowrap;
 }
 
+.visit-veil {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.visit-veil-dim {
+  background: #0c0a18;
+}
+
+.visit-veil-warm {
+  background: radial-gradient(circle at 50% 35%, rgba(255, 210, 140, 0.9), rgba(255, 160, 80, 0.2) 70%);
+  mix-blend-mode: screen;
+}
+
 .visit-room {
   position: relative;
+  overflow: hidden;
+  will-change: transform;
   transform-origin: 0 0;
   border-radius: 12px;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55), 0 0 60px rgba(242, 166, 90, 0.1);
 }
 
+/* An animation (not a transition) so it overrides the fade-in animation's held end state. */
 .visit.is-closing .visit-header,
 .visit.is-closing .reaction-bar {
-  opacity: 0;
-  transition: opacity 0.15s;
+  animation: fade-out 0.18s ease forwards;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .reaction-bar {
   margin-top: 16px;
   text-align: center;
-  animation: rise-in 0.6s 0.35s var(--ease) both;
+  animation: rise-in 0.5s 0.55s var(--ease) both;
 }
 
 .reaction-buttons {
