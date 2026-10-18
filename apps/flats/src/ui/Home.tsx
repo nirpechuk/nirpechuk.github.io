@@ -10,6 +10,7 @@ import { RoomScene } from "../art/RoomScene";
 import { SurfaceThumb } from "../art/Surfaces";
 import { CATALOG, itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
+import { addDays, weekStart } from "../game/dates";
 import { hasLoggedOn, presentsWaiting } from "../game/progression";
 import type { Slot } from "../game/room";
 import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, SLOTS, storedItemIds } from "../game/room";
@@ -67,6 +68,23 @@ function slotCenterY(slot: Slot, item: ItemDef): number {
   if (slot.anchor === "top") return slot.y + height / 2;
   if (slot.anchor === "bottom") return slot.y - height / 2;
   return slot.y;
+}
+
+/** This week at a glance: one dot per day, lit on workout days, today ringed. */
+function WeekDots({ player, day, large = false }: { player: Player; day: string; large?: boolean }) {
+  const monday = weekStart(day);
+  const days = Array.from({ length: 7 }, (_, index) => addDays(monday, index));
+  const count = days.filter((weekDay) => hasLoggedOn(player, weekDay)).length;
+  return (
+    <div className={`week-dots${large ? " is-large" : ""}`} role="img" aria-label={`${count} workout${count === 1 ? "" : "s"} this week`}>
+      {days.map((weekDay) => (
+        <span
+          key={weekDay}
+          className={`week-dot${hasLoggedOn(player, weekDay) ? " is-done" : ""}${weekDay === day ? " is-today" : ""}${weekDay > day ? " is-future" : ""}`}
+        />
+      ))}
+    </div>
+  );
 }
 
 export function Home(props: HomeProps) {
@@ -399,10 +417,7 @@ export function Home(props: HomeProps) {
         <section className="log-panel">
           {loggedToday ? (
             <>
-              <div className="log-done" aria-label="Workout logged today">
-                <span aria-hidden="true">✓</span>
-                {todaysWorkout?.type ? ` ${WORKOUT_TYPES.find((option) => option.type === todaysWorkout.type)?.label}` : ""}
-              </div>
+              <WeekDots player={me} day={day} large />
               {todaysWorkout && !todaysWorkout.type && typeDismissedDay !== day && (
                 <div className="type-row">
                   {WORKOUT_TYPES.map((option) => (
@@ -433,6 +448,7 @@ export function Home(props: HomeProps) {
               <span className="log-button-face">I worked out today</span>
             </button>
           )}
+          {!loggedToday && <WeekDots player={me} day={day} />}
           <div className="home-actions">
             <button type="button" className="chip chip-large" onClick={() => setEditing(true)}>
               Decorate {stored.length > 0 && <span className="badge">{stored.length}</span>}

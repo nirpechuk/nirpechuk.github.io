@@ -324,18 +324,48 @@ h3 {
   color: var(--ink);
 }
 
-.log-done {
-  margin: 4px auto 0;
-  width: fit-content;
-  padding: 12px 22px;
-  border-radius: 999px;
-  border: 1px solid rgba(242, 166, 90, 0.35);
-  color: var(--amber-bright);
-  font-weight: 500;
-  text-shadow: 0 0 14px rgba(242, 166, 90, 0.5);
-  background: rgba(242, 166, 90, 0.08);
+.week-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 14px 0 2px;
 }
 
+.week-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 222, 180, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.week-dot.is-future {
+  opacity: 0.45;
+}
+
+.week-dot.is-today {
+  border-color: rgba(255, 207, 138, 0.7);
+}
+
+.week-dot.is-done {
+  border-color: transparent;
+  background: radial-gradient(circle, #ffe6b8, var(--amber) 70%);
+  box-shadow: 0 0 10px 2px rgba(242, 166, 90, 0.55);
+}
+
+.week-dot.is-done.is-today {
+  animation: lamp-pulse 2.6s ease-in-out infinite;
+}
+
+.week-dots.is-large {
+  gap: 14px;
+  margin: 10px 0 4px;
+}
+
+.week-dots.is-large .week-dot {
+  width: 14px;
+  height: 14px;
+}
 .type-dismiss {
   color: var(--ink-faint);
 }
@@ -1228,12 +1258,20 @@ h3 {
   box-shadow: inset -10px -4px 0 0 #121733, 0 0 30px 6px rgba(243, 230, 200, 0.2);
 }
 
+/*
+ * The building and the street share one perspective transform so the pavement and road
+ * recede with the facade instead of meeting it at a flat, mismatched edge.
+ */
+.street-block {
+  position: relative;
+  transform: perspective(1500px) rotateY(-12deg);
+  transform-origin: 6% 100%;
+}
+
 .building {
   position: relative;
   width: min(82%, 380px);
   margin: 0 auto 0 6%;
-  transform: perspective(1500px) rotateY(-12deg);
-  transform-origin: 0 50%;
 }
 
 /*
@@ -1246,7 +1284,7 @@ h3 {
   bottom: 0;
   left: 100%;
   width: 54px;
-  clip-path: polygon(0 0, 100% 3%, 100% 97%, 0 100%);
+  clip-path: polygon(0 0, 100% 3%, 100% 100%, 0 100%);
   background-color: #2b1a19;
   background-image:
     repeating-linear-gradient(-3deg, rgba(0, 0, 0, 0.25) 0 1.5px, transparent 1.5px 17px),
@@ -1743,13 +1781,25 @@ h3 {
 
 .sidewalk {
   position: relative;
-  height: 46px;
-  background: linear-gradient(#3a3036 0 9px, #241e24 9px);
+  height: 40px;
+  margin: 0 -60%;
+  background: linear-gradient(#3e3439 0 7px, #2a2329 7px);
+  box-shadow: 0 -1px 0 rgba(255, 225, 190, 0.08);
+}
+
+.road {
+  position: relative;
+  height: 54px;
+  margin: 0 -60%;
+  background:
+    repeating-linear-gradient(90deg, rgba(240, 210, 150, 0.45) 0 28px, transparent 28px 60px) 0 50% / 100% 2px no-repeat,
+    linear-gradient(#1c171c, #141015);
+  border-top: 3px solid #4a3f45;
 }
 
 .street-tree {
   position: absolute;
-  left: 6%;
+  left: 31%;
   bottom: 30px;
   width: 44px;
   height: 64px;
@@ -1770,7 +1820,7 @@ h3 {
 
 .street-lamp {
   position: absolute;
-  right: 6%;
+  right: 31%;
   bottom: 30px;
   width: 3px;
   height: 72px;

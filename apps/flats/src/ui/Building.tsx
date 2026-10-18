@@ -162,6 +162,7 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, onOpenF
           <span className="sky-cloud cloud-c" />
           <span className="sky-orb" />
         </div>
+        <div className="street-block">
         <div className="building">
           <span className="building-side" aria-hidden="true" />
           <div className="roof" aria-hidden="true">
@@ -214,6 +215,8 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, onOpenF
         <div className="sidewalk" aria-hidden="true">
           <span className="street-tree" />
           <span className="street-lamp" />
+        </div>
+        <div className="road" aria-hidden="true" />
         </div>
       </div>
     </main>
