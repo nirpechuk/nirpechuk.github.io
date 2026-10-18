@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { CATALOG, validateCatalog } from "./catalog";
 import { addDays, weekStart } from "./dates";
 import { cosinessTitle, drawChoices, nextPresent, petMood, plantStage, presentTiers, presentsWaiting, weekRecap, weekStreak } from "./progression";
-import { emptyLayout, placeItem, projectWallPoint, SLOTS, storedItemIds, validSlots, VANISHING_POINT } from "./room";
+import { emptyLayout, placeItem, projectWallPoint, SLOTS, ownedItemIds, storedItemIds, validSlots, VANISHING_POINT } from "./room";
 import type { Catalog, Player } from "./types";
 
 const MONDAY = "2026-10-12";
@@ -175,6 +175,21 @@ describe("placement", () => {
     const second = placeItem(CATALOG, first.layout, "floorBC", { itemId: "canopy-bed", palette: 1, flip: true });
     expect(second.displacedItemId).toBe("comfy-sofa");
     expect(storedItemIds(CATALOG, { ...player, layout: second.layout })).toEqual(["comfy-sofa"]);
+  });
+
+  it("keeps placed furniture in Things and excludes wall and floor finishes", () => {
+    const layout = placeItem(CATALOG, emptyLayout(), "floorBC", { itemId: "comfy-sofa", palette: 2, flip: true }).layout;
+    const player = makePlayer([], {
+      layout,
+      unlocks: [
+        { id: "comfy-sofa", atWorkout: 1, day: MONDAY },
+        { id: "crate-shelf", atWorkout: 2, day: MONDAY },
+        { id: CATALOG.surfaces[0].id, atWorkout: 3, day: MONDAY },
+      ],
+    });
+    expect(ownedItemIds(CATALOG, player)).toEqual(["comfy-sofa", "crate-shelf"]);
+    expect(storedItemIds(CATALOG, player)).toEqual(["crate-shelf"]);
+    expect(ownedItemIds(CATALOG, { ...player, unlocks: [] })).toEqual(["comfy-sofa"]);
   });
 
   it("moves an already-placed item instead of duplicating it", () => {

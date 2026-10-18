@@ -1414,3 +1414,41 @@ dialog::backdrop {
     transition: none;
   }
 }
+
+/* Selected furniture stays movable, with its controls beside the room. */
+.selected-item-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #e7cfa626;
+  border-radius: 12px;
+  background: #120d0a55;
+}
+.selected-item-controls .item-menu-name {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.selected-item-controls .item-menu-swatches {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 0;
+}
+.selected-item-controls .item-menu-actions {
+  justify-content: flex-start;
+}
+.is-saving .selected-item-controls {
+  pointer-events: none;
+  opacity: 0.65;
+}
+.drawer-card .furniture-location {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.home-panel .drawer-card {
+  height: 142px;
+}

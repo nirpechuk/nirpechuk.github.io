@@ -16,7 +16,7 @@ import type { PetMood } from "../game/progression";
 import { addDays, weekStart } from "../game/dates";
 import { hasLoggedOn, presentsWaiting, nextPresent, workoutsInWeekOf } from "../game/progression";
 import type { Slot } from "../game/room";
-import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, roomSlots, storedItemIds } from "../game/room";
+import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, roomSlots, ownedItemIds, slotOfItem } from "../game/room";
 import type { ItemDef, Layout, Player, WorkoutType } from "../game/types";
 import { playPop, playRustle } from "./sound";
 
@@ -134,7 +134,11 @@ export function Home(props: HomeProps) {
   const loggedToday = hasLoggedOn(me, day);
   const todaysWorkout = me.workouts.find((workout) => workout.day === day);
   const waiting = presentsWaiting(me);
-  const stored = storedItemIds(CATALOG, me);
+  const furniture = ownedItemIds(CATALOG, me);
+  const selectItem = (itemId: string) => {
+    setHeldItemId(itemId);
+    setMenuSlotId(slotOfItem(me.layout, itemId));
+  };
   const box: BoxState = waiting > 0 ? "present" : null;
 
   useEffect(() => {
@@ -171,6 +175,7 @@ export function Home(props: HomeProps) {
     if (savingRef.current) return;
     playPop();
     setMenuSlotId(null);
+    setHeldItemId(null);
     await save(removeItem(me.layout, itemId));
   };
 
@@ -203,7 +208,7 @@ export function Home(props: HomeProps) {
       if (!pending.dragging) {
         if (Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD_PX) return;
         // From the drawer, a mostly sideways swipe is a scroll, not a drag.
-        if (!pending.fromSlot && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+        if (!pending.fromSlot && event.pointerType === "touch" && window.innerWidth < 900 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
           pendingRef.current = null;
           return;
         }
@@ -234,13 +239,8 @@ export function Home(props: HomeProps) {
         else setHeldItemId(null);
         return;
       }
-      if (pending.fromSlot) {
-        setMenuSlotId((current) => (current === pending.fromSlot ? null : pending.fromSlot));
-        setHeldItemId(null);
-      } else {
-        setHeldItemId((current) => (current === pending.itemId ? null : pending.itemId));
-        playPop();
-      }
+      selectItem(pending.itemId);
+      playPop();
     };
     const onCancel = () => {
       if (pendingRef.current?.longPress) clearTimeout(pendingRef.current.longPress);
@@ -283,24 +283,6 @@ export function Home(props: HomeProps) {
     }, LONG_PRESS_MS);
     pendingRef.current = pending;
   };
-
-  const menuPosition = (() => {
-    if (!menuSlotId || !svgRef.current || !roomWrapRef.current) return null;
-    const placement = me.layout.slots[menuSlotId];
-    if (!placement) return null;
-    const slot = slots.find((slot) => slot.id === menuSlotId)!;
-    const matrix = svgRef.current.getScreenCTM();
-    if (!matrix) return null;
-    const point = new DOMPoint(slot.x, slotCenterY(slot, itemById(placement.itemId))).matrixTransform(matrix);
-    const wrap = roomWrapRef.current.getBoundingClientRect();
-    const paletteCount = itemById(placement.itemId).palettes.length;
-    const menuWidth = Math.max(150, paletteCount * 28 + (paletteCount - 1) * 7 + 26);
-    const inset = menuWidth / 2 + 8;
-    return {
-      left: Math.max(inset, Math.min(wrap.width - inset, point.x - wrap.left)),
-      top: Math.max(132, point.y - wrap.top),
-    };
-  })();
 
   const updatePlacement = async (slotId: string, change: { palette?: number; flip?: boolean }) => {
     const placement = me.layout.slots[slotId];
@@ -354,54 +336,13 @@ export function Home(props: HomeProps) {
             onItemActivate={
               editing
                 ? (slotId) => {
-                    setMenuSlotId(slotId);
-                    setHeldItemId(null);
+                    selectItem(me.layout.slots[slotId].itemId);
                   }
                 : undefined
             }
             onItemPointerDown={editing ? startItemDrag : undefined}
             onBoxTap={onOpenPresent}
           />
-          {menuSlotId && menuItem && menuPlacement && menuPosition && (
-            <div className="item-menu card" style={{ left: menuPosition.left, top: menuPosition.top }}>
-              <p className="item-menu-name">{menuItem.name}</p>
-              <div className="item-menu-swatches">
-                {menuItem.palettes.map((palette, index) => (
-                  <button
-                    key={palette.name}
-                    type="button"
-                    className={`swatch${index === menuPlacement.palette ? " is-current" : ""}`}
-                    style={{ background: `linear-gradient(135deg, ${palette.p} 55%, ${palette.s} 55%)` }}
-                    onClick={() => void updatePlacement(menuSlotId, { palette: index })}
-                    aria-label={`${palette.name} colour`}
-                  />
-                ))}
-              </div>
-              <div className="item-menu-actions">
-                <button
-                  type="button"
-                  className="icon-chip"
-                  onClick={() => {
-                    setHeldItemId(menuPlacement.itemId);
-                    setMenuSlotId(null);
-                  }}
-                >
-                  Move
-                </button>
-                <button
-                  type="button"
-                  className="icon-chip"
-                  onClick={() => void updatePlacement(menuSlotId, { flip: !menuPlacement.flip })}
-                  aria-label="Flip"
-                >
-                  ⇄
-                </button>
-                <button type="button" className="icon-chip" onClick={() => void storeAway(menuPlacement.itemId)} aria-label="Put away">
-                  ⤓
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
       <aside className="home-panel" aria-label="Your flat and activity">
@@ -413,12 +354,49 @@ export function Home(props: HomeProps) {
               Find a spot for your <strong>{itemById(heldItemId).name.toLowerCase()}</strong>.
               {itemById(heldItemId).light ? " Light up a corner." : ""}
             </span>
-            <button className="chip" onClick={() => setHeldItemId(null)}>
+            <button
+              className="chip"
+              onClick={() => {
+                setHeldItemId(null);
+                setMenuSlotId(null);
+              }}
+            >
               Cancel
             </button>
           </div>
         )}
         {editing && !heldItemId && <p className="room-hint">Choose a thing, then tap a spot in your room.</p>}
+
+        {menuSlotId && menuItem && menuPlacement && (
+          <div className="selected-item-controls" aria-label="Selected furniture">
+            <p className="item-menu-name">{menuItem.name}</p>
+            <div className="item-menu-swatches">
+              {menuItem.palettes.map((palette, index) => (
+                <button
+                  key={palette.name}
+                  type="button"
+                  className={`swatch${index === menuPlacement.palette ? " is-current" : ""}`}
+                  style={{ background: `linear-gradient(135deg, ${palette.p} 55%, ${palette.s} 55%)` }}
+                  onClick={() => void updatePlacement(menuSlotId, { palette: index })}
+                  aria-label={`${palette.name} colour`}
+                />
+              ))}
+            </div>
+            <div className="item-menu-actions">
+              <button
+                type="button"
+                className="icon-chip"
+                onClick={() => void updatePlacement(menuSlotId, { flip: !menuPlacement.flip })}
+                aria-label="Flip"
+              >
+                ⇄
+              </button>
+              <button type="button" className="icon-chip" onClick={() => void storeAway(menuPlacement.itemId)} aria-label="Put away">
+                ⤓
+              </button>
+            </div>
+          </div>
+        )}
 
         {saveError && (
           <p className="save-status" role="alert">
@@ -441,7 +419,7 @@ export function Home(props: HomeProps) {
                   className={drawerTab === "items" ? "is-active" : ""}
                   onClick={() => setDrawerTab("items")}
                 >
-                  Things {stored.length > 0 && <span className="badge">{stored.length}</span>}
+                  Things {furniture.length > 0 && <span className="badge">{furniture.length}</span>}
                 </button>
                 <button
                   type="button"
@@ -467,15 +445,11 @@ export function Home(props: HomeProps) {
             </div>
             {drawerTab === "items" && (
               <div className="drawer-row">
-                {stored.length === 0 && (
-                  <p className="drawer-empty">
-                    {me.unlocks.length
-                      ? "Everything you own is in your flat. Tap a placed item to move it or put it away."
-                      : "Your shelf is empty. Log a workout and unpack a present to find something for your flat."}
-                  </p>
-                )}
-                {stored.map((itemId) => {
+                {furniture.length === 0 && <p className="drawer-empty">Log a workout and unpack a present to find something for your flat.</p>}
+                {furniture.map((itemId) => {
                   const item = itemById(itemId);
+                  const placedSlot = slotOfItem(me.layout, itemId);
+                  const placement = placedSlot ? me.layout.slots[placedSlot] : undefined;
                   return (
                     <button
                       key={itemId}
@@ -483,12 +457,14 @@ export function Home(props: HomeProps) {
                       className={`drawer-card${heldItemId === itemId ? " is-held" : ""}`}
                       onPointerDown={(event) => startDrawerDrag(event, itemId)}
                       onClick={(event) => {
-                        if (event.detail === 0) setHeldItemId(itemId);
+                        if (event.detail === 0) selectItem(itemId);
                       }}
-                      aria-label={item.name}
+                      aria-label={`${item.name}, ${placement ? "in room" : "stored"}`}
+                      aria-pressed={heldItemId === itemId}
                     >
-                      <ItemThumb item={item} size={66} />
+                      <ItemThumb item={item} paletteIndex={placement?.palette ?? 0} size={66} />
                       <span>{item.name}</span>
+                      <small className="furniture-location">{placement ? "In room" : "Stored"}</small>
                     </button>
                   );
                 })}
@@ -585,7 +561,7 @@ export function Home(props: HomeProps) {
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
                   <path d="M4 11V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5M3 10h3v5h12v-5h3v9H3Zm3 9v2m12-2v2" />
                 </svg>
-                Decorate {stored.length > 0 && <span className="badge">{stored.length}</span>}
+                Decorate {furniture.length > 0 && <span className="badge">{furniture.length}</span>}
               </button>
             </div>
           </section>

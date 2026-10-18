@@ -659,7 +659,7 @@ export function RoomScene(props: RoomSceneProps) {
       {heldItem && (
         <g className="slot-markers">
           {slots
-            .filter((slot) => validSlotIds.has(slot.id))
+            .filter((slot) => validSlotIds.has(slot.id) && player.layout.slots[slot.id]?.itemId !== heldItem.id)
             .map((slot) => {
               const width = Math.min(heldItem.w * itemScale(heldItem, slot), 190) + 10;
               const height = Math.min(heldItem.h * itemScale(heldItem, slot), 170) + 10;

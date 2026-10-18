@@ -260,6 +260,14 @@ export function slotOfItem(layout: Layout, itemId: string): string | null {
   return match ? match[0] : null;
 }
 
+/** Every owned furnishing, including items already placed in the flat. */
+export function ownedItemIds(catalog: Catalog, player: Player): string[] {
+  const itemIds = new Set(catalog.items.map((item) => item.id));
+  return [
+    ...new Set([...player.unlocks.map((unlock) => unlock.id), ...Object.values(player.layout.slots).map((placement) => placement.itemId)]),
+  ].filter((id) => itemIds.has(id));
+}
+
 /** Unlocked furniture and decor that is not currently placed. */
 export function storedItemIds(catalog: Catalog, player: Player): string[] {
   const placed = new Set(Object.values(player.layout.slots).map((placement) => placement.itemId));
