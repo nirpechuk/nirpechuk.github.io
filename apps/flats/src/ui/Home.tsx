@@ -256,7 +256,13 @@ export function Home(props: HomeProps) {
     if (!matrix) return null;
     const point = new DOMPoint(slot.x, slotCenterY(slot, itemById(placement.itemId))).matrixTransform(matrix);
     const wrap = roomWrapRef.current.getBoundingClientRect();
-    return { left: point.x - wrap.left, top: point.y - wrap.top };
+    const paletteCount = itemById(placement.itemId).palettes.length;
+    const menuWidth = Math.max(150, paletteCount * 28 + (paletteCount - 1) * 7 + 26);
+    const inset = menuWidth / 2 + 8;
+    return {
+      left: Math.max(inset, Math.min(wrap.width - inset, point.x - wrap.left)),
+      top: Math.max(132, point.y - wrap.top),
+    };
   })();
 
   const updatePlacement = async (slotId: string, change: { palette?: number; flip?: boolean }) => {
@@ -341,7 +347,13 @@ export function Home(props: HomeProps) {
         )}
       </div>
 
-      {!editing && <p className="room-hint">{waiting > 0 ? "You earned a little something. Tap to unwrap ✦" : "Tap around. Say hello."}</p>}
+      <p className="room-hint">
+        {editing
+          ? "Select an item for colors. Drag to move."
+          : waiting > 0
+            ? "You earned a little something. Tap to unwrap ✦"
+            : "Tap around. Say hello."}
+      </p>
 
       {editing ? (
         <section className="drawer card">

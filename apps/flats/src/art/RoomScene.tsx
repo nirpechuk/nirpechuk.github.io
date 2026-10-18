@@ -82,10 +82,49 @@ const WINDOW_TRANSFORM = `translate(${WINDOW_LEFT} ${WINDOW_FRAME.top}) scale(${
 const PET_SCALE = 1.2;
 const BOX_DEPTH = 0.1;
 
-function slotTransform(item: ItemDef, slot: Slot, flip: boolean): string {
+function WallPlane({ slot, children, hitTest = true }: { slot: Slot; children: ReactNode; hitTest?: boolean }) {
+  const projection = wallProjection(slot);
+  return (
+    <g transform={`translate(${slot.x} ${slot.y})`}>
+      {projection ? (
+        // SVG groups flatten 3D matrices. An HTML plane preserves the perspective
+        // divide while the inner SVG keeps the paper layers and their animations.
+        <foreignObject x={-128} y={-128} width={256} height={256} style={{ overflow: "visible", pointerEvents: "none" }}>
+          <div style={{ width: 256, height: 256, transform: projection, transformOrigin: "128px 128px", pointerEvents: "none" }}>
+            <svg width={256} height={256} viewBox="0 0 256 256" style={{ overflow: "visible", pointerEvents: "none" }}>
+              <g transform="translate(128 128)" pointerEvents={hitTest ? "visiblePainted" : "none"}>
+                {children}
+              </g>
+            </svg>
+          </div>
+        </foreignObject>
+      ) : (
+        children
+      )}
+    </g>
+  );
+}
+
+function ItemPlacement({
+  item,
+  slot,
+  flip,
+  children,
+  hitTest = true,
+}: {
+  item: ItemDef;
+  slot: Slot;
+  flip: boolean;
+  children: ReactNode;
+  hitTest?: boolean;
+}) {
   const anchorOffset = slot.anchor === "top" ? 0 : slot.anchor === "bottom" ? -item.h : -item.h / 2;
   const scale = itemScale(item, slot);
-  return `translate(${slot.x} ${slot.y}) ${wallProjection(slot)} scale(${flip ? -scale : scale} ${scale}) translate(${-item.w / 2} ${anchorOffset})`;
+  return (
+    <WallPlane slot={slot} hitTest={hitTest}>
+      <g transform={`scale(${flip ? -scale : scale} ${scale}) translate(${-item.w / 2} ${anchorOffset})`}>{children}</g>
+    </WallPlane>
+  );
 }
 
 function napSpot(item: ItemDef, slot: Slot, placement: Placement): PetSpot | null {
@@ -402,7 +441,7 @@ export function RoomScene(props: RoomSceneProps) {
             {slot.zone === "floor" && (
               <ellipse cx={slot.x} cy={slot.y - 1} rx={item.w * 0.42 * itemScale(item, slot)} ry="3.4" fill="rgba(12,6,16,0.3)" />
             )}
-            <g transform={slotTransform(item, slot, placement.flip)}>
+            <ItemPlacement item={item} slot={slot} flip={placement.flip}>
               <g className={freshItemId === item.id ? "item-enter" : undefined}>
                 <g className={swayClass} filter={isStaticWallArt ? `url(#${idPrefix}-lift)` : undefined}>
                   <ItemArt
@@ -415,7 +454,7 @@ export function RoomScene(props: RoomSceneProps) {
                   />
                 </g>
               </g>
-            </g>
+            </ItemPlacement>
           </g>
         ),
       };
@@ -588,18 +627,19 @@ export function RoomScene(props: RoomSceneProps) {
                 item.id,
                 placed.findIndex((entry) => entry.item.id === item.id)
               )}
-              transform={slotTransform(item, slot, placement.flip)}
             >
-              <g className={item.anim ? `anim anim-${item.anim}${slot.anchor === "top" ? "-top" : ""}` : undefined}>
-                <ItemArt
-                  item={item}
-                  paletteIndex={placement.palette}
-                  stage={stage}
-                  glowStrength={lighting.glow}
-                  pass="glow"
-                  reactionKey={animate ? activeObjects[item.id] : 0}
-                />
-              </g>
+              <ItemPlacement item={item} slot={slot} flip={placement.flip} hitTest={false}>
+                <g className={item.anim ? `anim anim-${item.anim}${slot.anchor === "top" ? "-top" : ""}` : undefined}>
+                  <ItemArt
+                    item={item}
+                    paletteIndex={placement.palette}
+                    stage={stage}
+                    glowStrength={lighting.glow}
+                    pass="glow"
+                    reactionKey={animate ? activeObjects[item.id] : 0}
+                  />
+                </g>
+              </ItemPlacement>
             </g>
           ))}
       </g>
@@ -635,9 +675,9 @@ export function RoomScene(props: RoomSceneProps) {
                     : undefined
                 }
               >
-                <g transform={`translate(${slot.x} ${slot.y}) ${wallProjection(slot)}`}>
+                <WallPlane slot={slot}>
                   <rect x={-width / 2} y={y - slot.y} width={width} height={height} rx="10" />
-                </g>
+                </WallPlane>
                 <text x={slot.x} y={y + height / 2 + 4}>
                   {occupied ? "swap" : "+"}
                 </text>

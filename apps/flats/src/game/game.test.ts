@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { CATALOG, validateCatalog } from "./catalog";
 import { addDays, weekStart } from "./dates";
 import { cosinessTitle, drawChoices, nextPresent, petMood, plantStage, presentTiers, presentsWaiting, weekRecap, weekStreak } from "./progression";
-import { emptyLayout, placeItem, SLOTS, storedItemIds, validSlots } from "./room";
+import { emptyLayout, placeItem, projectWallPoint, SLOTS, storedItemIds, validSlots, VANISHING_POINT } from "./room";
 import type { Catalog, Player } from "./types";
 
 const MONDAY = "2026-10-12";
@@ -181,6 +181,27 @@ describe("placement", () => {
     const placed = placeItem(CATALOG, emptyLayout(), "floorBL", { itemId: "crate-shelf", palette: 0, flip: false });
     const moved = placeItem(CATALOG, placed.layout, "floorBR", { itemId: "crate-shelf", palette: 0, flip: false });
     expect(Object.keys(moved.layout.slots)).toEqual(["floorBR"]);
+  });
+
+  it("makes side-wall edges converge and the far edge shorter", () => {
+    for (const slot of SLOTS.filter((entry) => entry.wall === "left" || entry.wall === "right")) {
+      const nearX = slot.wall === "left" ? -20 : 20;
+      const farX = -nearX;
+      const nearTop = projectWallPoint(slot, nearX, -20);
+      const nearBottom = projectWallPoint(slot, nearX, 20);
+      const farTop = projectWallPoint(slot, farX, -20);
+      const farBottom = projectWallPoint(slot, farX, 20);
+      expect(farBottom.y - farTop.y).toBeLessThan(nearBottom.y - nearTop.y);
+      for (const [near, far] of [
+        [nearTop, farTop],
+        [nearBottom, farBottom],
+      ]) {
+        const yAtVanishingPoint = near.y + ((VANISHING_POINT.x - near.x) * (far.y - near.y)) / (far.x - near.x);
+        expect(yAtVanishingPoint).toBeCloseTo(VANISHING_POINT.y, 8);
+      }
+      const center = projectWallPoint(slot, 0, 0);
+      expect(center).toEqual({ x: slot.x, y: slot.y });
+    }
   });
 
   it("declares unique slot ids", () => {

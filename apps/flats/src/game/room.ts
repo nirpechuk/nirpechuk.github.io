@@ -111,12 +111,33 @@ function sideWallSlot(id: string, wall: "left" | "right", zone: "wall" | "wallTo
   };
 }
 
-/** Foreshorten side-wall art; its horizontal edges follow the room's vanishing point. */
-export function wallProjection(slot: Slot): string {
-  if (!slot.wall || slot.wall === "back") return "";
+function sideWallPerspective(slot: Slot) {
+  if (!slot.wall || slot.wall === "back") return null;
   const widthScale = slot.zone === "wallTop" ? 0.26 : 0.6;
-  const slope = (VANISHING_POINT.y - slot.y) / (VANISHING_POINT.x - slot.x);
-  return `matrix(${widthScale} ${widthScale * slope} 0 1 0 0)`;
+  const perspective = widthScale / (VANISHING_POINT.x - slot.x);
+  const slope = perspective * (VANISHING_POINT.y - slot.y);
+  return { widthScale, perspective, slope };
+}
+
+/** Project a wall-local point through the same vanishing point as the room.
+ * The denominator makes the far edge shorter, which an affine skew cannot do.
+ */
+export function projectWallPoint(slot: Slot, x: number, y: number): { x: number; y: number } {
+  const plane = sideWallPerspective(slot);
+  if (!plane) return { x: slot.x + x, y: slot.y + y };
+  const denominator = 1 + plane.perspective * x;
+  return {
+    x: slot.x + (plane.widthScale * x) / denominator,
+    y: slot.y + (y + plane.slope * x) / denominator,
+  };
+}
+
+/** CSS projective matrix, applied before the item's local flip and animations. */
+export function wallProjection(slot: Slot): string | undefined {
+  const plane = sideWallPerspective(slot);
+  if (!plane) return undefined;
+  const { widthScale, perspective, slope } = plane;
+  return `matrix3d(${widthScale},${slope},0,${perspective},0,1,0,0,0,0,1,0,0,0,0,1)`;
 }
 
 function floorSlot(id: string, zone: Zone, worldX: number, depth: number, capacity: number): Slot {
