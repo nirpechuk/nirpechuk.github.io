@@ -124,14 +124,10 @@
           {% endfor %}
           <li class="nav-item frivolities-item">
             <details class="frivolities-menu">
-              <summary class="nav-link">frivolities <span class="frivolities-twinkle" aria-hidden="true">✧</span></summary>
+              <summary class="nav-link">frivolities</summary>
               <div class="frivolities-links">
-                <a href="{{ '/structs/' | relative_url }}"
-                  ><span aria-hidden="true">⌘</span> structs <span class="link-flourish" aria-hidden="true">⟡</span></a
-                >
-                <a href="{{ '/flats/' | relative_url }}"
-                  ><span aria-hidden="true">⌂</span> flats <span class="link-flourish" aria-hidden="true">✦</span></a
-                >
+                <a class="frivolity-structs" href="{{ '/structs/' | relative_url }}"><span>structs</span></a>
+                <a class="frivolity-flats" href="{{ '/flats/' | relative_url }}"><span>flats</span></a>
               </div>
             </details>
           </li>

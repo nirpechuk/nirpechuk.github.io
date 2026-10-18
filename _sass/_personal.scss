@@ -217,14 +217,6 @@ footer .page-views {
     outline-offset: 3px;
     border-radius: 4px;
   }
-  .frivolities-twinkle {
-    display: inline-block;
-    color: var(--global-theme-color);
-    transition: transform 0.3s ease;
-  }
-  &[open] .frivolities-twinkle {
-    transform: rotate(45deg);
-  }
 }
 .frivolities-links {
   position: absolute;
@@ -247,24 +239,68 @@ footer .page-views {
     text-decoration: none;
   }
   a > span {
-    color: var(--global-theme-color);
-    opacity: 0.65;
-  }
-  .link-flourish {
-    margin-left: auto;
-    font-size: 0.75em;
-    transition: transform 0.25s ease;
+    color: inherit;
+    display: inline-block;
+    transform-origin: 50% 70%;
   }
   a:hover,
   a:focus-visible {
     background: var(--global-code-bg-color);
-    color: var(--global-theme-color);
   }
-  a:hover .link-flourish,
-  a:focus-visible .link-flourish {
-    transform: rotate(20deg) scale(1.2);
+  .frivolity-structs {
+    font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+    font-weight: 500;
+    font-size: 0.96rem;
+    letter-spacing: 0.02em;
+    color: #2747c9;
+  }
+  .frivolity-flats {
+    font-family: "Fraunces", "Iowan Old Style", Georgia, serif;
+    font-weight: 500;
+    font-size: 1.18rem;
+    color: #a35e30;
+  }
+  .frivolity-structs:hover > span,
+  .frivolity-structs:focus-visible > span {
+    animation: structs-align 0.65s steps(3, end) both;
+  }
+  .frivolity-flats:hover > span,
+  .frivolity-flats:focus-visible > span {
+    animation: flats-sway 0.9s ease-in-out both;
   }
 }
+html[data-theme="dark"] .frivolities-links {
+  .frivolity-structs {
+    color: #8ea6ff;
+  }
+  .frivolity-flats {
+    color: #e8b679;
+  }
+}
+@keyframes structs-align {
+  0%,
+  100% {
+    letter-spacing: 0.02em;
+    transform: translateX(0);
+  }
+  50% {
+    letter-spacing: 0.075em;
+    transform: translateX(2px);
+  }
+}
+@keyframes flats-sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  35% {
+    transform: translateY(-2px) rotate(-1.5deg);
+  }
+  70% {
+    transform: translateY(-1px) rotate(1deg);
+  }
+}
+
 @media (max-width: 575px) {
   .frivolities-links {
     position: static;
@@ -276,5 +312,6 @@ footer .page-views {
 @media (prefers-reduced-motion: reduce) {
   .frivolities-menu * {
     transition: none !important;
+    animation: none !important;
   }
 }
