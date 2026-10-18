@@ -526,12 +526,16 @@ export function RoomScene(props: RoomSceneProps) {
         </filter>
       </defs>
 
-      <g {...interaction("surfaces", "Play with the room", 0)} className={activeObjects.surfaces ? "surface-response" : undefined}>
-        <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
+      <g {...interaction("surfaces", "Play with the room", 0)}>
+        <g key={activeObjects.surfaces ?? 0} className={animate && activeObjects.surfaces ? "surface-response" : undefined}>
+          <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
+        </g>
       </g>
       <g className="room-openings">
         <g {...interaction("window", "Play with the window", 0)}>
-          <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
+          <g key={activeObjects.window ?? 0} className={animate && activeObjects.window ? "surface-response" : undefined}>
+            <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
+          </g>
         </g>
         {(lighting.phase === "day" || lighting.phase === "dawn") && (
           <g className="sunbeam" pointerEvents="none">
