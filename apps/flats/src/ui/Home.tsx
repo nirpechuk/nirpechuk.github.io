@@ -3,6 +3,9 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import { FlatProgress } from "./FlatProgress";
+import { PetPortrait } from "../art/Pet";
+import { KitArt } from "../art/brownstone/KitArt";
 import { ItemThumb } from "../art/ItemArt";
 import type { Lighting } from "../art/lighting";
 import type { BoxState, EditingState } from "../art/RoomScene";
@@ -11,7 +14,7 @@ import { SurfaceThumb } from "../art/Surfaces";
 import { CATALOG, itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
 import { addDays, weekStart } from "../game/dates";
-import { hasLoggedOn, presentsWaiting, cosinessTitle, workoutsInWeekOf } from "../game/progression";
+import { hasLoggedOn, presentsWaiting, nextPresent, workoutsInWeekOf } from "../game/progression";
 import type { Slot } from "../game/room";
 import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, roomSlots, storedItemIds } from "../game/room";
 import type { ItemDef, Layout, Player, WorkoutType } from "../game/types";
@@ -83,6 +86,9 @@ function WeekDots({ player, day, large = false }: { player: Player; day: string;
           key={weekDay}
           className={`week-dot${hasLoggedOn(player, weekDay) ? " is-done" : ""}${weekDay === day ? " is-today" : ""}${weekDay > day ? " is-future" : ""}`}
         >
+          <span className="week-dot-mark" aria-hidden="true">
+            {hasLoggedOn(player, weekDay) ? "✓" : ""}
+          </span>
           <small>{["M", "T", "W", "T", "F", "S", "S"][index]}</small>
         </span>
       ))}
@@ -320,255 +326,271 @@ export function Home(props: HomeProps) {
 
   return (
     <main className={`home${editing ? " is-editing" : ""}${saving ? " is-saving" : ""}`} aria-busy={saving}>
-      <div className="home-topbar">
-        <button type="button" className="back-button" onClick={onBack} aria-label="Back to the building">
-          ←
-        </button>
-        <h1 className="visit-name">My flat</h1>
-        <button type="button" className="icon-button" onClick={onOpenSettings} aria-label="Settings">
-          ⚙︎
-        </button>
-      </div>
+      <div className="home-room">
+        <div className="home-topbar">
+          <button type="button" className="back-button" onClick={onBack} aria-label="Back to the building">
+            ←
+          </button>
+          <h1 className="visit-name">My flat</h1>
+          <button type="button" className="icon-button" onClick={onOpenSettings} aria-label="Settings">
+            ⚙︎
+          </button>
+        </div>
 
-      <div className="room-wrap" ref={roomWrapRef}>
-        <RoomScene
-          player={me}
-          variant="home"
-          lighting={lighting}
-          mood={mood}
-          reducedMotion={reducedMotion}
-          editing={editingState}
-          freshItemId={freshItemId}
-          box={editing ? null : box}
-          celebrateKey={celebrateKey}
-          treatKey={treatKey}
-          svgRef={svgRef}
-          onSlotTap={(slotId) => heldItemId && void place(heldItemId, slotId)}
-          onItemActivate={
-            editing
-              ? (slotId) => {
-                  setMenuSlotId(slotId);
-                  setHeldItemId(null);
-                }
-              : undefined
-          }
-          onItemPointerDown={editing ? startItemDrag : undefined}
-          onBoxTap={onOpenPresent}
-        />
-        {menuSlotId && menuItem && menuPlacement && menuPosition && (
-          <div className="item-menu card" style={{ left: menuPosition.left, top: menuPosition.top }}>
-            <p className="item-menu-name">{menuItem.name}</p>
-            <div className="item-menu-swatches">
-              {menuItem.palettes.map((palette, index) => (
+        <div className="room-wrap" ref={roomWrapRef}>
+          <RoomScene
+            player={me}
+            variant="home"
+            lighting={lighting}
+            mood={mood}
+            reducedMotion={reducedMotion}
+            editing={editingState}
+            freshItemId={freshItemId}
+            box={editing ? null : box}
+            celebrateKey={celebrateKey}
+            treatKey={treatKey}
+            svgRef={svgRef}
+            onSlotTap={(slotId) => heldItemId && void place(heldItemId, slotId)}
+            onItemActivate={
+              editing
+                ? (slotId) => {
+                    setMenuSlotId(slotId);
+                    setHeldItemId(null);
+                  }
+                : undefined
+            }
+            onItemPointerDown={editing ? startItemDrag : undefined}
+            onBoxTap={onOpenPresent}
+          />
+          {menuSlotId && menuItem && menuPlacement && menuPosition && (
+            <div className="item-menu card" style={{ left: menuPosition.left, top: menuPosition.top }}>
+              <p className="item-menu-name">{menuItem.name}</p>
+              <div className="item-menu-swatches">
+                {menuItem.palettes.map((palette, index) => (
+                  <button
+                    key={palette.name}
+                    type="button"
+                    className={`swatch${index === menuPlacement.palette ? " is-current" : ""}`}
+                    style={{ background: `linear-gradient(135deg, ${palette.p} 55%, ${palette.s} 55%)` }}
+                    onClick={() => void updatePlacement(menuSlotId, { palette: index })}
+                    aria-label={`${palette.name} colour`}
+                  />
+                ))}
+              </div>
+              <div className="item-menu-actions">
                 <button
-                  key={palette.name}
                   type="button"
-                  className={`swatch${index === menuPlacement.palette ? " is-current" : ""}`}
-                  style={{ background: `linear-gradient(135deg, ${palette.p} 55%, ${palette.s} 55%)` }}
-                  onClick={() => void updatePlacement(menuSlotId, { palette: index })}
-                  aria-label={`${palette.name} colour`}
-                />
-              ))}
+                  className="icon-chip"
+                  onClick={() => {
+                    setHeldItemId(menuPlacement.itemId);
+                    setMenuSlotId(null);
+                  }}
+                >
+                  Move
+                </button>
+                <button
+                  type="button"
+                  className="icon-chip"
+                  onClick={() => void updatePlacement(menuSlotId, { flip: !menuPlacement.flip })}
+                  aria-label="Flip"
+                >
+                  ⇄
+                </button>
+                <button type="button" className="icon-chip" onClick={() => void storeAway(menuPlacement.itemId)} aria-label="Put away">
+                  ⤓
+                </button>
+              </div>
             </div>
-            <div className="item-menu-actions">
+          )}
+        </div>
+      </div>
+      <aside className="home-panel" aria-label="Your flat and activity">
+        {!editing && <FlatProgress placed={Object.keys(me.layout.slots).length} />}
+        {editing && <h2 className="decorating-title">Make it yours</h2>}
+        {editing && heldItemId && (
+          <div className="placement-guidance">
+            <span>
+              Find a spot for your <strong>{itemById(heldItemId).name.toLowerCase()}</strong>.
+              {itemById(heldItemId).light ? " Light up a corner." : ""}
+            </span>
+            <button className="chip" onClick={() => setHeldItemId(null)}>
+              Cancel
+            </button>
+          </div>
+        )}
+        {editing && !heldItemId && <p className="room-hint">Choose a thing, then tap a spot in your room.</p>}
+
+        {saveError && (
+          <p className="save-status" role="alert">
+            {saveError}
+          </p>
+        )}
+        {saving && (
+          <p className="save-status" role="status">
+            Making it feel like home…
+          </p>
+        )}
+        {editing ? (
+          <section className="drawer card">
+            <div className="drawer-header">
+              <div className="drawer-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={drawerTab === "items"}
+                  className={drawerTab === "items" ? "is-active" : ""}
+                  onClick={() => setDrawerTab("items")}
+                >
+                  Things {stored.length > 0 && <span className="badge">{stored.length}</span>}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={drawerTab === "surfaces"}
+                  className={drawerTab === "surfaces" ? "is-active" : ""}
+                  onClick={() => setDrawerTab("surfaces")}
+                >
+                  Walls & floors
+                </button>
+              </div>
               <button
                 type="button"
-                className="icon-chip"
+                className="done-button"
                 onClick={() => {
-                  setHeldItemId(menuPlacement.itemId);
+                  setEditing(false);
+                  setHeldItemId(null);
                   setMenuSlotId(null);
                 }}
               >
-                Move
-              </button>
-              <button
-                type="button"
-                className="icon-chip"
-                onClick={() => void updatePlacement(menuSlotId, { flip: !menuPlacement.flip })}
-                aria-label="Flip"
-              >
-                ⇄
-              </button>
-              <button type="button" className="icon-chip" onClick={() => void storeAway(menuPlacement.itemId)} aria-label="Put away">
-                ⤓
+                Done
               </button>
             </div>
-          </div>
-        )}
-      </div>
-
-      {!editing && (
-        <div className="room-summary">
-          <h2>{cosinessTitle(Object.keys(me.layout.slots).length)}</h2>
-          <p>
-            {Object.keys(me.layout.slots).length} {Object.keys(me.layout.slots).length === 1 ? "thing" : "things"} placed ·{" "}
-            {workoutsInWeekOf(me, day)} {workoutsInWeekOf(me, day) === 1 ? "workout" : "workouts"} this week
-            <br />
-            {me.petName} is {mood === "perky" ? "feeling perky" : mood === "sleepy" ? "having a quiet evening" : "right at home"}.
-          </p>
-        </div>
-      )}
-      {editing && heldItemId && (
-        <div className="placement-guidance">
-          <span>
-            Find a spot for your <strong>{itemById(heldItemId).name.toLowerCase()}</strong>.{itemById(heldItemId).light ? " Light up a corner." : ""}
-          </span>
-          <button className="chip" onClick={() => setHeldItemId(null)}>
-            Cancel
-          </button>
-        </div>
-      )}
-      <p className="room-hint">
-        {editing
-          ? "Tap an item to choose colours, move it or put it away."
-          : waiting > 0
-            ? "You earned a little something. Tap to unwrap ✦"
-            : "Every little workout makes this place more yours."}
-      </p>
-
-      {saveError && (
-        <p className="save-status" role="alert">
-          {saveError}
-        </p>
-      )}
-      {saving && (
-        <p className="save-status" role="status">
-          Making it feel like home…
-        </p>
-      )}
-      {editing ? (
-        <section className="drawer card">
-          <div className="drawer-header">
-            <div className="drawer-tabs" role="tablist">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={drawerTab === "items"}
-                className={drawerTab === "items" ? "is-active" : ""}
-                onClick={() => setDrawerTab("items")}
-              >
-                Things {stored.length > 0 && <span className="badge">{stored.length}</span>}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={drawerTab === "surfaces"}
-                className={drawerTab === "surfaces" ? "is-active" : ""}
-                onClick={() => setDrawerTab("surfaces")}
-              >
-                Walls & floors
-              </button>
-            </div>
-            <button
-              type="button"
-              className="done-button"
-              onClick={() => {
-                setEditing(false);
-                setHeldItemId(null);
-                setMenuSlotId(null);
-              }}
-            >
-              Done
-            </button>
-          </div>
-          {drawerTab === "items" && (
-            <div className="drawer-row">
-              {stored.length === 0 && (
-                <p className="drawer-empty">
-                  {me.unlocks.length
-                    ? "Everything you own is in your flat. Tap a placed item to move it or put it away."
-                    : "Your shelf is empty. Log a workout and unpack a present to find something for your flat."}
-                </p>
-              )}
-              {stored.map((itemId) => {
-                const item = itemById(itemId);
-                return (
-                  <button
-                    key={itemId}
-                    type="button"
-                    className={`drawer-card${heldItemId === itemId ? " is-held" : ""}`}
-                    onPointerDown={(event) => startDrawerDrag(event, itemId)}
-                    onClick={(event) => {
-                      if (event.detail === 0) setHeldItemId(itemId);
-                    }}
-                    aria-label={item.name}
-                  >
-                    <ItemThumb item={item} size={66} />
-                    <span>{item.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {drawerTab === "surfaces" && (
-            <div className="drawer-row">
-              {ownedSurfaces.map((surface) => {
-                const current = me.layout.wallpaper === surface.id || me.layout.flooring === surface.id;
-                return (
-                  <button
-                    key={surface.id}
-                    type="button"
-                    className={`drawer-card${current ? " is-held" : ""}`}
-                    onClick={() => void applySurface(surface.id)}
-                    aria-label={surface.name}
-                  >
-                    <SurfaceThumb surface={surface} size={66} />
-                    <span>{surface.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      ) : (
-        <section className="log-panel">
-          {loggedToday ? (
-            <>
-              <p className="logged-message">You showed up today. Nicely done.</p>
-              <WeekDots player={me} day={day} large />
-              {todaysWorkout && !todaysWorkout.type && typeDismissedDay !== day && (
-                <div className="type-row">
-                  {WORKOUT_TYPES.map((option) => (
-                    <button key={option.type} type="button" className="type-chip" onClick={() => void onSetType(option.type)}>
-                      {option.label}
+            {drawerTab === "items" && (
+              <div className="drawer-row">
+                {stored.length === 0 && (
+                  <p className="drawer-empty">
+                    {me.unlocks.length
+                      ? "Everything you own is in your flat. Tap a placed item to move it or put it away."
+                      : "Your shelf is empty. Log a workout and unpack a present to find something for your flat."}
+                  </p>
+                )}
+                {stored.map((itemId) => {
+                  const item = itemById(itemId);
+                  return (
+                    <button
+                      key={itemId}
+                      type="button"
+                      className={`drawer-card${heldItemId === itemId ? " is-held" : ""}`}
+                      onPointerDown={(event) => startDrawerDrag(event, itemId)}
+                      onClick={(event) => {
+                        if (event.detail === 0) setHeldItemId(itemId);
+                      }}
+                      aria-label={item.name}
+                    >
+                      <ItemThumb item={item} size={66} />
+                      <span>{item.name}</span>
                     </button>
-                  ))}
-                  <button type="button" className="type-chip type-dismiss" onClick={() => setTypeDismissedDay(day)} aria-label="Dismiss">
-                    ✕
-                  </button>
+                  );
+                })}
+              </div>
+            )}
+            {drawerTab === "surfaces" && (
+              <div className="drawer-row">
+                {ownedSurfaces.map((surface) => {
+                  const current = me.layout.wallpaper === surface.id || me.layout.flooring === surface.id;
+                  return (
+                    <button
+                      key={surface.id}
+                      type="button"
+                      className={`drawer-card${current ? " is-held" : ""}`}
+                      onClick={() => void applySurface(surface.id)}
+                      aria-label={surface.name}
+                    >
+                      <SurfaceThumb surface={surface} size={66} />
+                      <span>{surface.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        ) : (
+          <section className="log-panel">
+            <div className="weekly-overview">
+              <div className="companion-status">
+                <PetPortrait kind={me.petKind} action={mood === "sleepy" ? "sleep" : "idle"} size={76} />
+                <div>
+                  <strong>{me.petName}</strong>
+                  <span>{mood === "perky" ? "Perky" : mood === "sleepy" ? "Sleepy" : "Content"}</span>
                 </div>
-              )}
-            </>
-          ) : (
-            <button
-              type="button"
-              className="log-button"
-              disabled={logging}
-              onClick={async () => {
-                setLogging(true);
-                try {
-                  await onLog();
-                } finally {
-                  setLogging(false);
-                }
-              }}
-            >
-              <span className="log-button-face">I worked out today</span>
-            </button>
-          )}
-          {!loggedToday && <WeekDots player={me} day={day} />}
-          <div className="home-actions">
-            {waiting > 0 && (
-              <button className="chip chip-present" onClick={onOpenPresent}>
-                Unpack {waiting > 1 ? `${waiting} presents` : "a present"}
+              </div>
+              <div className="weekly-total">
+                <strong>{workoutsInWeekOf(me, day)}</strong>
+                <span>this week</span>
+              </div>
+            </div>
+            <WeekDots player={me} day={day} large />
+            {loggedToday ? (
+              <>
+                <div className="activity-complete">
+                  <span aria-hidden="true">✓</span> Logged today
+                </div>
+                {todaysWorkout && !todaysWorkout.type && typeDismissedDay !== day && (
+                  <div className="type-row">
+                    {WORKOUT_TYPES.map((option) => (
+                      <button key={option.type} type="button" className="type-chip" onClick={() => void onSetType(option.type)}>
+                        {option.label}
+                      </button>
+                    ))}
+                    <button type="button" className="type-chip type-dismiss" onClick={() => setTypeDismissedDay(day)} aria-label="Dismiss">
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <button
+                type="button"
+                className="log-button"
+                disabled={logging}
+                onClick={async () => {
+                  setLogging(true);
+                  try {
+                    await onLog();
+                  } finally {
+                    setLogging(false);
+                  }
+                }}
+              >
+                <span className="log-button-face">I worked out today</span>
               </button>
             )}
-            <button type="button" className="chip chip-large" onClick={() => setEditing(true)}>
-              Decorate {stored.length > 0 && <span className="badge">{stored.length}</span>}
-            </button>
-          </div>
-        </section>
-      )}
+
+            {waiting > 0 && (
+              <button className="parcel-button" onClick={onOpenPresent}>
+                <svg viewBox="0 0 100 86" width="100" height="86" aria-hidden="true">
+                  <KitArt id={`present-${nextPresent(me)?.tier ?? 1}`} width={100} height={86} />
+                </svg>
+                <span>
+                  <strong>Unpack a present</strong>
+                  <small>{waiting > 1 ? `${waiting} waiting for you` : "Choose something new"}</small>
+                </span>
+                <span className="parcel-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </button>
+            )}
+            <div className="home-actions">
+              <button type="button" className="chip chip-large decorate-button" onClick={() => setEditing(true)}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                  <path d="M4 11V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5M3 10h3v5h12v-5h3v9H3Zm3 9v2m12-2v2" />
+                </svg>
+                Decorate {stored.length > 0 && <span className="badge">{stored.length}</span>}
+              </button>
+            </div>
+          </section>
+        )}
+      </aside>
 
       {drag && (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">

@@ -3,9 +3,10 @@
 import type { ReactNode } from "react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { FlatProgress } from "./FlatProgress";
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
-import { petMood, cosinessTitle, workoutsInWeekOf } from "../game/progression";
+import { petMood } from "../game/progression";
 import type { Player, Reaction, ReactionKind } from "../game/types";
 import { playChime, playPop } from "./sound";
 
@@ -219,69 +220,65 @@ export function Visit(props: VisitProps) {
         {ownFlat ? (
           ownFlat(close)
         ) : (
-          <>
-            <header className="visit-header">
-              <button type="button" className="back-button" onClick={close} aria-label="Back to the building">
-                ←
-              </button>
-              <h1 className="visit-name">{isMe ? "You" : player.name}</h1>
-            </header>
-            <div className="visit-room">
-              <RoomScene
-                player={player}
-                variant="visit"
-                lighting={lighting}
-                mood={petMood(player, day)}
-                reducedMotion={reducedMotion}
-                celebrateKey={celebrateKey}
-                treatKey={treatKey}
-                stickers={stickers}
-              />
-            </div>
-            <div className="room-summary">
-              <h2>{cosinessTitle(Object.keys(player.layout.slots).length)}</h2>
-              <p>
-                {Object.keys(player.layout.slots).length} things placed · {workoutsInWeekOf(player, day)} workouts this week
-                <br />
-                Make yourself at home. {player.petName} likes visitors.
-              </p>
-            </div>
-            <div className="reaction-bar">
-              <p className="room-hint">Leave a little kindness</p>
-              <div className="reaction-buttons">
-                <button
-                  type="button"
-                  className="reaction-button tone-blush"
-                  disabled={sending || sentToday("heart")}
-                  onClick={(event) => void send("heart", event.currentTarget)}
-                  aria-label="Leave a heart"
-                >
-                  ♥ <span>{sentToday("heart") ? "Sent" : "Heart"}</span>
+          <div className="neighbour-layout">
+            <div className="neighbour-room">
+              <header className="visit-header">
+                <button type="button" className="back-button" onClick={close} aria-label="Back to the building">
+                  ←
                 </button>
-                <button
-                  type="button"
-                  className="reaction-button tone-butter"
-                  disabled={sending || sentToday("sticker")}
-                  onClick={(event) => void send("sticker", event.currentTarget)}
-                  aria-label="Leave a star"
-                >
-                  ✦ <span>{sentToday("sticker") ? "Sent" : "Star"}</span>
-                </button>
-                <button
-                  type="button"
-                  className="reaction-button tone-mint"
-                  disabled={sending || sentToday("treat")}
-                  onClick={(event) => void send("treat", event.currentTarget)}
-                  aria-label={`Give ${player.petName} a treat`}
-                >
-                  <span aria-hidden="true">🍪</span> <span>{sentToday("treat") ? "Sent" : `Treat for ${player.petName}`}</span>
-                </button>
+                <h1 className="visit-name">{isMe ? "You" : player.name}</h1>
+              </header>
+              <div className="visit-room">
+                <RoomScene
+                  player={player}
+                  variant="visit"
+                  lighting={lighting}
+                  mood={petMood(player, day)}
+                  reducedMotion={reducedMotion}
+                  celebrateKey={celebrateKey}
+                  treatKey={treatKey}
+                  stickers={stickers}
+                />
               </div>
-              <p className="reaction-explainer">
-                Stars stay on {player.name}’s window frame. Treats make {player.petName}’s day. One of each, every day.
-              </p>
             </div>
-          </>
+            <aside className="neighbour-panel" aria-label="Neighbour's flat">
+              <h2 className="neighbour-title">{player.name}’s flat</h2>
+              <FlatProgress placed={Object.keys(player.layout.slots).length} />
+              <div className="reaction-bar">
+                <p className="room-hint">Leave a little kindness</p>
+                <div className="reaction-buttons">
+                  <button
+                    type="button"
+                    className="reaction-button tone-blush"
+                    disabled={sending || sentToday("heart")}
+                    onClick={(event) => void send("heart", event.currentTarget)}
+                    aria-label="Leave a heart"
+                  >
+                    ♥ <span>{sentToday("heart") ? "Sent" : "Heart"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="reaction-button tone-butter"
+                    disabled={sending || sentToday("sticker")}
+                    onClick={(event) => void send("sticker", event.currentTarget)}
+                    aria-label="Leave a star"
+                  >
+                    ✦ <span>{sentToday("sticker") ? "Sent" : "Star"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="reaction-button tone-mint"
+                    disabled={sending || sentToday("treat")}
+                    onClick={(event) => void send("treat", event.currentTarget)}
+                    aria-label={`Give ${player.petName} a treat`}
+                  >
+                    <span aria-hidden="true">🍪</span> <span>{sentToday("treat") ? "Sent" : "Treat"}</span>
+                  </button>
+                </div>
+                <p className="reaction-explainer">One of each, every day.</p>
+              </div>
+            </aside>
+          </div>
         )}
       </div>
       {flying && !reducedMotion && (

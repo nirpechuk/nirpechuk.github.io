@@ -9,8 +9,11 @@ existing Supabase project. No resident reset or data migration is required.
 
 - Rooms stay at night. The street can have dusk tint, rain, winter snow or autumn
   leaves. Weather is decorative and deterministic by date, not a weather forecast.
-- Warmth is continuous, based on placed objects. The existing cosiness titles and
-  workout tiers remain the rules; the mockup's 0/6/14/23 counts are not unlock gates.
+- Warmth is continuous, based on placed objects. Four visual milestones—Moving in,
+  Unpacked, Settled and Homey—mark 0, 6, 14 and 20 placed objects, matching the 20
+  available spots. These are progress markers, not unlock gates; workout tiers stay
+  unchanged. Laptop rooms pair a large scene with an illustrated progress and
+  activity panel; the furniture drawer becomes a shelf beside the room.
 - The room cools gently after quiet weeks (70% lamp strength after seven days, 45%
   after 21). Logging a workout restores full strength. Belongings never disappear.
 - Six paints coexist with all existing wallpapers. Nine additional surfaces and
