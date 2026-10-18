@@ -106,7 +106,11 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
   useLayoutEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
-    const fit = () => setScale(Math.max(0.25, Math.min((scene.clientHeight - 80) / 800, (scene.clientWidth - 22) / 470, 1.6)));
+    const fit = () => {
+      const { clientWidth: width, clientHeight: height } = scene;
+      // Fill laptop/desktop viewports edge to edge; keep the whole building visible on phones.
+      setScale(width >= 768 ? Math.max(width / 1440, height / 800) : Math.max(0.25, Math.min((height - 80) / 800, (width - 22) / 470, 1.6)));
+    };
     const observer = new ResizeObserver(fit);
     observer.observe(scene);
     fit();
