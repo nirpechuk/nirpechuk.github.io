@@ -9,11 +9,15 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
+import { RoomArchitecture } from "../art/RoomShell";
+import { surfaceById } from "../game/catalog";
+import { DEFAULT_FLOORING, DEFAULT_WALLPAPER } from "../game/room";
 import { petMood, workoutsInWeekOf } from "../game/progression";
 import type { GroupSnapshot, Player } from "../game/types";
 import { playPop } from "./sound";
 
 const FLATS_PER_FLOOR = 2;
+const MIN_ROOMS = 6;
 /** Keep in sync with the `.pane` transition in styles.css. */
 const PANE_OPEN_MS = 700;
 /** A short beat with the window fully open before the zoom begins. */
@@ -26,7 +30,7 @@ export function windowGlow(weekCount: number): number {
   return GLOW_BY_WEEKLY_COUNT[Math.min(weekCount, GLOW_BY_WEEKLY_COUNT.length - 1)];
 }
 
-type WindowSlot = { kind: "flat"; player: Player } | { kind: "vacancy" } | { kind: "curtained" };
+type WindowSlot = { kind: "flat"; player: Player } | { kind: "vacancy" };
 
 interface BuildingProps {
   snapshot: GroupSnapshot;
@@ -126,29 +130,25 @@ function FlatWindow({
 }
 
 function Vacancy({ onInvite }: { onInvite: () => void }) {
+  const id = useId();
   return (
-    <div className="flat-slot">
-      <button type="button" className="flat-window is-vacant" onClick={onInvite} aria-label="Invite a friend">
+    <div className="flat-slot is-empty">
+      <button type="button" className="flat-window is-vacant" onClick={onInvite} aria-label="Empty flat — invite a friend">
         <div className="window-glass vacancy-glass">
-          <span className="for-rent" aria-hidden="true">
-            +
-          </span>
+          <svg className="vacancy-interior" viewBox="-7 -7 374 434" aria-hidden="true">
+            <RoomArchitecture idPrefix={id} wallpaper={surfaceById(DEFAULT_WALLPAPER)} flooring={surfaceById(DEFAULT_FLOORING)} />
+            <rect x="139" y="94" width="82" height="120" rx="2" fill="#403c48" stroke="#5e5654" strokeWidth="6" />
+            <path d="M180 94v120m-41-60h82" fill="none" stroke="#211c27" strokeWidth="5" />
+          </svg>
+          <div className="glass-sheen" />
+        </div>
+        <div className="window-panes" aria-hidden="true">
+          <span className="pane pane-left" />
+          <span className="pane pane-right" />
         </div>
         <span className="window-lintel" aria-hidden="true" />
       </button>
       <FlowerBox count={0} />
-    </div>
-  );
-}
-
-function Curtained() {
-  return (
-    <div className="flat-slot" aria-hidden="true">
-      <div className="flat-window is-curtained">
-        <div className="window-glass curtained-glass" />
-        <span className="window-lintel" />
-      </div>
-      <FlowerBox count={2} />
     </div>
   );
 }
@@ -205,8 +205,10 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
     fit();
     return () => observer.disconnect();
   }, []);
-  const slots: WindowSlot[] = [...snapshot.players.map((player) => ({ kind: "flat" as const, player })), { kind: "vacancy" as const }];
-  if (slots.length % FLATS_PER_FLOOR !== 0) slots.push({ kind: "curtained" });
+  const slots: WindowSlot[] = snapshot.players.map((player) => ({ kind: "flat", player }));
+  // Keep at least three storeys and leave space for the next friend to move in.
+  const roomCount = Math.max(MIN_ROOMS, Math.ceil((slots.length + 1) / FLATS_PER_FLOOR) * FLATS_PER_FLOOR);
+  while (slots.length < roomCount) slots.push({ kind: "vacancy" });
   const floors: WindowSlot[][] = [];
   for (let index = 0; index < slots.length; index += FLATS_PER_FLOOR) floors.push(slots.slice(index, index + FLATS_PER_FLOOR));
 
@@ -328,8 +330,7 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
               {[...floors].reverse().map((floor, reversedIndex) => (
                 <div className="floor" key={floors.length - reversedIndex}>
                   {floor.map((slot, index) => {
-                    if (slot.kind === "vacancy") return <Vacancy key="vacancy" onInvite={onInvite} />;
-                    if (slot.kind === "curtained") return <Curtained key={`curtained-${index}`} />;
+                    if (slot.kind === "vacancy") return <Vacancy key={`vacancy-${index}`} onInvite={onInvite} />;
                     return (
                       <FlatWindow
                         key={slot.player.id}

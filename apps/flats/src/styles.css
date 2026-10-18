@@ -1731,30 +1731,27 @@ h3 {
   color: #e6d6ea;
 }
 
-.is-vacant {
-  background: #2b2228;
+.flat-slot.is-empty {
+  /* Keep the floor spacing without a name tag on an unoccupied room. */
+  padding-bottom: 38px;
 }
 
-.vacancy-glass {
-  display: grid;
-  place-items: center;
-  background: #120e16;
-  border: 1px dashed rgba(255, 222, 180, 0.18);
+.flat-window.is-vacant .window-glass {
+  background: #15121c;
+  box-shadow: inset 0 4px 12px #08070c;
+  animation: none;
 }
 
-.for-rent {
-  font-size: 2.4rem;
-  font-weight: 300;
-  color: var(--amber-bright);
-  text-shadow: 0 0 18px rgba(242, 166, 90, 0.8);
-  animation: candle 4s linear infinite;
+.vacancy-interior {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: blur(2.5px) brightness(0.45);
+  opacity: 0.55;
 }
 
-.curtained-glass {
-  background:
-    radial-gradient(ellipse at 50% 60%, rgba(255, 170, 90, 0.35), transparent 70%),
-    linear-gradient(90deg, #5c222b 0 47%, #3e161d 47% 53%, #5c222b 53%);
-  animation: candle 5s linear infinite;
+.is-vacant .glass-sheen {
+  opacity: 0.35;
 }
 
 .lobby {
