@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Walls and floors</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E8A24A}a:hover{color:#ffd28f}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #120D0A; color: #F3E6D0; font-family: 'DM Sans', system-ui, sans-serif">
+
+<svg width="0" height="0" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+<defs>
+<linearGradient id="sfW1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4E4B44"></stop><stop offset="1" stop-color="#6A665C"></stop></linearGradient>
+<linearGradient id="sfL1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#36342F"></stop><stop offset="1" stop-color="#5A574F"></stop></linearGradient>
+<linearGradient id="sfW2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E2F25"></stop><stop offset="0.6" stop-color="#2E4636"></stop><stop offset="1" stop-color="#27392D"></stop></linearGradient>
+<linearGradient id="sfL2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16231B"></stop><stop offset="1" stop-color="#2A4032"></stop></linearGradient>
+<linearGradient id="sfW3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A0E11"></stop><stop offset="0.45" stop-color="#6A1E22"></stop><stop offset="0.6" stop-color="#5A181C"></stop><stop offset="1" stop-color="#3E1013"></stop></linearGradient>
+<linearGradient id="sfL3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22080A"></stop><stop offset="1" stop-color="#461215"></stop></linearGradient>
+<linearGradient id="sfW4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6A3022"></stop><stop offset="0.5" stop-color="#A65A40"></stop><stop offset="1" stop-color="#743626"></stop></linearGradient>
+<linearGradient id="sfL4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3E1C14"></stop><stop offset="1" stop-color="#6E3424"></stop></linearGradient>
+<linearGradient id="sfW5" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#121A30"></stop><stop offset="0.45" stop-color="#26325A"></stop><stop offset="1" stop-color="#18213C"></stop></linearGradient>
+<linearGradient id="sfL5" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0A0E1C"></stop><stop offset="1" stop-color="#1A2340"></stop></linearGradient>
+<linearGradient id="sfW6" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6E4612"></stop><stop offset="0.5" stop-color="#B07A26"></stop><stop offset="1" stop-color="#7E5216"></stop></linearGradient>
+<linearGradient id="sfL6" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3E2A0C"></stop><stop offset="1" stop-color="#74501A"></stop></linearGradient>
+<linearGradient id="sfW7" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2A1C2E"></stop><stop offset="0.5" stop-color="#57405A"></stop><stop offset="1" stop-color="#3D2A40"></stop></linearGradient>
+<linearGradient id="sfL7" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1C1220"></stop><stop offset="1" stop-color="#3A2A3E"></stop></linearGradient>
+<linearGradient id="sfLacq" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFE2C0" stop-opacity="0"></stop><stop offset="0.6" stop-color="#FFE2C0" stop-opacity="0"></stop><stop offset="0.68" stop-color="#FFE2C0" stop-opacity="0.14"></stop><stop offset="0.74" stop-color="#FFE2C0" stop-opacity="0.03"></stop><stop offset="0.8" stop-color="#FFE2C0" stop-opacity="0.08"></stop><stop offset="0.86" stop-color="#FFE2C0" stop-opacity="0"></stop><stop offset="1" stop-color="#FFE2C0" stop-opacity="0"></stop></linearGradient>
+<linearGradient id="sfBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0CF86"></stop><stop offset="0.5" stop-color="#B5893F"></stop><stop offset="1" stop-color="#6E4E1E"></stop></linearGradient>
+<linearGradient id="sfGilt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9C77A"></stop><stop offset="0.5" stop-color="#9A7432"></stop><stop offset="1" stop-color="#5E4318"></stop></linearGradient>
+<linearGradient id="sfShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D8"></stop><stop offset="1" stop-color="#F0CC92"></stop></linearGradient>
+<linearGradient id="sfUp" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.42"></stop><stop offset="1" stop-color="#FFC77A" stop-opacity="0.04"></stop></linearGradient>
+<linearGradient id="sfDown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9A0" stop-opacity="0.3"></stop><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"></stop></linearGradient>
+<radialGradient id="sfWarm"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.9"></stop><stop offset="0.4" stop-color="#FF9F45" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FF8A30" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="sfHole"><stop offset="0" stop-color="#000" stop-opacity="1"></stop><stop offset="0.55" stop-color="#000" stop-opacity="0.55"></stop><stop offset="1" stop-color="#000" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="sfVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.66"></stop></radialGradient>
+<radialGradient id="sfSheen" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFC07A" stop-opacity="0.28"></stop><stop offset="1" stop-color="#FFC07A" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="sfSwGlow" cx="0.7" cy="0.25" r="0.75"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.38"></stop><stop offset="0.4" stop-color="#FF9F45" stop-opacity="0.12"></stop><stop offset="1" stop-color="#FF8A30" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="sfSwVig" cx="0.6" cy="0.35" r="0.8"><stop offset="0.45" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.55"></stop></radialGradient>
+<filter id="sfBlur3"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+<filter id="sfBlur1"><feGaussianBlur stdDeviation="1.2"></feGaussianBlur></filter>
+<filter id="sfGrain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.18"></feFuncA></feComponentTransfer></filter>
+<filter id="sfPaper" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.12" numOctaves="3" seed="9"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.2 0"></feColorMatrix></filter>
+<filter id="sfLime" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="0.015 0.04" numOctaves="4" seed="27"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0.25  0 0 0 0 0.1  0 0 0 0 0.05  0 0 0 0.55 -0.15"></feColorMatrix></filter>
+<filter id="sfBlotch" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="21"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0.2  0 0 0 0 0.18  0 0 0 0 0.14  0 0 0 0.5 -0.12"></feColorMatrix></filter>
+<mask id="sfDark" maskUnits="userSpaceOnUse" x="0" y="0" width="176" height="200">
+<rect width="176" height="200" fill="#fff"></rect>
+<circle cx="118" cy="62" r="112" fill="url(#sfHole)"></circle>
+<ellipse cx="118" cy="182" rx="76" ry="22" fill="url(#sfHole)" opacity="0.7"></ellipse>
+</mask>
+<mask id="sfFDark" maskUnits="userSpaceOnUse" x="0" y="0" width="134" height="120">
+<rect width="134" height="120" fill="#fff"></rect>
+<ellipse cx="90" cy="86" rx="64" ry="32" fill="url(#sfHole)"></ellipse>
+<ellipse cx="30" cy="83" rx="30" ry="16" fill="url(#sfHole)" opacity="0.6"></ellipse>
+</mask>
+<clipPath id="sfFloorClip"><polygon points="27,30 107,30 134,70.5 134,120 0,120 0,70.5"></polygon></clipPath>
+<pattern id="sfPStripe" patternUnits="userSpaceOnUse" width="10" height="10"><rect width="10" height="10" fill="#4C2328"></rect><rect width="5" height="10" fill="#5A2A30"></rect><rect x="7.3" width="0.5" height="10" fill="#8A5A3A" opacity="0.7"></rect></pattern>
+<pattern id="sfPDots" patternUnits="userSpaceOnUse" width="10" height="10"><rect width="10" height="10" fill="#23304A"></rect><circle cx="2.5" cy="2.5" r="1.1" fill="#C9A96B"></circle><circle cx="7.5" cy="7.5" r="1.1" fill="#C9A96B"></circle></pattern>
+<pattern id="sfPTweed" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="6" height="6" fill="#33473B"></rect><path d="M0 6 L6 0" stroke="#3F5748" stroke-width="1.1"></path><path d="M0 0 L6 6" stroke="#273A2E" stroke-width="0.7"></path><rect x="2" y="3" width="1" height="1" fill="#8A7A4A" opacity="0.6"></rect></pattern>
+<pattern id="sfPSky" patternUnits="userSpaceOnUse" width="22" height="22"><rect width="22" height="22" fill="#1D2340"></rect><path d="M5 3.6 L5.5 5.5 L7.4 6 L5.5 6.5 L5 8.4 L4.5 6.5 L2.6 6 L4.5 5.5 Z" fill="#E0C07A"></path><circle cx="15" cy="4" r="0.6" fill="#E0C07A"></circle><circle cx="18" cy="15" r="0.8" fill="#E0C07A"></circle><circle cx="20" cy="9" r="0.5" fill="#E0C07A"></circle><circle cx="9" cy="16" r="2.4" fill="#E0C07A"></circle><circle cx="10.2" cy="15.2" r="2.2" fill="#1D2340"></circle><circle cx="2" cy="19" r="0.5" fill="#E0C07A"></circle></pattern>
+<pattern id="sfPScallop" patternUnits="userSpaceOnUse" width="12" height="6"><rect width="12" height="6" fill="#3D2A40"></rect><path d="M0 6 A6 6 0 0 1 12 6 M-6 0 A6 6 0 0 1 6 0 M6 0 A6 6 0 0 1 18 0" fill="none" stroke="#57405A" stroke-width="1.2"></path></pattern>
+<pattern id="sfPBotan" patternUnits="userSpaceOnUse" width="26" height="26"><rect width="26" height="26" fill="#1F3A32"></rect><path d="M4 24 C5 17 9 12 15 9" fill="none" stroke="#4F7A5E" stroke-width="0.8"></path><ellipse cx="8" cy="16" rx="3.4" ry="1.4" fill="#4F7A5E" transform="rotate(-50 8 16)"></ellipse><ellipse cx="12" cy="13" rx="3" ry="1.2" fill="#4F7A5E" transform="rotate(30 12 13)"></ellipse><ellipse cx="5.6" cy="21" rx="2.6" ry="1.1" fill="#3F6650" transform="rotate(20 5.6 21)"></ellipse><circle cx="17" cy="7.5" r="2.1" fill="#C98F6D"></circle><circle cx="17" cy="7.5" r="0.7" fill="#1F3A32"></circle><circle cx="21" cy="20" r="1.2" fill="#C98F6D"></circle><circle cx="23" cy="21.5" r="0.9" fill="#C98F6D"></circle><ellipse cx="20" cy="17" rx="2.2" ry="0.9" fill="#4F7A5E" transform="rotate(-30 20 17)"></ellipse></pattern>
+</defs>
+</svg>
+
+<div style="position: absolute; left: 56px; top: 40px; max-width: 760px">
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Brownstone kit · 08 · Walls and floors</div>
+<h1 style="margin: 10px 0 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.1">Walls and floors</h1>
+<p style="margin: 8px 0 0; font-size: 15px; line-height: 1.45; color: #B8A68A">Seven paints as a real corner (crown, picture rail, dado, skirting) under one brass sconce, so each colour is judged in warm light. Then wallpaper swatches, and floors in room perspective.</p>
+</div>
+<div style="position: absolute; right: 56px; top: 50px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+<div style="display: flex; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(232,162,74,0.4); font-size: 12px; color: #F3E6D0"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E8A24A; transform: rotate(45deg)"></span>Paint = milestone surface</span>
+<span style="display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A">t1–t3 · present tier</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 0 7px; line-height: 16px">new</span>proposal</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70">Paint is a big-moment reward; items keep their slots.</div>
+</div>
+
+<div style="position: absolute; left: 56px; right: 56px; top: 172px">
+
+<div style="display: flex; align-items: center; gap: 12px; height: 16px"><span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Paint · seven walls, one lamp</span><span style="flex: 1; height: 1px; background: rgba(243,230,208,0.08)"></span><span style="font-size: 12px; color: #9C8B70">brass sconce · 2400K · light r 66 · darkness 0.58 on every sample</span></div>
+
+<div style="margin-top: 10px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 16px">
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Bare plaster corner: stained grey-beige walls with a hairline crack and a damp patch, a pale ghost where a frame once hung, grey-painted panelled dado and skirting, scuffed grey boards, lit by the brass sconce" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#26241F"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL1)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW1)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfBlotch)"></rect>
+<path d="M150 27 L147 46 L153 60 L148 82 L151 98" fill="none" stroke="#3A3832" stroke-width="0.8"></path>
+<ellipse cx="160" cy="76" rx="11" ry="22" fill="#5B5446" opacity="0.5" filter="url(#sfBlur3)"></ellipse>
+<rect x="36" y="16" width="140" height="9" fill="#615D54"></rect>
+<line x1="36" y1="19" x2="176" y2="19" stroke="#77736A" stroke-width="0.8"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#5C5850"></polygon>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.2"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#5E5A51" stroke-width="2.2"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#55514A" stroke-width="2"></line>
+<rect x="48" y="58" width="36" height="30" fill="#7A766A" opacity="0.35"></rect>
+<path d="M66 42.5 V46 A1.6 1.6 0 0 0 69.2 46" fill="none" stroke="#2E2C28" stroke-width="0.8"></path>
+<rect x="36" y="118" width="140" height="44" fill="#57534A"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#3E3B35"></polygon>
+<g fill="none" stroke="#4A473F" stroke-width="1.1"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect><rect x="162" y="125" width="20" height="33"></rect><polygon points="6,132.9 30,126.6 30,160.9 6,172.3"></polygon></g>
+<g fill="none" stroke="#6A665C" stroke-width="0.6" transform="translate(0.9 0.9)"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect></g>
+<rect x="36" y="114" width="140" height="4" fill="#6E6A60"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#5C5850"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.25"></rect>
+<rect x="144" y="140" width="9" height="12" rx="1" fill="#D8D2C2"></rect><circle cx="147" cy="146" r="0.9" fill="#555"></circle><circle cx="150.5" cy="146" r="0.9" fill="#555"></circle>
+<rect x="36" y="162" width="140" height="8" fill="#3C3934"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#34312C"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#4A443D"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#2A2622" stroke-width="0.8"></path>
+<path d="M60 186 l12 -2 M120 178 l10 2 M24 194 l9 -3" stroke="#6A6258" stroke-width="0.7" opacity="0.6"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.06"></polygon>
+</g>
+<rect width="176" height="200" fill="#22304E" opacity="0.12" style="mix-blend-mode: multiply"></rect>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Bare plaster</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">bare-plaster · starter · Day 1 look</div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #5E5A51; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #57534A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #4A3F45; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Bottle green corner: deep green paint with a brown-gold crown and picture rail, a gilt-framed landscape on wires, green panelled dado, dark boards, lit by the brass sconce" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#1A1410"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL2)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW2)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfPaper)" opacity="0.6"></rect>
+<rect x="36" y="16" width="140" height="9" fill="#4A3F2F"></rect>
+<line x1="36" y1="19" x2="176" y2="19" stroke="#6A5A40" stroke-width="0.8"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#3B3226"></polygon>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.3"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#4A3F2F" stroke-width="2.4"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#3B3226" stroke-width="2.2"></line>
+<path d="M66 42.5 L50 58 M66 42.5 L82 58" stroke="#8A7A5A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.3"></rect>
+<rect x="48" y="58" width="36" height="30" fill="url(#sfGilt)"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#22352A"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#1B2A20"></polygon>
+<g fill="none" stroke="#3A5544" stroke-width="1.1"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect><rect x="162" y="125" width="20" height="33"></rect><polygon points="6,132.9 30,126.6 30,160.9 6,172.3"></polygon></g>
+<g fill="none" stroke="#15221A" stroke-width="0.8" transform="translate(0.9 0.9)"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect></g>
+<rect x="36" y="114" width="140" height="4" fill="#4F6B58"></rect>
+<rect x="36" y="114" width="140" height="1" fill="#6E8A74" opacity="0.7"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#3C5444"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.3"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#1E2E24"></rect>
+<rect x="36" y="162" width="140" height="1" fill="#4F6B58" opacity="0.5"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#17241C"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#4A2E1B"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#24150B" stroke-width="0.8"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.05"></polygon>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Bottle green</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">paint · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #2E4636; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #22352A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #4A3F2F; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Oxblood lacquer corner: glossy deep red walls with a soft reflected streak from the sconce, gilt picture rail and crown line, tongue-and-groove dado in near-black red, dark boards" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#170A0A"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL3)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW3)"></rect>
+<rect x="36" y="27" width="140" height="87" fill="url(#sfLacq)"></rect>
+<ellipse cx="118" cy="96" rx="10" ry="3" fill="#FFD9A0" opacity="0.16" filter="url(#sfBlur1)"></ellipse>
+<rect x="36" y="16" width="140" height="9" fill="#3A2614"></rect>
+<line x1="36" y1="22.5" x2="176" y2="22.5" stroke="#8A6A3A" stroke-width="1"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#2A1A10"></polygon>
+<line x1="0" y1="8" x2="36" y2="22.5" stroke="#6E5430" stroke-width="0.8"></line>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.35"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#8A6A3A" stroke-width="1.8"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#6E5430" stroke-width="1.6"></line>
+<path d="M66 42.5 L50 58 M66 42.5 L82 58" stroke="#8A7A5A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.35"></rect>
+<rect x="48" y="58" width="36" height="30" fill="url(#sfGilt)"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#2A0A0C"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#1C0607"></polygon>
+<path d="M44 120V162M52 120V162M60 120V162M68 120V162M76 120V162M84 120V162M92 120V162M100 120V162M108 120V162M116 120V162M124 120V162M132 120V162M140 120V162M148 120V162M156 120V162M164 120V162M172 120V162M6 124.5V177.1M12 123.2V174.1M18 121.9V171.1M24 120.6V168M30 119.3V165" stroke="#120405" stroke-width="1.2"></path>
+<path d="M45 120V162M77 120V162M109 120V162M141 120V162" stroke="#4A1A1C" stroke-width="0.5"></path>
+<rect x="36" y="114" width="140" height="4" fill="#8A6A3A"></rect>
+<rect x="36" y="114" width="140" height="1" fill="#C9A464" opacity="0.7"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#6E5430"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.35"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#1A0E0A"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#140A08"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#2C1C14"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#120A06" stroke-width="0.8"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<ellipse cx="118" cy="100" rx="5" ry="30" fill="#FFE2C0" opacity="0.1" filter="url(#sfBlur3)"></ellipse>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Oxblood lacquer</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">gloss paint · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #6A1E22; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #2A0A0C; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #8A6A3A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Terracotta limewash corner: chalky, cloudy terracotta walls over a sage green dado with a cream rail, a framed print hung from a nail, terracotta floor tiles" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#2A1610"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL4)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW4)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfLime)"></rect>
+<rect x="36" y="16" width="140" height="7" fill="#C9AE8A" opacity="0.6"></rect>
+<polygon points="0,0 36,16 36,23 0,8.6" fill="#C9AE8A" opacity="0.45"></polygon>
+<rect x="36" y="23" width="140" height="1.5" fill="#000" opacity="0.2"></rect>
+<circle cx="66" cy="47" r="0.9" fill="#3A1A10"></circle>
+<path d="M66 47 L50 58 M66 47 L82 58" stroke="#5A3A2A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.25"></rect>
+<rect x="48" y="58" width="36" height="30" fill="url(#sfGilt)"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#3E4A36"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#2A3424"></polygon>
+<rect x="36" y="118" width="140" height="44" filter="url(#sfLime)" opacity="0.5"></rect>
+<rect x="36" y="114" width="140" height="4" fill="#D8C8A8" opacity="0.85"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#B8A88A" opacity="0.8"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.25"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#2A3424"></rect>
+<rect x="36" y="162" width="140" height="1" fill="#D8C8A8" opacity="0.4"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#222A1C"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#8A3E26"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M0 177H176M0 186H176" stroke="#4A1E12" stroke-width="1"></path>
+<path d="M61.6 180 L75 180 L72 186 L56 186 Z M108.3 177 L120 177 L118 186 L103 186 Z" fill="#9A4A2E"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.05"></polygon>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Terracotta limewash</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">over sage dado · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #A65A40; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #3E4A36; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #D8C8A8; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Navy corner: inky navy walls and panelled dado with slate-blue rails, a pale painted skirting, a framed landscape, pale paint-flecked boards" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#0E1222"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL5)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW5)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfPaper)" opacity="0.5"></rect>
+<rect x="36" y="16" width="140" height="9" fill="#222C48"></rect>
+<line x1="36" y1="19" x2="176" y2="19" stroke="#3A4466" stroke-width="0.8"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#1A2238"></polygon>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.3"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#3A4466" stroke-width="2.2"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#2A3352" stroke-width="2"></line>
+<path d="M66 42.5 L50 58 M66 42.5 L82 58" stroke="#8A7A5A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.3"></rect>
+<rect x="48" y="58" width="36" height="30" fill="url(#sfGilt)"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#141B30"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#0A0E1A"></polygon>
+<g fill="none" stroke="#2A3456" stroke-width="1.1"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect><rect x="162" y="125" width="20" height="33"></rect><polygon points="6,132.9 30,126.6 30,160.9 6,172.3"></polygon></g>
+<g fill="none" stroke="#080B16" stroke-width="0.8" transform="translate(0.9 0.9)"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect></g>
+<rect x="36" y="114" width="140" height="4" fill="#3A4466"></rect>
+<rect x="36" y="114" width="140" height="1" fill="#56618A" opacity="0.7"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#2A3352"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.3"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#C9C2B4"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#A8A294"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#B5AD9E"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#7E7668" stroke-width="0.8"></path>
+<circle cx="88" cy="186" r="1.6" fill="#C2552E"></circle><circle cx="91" cy="188" r="0.8" fill="#C2552E"></circle><circle cx="140" cy="182" r="1.4" fill="#24324F"></circle><circle cx="40" cy="194" r="1.8" fill="#E8A24A"></circle>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.3"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.06"></polygon>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Navy</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">paint · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #26325A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #141B30; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #C9C2B4; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Ochre corner: warm golden ochre paint with cream crown, picture rail and dado rail over a chocolate-brown panelled dado, a framed landscape, walnut boards" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#2A1E10"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL6)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW6)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfPaper)" opacity="0.6"></rect>
+<rect x="36" y="16" width="140" height="9" fill="#D9C49A"></rect>
+<line x1="36" y1="19" x2="176" y2="19" stroke="#F0E2C0" stroke-width="0.8"></line>
+<line x1="36" y1="22.5" x2="176" y2="22.5" stroke="#A8936C" stroke-width="0.6"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#B8A47E"></polygon>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.22"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#D9C49A" stroke-width="2.2"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#B8A47E" stroke-width="2"></line>
+<path d="M66 42.5 L50 58 M66 42.5 L82 58" stroke="#5A4A2A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.25"></rect>
+<rect x="48" y="58" width="36" height="30" fill="#2E1B0F"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#3A2418"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#2A1810"></polygon>
+<g fill="none" stroke="#5A3A26" stroke-width="1.1"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect><rect x="162" y="125" width="20" height="33"></rect><polygon points="6,132.9 30,126.6 30,160.9 6,172.3"></polygon></g>
+<g fill="none" stroke="#1E120A" stroke-width="0.8" transform="translate(0.9 0.9)"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect></g>
+<rect x="36" y="114" width="140" height="4" fill="#D9C49A"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#B8A47E"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.3"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#2E1C12"></rect>
+<rect x="36" y="162" width="140" height="1" fill="#D9C49A" opacity="0.4"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#24160E"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#4E2F1A"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#1E1209" stroke-width="0.8"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.05"></polygon>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Ochre</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">paint · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #B07A26; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #3A2418; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #D9C49A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="176" height="200" viewBox="0 0 176 200" role="img" aria-label="Plum corner: dusky plum walls with mauve crown and rails, a brass picture rail, deep plum panelled dado, a framed landscape, dark boards" style="display: block">
+<polygon points="0,0 176,0 176,16 36,16" fill="#1A1220"></polygon>
+<polygon points="0,0 36,16 36,170 0,190" fill="url(#sfL7)"></polygon>
+<rect x="36" y="16" width="140" height="154" fill="url(#sfW7)"></rect>
+<rect x="0" y="0" width="176" height="170" filter="url(#sfPaper)" opacity="0.55"></rect>
+<rect x="36" y="16" width="140" height="9" fill="#6E5470"></rect>
+<line x1="36" y1="19" x2="176" y2="19" stroke="#8A6E8C" stroke-width="0.8"></line>
+<polygon points="0,0 36,16 36,25 0,11.1" fill="#4A3650"></polygon>
+<rect x="36" y="25" width="140" height="2" fill="#000" opacity="0.3"></rect>
+<line x1="36" y1="42" x2="176" y2="42" stroke="#9A7A5A" stroke-width="2"></line>
+<line x1="0" y1="32.1" x2="36" y2="42" stroke="#7A5E46" stroke-width="1.8"></line>
+<path d="M66 42.5 L50 58 M66 42.5 L82 58" stroke="#8A7A5A" stroke-width="0.5" fill="none"></path>
+<rect x="49.5" y="59.5" width="36" height="30" fill="#000" opacity="0.3"></rect>
+<rect x="48" y="58" width="36" height="30" fill="url(#sfGilt)"></rect>
+<rect x="51" y="61" width="30" height="24" fill="#E6D8C0"></rect>
+<rect x="54" y="64" width="24" height="18" fill="#2A3346"></rect>
+<path d="M54 82 L54 76 C60 72 64 75 70 71 C73 70 76 72 78 71 L78 82 Z" fill="#3E4A3A"></path>
+<circle cx="72" cy="68" r="1.5" fill="#E9D9A8"></circle>
+<rect x="36" y="118" width="140" height="44" fill="#2A1C2C"></rect>
+<polygon points="0,125.8 36,118 36,162 0,180.1" fill="#1E1420"></polygon>
+<g fill="none" stroke="#4A3650" stroke-width="1.1"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect><rect x="162" y="125" width="20" height="33"></rect><polygon points="6,132.9 30,126.6 30,160.9 6,172.3"></polygon></g>
+<g fill="none" stroke="#140C16" stroke-width="0.8" transform="translate(0.9 0.9)"><rect x="42" y="125" width="34" height="33"></rect><rect x="82" y="125" width="34" height="33"></rect><rect x="122" y="125" width="34" height="33"></rect></g>
+<rect x="36" y="114" width="140" height="4" fill="#6E5470"></rect>
+<rect x="36" y="114" width="140" height="1" fill="#8A6E8C" opacity="0.7"></rect>
+<polygon points="0,120.9 36,114 36,118 0,125.8" fill="#4A3650"></polygon>
+<rect x="36" y="118" width="140" height="1.5" fill="#000" opacity="0.3"></rect>
+<rect x="36" y="162" width="140" height="8" fill="#221624"></rect>
+<rect x="36" y="162" width="140" height="1" fill="#6E5470" opacity="0.5"></rect>
+<polygon points="0,180.1 36,162 36,170 0,190" fill="#1A101C"></polygon>
+<polygon points="0,190 36,170 176,170 176,200 0,200" fill="#3A2416"></polygon>
+<path d="M50 170L0.9 200M75 170L34.7 200M100 170L68.5 200M125 170L102.2 200M150 170L136 200M175 170L169.7 200M33.6 180L61.6 180M76.9 192L108.3 192M147.2 176L173.9 176" stroke="#160C08" stroke-width="0.8"></path>
+<rect x="115.5" y="70" width="5" height="12" rx="2" fill="url(#sfBrass)"></rect>
+<path d="M108 52 L128 52 L133 69 L103 69 Z" fill="url(#sfShade)"></path>
+<path d="M108 52 L128 52 M103 69 L133 69" stroke="#B5893F" stroke-width="0.9"></path>
+<ellipse cx="118" cy="69.5" rx="14" ry="1.5" fill="#FFE6B0"></ellipse>
+<rect width="176" height="200" fill="#080504" opacity="0.58" mask="url(#sfDark)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="118" cy="62" r="66" fill="url(#sfWarm)" opacity="0.8"></circle>
+<polygon points="108,52 128,52 152,16 84,16" fill="url(#sfUp)"></polygon>
+<polygon points="103,69 133,69 162,162 74,162" fill="url(#sfDown)"></polygon>
+<ellipse cx="118" cy="184" rx="64" ry="10" fill="url(#sfWarm)" opacity="0.35"></ellipse>
+<polygon points="0,0 36,16 36,170 0,190" fill="#9FB6E8" opacity="0.05"></polygon>
+</g>
+<rect width="176" height="200" fill="url(#sfVig)"></rect>
+<rect width="176" height="200" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 10px; right: 10px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 10px 12px 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px; line-height: 20px">Plum</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #9C8B70">paint · <span style="color: #E8A24A">milestone surface</span></div>
+<div style="margin-top: 8px; display: flex; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #57405A; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #2A1C2C; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span><span style="width: 10px; height: 10px; border-radius: 50%; background: #6E5470; box-shadow: 0 0 0 1px rgba(243,230,208,0.2)"></span></div>
+</div>
+</div>
+
+</div>
+
+<div style="margin-top: 16px; display: flex; align-items: center; gap: 12px; height: 16px"><span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Patterned wallpapers · catalogue</span><span style="flex: 1; height: 1px; background: rgba(243,230,208,0.08)"></span><span style="font-size: 12px; color: #9C8B70">swatches under the same warm pool · hang above any dado</span></div>
+
+<div style="margin-top: 10px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px">
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Oxblood stripe wallpaper swatch: alternating oxblood stripes with a thin bronze pinstripe" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPStripe)"></rect>
+<rect width="56" height="5" fill="#3A2614"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#2A1A12"></rect><rect y="49" width="56" height="1" fill="#8A6A3A"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Oxblood stripe</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">oxblood-stripe · t2</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#5A2A30 · #4C2328</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Midnight dots wallpaper swatch: small antique-gold dots on midnight blue" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPDots)"></rect>
+<rect width="56" height="5" fill="#222C48"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#141B30"></rect><rect y="49" width="56" height="1" fill="#3A4466"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Midnight dots</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">midnight-dots · t2</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#23304A · #C9A96B</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Moss tweed wallpaper swatch: woven moss-green crosshatch with ochre flecks" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPTweed)"></rect>
+<rect width="56" height="5" fill="#2A3A2E"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#1E2A22"></rect><rect y="49" width="56" height="1" fill="#4F6B58"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Moss tweed</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">moss-tweed · t2</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#33473B</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Night sky wallpaper swatch: gold stars and crescent moons on deep indigo" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPSky)"></rect>
+<rect width="56" height="5" fill="#141A30"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#12162A"></rect><rect y="49" width="56" height="1" fill="#E0C07A" opacity="0.6"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Night sky</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">night-sky · t3</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#1D2340 · #E0C07A</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Plum scallop wallpaper swatch: fish-scale scallops in mauve on plum" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPScallop)"></rect>
+<rect width="56" height="5" fill="#2A1C2E"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#221624"></rect><rect y="49" width="56" height="1" fill="#6E5470"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Plum scallop</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">plum-scallop · t2</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#3D2A40 · #57405A</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 9px 8px; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Botanical wallpaper swatch: trailing sage leaves and coral blooms on deep green" style="display: block; flex: none; border-radius: 8px">
+<rect width="56" height="56" fill="url(#sfPBotan)"></rect>
+<rect width="56" height="5" fill="#16281F"></rect><rect y="5" width="56" height="1.2" fill="#000" opacity="0.3"></rect>
+<rect y="49" width="56" height="7" fill="#14241C"></rect><rect y="49" width="56" height="1" fill="#C98F6D" opacity="0.6"></rect>
+<rect width="56" height="56" fill="url(#sfSwGlow)" style="mix-blend-mode: screen"></rect>
+<rect width="56" height="56" fill="url(#sfSwVig)"></rect>
+</svg>
+<div style="min-width: 0">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Botanical</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">botanical · t3</div>
+<div style="margin-top: 4px; font-size: 11px; color: #B8A68A">#1F3A32 · #C98F6D</div>
+</div>
+</div>
+
+</div>
+
+<div style="margin-top: 16px; display: flex; align-items: center; gap: 12px; height: 16px"><span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Floors · in floor perspective</span><span style="flex: 1; height: 1px; background: rgba(243,230,208,0.08)"></span><span style="font-size: 12px; color: #9C8B70">same moon patch from the side window and the same lamp pool on each</span></div>
+
+<div style="margin-top: 10px; display: grid; grid-template-columns: repeat(9, 1fr); gap: 16px">
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Scuffed grey floorboards from day one, worn pale scuff marks, a cold moon patch and a warm lamp pool" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#3A3833"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#2E2C28"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#32302B"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#4A443D"></rect>
+<path d="M-36.1 110.6L-17.3 110.6L20 48.4L9.5 48.4ZM1.8 78.7L16.3 78.7L33.6 41.6L24.1 41.6ZM-10.8 136.7L11.4 136.7L17.7 117.9L-2 117.9ZM30.3 80.2L45 80.2L51.9 45.3L41.9 45.3ZM41.9 45.3L51.9 45.3L55.5 27.7L47.8 27.7ZM76 104.3L93.9 104.3L84.2 55.8L72.7 55.8ZM81.7 43.3L91.4 43.3L86.2 27.7L78.5 27.7Z" fill="#4A443D"></path>
+<path d="M9.5 48.4L20 48.4L32.4 27.7L24.7 27.7ZM24.1 41.6L33.6 41.6L40.1 27.7L32.4 27.7ZM29.3 50.8L40.1 50.8L47.5 28.6L39.6 28.6ZM33.7 136.7L55.9 136.7L57.1 118.1L37.4 118.1ZM55.9 136.7L78.1 136.7L73.7 71L60.3 71ZM60.3 71L73.7 71L71.4 35.5L62.6 35.5ZM72.7 55.8L84.2 55.8L79.6 33.2L71.2 33.2ZM103.5 79.4L118 79.4L98.3 37.1L89.4 37.1ZM116.5 76L130.6 76L107.9 38.2L98.8 38.2ZM142.2 95.3L158.9 95.3L120.8 43.3L111 43.3ZM111 43.3L120.8 43.3L109.3 27.7L101.6 27.7Z" fill="#58514A"></path>
+<path d="M-33 136.7L-10.8 136.7L16.3 78.7L1.8 78.7ZM49.9 55.6L61.3 55.6L63.2 27.7L55.5 27.7Z" fill="#544D45"></path>
+<path d="M-2 117.9L17.7 117.9L40.1 50.8L29.3 50.8ZM37.4 118.1L57.1 118.1L61.3 55.6L49.9 55.6ZM100.3 136.7L122.6 136.7L101.2 72.7L87.5 72.7Z" fill="#565049"></path>
+<path d="M11.4 136.7L33.7 136.7L45 80.2L30.3 80.2ZM78.1 136.7L100.3 136.7L93.9 104.3L76 104.3ZM87.5 72.7L101.2 72.7L91.4 43.3L81.7 43.3Z" fill="#4B453E"></path>
+<path d="M62.6 35.5L71.4 35.5L70.8 27.7L63.2 27.7ZM71.2 33.2L79.6 33.2L78.5 27.7L70.8 27.7ZM122.6 136.7L144.8 136.7L118 79.4L103.5 79.4ZM89.4 37.1L98.3 37.1L93.9 27.7L86.2 27.7ZM144.8 136.7L167 136.7L130.6 76L116.5 76ZM98.8 38.2L107.9 38.2L101.6 27.7L93.9 27.7Z" fill="#4E4841"></path>
+<path d="M-36.1 110.6L-17.3 110.6M9.5 48.4L20 48.4M1.8 78.7L16.3 78.7M24.1 41.6L33.6 41.6M-33 136.7L32.4 27.7M-2 117.9L17.7 117.9M29.3 50.8L40.1 50.8M39.6 28.6L47.5 28.6M-10.8 136.7L40.1 27.7M30.3 80.2L45 80.2M41.9 45.3L51.9 45.3M11.4 136.7L47.8 27.7M37.4 118.1L57.1 118.1M49.9 55.6L61.3 55.6M33.7 136.7L55.5 27.7M60.3 71L73.7 71M62.6 35.5L71.4 35.5M55.9 136.7L63.2 27.7M76 104.3L93.9 104.3M72.7 55.8L84.2 55.8M71.2 33.2L79.6 33.2M78.1 136.7L70.8 27.7M87.5 72.7L101.2 72.7M81.7 43.3L91.4 43.3M100.3 136.7L78.5 27.7M103.5 79.4L118 79.4M89.4 37.1L98.3 37.1M122.6 136.7L86.2 27.7M116.5 76L130.6 76M98.8 38.2L107.9 38.2M144.8 136.7L93.9 27.7M142.2 95.3L158.9 95.3M111 43.3L120.8 43.3M167 136.7L101.6 27.7" stroke="#2A2622" stroke-width="0.8" fill="none"></path>
+<path d="M86.6 69.1L94.7 65.6M105.2 103.8L119.3 113.9M39.2 38.9L43.7 37.5M63.1 74.8L72.5 73.1M74.4 48.7L78.2 51M-1.6 87.2L9.9 86.4M55.4 71.3L64.4 73.3M105.4 48L110.1 46.2M57.5 38.2L64.2 35.6" stroke="#7A7268" stroke-width="0.7" opacity="0.55" fill="none"></path>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#3C3934"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#34312C"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#34312C"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.55"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.2"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="#22304E" opacity="0.14" style="mix-blend-mode: multiply"></rect>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Scuffed grey boards</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">Day 1 · starter</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Bare brown floorboards, plain and unvarnished, with a moon patch and a warm lamp pool" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#2A2420"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1E1A17"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#221D19"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#3B2F2A"></rect>
+<path d="M-55.2 136.7L-33 136.7L6.1 71.5L-7.4 71.5ZM11.4 136.7L33.7 136.7L43.4 87.9L27.7 87.9ZM27.7 87.9L43.4 87.9L51.8 45.8L41.7 45.8Z" fill="#3B2F2A"></path>
+<path d="M-7.4 71.5L6.1 71.5L28.9 33.6L20.4 33.6ZM28.2 53L39.3 53L47.8 27.7L40.1 27.7ZM41.7 45.8L51.8 45.8L55.5 27.7L47.8 27.7ZM58.1 104.2L75.9 104.2L73 59.5L61 59.5ZM76.2 107.5L94.5 107.5L82.4 46.8L72.1 46.8ZM116.4 75.9L130.6 75.9L110.1 41.8L100.5 41.8ZM133 80.1L147.7 80.1L119.2 41.2L109.7 41.2Z" fill="#372B26"></path>
+<path d="M20.4 33.6L28.9 33.6L32.4 27.7L24.7 27.7ZM1.2 79.7L15.8 79.7L34.5 39.7L25.2 39.7ZM42.7 91.7L58.9 91.7L61.7 49.2L51.2 49.2ZM100.3 136.7L122.6 136.7L109.5 97.5L92.5 97.5ZM167 136.7L189.2 136.7L147.7 80.1L133 80.1ZM109.7 41.2L119.2 41.2L109.3 27.7L101.6 27.7Z" fill="#43352E"></path>
+<path d="M-33 136.7L-10.8 136.7L15.8 79.7L1.2 79.7ZM25.2 39.7L34.5 39.7L40.1 27.7L32.4 27.7ZM-1.8 117.4L17.9 117.4L39.3 53L28.2 53ZM33.7 136.7L55.9 136.7L58.9 91.7L42.7 91.7ZM51.2 49.2L61.7 49.2L63.1 28.2L55.4 28.2ZM55.9 136.7L78.1 136.7L75.9 104.2L58.1 104.2ZM61 59.5L73 59.5L71.3 34.1L62.7 34.1ZM62.7 34.1L71.3 34.1L70.8 27.7L63.2 27.7ZM78.1 136.7L100.3 136.7L94.5 107.5L76.2 107.5ZM72.1 46.8L82.4 46.8L78.5 27.7L70.8 27.7ZM104.7 83L119.7 83L102.6 46.3L92.4 46.3ZM92.4 46.3L102.6 46.3L93.9 27.7L86.2 27.7ZM100.5 41.8L110.1 41.8L101.6 27.7L93.9 27.7Z" fill="#3E302A"></path>
+<path d="M-10.8 136.7L11.4 136.7L17.9 117.4L-1.8 117.4ZM92.5 97.5L109.5 97.5L91.2 42.5L81.5 42.5ZM81.5 42.5L91.2 42.5L86.2 27.7L78.5 27.7ZM122.6 136.7L144.8 136.7L119.7 83L104.7 83ZM144.8 136.7L167 136.7L130.6 75.9L116.4 75.9Z" fill="#40322B"></path>
+<path d="M-7.4 71.5L6.1 71.5M20.4 33.6L28.9 33.6M1.2 79.7L15.8 79.7M25.2 39.7L34.5 39.7M-33 136.7L32.4 27.7M-1.8 117.4L17.9 117.4M28.2 53L39.3 53M-10.8 136.7L40.1 27.7M27.7 87.9L43.4 87.9M41.7 45.8L51.8 45.8M11.4 136.7L47.8 27.7M42.7 91.7L58.9 91.7M51.2 49.2L61.7 49.2M55.4 28.2L63.1 28.2M33.7 136.7L55.5 27.7M58.1 104.2L75.9 104.2M61 59.5L73 59.5M62.7 34.1L71.3 34.1M55.9 136.7L63.2 27.7M76.2 107.5L94.5 107.5M72.1 46.8L82.4 46.8M78.1 136.7L70.8 27.7M92.5 97.5L109.5 97.5M81.5 42.5L91.2 42.5M100.3 136.7L78.5 27.7M104.7 83L119.7 83M92.4 46.3L102.6 46.3M122.6 136.7L86.2 27.7M116.4 75.9L130.6 75.9M100.5 41.8L110.1 41.8M144.8 136.7L93.9 27.7M133 80.1L147.7 80.1M109.7 41.2L119.2 41.2M167 136.7L101.6 27.7" stroke="#1E1714" stroke-width="0.8" fill="none"></path>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#2A1E16"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#241A13"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#241A13"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.55"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Bare boards</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">bare-boards · starter</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Walnut planks: wide dark-brown boards with flowing grain and a soft polished sheen under the lamp" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#2A1E16"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1E1610"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#221912"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#4E2F1A"></rect>
+<path d="M-31.3 104.1L-9 104.1L21.3 50.7L7.8 50.7ZM0.3 136.7L28.1 136.7L37.7 95.5L16.8 95.5ZM37.7 95.6L58.6 95.6L62 44.3L49.7 44.3ZM73.9 39.5L85.5 39.5L82.4 27.7L72.8 27.7ZM85.2 38.1L96.5 38.1L92 27.7L82.4 27.7ZM133.2 80.4L151.6 80.4L123.8 44.1L111.4 44.1Z" fill="#553522"></path>
+<path d="M7.8 50.7L21.3 50.7L33.5 29.1L23.7 29.1ZM16.8 95.5L37.7 95.5L47 55.7L32.7 55.7ZM83.7 136.7L111.4 136.7L98 86.1L78.6 86.1ZM139.2 136.7L167 136.7L139.5 90.8L119.3 90.8Z" fill="#5A3820"></path>
+<path d="M-27.4 136.7L0.3 136.7L26.9 70.1L10.3 70.1ZM10.3 70.1L26.9 70.1L39.9 37.8L28.6 37.8ZM49.7 44.3L62 44.3L63.2 27.7L53.5 27.7ZM61.7 49.5L74.9 49.5L72.8 27.7L63.2 27.7ZM101 48.4L114.1 48.4L103.2 30.4L93.2 30.4ZM93.2 30.4L103.2 30.4L101.6 27.7L92 27.7Z" fill="#46291A"></path>
+<path d="M28.6 37.8L39.9 37.8L43.9 27.7L34.3 27.7ZM28.1 136.7L55.9 136.7L58.6 95.6L37.7 95.6ZM55.9 136.7L83.7 136.7L79 90.2L59 90.2ZM94.5 73.3L111.8 73.3L96.5 38.1L85.2 38.1Z" fill="#3E2614"></path>
+<path d="M32.7 55.7L47 55.7L53.4 28.3L43.7 28.3ZM59 90.2L79 90.2L74.9 49.5L61.7 49.5ZM78.6 86.1L98 86.1L85.5 39.5L73.9 39.5ZM119.3 90.8L139.5 90.8L114.1 48.4L101 48.4ZM167 136.7L194.8 136.7L151.6 80.4L133.2 80.4Z" fill="#62402A"></path>
+<path d="M111.4 136.7L139.2 136.7L111.8 73.3L94.5 73.3ZM111.4 44.1L123.8 44.1L111.2 27.7L101.6 27.7Z" fill="#4E2F1A"></path>
+<path d="M-49.1 136.7Q8.5 55.7 26.8 27.7M-36.8 136.7Q12.7 55.7 31.1 27.7M-17.5 136.7Q22.6 55.7 37.7 27.7M-9.5 136.7Q29.1 55.7 40.5 27.7M10.1 136.7Q36.9 55.7 47.3 27.7M20.2 136.7Q44.4 55.7 50.8 27.7M38.5 136.7Q51.1 55.7 57.1 27.7M47 136.7Q55.1 55.7 60.1 27.7M64.3 136.7Q65.2 55.7 66 27.7M74.7 136.7Q71.2 55.7 69.7 27.7M92.8 136.7Q79.1 55.7 75.9 27.7M104.7 136.7Q88 55.7 80.1 27.7M118.7 136.7Q92.3 55.7 84.9 27.7M130.8 136.7Q100.3 55.7 89.1 27.7M149.2 136.7Q107.7 55.7 95.5 27.7M159.2 136.7Q112.8 55.7 98.9 27.7M177.5 136.7Q123.2 55.7 105.3 27.7M184.6 136.7Q127.8 55.7 107.7 27.7" fill="none" stroke="#2A170B" stroke-width="0.5" opacity="0.45"></path>
+<path d="M-31.3 104.1L-9 104.1M7.8 50.7L21.3 50.7M23.7 29.1L33.5 29.1M10.3 70.1L26.9 70.1M28.6 37.8L39.9 37.8M-27.4 136.7L34.3 27.7M16.8 95.5L37.7 95.5M32.7 55.7L47 55.7M43.7 28.3L53.4 28.3M0.3 136.7L43.9 27.7M37.7 95.6L58.6 95.6M49.7 44.3L62 44.3M28.1 136.7L53.5 27.7M59 90.2L79 90.2M61.7 49.5L74.9 49.5M55.9 136.7L63.2 27.7M78.6 86.1L98 86.1M73.9 39.5L85.5 39.5M83.7 136.7L72.8 27.7M94.5 73.3L111.8 73.3M85.2 38.1L96.5 38.1M111.4 136.7L82.4 27.7M119.3 90.8L139.5 90.8M101 48.4L114.1 48.4M93.2 30.4L103.2 30.4M139.2 136.7L92 27.7M133.2 80.4L151.6 80.4M111.4 44.1L123.8 44.1M167 136.7L101.6 27.7" stroke="#1E1209" stroke-width="0.8" fill="none"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#2E1B0F"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#24150B"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#24150B"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.55"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Walnut planks</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">walnut-planks · t2</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Dark parquet: smoked-oak basketweave blocks, three strips per square alternating direction, waxed to a low glow" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#24180F"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1A120B"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#1E150D"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#36210F"></rect>
+<path d="M-49.7 178.3L-33 178.3L0.3 108.9L-10.8 108.9ZM-14.8 83.6L12.5 83.6L17 74.2L-8 74.2ZM-8 74.2L0.3 74.2L13.7 53.3L7 53.3ZM7 53.3L27 53.3L29.5 48.1L10.8 48.1ZM10.8 48.1L29.5 48.1L31.7 43.5L14.1 43.5ZM14.1 43.5L31.7 43.5L33.7 39.4L17 39.4ZM28.1 39.4L33.7 39.4L38.4 29.5L33.7 29.5ZM0.3 108.9L11.4 108.9L25.3 74.2L17 74.2ZM17 74.2L42 74.2L43.9 66.2L20.8 66.2ZM24.1 59.3L45.6 59.3L47 53.3L27 53.3ZM33.7 53.3L40.3 53.3L44.8 39.4L39.2 39.4ZM33.7 108.9L67 108.9L67 95L37 95ZM37 95L67 95L67 83.6L39.7 83.6ZM47 53.3L67 53.3L67 48.1L48.2 48.1ZM55.9 39.4L61.4 39.4L62.2 29.5L57.5 29.5ZM67 126.2L104.5 126.2L100.3 108.9L67 108.9ZM78.1 108.9L89.2 108.9L83.7 74.2L75.3 74.2ZM67 66.2L90.1 66.2L88.4 59.3L67 59.3ZM73.7 53.3L80.3 53.3L78.1 39.4L72.6 39.4ZM67 32.5L82 32.5L81.3 29.5L67 29.5ZM133.7 178.3L150.3 178.3L122.6 108.9L111.4 108.9ZM100.3 108.9L133.7 108.9L127 95L97 95ZM100.3 74.2L108.7 74.2L100.3 53.3L93.7 53.3ZM87 53.3L107 53.3L104.5 48.1L85.8 48.1ZM85.8 48.1L104.5 48.1L102.3 43.5L84.6 43.5ZM83.7 39.4L89.2 39.4L86 29.5L81.3 29.5ZM89.2 39.4L94.8 39.4L90.8 29.5L86 29.5ZM94.8 39.4L100.3 39.4L95.6 29.5L90.8 29.5ZM155.9 108.9L167 108.9L142 74.2L133.7 74.2ZM113.2 66.2L136.2 66.2L131.3 59.3L109.9 59.3ZM120.3 53.3L127 53.3L117 39.4L111.4 39.4ZM97 32.5L112 32.5L109.9 29.5L95.6 29.5Z" fill="#442A1A" stroke="#140B05" stroke-width="0.5"></path>
+<path d="M-33 108.9L0.3 108.9L7 95L-23 95ZM0.3 74.2L8.7 74.2L20.3 53.3L13.7 53.3ZM8.7 74.2L17 74.2L27 53.3L20.3 53.3ZM33.7 39.4L50.3 39.4L51.2 35.8L35.4 35.8ZM33.7 178.3L50.3 178.3L55.9 108.9L44.8 108.9ZM50.3 178.3L67 178.3L67 108.9L55.9 108.9ZM61.4 39.4L67 39.4L67 29.5L62.2 29.5ZM67 108.9L78.1 108.9L75.3 74.2L67 74.2ZM67 53.3L73.7 53.3L72.6 39.4L67 39.4ZM67 35.8L82.8 35.8L82 32.5L67 32.5ZM150.3 178.3L167 178.3L133.7 108.9L122.6 108.9ZM133.7 108.9L144.8 108.9L125.3 74.2L117 74.2ZM117 74.2L142 74.2L136.2 66.2L113.2 66.2ZM113.7 53.3L120.3 53.3L111.4 39.4L105.9 39.4Z" fill="#2E1C10" stroke="#140B05" stroke-width="0.5"></path>
+<path d="M-23 95L7 95L12.5 83.6L-14.8 83.6ZM17 39.4L22.6 39.4L28.9 29.5L24.1 29.5ZM11.4 108.9L22.6 108.9L33.7 74.2L25.3 74.2ZM20.8 66.2L43.9 66.2L45.6 59.3L24.1 59.3ZM39.7 83.6L67 83.6L67 74.2L42 74.2ZM42 74.2L50.3 74.2L53.7 53.3L47 53.3ZM50.3 74.2L58.7 74.2L60.3 53.3L53.7 53.3ZM80.3 53.3L87 53.3L83.7 39.4L78.1 39.4ZM67 39.4L83.7 39.4L82.8 35.8L67 35.8ZM117 178.3L133.7 178.3L111.4 108.9L100.3 108.9ZM94.3 83.6L121.5 83.6L117 74.2L92 74.2ZM92 74.2L100.3 74.2L93.7 53.3L87 53.3ZM108.7 74.2L117 74.2L107 53.3L100.3 53.3ZM84.6 43.5L102.3 43.5L100.3 39.4L83.7 39.4ZM98.6 35.8L114.4 35.8L112 32.5L97 32.5Z" fill="#3A2416" stroke="#140B05" stroke-width="0.5"></path>
+<path d="M22.6 39.4L28.1 39.4L33.7 29.5L28.9 29.5ZM22.6 108.9L33.7 108.9L42 74.2L33.7 74.2ZM27 53.3L33.7 53.3L39.2 39.4L33.7 39.4ZM40.3 53.3L47 53.3L50.3 39.4L44.8 39.4ZM48.2 48.1L67 48.1L67 43.5L49.4 43.5ZM49.4 43.5L67 43.5L67 39.4L50.3 39.4ZM67 74.2L92 74.2L90.1 66.2L67 66.2ZM67 59.3L88.4 59.3L87 53.3L67 53.3ZM142 126.2L179.5 126.2L167 108.9L133.7 108.9ZM107 53.3L113.7 53.3L105.9 39.4L100.3 39.4ZM100.3 39.4L117 39.4L114.4 35.8L98.6 35.8Z" fill="#3F2717" stroke="#140B05" stroke-width="0.5"></path>
+<path d="M-8 126.2L29.5 126.2L33.7 108.9L0.3 108.9ZM35.4 35.8L51.2 35.8L52 32.5L37 32.5ZM37 32.5L52 32.5L52.7 29.5L38.4 29.5ZM17 178.3L33.7 178.3L44.8 108.9L33.7 108.9ZM58.7 74.2L67 74.2L67 53.3L60.3 53.3ZM50.3 39.4L55.9 39.4L57.5 29.5L52.7 29.5ZM89.2 108.9L100.3 108.9L92 74.2L83.7 74.2ZM97 95L127 95L121.5 83.6L94.3 83.6ZM144.8 108.9L155.9 108.9L133.7 74.2L125.3 74.2ZM109.9 59.3L131.3 59.3L127 53.3L107 53.3Z" fill="#36210F" stroke="#140B05" stroke-width="0.5"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#1E140C"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#160E08"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#160E08"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.6"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 8px; right: 8px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Dark parquet</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">basketweave · t3</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Herringbone parquet: honey and mid-brown oak blocks in a zigzag running into the room, glossy under the lamp" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#2A1E16"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1E1610"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#221912"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#5E3F2A"></rect>
+<path d="M-6.2 89.5L3 83.1L-2 67.5L-10.1 72.2ZM20.2 46.4L25.3 43.8L19.8 36.8L15 39ZM16.1 124.3L26.3 113.8L16.3 89.5L7.3 96.7ZM34.8 67.5L40.6 63.3L32 52.4L26.6 55.7ZM14.2 63.3L32 52.4L29.6 49.3L12.3 59.3ZM37.5 59.3L42.8 55.7L34.6 46.4L29.6 49.3ZM41.8 46.4L46.1 43.8L38.7 36.8L34.5 39ZM25.3 43.8L38.7 36.8L36.5 34.8L23.3 41.3ZM43.5 41.3L47.5 39L40.3 32.9L36.5 34.8ZM46.3 32.9L49.7 31L43.2 26.2L39.8 27.7ZM32.5 31L43.2 26.2L41.2 24.7L30.6 29.3ZM38.1 72.2L54.4 59.3L50.8 55.7L34.8 67.5ZM47.5 39L58.1 32.9L55.5 31L45 36.8ZM64 32.9L67 31L59.1 26.2L56.1 27.7ZM67 167.4L88.8 124.3L80.6 113.8L58.5 150.6ZM109.6 150.6L114.1 136.4L86 104.7L80.6 113.8ZM95.2 89.5L99 83.1L80.8 67.5L76.6 72.2ZM92.3 77.4L95.9 72.2L79.6 59.3L75.8 63.3ZM90 67.5L93.4 63.3L78.7 52.4L75.1 55.7ZM86.4 52.4L89.4 49.3L77.1 41.3L74 43.8ZM67 43.8L76.4 36.8L73.1 34.8L63.6 41.3ZM67 31L74.9 26.2L72.2 24.7L64.2 29.3ZM107.7 113.8L117.7 89.5L109.7 83.1L98.7 104.7ZM129 89.5L131 83.1L108.4 67.5L105.6 72.2ZM87.9 43.8L95.3 36.8L91.4 34.8L83.8 41.3ZM153.1 77.4L153.8 72.2L130.2 59.3L128.5 63.3ZM138.6 59.3L139.7 55.7L121.1 46.4L119.3 49.3ZM133 52.4L134.3 49.3L117.4 41.3L115.7 43.8ZM111.9 49.3L117.4 41.3L112.5 39L106.6 46.4ZM128.3 46.4L129.6 43.8L114.2 36.8L112.5 39ZM120.5 36.8L122 34.8L109 29.3L107.3 31ZM117.4 32.9L118.8 31L106.7 26.2L105.1 27.7Z" fill="#7A5236" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M1.2 77.4L9.2 72.2L3.8 59.3L-3.3 63.3ZM12.3 59.3L18.5 55.7L12.9 46.4L7.2 49.3ZM16.5 52.4L22.1 49.3L16.6 41.3L11.3 43.8ZM7.4 150.6L19.9 136.4L9.9 104.7L-0.8 113.8ZM22.6 104.7L31.2 96.7L21.4 77.4L13.7 83.1ZM27.6 89.5L35 83.1L25.6 67.5L18.8 72.2ZM31.6 77.4L38.1 72.2L29.1 59.3L23 63.3ZM39.8 52.4L44.6 49.3L36.7 41.3L32.2 43.8ZM58.5 150.6L67 136.4L48 104.7L39.9 113.8ZM63.6 41.3L67 39L58.1 32.9L54.8 34.8ZM63.9 36.8L67 34.8L58.6 29.3L55.5 31ZM85 46.4L87.9 43.8L76.4 36.8L73.5 39ZM83.8 41.3L86.5 39L75.9 32.9L73.1 34.8ZM147 124.3L148.4 113.8L117.7 89.5L114.8 96.7ZM122.7 77.4L124.8 72.2L104.9 59.3L102.2 63.3ZM117.6 67.5L119.8 63.3L102 52.4L99.3 55.7ZM106.6 46.4L108.7 43.8L95.3 36.8L93 39ZM101.6 36.8L103.6 34.8L92.2 29.3L90 31ZM99.6 32.9L101.5 31L90.8 26.2L88.8 27.7Z" fill="#6A4630" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M7.2 67.5L14.2 63.3L8.7 52.4L2.4 55.7ZM26.1 36.8L30.4 34.8L25 29.3L21 31ZM-14.4 113.8L16.3 89.5L13.7 83.1L-15.5 104.7ZM28 39L40.3 32.9L38.2 31L26.1 36.8ZM45 36.8L48.7 34.8L41.8 29.3L38.2 31ZM11.2 167.4L45.2 124.3L39.9 113.8L7.4 150.6ZM60.7 104.7L67 96.7L51.8 77.4L45.7 83.1ZM31.2 96.7L51.8 77.4L47.7 72.2L27.6 89.5ZM61.4 89.5L67 83.1L53.2 67.5L47.7 72.2ZM35 83.1L53.2 67.5L49.4 63.3L31.6 77.4ZM40.6 63.3L55.3 52.4L52 49.3L37.5 59.3ZM63.1 52.4L67 49.3L56.9 41.3L53.1 43.8ZM63.4 46.4L67 43.8L57.6 36.8L54 39ZM67 136.4L86 104.7L78.9 96.7L59.7 124.3ZM103.4 124.3L107.7 113.8L83.9 89.5L78.9 96.7ZM98.7 104.7L102.8 96.7L82.2 77.4L77.7 83.1ZM67 63.3L78.7 52.4L74.5 49.3L62.8 59.3ZM88.1 59.3L91.2 55.7L77.8 46.4L74.5 49.3ZM67 55.7L77.8 46.4L74 43.8L63.1 52.4ZM67 49.3L77.1 41.3L73.5 39L63.4 46.4ZM67 39L75.9 32.9L72.8 31L63.9 36.8ZM81.8 32.9L84.3 31L74.9 26.2L72.4 27.7ZM122.8 167.4L132.5 124.3L121.2 113.8L109.6 150.6ZM136.8 104.7L138.6 96.7L112.6 77.4L109.7 83.1ZM113.3 59.3L115.5 55.7L99.4 46.4L96.9 49.3ZM89.4 49.3L97.3 41.3L93 39L85 46.4ZM86.5 39L93.7 32.9L90 31L82.7 36.8ZM145.2 67.5L146.1 63.3L125.3 52.4L123.6 55.7ZM124.1 41.3L125.5 39L111.4 32.9L109.7 34.8ZM106 39L111.4 32.9L107.3 31L101.6 36.8Z" fill="#5E3F2A" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M23.3 41.3L28 39L22.6 32.9L18.1 34.8ZM28.5 32.9L32.5 31L27.3 26.2L23.5 27.7ZM59.7 124.3L67 113.8L50.1 89.5L43.1 96.7ZM61.9 77.4L67 72.2L54.4 59.3L49.4 63.3ZM62.4 67.5L67 63.3L55.3 52.4L50.8 55.7ZM62.8 59.3L67 55.7L56.2 46.4L52 49.3ZM82.7 36.8L85.3 34.8L75.4 29.3L72.8 31ZM160.6 150.6L161.1 136.4L124.1 104.7L121.2 113.8ZM109.7 52.4L111.9 49.3L97.3 41.3L94.8 43.8ZM104 41.3L106 39L93.7 32.9L91.4 34.8Z" fill="#553824" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M-44.6 167.4L1.5 124.3L-0.8 113.8L-43.7 150.6ZM-27.1 136.4L9.9 104.7L7.3 96.7L-27.6 124.3ZM3 83.1L25.6 67.5L23 63.3L1.2 77.4ZM22.1 49.3L36.7 41.3L34.5 39L20.2 46.4ZM26.3 113.8L50.1 89.5L45.7 83.1L22.6 104.7ZM46.1 43.8L57.6 36.8L54.8 34.8L43.5 41.3ZM67 96.7L82.2 77.4L76.6 72.2L61.4 89.5ZM67 72.2L79.6 59.3L75.1 55.7L62.4 67.5ZM67 34.8L75.4 29.3L72.4 27.7L64 32.9ZM99 83.1L108.4 67.5L102.2 63.3L92.3 77.4ZM91.2 55.7L99.4 46.4L94.8 43.8L86.4 52.4ZM124.8 72.2L130.2 59.3L123.6 55.7L117.6 67.5Z" fill="#6E4A30" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M-4.6 96.7L21.4 77.4L18.8 72.2L-6.2 89.5ZM30.4 34.8L41.8 29.3L39.8 27.7L28.5 32.9ZM42.8 55.7L56.2 46.4L53.1 43.8L39.8 52.4ZM49.7 31L59.1 26.2L56.7 24.7L47.4 29.3ZM67 83.1L80.8 67.5L75.8 63.3L61.9 77.4ZM95.9 72.2L104.9 59.3L99.3 55.7L90 67.5ZM84.3 31L90.8 26.2L87.6 24.7L81 29.3ZM115.5 55.7L121.1 46.4L115.7 43.8L109.7 52.4ZM108.7 43.8L114.2 36.8L109.7 34.8L104 41.3ZM103.6 34.8L109 29.3L105.1 27.7L99.6 32.9Z" fill="#694530" stroke="#2E1D12" stroke-width="0.5"></path>
+<path d="M9.2 72.2L29.1 59.3L26.6 55.7L7.2 67.5ZM18.5 55.7L34.6 46.4L32.2 43.8L16.5 52.4ZM19.9 136.4L48 104.7L43.1 96.7L16.1 124.3ZM44.6 49.3L56.9 41.3L54 39L41.8 46.4ZM48.7 34.8L58.6 29.3L56.1 27.7L46.3 32.9ZM67 113.8L83.9 89.5L77.7 83.1L60.7 104.7ZM114.1 136.4L124.1 104.7L114.8 96.7L103.4 124.3ZM102.8 96.7L112.6 77.4L105.6 72.2L95.2 89.5ZM93.4 63.3L102 52.4L96.9 49.3L88.1 59.3ZM85.3 34.8L92.2 29.3L88.8 27.7L81.8 32.9ZM138.6 96.7L143 77.4L134.5 72.2L129 89.5ZM131 83.1L136 67.5L128.5 63.3L122.7 77.4ZM119.8 63.3L125.3 52.4L119.3 49.3L113.3 59.3ZM101.5 31L106.7 26.2L103.1 24.7L97.8 29.3Z" fill="#845A3C" stroke="#2E1D12" stroke-width="0.5"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#2E1B0F"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#24150B"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#24150B"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.55"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Herringbone parquet</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">herringbone-parquet · t3</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Terracotta tile: square clay tiles in uneven rust tones with dark grout lines and a soft waxed sheen" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#3A2018"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#2A1610"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#2E1A12"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#8A3E26"></rect>
+<path d="M-33 90L-13 90L0.3 70L-16.3 70ZM-33 120L-8 120L7 90L-13 90ZM27 30L37 30L39.7 24.5L30.6 24.5ZM7 90L27 90L33.7 70L17 70ZM42 120L67 120L67 90L47 90ZM54.5 45L67 45L67 36.7L55.9 36.7ZM57 30L67 30L67 24.5L57.9 24.5ZM81.3 55.7L95.6 55.7L92 45L79.5 45Z" fill="#843A22" stroke="#4A1E12" stroke-width="0.9"></path>
+<path d="M-16.3 70L0.3 70L9.9 55.7L-4.4 55.7ZM0.3 70L17 70L24.1 55.7L9.9 55.7ZM9.9 55.7L24.1 55.7L29.5 45L17 45ZM22.6 36.7L33.7 36.7L37 30L27 30ZM38.4 55.7L52.7 55.7L54.5 45L42 45ZM47 90L67 90L67 70L50.3 70ZM52.7 55.7L67 55.7L67 45L54.5 45ZM55.9 36.7L67 36.7L67 30L57 30ZM67 45L79.5 45L78.1 36.7L67 36.7ZM83.7 70L100.3 70L95.6 55.7L81.3 55.7ZM92 45L104.5 45L100.3 36.7L89.2 36.7ZM142 120L167 120L147 90L127 90ZM127 90L147 90L133.7 70L117 70ZM117 45L129.5 45L122.6 36.7L111.4 36.7ZM111.4 36.7L122.6 36.7L117 30L107 30Z" fill="#9A4A2E" stroke="#4A1E12" stroke-width="0.9"></path>
+<path d="M-4.4 55.7L9.9 55.7L17 45L4.5 45ZM4.5 45L17 45L22.6 36.7L11.4 36.7ZM17 45L29.5 45L33.7 36.7L22.6 36.7ZM33.7 36.7L44.8 36.7L47 30L37 30ZM33.7 170L67 170L67 120L42 120ZM50.3 70L67 70L67 55.7L52.7 55.7ZM67 120L92 120L87 90L67 90ZM67 36.7L78.1 36.7L77 30L67 30ZM67 30L77 30L76.1 24.5L67 24.5ZM100.3 70L117 70L109.9 55.7L95.6 55.7ZM109.9 55.7L124.1 55.7L117 45L104.5 45ZM104.5 45L117 45L111.4 36.7L100.3 36.7ZM147 90L167 90L150.3 70L133.7 70Z" fill="#8A3E26" stroke="#4A1E12" stroke-width="0.9"></path>
+<path d="M11.4 36.7L22.6 36.7L27 30L17 30ZM-33 170L0.3 170L17 120L-8 120ZM37 30L47 30L48.8 24.5L39.7 24.5ZM67 90L87 90L83.7 70L67 70ZM92 120L117 120L107 90L87 90ZM79.5 45L92 45L89.2 36.7L78.1 36.7ZM89.2 36.7L100.3 36.7L97 30L87 30Z" fill="#7A3420" stroke="#4A1E12" stroke-width="0.9"></path>
+<path d="M17 30L27 30L30.6 24.5L21.5 24.5ZM-13 90L7 90L17 70L0.3 70ZM-8 120L17 120L27 90L7 90ZM29.5 45L42 45L44.8 36.7L33.7 36.7ZM27 90L47 90L50.3 70L33.7 70ZM33.7 70L50.3 70L52.7 55.7L38.4 55.7ZM42 45L54.5 45L55.9 36.7L44.8 36.7ZM47 30L57 30L57.9 24.5L48.8 24.5ZM67 170L100.3 170L92 120L67 120ZM67 70L83.7 70L81.3 55.7L67 55.7ZM67 55.7L81.3 55.7L79.5 45L67 45ZM87 90L107 90L100.3 70L83.7 70ZM133.7 170L167 170L142 120L117 120ZM117 120L142 120L127 90L107 90ZM95.6 55.7L109.9 55.7L104.5 45L92 45ZM97 30L107 30L103.4 24.5L94.3 24.5ZM124.1 55.7L138.4 55.7L129.5 45L117 45ZM107 30L117 30L112.5 24.5L103.4 24.5Z" fill="#A0502F" stroke="#4A1E12" stroke-width="0.9"></path>
+<path d="M17 70L33.7 70L38.4 55.7L24.1 55.7ZM24.1 55.7L38.4 55.7L42 45L29.5 45ZM0.3 170L33.7 170L42 120L17 120ZM17 120L42 120L47 90L27 90ZM44.8 36.7L55.9 36.7L57 30L47 30ZM100.3 170L133.7 170L117 120L92 120ZM78.1 36.7L89.2 36.7L87 30L77 30ZM77 30L87 30L85.2 24.5L76.1 24.5ZM107 90L127 90L117 70L100.3 70ZM87 30L97 30L94.3 24.5L85.2 24.5ZM117 70L133.7 70L124.1 55.7L109.9 55.7ZM100.3 36.7L111.4 36.7L107 30L97 30ZM133.7 70L150.3 70L138.4 55.7L124.1 55.7Z" fill="#8F4329" stroke="#4A1E12" stroke-width="0.9"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#2A3424"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#222A1C"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#222A1C"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.5"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.22"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 8px; right: 8px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Terracotta tile</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">clay squares · t2</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Pale painted floorboards flecked with rust, navy, green and amber paint splatters from an artist's work" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#18213C"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#0E1426"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#121A30"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#B5AD9E"></rect>
+<path d="M-27.7 99.1L-10.5 99.1L16 55L4.7 55ZM15.8 55.4L27.2 55.4L36.8 34.7L28.2 34.7ZM11.4 136.7L33.7 136.7L43.8 86.1L28.3 86.1ZM40.2 50.5L50.9 50.5L55.5 27.7L47.8 27.7ZM57.8 107.6L76.2 107.6L72.4 51.3L61.6 51.3ZM144.8 136.7L167 136.7L132.9 79.9L118.3 79.9ZM150.1 108.6L168.6 108.6L129.8 55.6L118.4 55.6Z" fill="#B5AD9E"></path>
+<path d="M4.7 55L16 55L31.6 29L23.7 29ZM43.5 87.3L59.2 87.3L61.7 50L51 50ZM55.9 136.7L78.1 136.7L76.2 107.6L57.8 107.6ZM91.7 93.6L108.2 93.6L93.7 50.1L83 50.1ZM83 50.1L93.7 50.1L86.2 27.7L78.5 27.7ZM122.6 136.7L144.8 136.7L129.3 103.4L111.5 103.4Z" fill="#AFA798"></path>
+<path d="M-20.5 115.8L-1 115.8L27.2 55.4L15.8 55.4ZM-10.8 136.7L11.4 136.7L25.8 93.7L9.3 93.7ZM28.3 86.1L43.8 86.1L50.9 50.5L40.2 50.5Z" fill="#BDB5A6"></path>
+<path d="M28.2 34.7L36.8 34.7L40.1 27.7L32.4 27.7ZM33.7 136.7L55.9 136.7L59.2 87.3L43.5 87.3ZM51 50L61.7 50L63.1 28.3L55.3 28.3ZM61.6 51.3L72.4 51.3L70.8 27.7L63.2 27.7ZM71.8 41.3L81.3 41.3L78.5 27.7L70.8 27.7ZM111.5 103.4L129.3 103.4L107.3 56.3L95.8 56.3ZM118.3 79.9L132.9 79.9L111.7 44.4L101.7 44.4Z" fill="#B3AB9C"></path>
+<path d="M9.3 93.7L25.8 93.7L42.6 43.1L32.9 43.1ZM32.9 43.1L42.6 43.1L47.8 27.7L40.1 27.7ZM74.4 80.6L89.1 80.6L81.3 41.3L71.8 41.3ZM118.4 55.6L129.8 55.6L109.3 27.7L101.6 27.7Z" fill="#BEB6A7"></path>
+<path d="M78.1 136.7L100.3 136.7L89.1 80.6L74.4 80.6ZM100.3 136.7L122.6 136.7L108.2 93.6L91.7 93.6ZM95.8 56.3L107.3 56.3L94.3 28.6L86.5 28.6ZM101.7 44.4L111.7 44.4L101.6 27.7L93.9 27.7Z" fill="#C2BAAB"></path>
+<path d="M-27.7 99.1L-10.5 99.1M4.7 55L16 55M23.7 29L31.6 29M-20.5 115.8L-1 115.8M15.8 55.4L27.2 55.4M28.2 34.7L36.8 34.7M-33 136.7L32.4 27.7M9.3 93.7L25.8 93.7M32.9 43.1L42.6 43.1M-10.8 136.7L40.1 27.7M28.3 86.1L43.8 86.1M40.2 50.5L50.9 50.5M11.4 136.7L47.8 27.7M43.5 87.3L59.2 87.3M51 50L61.7 50M55.3 28.3L63.1 28.3M33.7 136.7L55.5 27.7M57.8 107.6L76.2 107.6M61.6 51.3L72.4 51.3M55.9 136.7L63.2 27.7M74.4 80.6L89.1 80.6M71.8 41.3L81.3 41.3M78.1 136.7L70.8 27.7M91.7 93.6L108.2 93.6M83 50.1L93.7 50.1M100.3 136.7L78.5 27.7M111.5 103.4L129.3 103.4M95.8 56.3L107.3 56.3M86.5 28.6L94.3 28.6M122.6 136.7L86.2 27.7M118.3 79.9L132.9 79.9M101.7 44.4L111.7 44.4M144.8 136.7L93.9 27.7M150.1 108.6L168.6 108.6M118.4 55.6L129.8 55.6M167 136.7L101.6 27.7" stroke="#7E7668" stroke-width="0.8" fill="none"></path>
+<g fill="#C2552E"><ellipse cx="53.7" cy="58.5" rx="2.3" ry="1.3"></ellipse><ellipse cx="107.1" cy="60.2" rx="2.1" ry="1.1"></ellipse><ellipse cx="42.5" cy="66.9" rx="2.6" ry="1.5"></ellipse><ellipse cx="46.8" cy="68" rx="1.1" ry="0.7"></ellipse><ellipse cx="31.4" cy="92.2" rx="2" ry="1.1"></ellipse><ellipse cx="34.6" cy="93" rx="0.8" ry="0.5"></ellipse><ellipse cx="72.7" cy="55.7" rx="2.5" ry="1.4"></ellipse><ellipse cx="76.7" cy="56.6" rx="1" ry="0.6"></ellipse><ellipse cx="64" cy="59.4" rx="1" ry="0.6"></ellipse><ellipse cx="88.6" cy="59.8" rx="2.1" ry="1.2"></ellipse><ellipse cx="92" cy="60.7" rx="0.8" ry="0.5"></ellipse><ellipse cx="105.9" cy="56.2" rx="1.1" ry="0.6"></ellipse><ellipse cx="70" cy="100" rx="3.2" ry="1.6"></ellipse><ellipse cx="75" cy="102" rx="1.2" ry="0.7"></ellipse></g>
+<g fill="#24324F"><ellipse cx="25" cy="90.3" rx="1.7" ry="0.9"></ellipse><ellipse cx="27.8" cy="91" rx="0.7" ry="0.4"></ellipse><ellipse cx="106.6" cy="89.5" rx="1.8" ry="1"></ellipse><ellipse cx="109.5" cy="90.2" rx="0.7" ry="0.5"></ellipse><ellipse cx="56.1" cy="53.7" rx="2.4" ry="1.3"></ellipse><ellipse cx="57.5" cy="59.6" rx="1.6" ry="0.9"></ellipse><ellipse cx="60.1" cy="60.2" rx="0.6" ry="0.4"></ellipse><ellipse cx="96" cy="108" rx="2.8" ry="1.4"></ellipse></g>
+<g fill="#2F5A4A"><ellipse cx="51.2" cy="52.9" rx="1.9" ry="1.1"></ellipse><ellipse cx="54.3" cy="53.7" rx="0.8" ry="0.5"></ellipse><ellipse cx="58.2" cy="47.5" rx="0.8" ry="0.4"></ellipse><ellipse cx="56.4" cy="78" rx="1.3" ry="0.7"></ellipse><ellipse cx="46" cy="64.9" rx="1.6" ry="0.9"></ellipse><ellipse cx="102.2" cy="48.2" rx="1.9" ry="1.1"></ellipse><ellipse cx="85.9" cy="37.4" rx="1.7" ry="1"></ellipse><ellipse cx="88.7" cy="38.1" rx="0.7" ry="0.4"></ellipse><ellipse cx="76.2" cy="60.2" rx="1.1" ry="0.6"></ellipse></g>
+<g fill="#E8A24A"><ellipse cx="31.4" cy="54.2" rx="2.2" ry="1.2"></ellipse><ellipse cx="34.9" cy="55.1" rx="0.9" ry="0.5"></ellipse><ellipse cx="76.8" cy="58.7" rx="1.2" ry="0.7"></ellipse><ellipse cx="78.8" cy="59.2" rx="0.5" ry="0.3"></ellipse><ellipse cx="97.2" cy="50.7" rx="1" ry="0.6"></ellipse><ellipse cx="20" cy="108" rx="2.6" ry="1.3"></ellipse></g>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#C9C2B4"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#A8A294"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#A8A294"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.45"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.2"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<span style="position: absolute; top: 8px; right: 8px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px; background: rgba(18,13,10,0.72)">new</span>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Pale painted boards</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">with splatters · t2</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Bistro tiles: cream and near-black squares laid on the diagonal, glossy under the lamp" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#2A2420"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1E1A17"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#221D19"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#2A2526"></rect>
+<path d="M-11.9 179.2L17.6 144.7L10.4 120L-15.4 144.7ZM-17.9 120L5.1 101.4L0.9 86.9L-19.7 101.4ZM27.6 179.2L50.5 144.7L38.7 120L17.6 144.7ZM10.4 120L29.8 101.4L22.9 86.9L5.1 101.4ZM0.9 86.9L17.4 75.3L12.8 65.8L-2.5 75.3ZM-5.3 65.8L9 57.9L5.8 51.1L-7.6 57.9ZM67 179.2L83.5 144.7L67 120L50.5 144.7ZM38.7 120L54.6 101.4L45 86.9L29.8 101.4ZM22.9 86.9L37.2 75.3L30.9 65.8L17.4 75.3ZM12.8 65.8L25.6 57.9L21.1 51.1L9 57.9ZM5.8 51.1L17.3 45.4L13.9 40.4L3 45.4ZM106.4 179.2L116.4 144.7L95.3 120L83.5 144.7ZM67 120L79.4 101.4L67 86.9L54.6 101.4ZM45 86.9L57.1 75.3L48.9 65.8L37.2 75.3ZM30.9 65.8L42.1 57.9L36.4 51.1L25.6 57.9ZM21.1 51.1L31.5 45.4L27.2 40.4L17.3 45.4ZM13.9 40.4L23.4 36L20.1 32.1L11 36ZM145.9 179.2L149.4 144.7L123.6 120L116.4 144.7ZM95.3 120L104.2 101.4L89 86.9L79.4 101.4ZM67 86.9L76.9 75.3L67 65.8L57.1 75.3ZM48.9 65.8L58.7 57.9L51.7 51.1L42.1 57.9ZM36.4 51.1L45.7 45.4L40.5 40.4L31.5 45.4ZM27.2 40.4L35.9 36L31.9 32.1L23.4 36ZM20.1 32.1L28.3 28.7L25.1 25.6L17.2 28.7ZM123.6 120L128.9 101.4L111.1 86.9L104.2 101.4ZM89 86.9L96.8 75.3L85.1 65.8L76.9 75.3ZM67 65.8L75.3 57.9L67 51.1L58.7 57.9ZM51.7 51.1L59.9 45.4L53.7 40.4L45.7 45.4ZM40.5 40.4L48.3 36L43.6 32.1L35.9 36ZM31.9 32.1L39.3 28.7L35.5 25.6L28.3 28.7ZM151.9 120L153.7 101.4L133.1 86.9L128.9 101.4ZM111.1 86.9L116.6 75.3L103.1 65.8L96.8 75.3ZM85.1 65.8L91.9 57.9L82.3 51.1L75.3 57.9ZM67 51.1L74.1 45.4L67 40.4L59.9 45.4ZM53.7 40.4L60.8 36L55.3 32.1L48.3 36ZM43.6 32.1L50.4 28.7L46 25.6L39.3 28.7ZM133.1 86.9L136.5 75.3L121.2 65.8L116.6 75.3ZM103.1 65.8L108.4 57.9L97.6 51.1L91.9 57.9ZM82.3 51.1L88.3 45.4L80.3 40.4L74.1 45.4ZM67 40.4L73.2 36L67 32.1L60.8 36ZM55.3 32.1L61.5 28.7L56.5 25.6L50.4 28.7ZM121.2 65.8L125 57.9L112.9 51.1L108.4 57.9ZM97.6 51.1L102.5 45.4L93.5 40.4L88.3 45.4ZM80.3 40.4L85.7 36L78.7 32.1L73.2 36ZM67 32.1L72.5 28.7L67 25.6L61.5 28.7ZM139.3 65.8L141.6 57.9L128.2 51.1L125 57.9ZM112.9 51.1L116.7 45.4L106.8 40.4L102.5 45.4ZM93.5 40.4L98.1 36L90.4 32.1L85.7 36ZM78.7 32.1L83.6 28.7L77.5 25.6L72.5 28.7ZM128.2 51.1L131 45.4L120.1 40.4L116.7 45.4ZM106.8 40.4L110.6 36L102.1 32.1L98.1 36ZM90.4 32.1L94.7 28.7L88 25.6L83.6 28.7ZM120.1 40.4L123 36L113.9 32.1L110.6 36ZM102.1 32.1L105.7 28.7L98.5 25.6L94.7 28.7ZM113.9 32.1L116.8 28.7L108.9 25.6L105.7 28.7Z" fill="#C9B9A3"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#1A1616"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#141010"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#141010"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.5"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Bistro tiles</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">bistro-tiles · t2</div>
+</div>
+</div>
+
+<div style="position: relative; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden">
+<svg width="133" height="119" viewBox="0 0 134 120" role="img" aria-label="Dark terrazzo: charcoal ground scattered with cream, rust, green and brass chips, divided by thin brass strips" style="display: block">
+<rect x="27" y="0" width="80" height="30" fill="#242022"></rect>
+<polygon points="0,0 27,0 27,30 0,70.5" fill="#1A1718"></polygon>
+<polygon points="134,0 107,0 107,30 134,70.5" fill="#1E1A1B"></polygon>
+<g clip-path="url(#sfFloorClip)">
+<rect x="0" y="25" width="134" height="95" fill="#2A2624"></rect>
+<path d="M61.8 65.3L61.1 66.6L62.9 66.9L63.4 65.8ZM122.7 61.1L121.1 61.1L121.7 62.4L122.9 62.5ZM84.3 42.4L84.4 41.8L83.4 41.4L82.4 41.9ZM126.1 95.3L124.1 92.2L122.2 93.3L124.2 96ZM107.1 55.5L106.4 53.6L104.3 52.8L105.4 55ZM65.9 42.2L66.3 43.1L67.5 42.8L67 42.2ZM46.9 54.9L46.9 53.3L45.3 53L44.7 54.4ZM103 41.4L103.9 42.7L105.9 42.5L105.3 41.3ZM79.4 44.2L78 43.8L77.4 44.8L78.9 45.2ZM21.6 82.2L21 81.9L19.9 83.1L21 83.2ZM20 39.9L19.3 40.8L21.4 40.4L21.7 39ZM76.1 34.7L75.6 35.4L77.3 36.1L77.7 35.1ZM37.9 36.1L38.5 36.9L40.2 35.7L38.6 35.2ZM85.2 57.1L82.7 57.6L83.8 59.7L87 58.9ZM51 53.4L48.8 53.6L49.3 56.1L51.1 55ZM68.4 42.2L68.9 43.3L71.5 43.2L71.3 41.9ZM88.6 54.8L90.9 53.2L89.4 51.7L86.6 52.3ZM42.8 36L41 35.8L40.1 37L41.6 37.3ZM96.6 75.5L96.7 76.6L97.9 77.8L98.8 76.8ZM45.4 83.8L47.5 83.9L48.1 81.4L46.5 80.8ZM10.4 81.4L12 80.8L12.2 79.4L10.5 80.3ZM9.1 58.6L11.4 56.8L11.3 55.6L7.3 57.5ZM108.4 94.3L107.6 92.1L106.6 92.7L106.8 94.2ZM37.1 93.5L37.8 90.8L36.4 90.9L35.7 93.1ZM49.7 46.1L49.7 45.2L48.9 45.6L48.8 46.2ZM5.2 91.3L6.6 89.3L5.2 88.1L4.1 89.8ZM113.3 72.4L114.3 71.9L113.5 71L112.8 71.5ZM30.2 30.6L29.9 31.1L31.4 30.9L31.1 30.5ZM16.7 86.9L16.5 85.9L15.6 85.4L14.9 87.2ZM75.2 66.2L75 63.7L73.6 63.8L74 65.8ZM83.7 48.1L83.7 47.2L82.5 46.9L82.7 47.8ZM103.8 33.9L104.4 35.6L106 35.5L106.1 34.6ZM45.2 79.9L40.7 82.5L43.7 86.1L45.7 83ZM90.3 84.3L89.1 84.7L89.9 85.7L90.9 85.2ZM13.2 62.8L12.9 64.3L14.3 64L15.4 62.9ZM98.5 76.7L101 77.8L100.3 75.6L98.7 74.9ZM114 112.2L118.1 114.8L118.8 111.7L114.5 107ZM70.3 66.4L68.6 66.3L68.4 67.8L70.6 68.4ZM116.9 70.8L115.1 72.1L117.1 74L118.9 72.5ZM130.1 82.8L128.1 81.1L128.4 82.9L129.7 84ZM58.1 42.7L60.9 43L60.6 41.1L58.3 41.9ZM36.9 73.8L38.7 74.3L38.4 72L36.5 72.5ZM45.8 32L47.7 31.4L47.2 30.8L46.1 31ZM121.9 63.2L119.2 62.6L119.8 64.8L122.6 65.9ZM93.9 47.9L97 47.7L96.7 46.5L93.7 45.4ZM63.1 44.9L60.8 44.9L59.6 45.6L61.8 46.7Z" fill="#CFC3A8"></path>
+<path d="M65.9 50L66.1 51.4L68.1 51.5L67.2 49.9ZM87.6 119.2L88.5 121.3L89.5 120L88.4 117.5ZM96.5 102.5L98.1 101L96.3 99.9L95.7 101.1ZM95.2 68.4L94.2 67.7L93.6 68.8L94.6 69.1ZM63.3 76.2L62.3 76.1L62.3 77.1L63 77.2ZM50.6 57.5L49.5 55.3L48.1 57L48.4 58.2ZM96.2 34.4L98 34.5L97.6 33L96.4 33.1ZM41.6 33.9L42.4 35.2L43.5 34.6L42.8 33.6ZM27.9 52.3L25.6 52.3L25.1 54.8L26.8 54.2ZM31 40.3L29.1 41.3L30.1 41.7L31.8 40.9ZM53.6 41.5L52.7 41.6L52.2 42.1L53.7 42.5ZM40.2 68L41.7 67.8L41.4 67.1L40.6 66.6Z" fill="#8A3E26"></path>
+<path d="M72.8 49L73.5 48.4L72.6 48.1L71.9 48.5ZM109.9 74.2L107.6 74.5L108.2 76.5L110.5 75.8ZM17.1 107.9L15.4 106.2L13.7 107.4L14.8 110.7ZM71 102.5L69.7 97.8L68 98.4L68.6 103.7ZM29.1 104.8L31.1 101.7L29.4 98.2L27.4 102ZM57 30.9L55.1 30.9L55.2 31.5L56.9 31.5ZM32 38.4L30.7 38.9L31.3 39.5L32.2 38.9ZM84 111.8L85.8 113.5L86 110.2L84.5 109.7ZM114.8 85.9L112.7 86.1L112.8 87.9L115.1 88.6ZM101.7 58.4L100.5 55.2L98.7 55.7L99.1 57.5ZM106.4 118.5L109.3 115L106.5 112.5L104.4 115ZM120.4 73.9L121.5 73.2L119.8 72.2L119.5 73.2Z" fill="#4F7A5E"></path>
+<path d="M116.3 77.4L115.8 77.9L117 79.2L117.1 78.1ZM67.7 56.1L67.2 58.4L70.1 58.1L71.3 56.8ZM53.9 35.2L55.6 34.3L54.2 33.8L53.2 34.5ZM113.8 45.1L114.1 46L115.4 46.3L115.3 45.2ZM52.6 46.6L53.7 47.1L54.9 46.7L53.4 46ZM32.3 33.2L31.3 33.5L32 33.8L32.6 33.4ZM56 74.4L53.9 75L54 76.9L55.9 76.9ZM112.9 58.1L112.8 59L113.7 59.7L114.3 58.7ZM13.3 60.4L14.6 59.5L13.8 58.9L12.5 59.1ZM111.4 39.3L109.8 38.1L108.9 39.2L110.9 40.1ZM45.5 40.5L46.5 40.6L47.2 39.9L46.3 39.6ZM115.1 93.9L113.5 88.2L109.1 88L111.5 92.3ZM34.3 46.4L35.8 47.2L36.8 45.7L35.2 45.8ZM75.1 67.3L78.9 65.6L76.7 63.1L75 64.4ZM96.9 36.2L96.3 37.1L97.4 38.4L99.1 37.1ZM111.1 50.4L110 48.8L108.5 48.6L108.8 50.2ZM12.2 112.3L13.6 113L15.6 110.4L14.4 109.3ZM56.5 55L55.7 56.6L57.8 58.2L58.8 55.5ZM76 110.2L77 118.4L82 115.8L78.7 108.8ZM103 108.8L102.4 102.1L98.2 103.9L100.9 110.9ZM115.6 57.3L115.9 59.1L118.1 60.9L120.2 60Z" fill="#E6D8C0"></path>
+<path d="M126.5 88.3L126.7 90.7L130.9 91L129.3 87.1ZM68.6 49.6L69.4 49.6L69.3 49L68.7 49.2ZM87.5 33.8L87.2 34.4L88.5 34.6L88.4 34.1ZM85.9 113L85.9 115.9L88.6 119.2L89 116.8ZM93.5 38.3L92.6 39.2L93.5 40.2L94.5 39.1ZM40.3 43.1L38.8 44.5L41.2 44.9L42.1 43ZM55.5 56.1L57 55.6L56.2 54.7L54.9 55ZM116.8 58.6L119 60.7L120.7 60.1L118.8 58.4ZM51.8 76.8L49.4 77L48.5 79.9L52.1 79.8ZM19.4 70.9L21.1 69.7L20.1 68.1L18.4 69.3ZM101.5 38.9L100.5 37.5L99.1 37.6L99.2 38.8ZM50.9 35.4L52 36.2L53.7 35.7L53.2 34.9ZM95.2 52.8L96.2 54.2L97.3 54L96.1 52.4ZM110.1 58.1L112.8 57.5L111.2 55.1L109.2 55.9ZM92.8 44L90.4 42.5L89.7 43.9L91.8 45.1Z" fill="#9A8E7C"></path>
+<path d="M33.9 57L32.3 56.8L30.6 58.5L32.7 58.8ZM115.3 47.7L113.6 48.1L116.2 50.7L118.2 49.6ZM104.6 64.3L103.5 62L101.5 62.2L102.4 64.5ZM105.7 43.4L105.1 42.3L102.8 42.1L103.1 43ZM72.7 43.2L73.2 43L72.6 42.5L71.8 42.8ZM53.6 41L52.3 42.1L53.8 42.4L55.1 41.5ZM85.2 61.6L84.1 61.1L84.1 62.1L85 62.5ZM44.1 51.8L43.9 52.1L44.5 52.4L45 51.7ZM45.2 56.8L42.9 57.9L44 59.8L45.8 59.5ZM22.6 43.3L24.4 44.1L25.6 43L24.4 42.1ZM94.7 78.4L93.8 75.5L90.6 74.4L89.9 77.8ZM95.5 45.8L97.8 45.6L96.8 44L94.7 44.5ZM103.7 36.3L103 35.2L101.5 35.2L102.4 36ZM86.4 30.9L86.9 31.6L88.5 31.2L87.7 30.5ZM118 103.7L117.8 101.3L114.7 100.7L116.9 104.5ZM73.5 34.5L74.4 34L73.9 33.6L73 33.8ZM39.6 66.7L38.4 66L37.1 67L38.4 67.6ZM41.1 74.6L43.1 72L41 70.2L39.2 72.4ZM46.6 54.3L47.5 52.9L46.7 51.8L44.8 53.4ZM81 38.8L79.8 38.2L78.8 39.2L80.1 39.7ZM33.5 43.8L34.9 43.3L35.2 42.4L33.4 42.3Z" fill="#6A6058"></path>
+<path d="M8.9 60.2L9.5 61.4L11.3 60.7L11 59.2ZM58.7 86.7L57.2 85.6L56.1 89.2L57.9 89.7ZM103.5 69.1L104 67.1L101.5 66.4L102.2 68.5ZM50.7 40L49 41.6L51 42L52.6 40.3ZM106.9 63.7L104.1 63.4L105.2 65.3L107.5 65.9ZM65.4 51.8L65.1 51.2L64.4 51.3L64.3 52ZM70 101.1L68.9 100.5L67.9 101.9L69.5 102.9ZM64.5 60L65.6 61.2L67 59.2L65.8 58.4ZM33.4 55.3L32.4 54.3L30.8 55.6L31.6 56.4ZM98.2 46.6L98.2 49.7L100.4 50.3L100.7 47.5ZM64.2 42.8L63.5 43.6L64.2 43.9L65.1 43.4ZM42.9 75.6L41.3 73.3L37.7 76.3L40.6 77.9ZM24.3 46.8L23.7 48.1L27.1 47.7L26.4 45.9ZM48.4 56.7L45.9 56.8L44.6 59.1L47.1 58.6ZM8.6 65.8L7.3 65.1L6.1 67.1L7.8 67.1ZM97.4 53.8L96.9 55.2L100.5 55.9L99.2 53.2ZM75.2 35.9L74.9 35.4L74.1 35.4L74.3 36.1Z" fill="#B5893F"></path>
+<path d="M11.4 136.7L47.8 27.7M67 136.7L67 27.7M122.6 136.7L86.2 27.7M-21 90L155 90M4.1 55.7L129.9 55.7M18.1 36.7L115.9 36.7" stroke="#B5893F" stroke-width="0.9" opacity="0.8" fill="none"></path>
+<ellipse cx="84" cy="80" rx="60" ry="24" fill="url(#sfSheen)"></ellipse>
+</g>
+<rect x="27" y="26" width="80" height="4" fill="#1A1718"></rect>
+<polygon points="0,63.8 27,26 27,30 0,70.5" fill="#141213"></polygon>
+<polygon points="134,63.8 107,26 107,30 134,70.5" fill="#141213"></polygon>
+<rect width="134" height="120" fill="#080504" opacity="0.5" mask="url(#sfFDark)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="90" cy="86" rx="48" ry="18" fill="url(#sfWarm)" opacity="0.6"></ellipse>
+<polygon points="10,84 30,72 50,80 30,94" fill="#B8C8EA" opacity="0.18"></polygon>
+</g>
+<path d="M20 78 L40 87 M40 76 L20 89" stroke="#000" stroke-width="1.4" opacity="0.22"></path>
+<rect width="134" height="120" fill="url(#sfVig)"></rect>
+<rect width="134" height="120" filter="url(#sfGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="padding: 9px 10px 11px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px; line-height: 19px">Dark terrazzo</div>
+<div style="margin-top: 3px; font-size: 12px; line-height: 16px; color: #9C8B70">dark-terrazzo · t3</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

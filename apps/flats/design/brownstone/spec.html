@@ -1,0 +1,376 @@
+<title>Brownstone Design Spec</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~68ch) with wide figures and tables that break out to ~1040px; dark-first like the app at night. */
+:root {
+  --bg: #120D0A;
+  --panel: #1A130F;
+  --line: rgba(243,230,208,0.12);
+  --fg: #F3E6D0;
+  --muted: #B8A68A;
+  --faint: #9C8B70;
+  --accent: #E8A24A;
+  --accent-ink: #1D130B;
+  --moon: #9FB6E8;
+  --green: #2E4636;
+  --oxblood: #5A2A30;
+  --terracotta: #A8583A;
+  --navy: #23304A;
+  --ochre: #B07F2E;
+  --plum: #3D2A40;
+  --grey: #4A3F45;
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #EFE8DE; --panel: #E6DDD0; --line: rgba(40,28,20,0.16); --fg: #20170F; --muted: #5C4B3A; --faint: #6E5D4B;
+    --accent: #94561C; --accent-ink: #FFF7EA; --moon: #3F5A96; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #EFE8DE; --panel: #E6DDD0; --line: rgba(40,28,20,0.16); --fg: #20170F; --muted: #5C4B3A; --faint: #6E5D4B;
+  --accent: #94561C; --accent-ink: #FFF7EA; --moon: #3F5A96; color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 64px 96px; display: flex; flex-direction: column; gap: 56px; }
+.col { max-width: 68ch; }
+header { display: flex; flex-direction: column; gap: 18px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(44px, 8vw, 84px); line-height: 1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.lede { font-family: var(--display); font-style: italic; font-weight: 500; font-size: clamp(20px, 2.6vw, 25px); line-height: 1.4; color: var(--muted); margin: 0; max-width: 40ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--faint); }
+.meta a { color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 18px; }
+h2 { font-family: var(--display); font-weight: 600; font-size: clamp(28px, 4vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 .n { font-family: var(--mono); font-weight: 400; font-size: 15px; color: var(--accent); display: block; letter-spacing: 0.04em; margin-bottom: 6px; }
+h3 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 12px 0 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.25em; display: flex; flex-direction: column; gap: 8px; }
+li::marker { color: var(--faint); }
+strong { font-weight: 700; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+code { background: var(--panel); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+.callout { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+.callout .k { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.tablebox { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); font-weight: 500; background: var(--panel); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 14px; white-space: nowrap; }
+td .t { font-family: var(--display); font-size: 17px; font-weight: 500; }
+.chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 8px; border: 1px solid var(--line); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card h4 { font-family: var(--display); font-weight: 500; font-size: 19px; margin: 0; }
+.card p { font-size: 15px; color: var(--muted); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+figcaption { font-size: 14px; color: var(--faint); }
+.chart { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.chart svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.chart text { fill: var(--muted); font-family: var(--body); font-size: 12px; }
+.chart .axis { stroke: var(--line); }
+.chart .grid { stroke: var(--line); stroke-dasharray: 2 4; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 18px; height: 3px; border-radius: 2px; margin-right: 8px; vertical-align: 4px; background: currentColor; }
+.l-dark { color: var(--fg); } .l-tint { color: var(--moon); } .l-moon { color: var(--accent); }
+.stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.stage { border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 8px; color: #F3E6D0; border: 1px solid rgba(243,230,208,0.1); min-width: 0; }
+.stage .s { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: #E7CFA6; }
+.stage h4 { font-family: var(--display); font-weight: 600; font-size: 22px; margin: 0; }
+.stage p { font-size: 14px; color: #DCCDB3; line-height: 1.5; }
+.st1 { background: radial-gradient(120% 90% at 20% 80%, rgba(159,182,232,0.30), transparent 60%), #2A2830; }
+.st2 { background: radial-gradient(90% 80% at 15% 85%, rgba(159,182,232,0.22), transparent 55%), radial-gradient(70% 70% at 85% 50%, rgba(255,170,80,0.32), transparent 60%), #2B2622; }
+.st3 { background: radial-gradient(60% 60% at 20% 85%, rgba(159,182,232,0.14), transparent 55%), radial-gradient(80% 70% at 75% 45%, rgba(255,170,80,0.34), transparent 60%), #1E2F25; }
+.st4 { background: radial-gradient(40% 40% at 20% 85%, rgba(159,182,232,0.10), transparent 55%), radial-gradient(60% 50% at 30% 30%, rgba(255,180,90,0.30), transparent 60%), radial-gradient(70% 60% at 80% 60%, rgba(255,160,70,0.38), transparent 60%), #24301F; }
+.toc { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 6px 24px; font-size: 15px; padding: 0; list-style: none; }
+.toc a { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); display: block; padding: 6px 0; }
+.toc a:hover { color: var(--accent); }
+.toc .mono { color: var(--faint); margin-right: 10px; }
+pre { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; color: var(--fg); }
+footer { border-top: 1px solid var(--line); padding-top: 24px; font-size: 14px; color: var(--faint); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+<div class="eyebrow">Flats · design proposal · October 2026</div>
+<h1>Brownstone</h1>
+<p class="lede">A visual direction for Flats where light does the storytelling: a cold moonlit room that grows warmer, lamp by lamp, as you keep showing up.</p>
+<div class="meta">
+<span>Status: proposal, not built</span>
+<span>Scope: street view, your flat, visiting, assets</span>
+<span>Kit: <a href="https://claude.ai/artifact/2j91nuMZ7B5bkent4fnDB2">Brownstone design kit</a></span>
+</div>
+</header>
+
+<nav aria-label="Contents">
+<ul class="toc">
+<li><a href="#summary"><span class="mono">1</span>Summary</a></li>
+<li><a href="#today"><span class="mono">2</span>What the game does today</a></li>
+<li><a href="#language"><span class="mono">3</span>Visual language</a></li>
+<li><a href="#light"><span class="mono">4</span>The lighting model</a></li>
+<li><a href="#stages"><span class="mono">5</span>Progression in four stages</a></li>
+<li><a href="#rewards"><span class="mono">6</span>Big moments and quiet weeks</a></li>
+<li><a href="#variety"><span class="mono">7</span>Making every flat different</a></li>
+<li><a href="#street"><span class="mono">8</span>The street and visiting</a></li>
+<li><a href="#kit"><span class="mono">9</span>Asset inventory</a></li>
+<li><a href="#build"><span class="mono">10</span>Implementation notes</a></li>
+<li><a href="#open"><span class="mono">11</span>Open questions</a></li>
+</ul>
+</nav>
+
+<section id="summary">
+<h2><span class="n">1</span>Summary</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>Brownstone keeps everything Flats already does and changes how it looks and feels. Every friend has a flat in one brownstone on a wet night street. From outside, each window glows brighter with that week's workouts. Inside, the flat is drawn as a detailed, warmly lit room in the existing one-point cutaway.</p>
+<p>The central idea is that <strong>light is the progress bar</strong>. A new flat is lit almost entirely by cold moonlight through an uncurtained window. Each light you unpack cuts a warm pool out of the dark. Paint, curtains and flooring change the whole room at once. By the time the flat is homey, a dozen small warm sources do the work and the moonlight has become a quiet accent you have shaped with your own curtains.</p>
+<p>Three rules hold it together. The window light never goes away. Every lamp is a real light. Nothing is ever taken from you.</p>
+</div>
+</section>
+
+<section id="today">
+<h2><span class="n">2</span>What the game does today</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>Brownstone is a skin and lighting system over the current rules. None of these change:</p>
+<ul>
+<li><strong>Logging.</strong> One tap, "I worked out today", once per day.</li>
+<li><strong>Presents.</strong> Each workout earns a present. Its tier comes from that week's count: the first workout gives tier 1, the second and third tier 2, the fourth and later tier 3. Each present offers three choices.</li>
+<li><strong>Items.</strong> 50 catalogue items, each with zones (<code>ceiling</code>, <code>wall</code>, <code>wallTop</code>, <code>window</code>, <code>sill</code>, <code>floor</code>, <code>rug</code>), a rarity (standard, seasonal, surprise) and palettes with primary, shade and accent colour roles. Twelve surfaces cover wallpaper and flooring.</li>
+<li><strong>Pet.</strong> A cat, dog, bunny, frog or duck. Its mood is perky after a workout today, content otherwise, and sleepy after seven quiet days.</li>
+<li><strong>Plants.</strong> Grow through stages 0, 1 and 2, at 2 and 5 workouts after unpacking.</li>
+<li><strong>Cosiness title.</strong> Earned by items placed: Bare little box (0), Moving in (1), Getting homey (3), Snug nook (6), Cosy nest (9), Dreamy den (13), Storybook flat (17).</li>
+<li><strong>Visits.</strong> Friends leave a heart, star or treat, one of each per day. Stars stay on the window frame. The pet eats treats the next time the owner opens the app.</li>
+<li><strong>No punishment.</strong> Missed weeks never remove anything.</li>
+</ul>
+</div>
+</section>
+
+<section id="language">
+<h2><span class="n">3</span>Visual language</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>Detailed, adult and warm, closer to a lamplit period drama than a cartoon. It is always night, so lamps matter. Rooms read as dark academia: panelled walls, leather, brass, books, velvet, plants.</p>
+</div>
+<div class="grid2">
+<div class="card"><h4>Materials</h4><p>Cognac leather, brass, walnut, oxblood and mustard velvet, cream knit, terracotta, rattan. Every surface gets a gradient for form, a highlight and a soft contact shadow. Detail lives in the small things: tufting, piping, book spines of different heights, leaf veins.</p></div>
+<div class="card"><h4>Type</h4><p>Fraunces for names and moments ("Properly homey", "The jazz den"). DM Sans for everything you tap and read. Both are already in the app.</p></div>
+<div class="card"><h4>Interface</h4><p>Near-black warm ground, cream text, one amber accent for the primary action and for lit week dots. The interface stays quiet so the room can glow.</p></div>
+<div class="card"><h4>Room geometry</h4><p>The existing one-point cutaway: back wall 250 × 280 px in a 390 × 600 view, side walls and floor in perspective. Every flat shares it, so items, light pools and moon patches can be placed by formula.</p></div>
+</div>
+</section>
+
+<section id="light">
+<h2><span class="n">4</span>The lighting model</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>The room is painted flat-lit, then light is added in layers. All seven layers are cheap SVG or canvas operations.</p>
+</div>
+<div class="tablebox">
+<table>
+<thead><tr><th>Layer</th><th>What it does</th><th>Driven by</th></tr></thead>
+<tbody>
+<tr><td><span class="t">1 · Base art</span></td><td>Walls, floor, items, pet, drawn as if evenly lit.</td><td>Surfaces and placed items</td></tr>
+<tr><td><span class="t">2 · Cool tint</span></td><td>Multiply layer in moon blue <code>#22304E</code>.</td><td>Cosiness: full on day one, almost gone when homey</td></tr>
+<tr><td><span class="t">3 · Darkness</span></td><td>A near-black layer over the whole room, with a soft hole cut at every light source.</td><td>Cosiness for its opacity, light items for its holes</td></tr>
+<tr><td><span class="t">4 · Warm glow</span></td><td>Radial amber gradients in screen blend at each lamp, plus cones and pools on the floor.</td><td>Light items: position, radius, warmth, pattern</td></tr>
+<tr><td><span class="t">5 · Moonlight</span></td><td>A cool patch on the floor with mullion shadows, plus a faint shaft through the air.</td><td>Window position of the unit and the window treatment</td></tr>
+<tr><td><span class="t">6 · Vignette</span></td><td>Darkens the corners so the eye goes to the lit middle.</td><td>Constant</td></tr>
+<tr><td><span class="t">7 · Grain</span></td><td>Fine film grain in overlay blend. Hides banding and makes it feel photographed.</td><td>Constant</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Every lamp is an item, and every item can be a light</h3>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>The catalogue already tags lights with <code>light</code>. Brownstone gives each one a light definition. The renderer cuts one darkness hole and draws one glow per light, so placing a lamp visibly lights its corner, and the "tap a slot to place it" flow becomes the moment a corner comes alive.</p>
+</div>
+<pre>"light": {
+  "x": 0.5, "y": 0.1,        // emitter, relative to the item box
+  "radius": 90,              // px at the back wall; scaled by depth
+  "warmth": 2400,            // kelvin, 1800 (candle) to 4000 (bare bulb)
+  "pattern": "dapple",       // none | cone | dapple | stars | stripes | flicker
+  "throw": "down"            // down | up | wall | room
+}</pre>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>Patterns are the signature of a style. A pierced brass lantern scatters star-shaped spots across the ceiling. A wicker dome dapples. Shutters stripe. Candles flicker. A flat with one pattern light already looks like someone's home.</p>
+</div>
+
+<h3>The room gets warmer as it fills</h3>
+<figure>
+<div class="chart">
+<svg viewBox="0 0 720 300" role="img" aria-label="Line chart against items placed from 0 to 23. Darkness falls from 0.66 to 0.55. Cool tint falls from 1.0 to 0.1. Moonlight share of total light falls from about 80 percent to 15 percent. Stage markers at 0, 6, 14 and 23 items.">
+<line class="grid" x1="60" y1="40" x2="690" y2="40"></line>
+<line class="grid" x1="60" y1="95" x2="690" y2="95"></line>
+<line class="grid" x1="60" y1="150" x2="690" y2="150"></line>
+<line class="grid" x1="60" y1="205" x2="690" y2="205"></line>
+<line class="axis" x1="60" y1="260" x2="690" y2="260"></line>
+<line class="axis" x1="60" y1="40" x2="60" y2="260"></line>
+<text x="50" y="44" text-anchor="end">1.0</text>
+<text x="50" y="154" text-anchor="end">0.5</text>
+<text x="50" y="264" text-anchor="end">0</text>
+<line class="grid" x1="60" y1="40" x2="60" y2="260" style="stroke-dasharray: none"></line>
+<line class="grid" x1="224.3" y1="40" x2="224.3" y2="260"></line>
+<line class="grid" x1="443.5" y1="40" x2="443.5" y2="260"></line>
+<line class="grid" x1="690" y1="40" x2="690" y2="260"></line>
+<text x="60" y="282" text-anchor="middle">0 · Day 1</text>
+<text x="224.3" y="282" text-anchor="middle">6 · Unpacked</text>
+<text x="443.5" y="282" text-anchor="middle">14 · Settled</text>
+<text x="690" y="282" text-anchor="end">23 · Homey</text>
+<polyline points="60,114.8 224.3,123.6 443.5,134.6 690,139" fill="none" stroke="currentColor" style="color: var(--fg)" stroke-width="2.5"></polyline>
+<polyline points="60,40 224.3,128 443.5,205 690,238" fill="none" stroke="currentColor" style="color: var(--moon)" stroke-width="2.5"></polyline>
+<polyline points="60,84 224.3,150 443.5,205 690,227" fill="none" stroke="currentColor" style="color: var(--accent)" stroke-width="2.5" stroke-dasharray="6 5"></polyline>
+<circle cx="60" cy="114.8" r="4" fill="currentColor" style="color: var(--fg)"></circle>
+<circle cx="690" cy="139" r="4" fill="currentColor" style="color: var(--fg)"></circle>
+<circle cx="60" cy="40" r="4" fill="currentColor" style="color: var(--moon)"></circle>
+<circle cx="690" cy="238" r="4" fill="currentColor" style="color: var(--moon)"></circle>
+<text x="700" y="143" style="fill: var(--fg)">0.55</text>
+<text x="700" y="242" style="fill: var(--moon)">0.10</text>
+<text x="66" y="110" style="fill: var(--fg)">0.66</text>
+</svg>
+</div>
+<div class="legend"><span class="l-dark">Darkness opacity</span><span class="l-tint">Cool tint strength</span><span class="l-moon">Moonlight share of total light</span></div>
+<figcaption>Darkness and tint are a smooth function of cosiness, not steps. The four named stages are just points on these curves. Moonlight share falls because warm sources are added, not because the moon gets weaker.</figcaption>
+</figure>
+
+<h3>The window light stays</h3>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>The cold moonlit window is the one thing that never changes, and it is the strongest part of the look. What changes is how much it dominates. Window treatments shape it instead of removing it:</p>
+<ul>
+<li><strong>Bare sash:</strong> the full patch with crisp mullion shadows.</li>
+<li><strong>Curtains:</strong> narrow the patch by about a third and soften its edge.</li>
+<li><strong>Louvred shutters:</strong> break it into stripes across the rug.</li>
+<li><strong>Roller blind:</strong> shortens the patch to its near half.</li>
+<li><strong>Plants on the sill:</strong> add blurred leaf shadows inside it.</li>
+</ul>
+<p>That makes the moonlight something people decorate, not just a light that fades.</p>
+</div>
+</section>
+
+<section id="stages">
+<h2><span class="n">5</span>Progression in four stages</h2>
+<div class="col"><p>The kit shows your flat at four moments. They are illustrations of a continuous system, not gates the player has to pass.</p></div>
+<div class="stages">
+<div class="stage st1"><div class="s">0 items · Bare little box</div><h4>Day 1</h4><p>Stained grey walls, scuffed boards, one bare bulb, boxes marked "BOOKS?". The moonlight from the uncurtained window is the main light. Darkness 0.66, full cool tint.</p></div>
+<div class="stage st2"><div class="s">6 items · Snug nook</div><h4>Unpacked</h4><p>Walls still grey, moonlight still dominant. A paper globe softens the bulb, and a tripod lamp beside a secondhand mustard armchair makes the first warm pool. That cold-against-warm contrast is the emotional beat of week one.</p></div>
+<div class="stage st3"><div class="s">14 items · Dreamy den</div><h4>Settled</h4><p>The bottle-green paint is the big moment. Velvet curtains narrow the moonlight. The globe, tripod lamp and striped rug from week one are still there, so the things you own visibly carry forward.</p></div>
+<div class="stage st4"><div class="s">23 items · Storybook flat</div><h4>Homey</h4><p>Many small warm sources take over: arc lamp, pendant, sconce, picture light, fairy lights, candles. The moonlight is a quiet accent on the rug. Darkness 0.55, almost no tint.</p></div>
+</div>
+<div class="callout">
+<div class="k">Design rule</div>
+<p>Items persist between stages and are never swapped for better versions behind the player's back. The tripod lamp you unpacked on day two is still in the corner on day sixty. Progress is addition and warming, not replacement.</p>
+</div>
+</section>
+
+<section id="rewards">
+<h2><span class="n">6</span>Big moments and quiet weeks</h2>
+<div class="grid2">
+<div class="card"><h4>Surfaces are the big moments</h4><p>Paint, curtains and flooring change the whole room in one go, which makes them feel bigger than any single lamp. Offer them as tier 3 choices, as streak milestones, or as the reward for a first four-workout week. The first paint colour is the clearest "this is mine now" moment in the game.</p></div>
+<div class="card"><h4>Quiet weeks dim, never take</h4><p>After seven quiet days (when the pet already turns sleepy), lamps dim to about 70%. After three quiet weeks they sit at candle level with the pet asleep in the glow. One logged workout turns every lamp back on at once. Nothing is removed, and the room still looks lovely when dim.</p></div>
+<div class="card"><h4>Lights switch on</h4><p>Placing a light plays a short warm-up: the darkness hole opens and the glow blooms over about 600 ms. Logging a workout can do the same for every lamp, which turns the daily tap into a small visible reward.</p></div>
+<div class="card"><h4>Real time, optional</h4><p>Night is the default. Later, the moon patch could follow the local clock: blue hour at dusk, deep night after one in the morning, a thin dawn shaft. It is atmosphere only and never gates anything.</p></div>
+</div>
+</section>
+
+<section id="variety">
+<h2><span class="n">7</span>Making every flat different</h2>
+<div class="col"><p>Every flat should look good no matter what the player picks, and no two flats on a street should look alike. Six levers do this. The three neighbour showcases each turn all six.</p></div>
+<div class="tablebox">
+<table>
+<thead><tr><th>Lever</th><th>Your flat</th><th>Maya · 2B</th><th>Priya</th><th>Theo</th></tr></thead>
+<tbody>
+<tr><td><span class="t">Wall colour</span></td><td><span class="chip" style="background: var(--green)"></span>Bottle green, panelled</td><td><span class="chip" style="background: var(--oxblood)"></span>Oxblood lacquer</td><td><span class="chip" style="background: var(--terracotta)"></span>Terracotta limewash over sage</td><td><span class="chip" style="background: var(--navy)"></span>Navy</td></tr>
+<tr><td><span class="t">Hero piece</span></td><td>Built-in bookshelf</td><td>Upright piano with candelabra</td><td>Rattan peacock chair</td><td>Easel and canvas</td></tr>
+<tr><td><span class="t">Signature light</span></td><td>Brass arc lamp, picture light</td><td>Pierced lantern: star spots</td><td>Wicker dome: dapples</td><td>Bare filament bulbs, clamp lamp</td></tr>
+<tr><td><span class="t">Window</span></td><td>Left, velvet drapes</td><td>Left, louvred shutters: striped moonlight</td><td>Centre, arched, leaf shadows</td><td>Right, roller blind a third down</td></tr>
+<tr><td><span class="t">Floor and rug</span></td><td>Walnut planks, Persian</td><td>Dark parquet, kilim</td><td>Terracotta tile, round jute</td><td>Pale painted boards with splatters, faded Persian</td></tr>
+<tr><td><span class="t">Pet</span></td><td>Dog</td><td>Black cat, Miso</td><td>Spotted dog, Pip</td><td>Greyhound, Juno</td></tr>
+<tr><td><span class="t">Room name</span></td><td>Properly homey</td><td>The jazz den</td><td>The conservatory</td><td>The atelier</td></tr>
+</tbody>
+</table>
+</div>
+<div class="grid2">
+<div class="card"><h4>A short wall list</h4><p>Six curated paints: green, oxblood, terracotta, navy, ochre and plum. All are mid-dark and saturated enough to glow under warm light. No white or pale grey, which would read as flat under the darkness layer.</p></div>
+<div class="card"><h4>Window position comes free</h4><p>A unit's window sits where its facade window is: left, centre or right. The moon patch lands somewhere different in every flat before anyone decorates.</p></div>
+<div class="card"><h4>A hero slot</h4><p>One large floor slot per flat for a statement piece. It sets the personality and suggests the room's name.</p></div>
+<div class="card"><h4>Auto-matched colours</h4><p>Item palettes already have primary, shade and accent roles. Shift the primary slightly toward a harmonious hue for the current wall, derive the shade from it, and keep metals (brass, black) fixed as accents. Mixing items from different styles then still looks intended.</p></div>
+</div>
+</section>
+
+<section id="street">
+<h2><span class="n">8</span>The street and visiting</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<p>The building view is a laptop-wide night street: one brownstone with six windows, a stoop with iron railings, a brass plaque showing the invite code, street lamps, wet reflections and a neon "Flats" sign on the roof.</p>
+<ul>
+<li><strong>Window glow</strong> scales with that friend's workouts this week, from a faint cold pane at zero to blazing amber with interior silhouettes at seven.</li>
+<li><strong>Window boxes</strong> grow one flower per workout this week, with the resident's name stencilled on the box.</li>
+<li><strong>Stars</strong> left by visitors are nailed to the window frame as small brass stars and stay there.</li>
+<li><strong>Empty units</strong> show a "Room for a friend" card in the window with the invite action.</li>
+<li><strong>Time, weather and season</strong> change the street only: dusk, late night, rain, snow, autumn leaves.</li>
+</ul>
+<p>Visiting opens the neighbour's flat at full detail with a small panel at the bottom: Heart, Star, and "Treat for" the pet's name. Each can be sent once a day, and the panel says what each one does ("Stars stay on Maya's window frame from the street").</p>
+</div>
+</section>
+
+<section id="kit">
+<h2><span class="n">9</span>Asset inventory</h2>
+<div class="col"><p>The <a href="https://claude.ai/artifact/2j91nuMZ7B5bkent4fnDB2">Brownstone design kit</a> holds the showcase screens and the asset sheets below. All are mockups for direction, not production art.</p></div>
+<div class="tablebox">
+<table>
+<thead><tr><th>Section</th><th>Boards</th><th>What is on them</th></tr></thead>
+<tbody>
+<tr><td><span class="t">01 Showcases</span></td><td>Street, Day 1, Unpacked, Settled, Homey, Maya, Priya, Theo</td><td>The building view, your flat at four stages, three neighbours' flats with the visit panel</td></tr>
+<tr><td><span class="t">02 City and building</span></td><td>City backdrop, Street states, Building parts</td><td>Parallax skyline layers, moon phases, the street at dusk, night, late night, in rain, snow and autumn, facade parts, neon sign states, window boxes</td></tr>
+<tr><td><span class="t">03 Windows and moonlight</span></td><td>Window glow, Treatments, Moonlight shapes</td><td>Glow at 0 to 7 workouts, window states (asleep, stars, heart, treat, vacancy), eight treatments and the patch each throws, moon patches by window position</td></tr>
+<tr><td><span class="t">04 Furniture</span></td><td>Seating and beds, Tables and storage</td><td>Chairs, sofas and beds in palette variants, tables, shelves in three fill states, hero pieces</td></tr>
+<tr><td><span class="t">05 Light</span></td><td>Lights catalogue, Lighting system</td><td>Every lamp with the light it throws and its spec, the exploded render stack, the cosiness curves, quiet-week dimming</td></tr>
+<tr><td><span class="t">06 Plants, textiles, art</span></td><td>Plants, Rugs and wall art</td><td>Plants at growth stages 0 to 2, rugs, curtains, throws, frames, mirrors, small objects</td></tr>
+<tr><td><span class="t">07 Pets</span></td><td>Moods, Moments</td><td>Cat, dog, bunny, frog and duck at perky, content and sleepy; treats, naps, pet gear</td></tr>
+<tr><td><span class="t">08 Surfaces and colour</span></td><td>Walls and floors, Auto-matched palettes</td><td>The six paints and existing wallpapers under warm light, floors, palette harmonising by wall colour</td></tr>
+<tr><td><span class="t">09 Presents and interface</span></td><td>Presents, Interface kit, Placing a lamp</td><td>Present wrappers by tier and the unboxing sequence, buttons, week dots, cosiness ladder, visit panel, toasts, the place-a-lamp flow</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="build">
+<h2><span class="n">10</span>Implementation notes</h2>
+<div class="col" style="display: flex; flex-direction: column; gap: 14px">
+<ul>
+<li><strong>Projection.</strong> All flats use one formula, so lights, patches and slots can be computed: a point at room coordinates (X, Y, Z) maps to <code>[195 + X·s, 280 + (1.92 − Y)·s]</code> with <code>s = 312.5 / (5 − Z)</code>.</li>
+<li><strong>Data.</strong> Add an optional <code>light</code> object to light-tagged items, a <code>moonShape</code> modifier to window items, and a <code>windowSide</code> to each unit. Paint becomes a surface kind beside wallpaper and flooring.</li>
+<li><strong>Rendering.</strong> The current room is SVG, so the stack can stay SVG: one mask with a radial hole per light, one screen-blend group, one moon polygon. Cap visible light holes at about twelve and merge the faintest ones on low-end phones.</li>
+<li><strong>Grain and blend modes.</strong> The grain filter is the heaviest layer. Render it once to a cached image or a CSS background rather than as a live SVG filter on every frame.</li>
+<li><strong>Accessibility.</strong> The room is decorative and already described in text (title, item count, cosiness). Keep that, and keep all controls outside the dark room so their contrast never depends on lighting.</li>
+<li><strong>Art pipeline.</strong> Items keep the catalogue's layered-primitive format. Brownstone needs more layers per item (highlights, piping, grain), so a small number of hand-drawn SVG items may be cheaper than extending the primitive renderer.</li>
+</ul>
+</div>
+</section>
+
+<section id="open">
+<h2><span class="n">11</span>Open questions</h2>
+<div class="col">
+<ol>
+<li>Should paint replace the current wallpaper surfaces, or sit alongside them as a separate, rarer reward?</li>
+<li>How many lights before the room feels overlit? The Homey showcase uses about ten sources.</li>
+<li>Do we follow the real clock for the moon, or keep it always night?</li>
+<li>Is the hero slot one fixed location for every flat, or does it move with the window side?</li>
+<li>How do bunny, frog and duck fit the adult tone? The kit draws them naturalistically, not as cartoons.</li>
+<li>Does dimming after quiet weeks ever feel like punishment in testing? If it does, drop it and keep only the sleepy pet.</li>
+</ol>
+</div>
+</section>
+
+<footer>Brownstone design proposal for Flats. Showcases and assets live in the <a href="https://claude.ai/artifact/2j91nuMZ7B5bkent4fnDB2">design kit</a>.</footer>
+</div>

@@ -1,0 +1,71 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-17T22:10:00Z"},
+  "title": "Flats — Brownstone Kit",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "00 · Brownstone kit — cover"},
+
+    "Brownstone-Street.dc.html": {"x": 0, "y": 1400, "w": 1440, "h": 800, "title": "01 · Showcase — the street"},
+    "Brownstone-Day1.dc.html": {"x": 1520, "y": 1400, "w": 390, "h": 844, "title": "01 · Stage 1 — Day 1"},
+    "Brownstone-Unpacked.dc.html": {"x": 1990, "y": 1400, "w": 390, "h": 844, "title": "01 · Stage 2 — Unpacked"},
+    "Brownstone-Settled.dc.html": {"x": 2460, "y": 1400, "w": 390, "h": 844, "title": "01 · Stage 3 — Settled"},
+    "Brownstone-Homey.dc.html": {"x": 2930, "y": 1400, "w": 390, "h": 844, "title": "01 · Stage 4 — Homey"},
+    "Brownstone-Maya.dc.html": {"x": 3480, "y": 1400, "w": 390, "h": 844, "title": "01 · Visiting Maya — oxblood jazz den"},
+    "Brownstone-Priya.dc.html": {"x": 3950, "y": 1400, "w": 390, "h": 844, "title": "01 · Visiting Priya — terracotta conservatory"},
+    "Brownstone-Theo.dc.html": {"x": 4420, "y": 1400, "w": 390, "h": 844, "title": "01 · Visiting Theo — navy atelier"},
+
+    "City-Skyline.dc.html": {"x": 0, "y": 2650, "w": 1440, "h": 900, "title": "02 · City backdrop layers"},
+    "Street-States.dc.html": {"x": 1520, "y": 2650, "w": 1440, "h": 900, "title": "02 · Street — time, weather, season"},
+    "Building-Parts.dc.html": {"x": 3040, "y": 2650, "w": 1440, "h": 900, "title": "02 · Building parts"},
+
+    "Windows-Glow.dc.html": {"x": 0, "y": 3950, "w": 1440, "h": 900, "title": "03 · Windows from the street — glow and states"},
+    "Windows-Treatments.dc.html": {"x": 1520, "y": 3950, "w": 1440, "h": 900, "title": "03 · Window treatments"},
+    "Moonlight-Shapes.dc.html": {"x": 3040, "y": 3950, "w": 1440, "h": 900, "title": "03 · Moonlight shapes on the floor"},
+
+    "Furniture-Seating.dc.html": {"x": 0, "y": 5250, "w": 1440, "h": 900, "title": "04 · Furniture — seating and beds"},
+    "Furniture-Storage.dc.html": {"x": 1520, "y": 5250, "w": 1440, "h": 900, "title": "04 · Furniture — tables, storage, hero pieces"},
+
+    "Lights-Catalog.dc.html": {"x": 0, "y": 6550, "w": 1440, "h": 900, "title": "05 · Lights — every lamp is a light source"},
+    "Light-System.dc.html": {"x": 1520, "y": 6550, "w": 1440, "h": 900, "title": "05 · The lighting system"},
+
+    "Decor-Plants.dc.html": {"x": 0, "y": 7850, "w": 1440, "h": 900, "title": "06 · Plants and growth stages"},
+    "Decor-Textiles-Art.dc.html": {"x": 1520, "y": 7850, "w": 1440, "h": 900, "title": "06 · Rugs, textiles, wall art, small things"},
+
+    "Pets-Moods.dc.html": {"x": 0, "y": 9150, "w": 1440, "h": 900, "title": "07 · Pets — five kinds, three moods"},
+    "Pets-Moments.dc.html": {"x": 1520, "y": 9150, "w": 1440, "h": 900, "title": "07 · Pets — moments and gear"},
+
+    "Surfaces.dc.html": {"x": 0, "y": 10450, "w": 1440, "h": 900, "title": "08 · Walls and floors"},
+    "Palette-Harmony.dc.html": {"x": 1520, "y": 10450, "w": 1440, "h": 900, "title": "08 · Auto-matched palettes"},
+
+    "Presents.dc.html": {"x": 0, "y": 11750, "w": 1440, "h": 900, "title": "09 · Presents — tiers and unboxing"},
+    "UI-Kit.dc.html": {"x": 1520, "y": 11750, "w": 1440, "h": 900, "title": "09 · Interface kit"},
+    "Flow-PlaceLamp.dc.html": {"x": 3040, "y": 11750, "w": 1440, "h": 960, "title": "09 · Flow — placing a lamp lights the corner"}
+  },
+  "order": [
+    "Main.dc.html",
+    "Brownstone-Street.dc.html", "Brownstone-Day1.dc.html", "Brownstone-Unpacked.dc.html", "Brownstone-Settled.dc.html", "Brownstone-Homey.dc.html", "Brownstone-Maya.dc.html", "Brownstone-Priya.dc.html", "Brownstone-Theo.dc.html",
+    "City-Skyline.dc.html", "Street-States.dc.html", "Building-Parts.dc.html",
+    "Windows-Glow.dc.html", "Windows-Treatments.dc.html", "Moonlight-Shapes.dc.html",
+    "Furniture-Seating.dc.html", "Furniture-Storage.dc.html",
+    "Lights-Catalog.dc.html", "Light-System.dc.html",
+    "Decor-Plants.dc.html", "Decor-Textiles-Art.dc.html",
+    "Pets-Moods.dc.html", "Pets-Moments.dc.html",
+    "Surfaces.dc.html", "Palette-Harmony.dc.html",
+    "Presents.dc.html", "UI-Kit.dc.html", "Flow-PlaceLamp.dc.html"
+  ],
+  "notes": {
+    "s0": {"x": 0, "y": -250, "text": "Flats · Brownstone — design kit", "kind": "title1", "maxW": 1440},
+    "s1": {"x": 0, "y": 1150, "text": "01 · Showcases — the street, four stages of your flat, three neighbours", "kind": "title1", "maxW": 4810},
+    "s2": {"x": 0, "y": 2400, "text": "02 · City and building", "kind": "title1", "maxW": 4480},
+    "s3": {"x": 0, "y": 3700, "text": "03 · Windows and moonlight", "kind": "title1", "maxW": 4480},
+    "s4": {"x": 0, "y": 5000, "text": "04 · Furniture", "kind": "title1", "maxW": 2960},
+    "s5": {"x": 0, "y": 6300, "text": "05 · Light", "kind": "title1", "maxW": 2960},
+    "s6": {"x": 0, "y": 7600, "text": "06 · Plants, textiles and wall art", "kind": "title1", "maxW": 2960},
+    "s7": {"x": 0, "y": 8900, "text": "07 · Pets", "kind": "title1", "maxW": 2960},
+    "s8": {"x": 0, "y": 10200, "text": "08 · Surfaces and colour", "kind": "title1", "maxW": 2960},
+    "s9": {"x": 0, "y": 11500, "text": "09 · Presents, interface and flows", "kind": "title1", "maxW": 4480}
+  },
+  "designSystems": []
+}

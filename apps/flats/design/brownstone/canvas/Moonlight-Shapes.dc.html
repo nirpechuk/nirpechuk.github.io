@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Moonlight shapes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E8A24A}a:hover{color:#ffd28f}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #120D0A; color: #F3E6D0; font-family: 'DM Sans', system-ui, sans-serif">
+
+<svg width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden" aria-hidden="true" focusable="false">
+<defs>
+<clipPath id="mlFloor"><polygon points="0,466.9 70,400 320,400 390,466.9 390,600 0,600"></polygon></clipPath>
+<clipPath id="mlGlassL"><rect x="90" y="189" width="72" height="147"></rect></clipPath>
+<clipPath id="mlGlassC"><path d="M141 350 L141 210 A54 38 0 0 1 249 210 L249 350 Z"></path></clipPath>
+<clipPath id="mlPL"><polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5"></polygon></clipPath>
+<clipPath id="mlPC"><path d="M158.7 419.5 L282.2 419.5 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z"></path></clipPath>
+<clipPath id="mlPR"><polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5"></polygon></clipPath>
+<clipPath id="mlPLc"><polygon points="110,419.5 171,419.5 202.1,473.5 117.4,473.5"></polygon></clipPath>
+<clipPath id="mlPCc"><path d="M176.5 419.5 L264.4 419.5 L313.3 458.8 C309 467 290 473.5 270.6 473.5 C250 473.5 206 467 200.6 458.8 Z"></path></clipPath>
+<clipPath id="mlPRc"><polygon points="269.9,419.5 330.9,419.5 354.8,433.4 396.6,473.5 339.2,473.5"></polygon></clipPath>
+<linearGradient id="mlWall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#262428"></stop><stop offset="0.45" stop-color="#3A373D"></stop><stop offset="1" stop-color="#2A282C"></stop></linearGradient>
+<linearGradient id="mlSideL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#151416"></stop><stop offset="1" stop-color="#29272B"></stop></linearGradient>
+<linearGradient id="mlSideR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#161517"></stop><stop offset="1" stop-color="#2B292D"></stop></linearGradient>
+<linearGradient id="mlNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1230"></stop><stop offset="1" stop-color="#2E2C4C"></stop></linearGradient>
+<linearGradient id="mlShaft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FB6E8" stop-opacity="0.02"></stop><stop offset="1" stop-color="#9FB6E8" stop-opacity="0.13"></stop></linearGradient>
+<linearGradient id="mlBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0CF86"></stop><stop offset="0.5" stop-color="#B5893F"></stop><stop offset="1" stop-color="#6E4E1E"></stop></linearGradient>
+<linearGradient id="mlLinen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6E6658"></stop><stop offset="0.35" stop-color="#A49A84"></stop><stop offset="0.6" stop-color="#8A806C"></stop><stop offset="1" stop-color="#5E5648"></stop></linearGradient>
+<linearGradient id="mlWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4A3020"></stop><stop offset="1" stop-color="#2E1B0F"></stop></linearGradient>
+<radialGradient id="mlHole"><stop offset="0" stop-color="#000" stop-opacity="1"></stop><stop offset="0.55" stop-color="#000" stop-opacity="0.55"></stop><stop offset="1" stop-color="#000" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="mlVig" cx="0.5" cy="0.5" r="0.75"><stop offset="0.5" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.7"></stop></radialGradient>
+<filter id="mlBlur1"><feGaussianBlur stdDeviation="1.2"></feGaussianBlur></filter>
+<filter id="mlBlur2"><feGaussianBlur stdDeviation="2"></feGaussianBlur></filter>
+<filter id="mlBlur3"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+<filter id="mlGrain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.18"></feFuncA></feComponentTransfer></filter>
+<mask id="mlDarkL" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="600">
+<rect width="390" height="600" fill="#fff"></rect>
+<ellipse cx="126" cy="262" rx="72" ry="104" fill="url(#mlHole)"></ellipse>
+<ellipse cx="158" cy="447" rx="92" ry="40" fill="url(#mlHole)"></ellipse>
+</mask>
+<mask id="mlDarkC" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="600">
+<rect width="390" height="600" fill="#fff"></rect>
+<ellipse cx="195" cy="262" rx="92" ry="112" fill="url(#mlHole)"></ellipse>
+<ellipse cx="262" cy="447" rx="112" ry="40" fill="url(#mlHole)"></ellipse>
+</mask>
+<mask id="mlDarkR" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="600">
+<rect width="390" height="600" fill="#fff"></rect>
+<ellipse cx="264" cy="262" rx="72" ry="104" fill="url(#mlHole)"></ellipse>
+<ellipse cx="330" cy="445" rx="92" ry="44" fill="url(#mlHole)"></ellipse>
+</mask>
+
+<g id="mlShell">
+<polygon points="0,0 390,0 390,30.4 320,120 70,120 0,30.4" fill="#151416"></polygon>
+<polygon points="0,30.4 70,120 70,400 0,466.9" fill="url(#mlSideL)"></polygon>
+<polygon points="390,30.4 320,120 320,400 390,466.9" fill="url(#mlSideR)"></polygon>
+<rect x="70" y="120" width="250" height="280" fill="url(#mlWall)"></rect>
+<polygon points="0,30.4 70,120 70,131.3 0,48.3" fill="#2E2C30"></polygon>
+<polygon points="390,30.4 320,120 320,131.3 390,48.3" fill="#2E2C30"></polygon>
+<rect x="70" y="120" width="250" height="11.3" fill="#34323A"></rect>
+<g stroke="#1E1C20" stroke-width="0.8" opacity="0.6"><line x1="70" y1="160" x2="320" y2="160"></line><line x1="70" y1="230" x2="320" y2="230"></line><line x1="70" y1="310" x2="320" y2="310"></line></g>
+<rect x="70" y="392" width="250" height="8" fill="#1C1A1E"></rect>
+<polygon points="70,392 70,400 0.3,466.9 0.3,456.6" fill="#18171A"></polygon>
+<polygon points="320,392 320,400 389.7,466.9 389.7,456.6" fill="#1A191C"></polygon>
+<g clip-path="url(#mlFloor)">
+<rect x="0" y="380" width="390" height="230" fill="#2E2520"></rect>
+<polygon points="70,400 95,400 -82.8,613.3 -152.2,613.3" fill="#3B2F2A"></polygon>
+<polygon points="95,400 120,400 -13.3,613.3 -82.8,613.3" fill="#342A25"></polygon>
+<polygon points="120,400 145,400 56.1,613.3 -13.3,613.3" fill="#3E322C"></polygon>
+<polygon points="145,400 170,400 125.6,613.3 56.1,613.3" fill="#362B26"></polygon>
+<polygon points="170,400 195,400 195,613.3 125.6,613.3" fill="#3C302A"></polygon>
+<polygon points="195,400 220,400 264.4,613.3 195,613.3" fill="#332823"></polygon>
+<polygon points="220,400 245,400 333.9,613.3 264.4,613.3" fill="#40342D"></polygon>
+<polygon points="245,400 270,400 403.3,613.3 333.9,613.3" fill="#372C26"></polygon>
+<polygon points="270,400 295,400 472.8,613.3 403.3,613.3" fill="#3B2F29"></polygon>
+<polygon points="295,400 320,400 542.2,613.3 472.8,613.3" fill="#312722"></polygon>
+<path d="M60.6 409L87.5 409M110 416.1L138.3 416.1M167.4 412.5L195 412.5M221.9 409L248.8 409M280 416.1L308.4 416.1M72.5 427.1L103.1 427.1M135.5 422.9L165.2 422.9M195 431.5L226.6 431.5M256.3 427.1L286.9 427.1M314 422.9L343.8 422.9M26.1 442.2L59.9 442.2M86.6 453.4L122.7 453.4M160.1 447.6L195 447.6M228.8 442.2L262.6 442.2M303.4 453.4L339.5 453.4M30 478L71.2 478M115.6 470.5L155.3 470.5M195 486.2L238 486.2M277.5 478L318.8 478" stroke="#1A1310" stroke-width="0.9"></path>
+<path d="M95 400L-82.8 613.3M120 400L-13.3 613.3M145 400L56.1 613.3M170 400L125.6 613.3M195 400L195 613.3M220 400L264.4 613.3M245 400L333.9 613.3M270 400L403.3 613.3M295 400L472.8 613.3" stroke="#1E1612" stroke-width="0.7" opacity="0.8"></path>
+</g>
+</g>
+
+<g id="mlWinL">
+<rect x="90" y="189" width="72" height="147" fill="url(#mlNight)"></rect>
+<g clip-path="url(#mlGlassL)">
+<circle cx="146" cy="208" r="6" fill="#F2E6C4"></circle>
+<circle cx="146" cy="208" r="14" fill="#F2E6C4" opacity="0.08"></circle>
+<path d="M90 336 V292 H100 V280 H110 V300 H118 V270 H132 V296 H140 V284 H152 V262 H162 V336 Z" fill="#141522"></path>
+<g fill="#E9B864"><rect x="103" y="286" width="2" height="2"></rect><rect x="121" y="276" width="2" height="2"></rect><rect x="121" y="300" width="2" height="2"></rect><rect x="145" y="290" width="2" height="2" opacity="0.7"></rect><rect x="155" y="270" width="2" height="2"></rect></g>
+<polygon points="90,189 112,189 90,240" fill="#fff" opacity="0.05"></polygon>
+</g>
+<g fill="none" stroke="#8C857A" stroke-width="3.5"><rect x="88" y="187" width="76" height="151"></rect><line x1="126" y1="189" x2="126" y2="336"></line></g>
+<rect x="88" y="259" width="76" height="6" fill="#8C857A"></rect>
+<rect x="82" y="336" width="88" height="6" rx="1" fill="#9A9286"></rect>
+<rect x="82" y="342" width="88" height="3" fill="#000" opacity="0.35"></rect>
+</g>
+
+<g id="mlWinC">
+<path d="M141 350 L141 210 A54 38 0 0 1 249 210 L249 350 Z" fill="url(#mlNight)"></path>
+<g clip-path="url(#mlGlassC)">
+<circle cx="220" cy="214" r="7" fill="#F2E6C4"></circle>
+<circle cx="220" cy="214" r="16" fill="#F2E6C4" opacity="0.08"></circle>
+<path d="M141 350 V300 H156 V286 H170 V306 H184 V276 H198 V296 H210 V284 H224 V262 H236 V290 H249 V350 Z" fill="#141522"></path>
+<g fill="#E9B864"><rect x="160" y="292" width="2" height="2"></rect><rect x="188" y="282" width="2" height="2"></rect><rect x="214" y="290" width="2" height="2"></rect><rect x="228" y="270" width="2" height="2"></rect><rect x="240" y="300" width="2" height="2"></rect></g>
+</g>
+<g fill="none" stroke="#8C857A" stroke-width="3"><path d="M141 350 L141 210 A54 38 0 0 1 249 210 L249 350 Z"></path><line x1="195" y1="172" x2="195" y2="350"></line><line x1="141" y1="250" x2="249" y2="250"></line><line x1="141" y1="300" x2="249" y2="300"></line><path d="M141 210 L249 210 M195 210 L160 182 M195 210 L230 182"></path></g>
+<rect x="134" y="348" width="122" height="6" fill="#9A9286"></rect>
+<rect x="134" y="354" width="122" height="3" fill="#000" opacity="0.35"></rect>
+</g>
+
+<g id="mlShutL">
+<g fill="url(#mlWood)"><rect x="88" y="189" width="37" height="147"></rect><rect x="127" y="189" width="37" height="147"></rect></g>
+<path d="M90 196H123M129 196H162M90 204H123M129 204H162M90 212H123M129 212H162M90 220H123M129 220H162M90 228H123M129 228H162M90 236H123M129 236H162M90 244H123M129 244H162M90 252H123M129 252H162M90 270H123M129 270H162M90 278H123M129 278H162M90 286H123M129 286H162M90 294H123M129 294H162M90 302H123M129 302H162M90 310H123M129 310H162M90 318H123M129 318H162M90 326H123M129 326H162" stroke="#5A3A26" stroke-width="2.4"></path>
+<path d="M90 199H123M129 199H162M90 207H123M129 207H162M90 215H123M129 215H162M90 223H123M129 223H162M90 231H123M129 231H162M90 239H123M129 239H162M90 247H123M129 247H162M90 255H123M129 255H162M90 273H123M129 273H162M90 281H123M129 281H162M90 289H123M129 289H162M90 297H123M129 297H162M90 305H123M129 305H162M90 313H123M129 313H162M90 321H123M129 321H162M90 329H123M129 329H162" stroke="#8FA4D0" stroke-width="1" opacity="0.65"></path>
+<g fill="none" stroke="#24150B" stroke-width="3"><rect x="88" y="189" width="37" height="147"></rect><rect x="127" y="189" width="37" height="147"></rect><line x1="88" y1="261" x2="125" y2="261"></line><line x1="127" y1="261" x2="164" y2="261"></line></g>
+<g fill="url(#mlBrass)"><rect x="122" y="222" width="2" height="6"></rect><rect x="128" y="222" width="2" height="6"></rect><rect x="122" y="296" width="2" height="6"></rect><rect x="128" y="296" width="2" height="6"></rect></g>
+</g>
+
+<g id="mlShutC">
+<g fill="url(#mlWood)"><rect x="141" y="210" width="53" height="140"></rect><rect x="196" y="210" width="53" height="140"></rect></g>
+<path d="M143 216H193M197 216H247M143 224H193M197 224H247M143 232H193M197 232H247M143 240H193M197 240H247M143 248H193M197 248H247M143 256H193M197 256H247M143 264H193M197 264H247M143 272H193M197 272H247M143 280H193M197 280H247M143 288H193M197 288H247M143 296H193M197 296H247M143 304H193M197 304H247M143 312H193M197 312H247M143 320H193M197 320H247M143 328H193M197 328H247M143 336H193M197 336H247M143 344H193M197 344H247" stroke="#5A3A26" stroke-width="2.4"></path>
+<path d="M143 219H193M197 219H247M143 227H193M197 227H247M143 235H193M197 235H247M143 243H193M197 243H247M143 251H193M197 251H247M143 259H193M197 259H247M143 267H193M197 267H247M143 275H193M197 275H247M143 283H193M197 283H247M143 291H193M197 291H247M143 299H193M197 299H247M143 307H193M197 307H247M143 315H193M197 315H247M143 323H193M197 323H247M143 331H193M197 331H247M143 339H193M197 339H247M143 347H193M197 347H247" stroke="#8FA4D0" stroke-width="1" opacity="0.65"></path>
+<g fill="none" stroke="#24150B" stroke-width="3"><rect x="141" y="210" width="53" height="140"></rect><rect x="196" y="210" width="53" height="140"></rect><line x1="141" y1="280" x2="194" y2="280"></line><line x1="196" y1="280" x2="249" y2="280"></line></g>
+<g fill="url(#mlBrass)"><rect x="190" y="240" width="2" height="6"></rect><rect x="198" y="240" width="2" height="6"></rect><rect x="190" y="314" width="2" height="6"></rect><rect x="198" y="314" width="2" height="6"></rect></g>
+</g>
+
+<g id="mlCurtL">
+<rect x="70" y="177" width="112" height="3" rx="1.5" fill="url(#mlBrass)"></rect>
+<circle cx="70" cy="178.5" r="3.2" fill="url(#mlBrass)"></circle><circle cx="182" cy="178.5" r="3.2" fill="url(#mlBrass)"></circle>
+<path d="M74 180 L101 180 C100 240 102 320 100 400 L72 400 C74 320 70 240 74 180 Z" fill="url(#mlLinen)"></path>
+<path d="M151 180 L178 180 C180 240 176 320 180 400 L152 400 C153 320 150 240 151 180 Z" fill="url(#mlLinen)"></path>
+<g fill="none" stroke="#4E4638" stroke-width="0.9" opacity="0.85"><path d="M80 182 C79 250 81 330 79 398"></path><path d="M87 182 C88 250 86 330 88 398"></path><path d="M94 182 C93 250 95 330 94 398"></path><path d="M158 182 C159 250 157 330 159 398"></path><path d="M165 182 C164 250 166 330 165 398"></path><path d="M172 182 C173 250 171 330 173 398"></path></g>
+<g fill="#C9D6F0" opacity="0.14"><rect x="90" y="189" width="11" height="147"></rect><rect x="151" y="189" width="11" height="147"></rect></g>
+</g>
+
+<g id="mlCurtC">
+<rect x="118" y="158" width="154" height="3" rx="1.5" fill="url(#mlBrass)"></rect>
+<circle cx="118" cy="159.5" r="3.2" fill="url(#mlBrass)"></circle><circle cx="272" cy="159.5" r="3.2" fill="url(#mlBrass)"></circle>
+<path d="M122 161 L158 161 C156 230 159 320 157 400 L120 400 C122 320 118 230 122 161 Z" fill="url(#mlLinen)"></path>
+<path d="M232 161 L268 161 C270 230 266 320 270 400 L233 400 C234 320 231 230 232 161 Z" fill="url(#mlLinen)"></path>
+<g fill="none" stroke="#4E4638" stroke-width="0.9" opacity="0.85"><path d="M129 163 C128 240 130 330 128 398"></path><path d="M137 163 C138 240 136 330 138 398"></path><path d="M146 163 C145 240 147 330 146 398"></path><path d="M152 163 C153 240 151 330 152 398"></path><path d="M240 163 C241 240 239 330 241 398"></path><path d="M248 163 C247 240 249 330 247 398"></path><path d="M256 163 C257 240 255 330 257 398"></path><path d="M263 163 C262 240 264 330 262 398"></path></g>
+<g fill="#C9D6F0" opacity="0.14"><rect x="141" y="200" width="17" height="150"></rect><rect x="232" y="200" width="17" height="150"></rect></g>
+</g>
+</defs>
+</svg>
+
+<div style="position: absolute; left: 56px; top: 44px; width: 760px">
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A; font-weight: 500">Brownstone kit · 03 · Light</div>
+<h1 style="margin: 8px 0 6px; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.1">Moonlight shapes on the floor</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.4; color: #B8A68A; max-width: 740px">Each unit’s window sits in a fixed place, so every flat gets its own moonlight. Same moon, but the patch lands left, centre or right, and whatever hangs in the window cuts it into a different shape.</p>
+</div>
+<div style="position: absolute; right: 56px; top: 56px; display: flex; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 6px 12px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #A9BEE6; display: inline-block"></span>Moon patch #A9BEE6 · 0.32</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 6px 12px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #2C2A2E; border: 1px solid #4A4650; display: inline-block"></span>Empty grey room · darkness 0.6</span>
+</div>
+
+<div style="position: absolute; left: 56px; top: 160px; display: grid; grid-template-columns: 80px repeat(3, 212px); grid-template-rows: 20px repeat(3, auto); column-gap: 12px; row-gap: 10px">
+<div></div>
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A; align-self: end">Window left</div>
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A; align-self: end">Centre · arched</div>
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A; align-self: end">Window right</div>
+
+<div style="align-self: center">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 18px">Bare</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px; line-height: 1.35">no treatment, full patch</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Empty grey room with a bare sash window on the left of the back wall. A cold moon patch with a cross-shaped glazing-bar shadow lands left of centre on the floor." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="90,337 162,337 220.2,473.5 99.2,473.5" fill="url(#mlShaft)"></polygon>
+<polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#A9BEE6" opacity="0.32"></polygon>
+<g clip-path="url(#mlPL)" stroke="#1C1A1E" opacity="0.7"><line x1="140.2" y1="419.5" x2="159.3" y2="473.5" stroke-width="3.6"></line><line x1="80" y1="442.6" x2="240" y2="442.6" stroke-width="3.4"></line></g>
+<use href="#mlWinL"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkL)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#9FB3D9" opacity="0.14" filter="url(#mlBlur2)"></polygon><rect x="90" y="189" width="72" height="147" fill="#9FB6E8" opacity="0.05"></rect></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Left · bare</span>
+<span style="font-size: 12px; color: #9C8B70">x 99–220</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">cross-bar shadow, left of centre</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Empty grey room with a tall arched window in the centre of the back wall. The moon patch is wide, slides right of centre, and its far edge is rounded by the arch." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="141,350 249,350 361.3,473.5 179.9,473.5" fill="url(#mlShaft)"></polygon>
+<path d="M158.7 419.5 L282.2 419.5 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z" fill="#A9BEE6" opacity="0.32"></path>
+<g clip-path="url(#mlPC)" stroke="#1C1A1E" opacity="0.7"><line x1="220.4" y1="419.5" x2="270.6" y2="473.5" stroke-width="3.6"></line><line x1="140" y1="431.4" x2="380" y2="431.4" stroke-width="3"></line><line x1="140" y1="445.5" x2="380" y2="445.5" stroke-width="3"></line><path d="M174 458.8 L340 458.8" stroke-width="2.6"></path><path d="M270.6 458.8 L246 473.5 M270.6 458.8 L310 472" stroke-width="2.2"></path></g>
+<use href="#mlWinC"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkC)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><path d="M158.7 419.5 L282.2 419.5 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z" fill="#9FB3D9" opacity="0.14" filter="url(#mlBlur2)"></path><path d="M141 350 L141 210 A54 38 0 0 1 249 210 L249 350 Z" fill="#9FB6E8" opacity="0.05"></path></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Centre · bare</span>
+<span style="font-size: 12px; color: #9C8B70">x 158–361</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">widest patch, far edge rounded</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Empty grey room with a bare sash window on the right of the back wall. The moon patch runs into the right wall, is clipped there, and a thin sliver of light folds up the skirting." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="228,337 300,337 396.6,473.5 321,473.5" fill="url(#mlShaft)"></polygon>
+<polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5" fill="#A9BEE6" opacity="0.32"></polygon>
+<polygon points="340.3,419.5 396.6,473.5 396.6,428.1 340.3,415.9" fill="#A9BEE6" opacity="0.2"></polygon>
+<g clip-path="url(#mlPR)" stroke="#1C1A1E" opacity="0.7"><line x1="300.4" y1="419.5" x2="381.5" y2="473.5" stroke-width="3.6"></line><line x1="240" y1="442.6" x2="400" y2="442.6" stroke-width="3.4"></line></g>
+<use href="#mlWinL" transform="translate(138 0)"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkR)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5" fill="#9FB3D9" opacity="0.14" filter="url(#mlBlur2)"></polygon><rect x="228" y="189" width="72" height="147" fill="#9FB6E8" opacity="0.05"></rect></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Right · bare</span>
+<span style="font-size: 12px; color: #9C8B70">x 257–397</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">clipped at the wall, folds up it</div>
+</div>
+
+<div style="align-self: center">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 18px">Curtains</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px; line-height: 1.35">plain-curtains, Oatmeal linen</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Left window with linen curtains half drawn. The moon patch is narrower with soft edges, and a faint glow comes through the linen either side." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="101,337 151,337 202.1,473.5 117.4,473.5" fill="url(#mlShaft)"></polygon>
+<polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#A9BEE6" opacity="0.06" filter="url(#mlBlur3)"></polygon>
+<polygon points="110,419.5 171,419.5 202.1,473.5 117.4,473.5" fill="#A9BEE6" opacity="0.3" filter="url(#mlBlur1)"></polygon>
+<g clip-path="url(#mlPLc)" stroke="#1C1A1E" opacity="0.6"><line x1="140.2" y1="419.5" x2="159.3" y2="473.5" stroke-width="3.6"></line><line x1="80" y1="442.6" x2="240" y2="442.6" stroke-width="3.4"></line></g>
+<use href="#mlWinL"></use>
+<use href="#mlCurtL"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkL)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="110,419.5 171,419.5 202.1,473.5 117.4,473.5" fill="#9FB3D9" opacity="0.12" filter="url(#mlBlur3)"></polygon></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Left · curtains</span>
+<span style="font-size: 12px; color: #9C8B70">x 110–202</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">30% narrower, soft edge</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Centre arched window with linen curtains framing it. The moon patch is narrower and soft-edged but the arch still rounds its far edge." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="158,350 232,350 331.6,473.5 209.6,473.5" fill="url(#mlShaft)"></polygon>
+<path d="M158.7 419.5 L282.2 419.5 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z" fill="#A9BEE6" opacity="0.06" filter="url(#mlBlur3)"></path>
+<path d="M176.5 419.5 L264.4 419.5 L313.3 458.8 C309 467 290 473.5 270.6 473.5 C250 473.5 206 467 200.6 458.8 Z" fill="#A9BEE6" opacity="0.3" filter="url(#mlBlur1)"></path>
+<g clip-path="url(#mlPCc)" stroke="#1C1A1E" opacity="0.6"><line x1="220.4" y1="419.5" x2="270.6" y2="473.5" stroke-width="3.6"></line><line x1="140" y1="431.4" x2="380" y2="431.4" stroke-width="3"></line><line x1="140" y1="445.5" x2="380" y2="445.5" stroke-width="3"></line><path d="M174 458.8 L340 458.8" stroke-width="2.6"></path></g>
+<use href="#mlWinC"></use>
+<use href="#mlCurtC"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkC)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><path d="M176.5 419.5 L264.4 419.5 L313.3 458.8 C309 467 290 473.5 270.6 473.5 C250 473.5 206 467 200.6 458.8 Z" fill="#9FB3D9" opacity="0.12" filter="url(#mlBlur3)"></path></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Centre · curtains</span>
+<span style="font-size: 12px; color: #9C8B70">x 177–332</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">narrower; arch still rounds it</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Right window with linen curtains. The narrowed, soft-edged moon patch slides along the floor and meets the right wall at its far end." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="239,337 289,337 396.6,473.5 339.2,473.5" fill="url(#mlShaft)"></polygon>
+<polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5" fill="#A9BEE6" opacity="0.06" filter="url(#mlBlur3)"></polygon>
+<polygon points="269.9,419.5 330.9,419.5 354.8,433.4 396.6,473.5 339.2,473.5" fill="#A9BEE6" opacity="0.3" filter="url(#mlBlur1)"></polygon>
+<polygon points="354.8,433.4 396.6,473.5 396.6,452 354.8,430.6" fill="#A9BEE6" opacity="0.14" filter="url(#mlBlur1)"></polygon>
+<g clip-path="url(#mlPRc)" stroke="#1C1A1E" opacity="0.6"><line x1="300.4" y1="419.5" x2="381.5" y2="473.5" stroke-width="3.6"></line><line x1="240" y1="442.6" x2="400" y2="442.6" stroke-width="3.4"></line></g>
+<use href="#mlWinL" transform="translate(138 0)"></use>
+<use href="#mlCurtL" transform="translate(138 0)"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkR)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="269.9,419.5 330.9,419.5 354.8,433.4 396.6,473.5 339.2,473.5" fill="#9FB3D9" opacity="0.12" filter="url(#mlBlur3)"></polygon></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Right · curtains</span>
+<span style="font-size: 12px; color: #9C8B70">x 270–397</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">narrower, hugs the right wall</div>
+</div>
+
+<div style="align-self: center">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 18px">Shutters</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px; line-height: 1.35">louvred, walnut</div>
+<span style="display: inline-block; margin-top: 6px; font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px">new</span>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Left window closed with louvred walnut shutters. The moon patch keeps its full size but is striped by seven slat shadows and split by the meeting stile." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="90,337 162,337 220.2,473.5 99.2,473.5" fill="url(#mlShaft)" opacity="0.7"></polygon>
+<polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#A9BEE6" opacity="0.32"></polygon>
+<g clip-path="url(#mlPL)" stroke="#1C1A1E" stroke-width="3.2" opacity="0.78"><line x1="80" y1="423" x2="240" y2="423"></line><line x1="80" y1="429" x2="240" y2="429"></line><line x1="80" y1="435.5" x2="240" y2="435.5"></line><line x1="80" y1="442.5" x2="240" y2="442.5"></line><line x1="80" y1="450" x2="240" y2="450"></line><line x1="80" y1="458" x2="240" y2="458"></line><line x1="80" y1="466.5" x2="240" y2="466.5"></line><line x1="139" y1="419.5" x2="160" y2="473.5" stroke-width="4"></line></g>
+<use href="#mlWinL"></use>
+<use href="#mlShutL"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkL)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#9FB3D9" opacity="0.1" filter="url(#mlBlur1)"></polygon></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Left · shutters</span>
+<span style="font-size: 12px; color: #9C8B70">7 slats</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">striped, stile down the middle</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Centre arched window with louvred shutters over the lower part and the arch left open. The moon patch is striped near the wall and solid at its rounded far edge." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="141,350 249,350 361.3,473.5 179.9,473.5" fill="url(#mlShaft)" opacity="0.7"></polygon>
+<path d="M158.7 419.5 L282.2 419.5 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z" fill="#A9BEE6" opacity="0.32"></path>
+<g clip-path="url(#mlPC)" stroke="#1C1A1E" stroke-width="3.2" opacity="0.78"><line x1="140" y1="422.5" x2="380" y2="422.5"></line><line x1="140" y1="427.5" x2="380" y2="427.5"></line><line x1="140" y1="433" x2="380" y2="433"></line><line x1="140" y1="438.8" x2="380" y2="438.8"></line><line x1="140" y1="444.8" x2="380" y2="444.8"></line><line x1="140" y1="451.2" x2="380" y2="451.2"></line><line x1="140" y1="458.8" x2="380" y2="458.8" stroke-width="2.6"></line><line x1="220.4" y1="419.5" x2="263" y2="458.8" stroke-width="4"></line><path d="M270.6 458.8 L246 473.5 M270.6 458.8 L310 472 M270.6 458.8 L270.6 473.5" stroke-width="2.2"></path></g>
+<use href="#mlWinC"></use>
+<use href="#mlShutC"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkC)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><path d="M174.1 458.8 L339.8 458.8 C333 468 300 474 270.6 473.5 C236 474 184 468 174.1 458.8 Z" fill="#9FB3D9" opacity="0.16" filter="url(#mlBlur1)"></path><path d="M141 210 A54 38 0 0 1 249 210 Z" fill="#9FB6E8" opacity="0.06"></path></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Centre · shutters</span>
+<span style="font-size: 12px; color: #9C8B70">6 slats</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">slats below, open arch above</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 168 390 312" width="194" height="155" role="img" aria-label="Right window closed with louvred shutters. The striped moon patch runs into the right wall, and the stripes continue faintly up the skirting." style="display: block; border-radius: 8px">
+<use href="#mlShell"></use>
+<polygon points="228,337 300,337 396.6,473.5 321,473.5" fill="url(#mlShaft)" opacity="0.7"></polygon>
+<polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5" fill="#A9BEE6" opacity="0.32"></polygon>
+<polygon points="340.3,419.5 396.6,473.5 396.6,428.1 340.3,415.9" fill="#A9BEE6" opacity="0.18"></polygon>
+<g clip-path="url(#mlPR)" stroke="#1C1A1E" stroke-width="3.2" opacity="0.78"><line x1="240" y1="423" x2="400" y2="423"></line><line x1="240" y1="429" x2="400" y2="429"></line><line x1="240" y1="435.5" x2="400" y2="435.5"></line><line x1="240" y1="442.5" x2="400" y2="442.5"></line><line x1="240" y1="450" x2="400" y2="450"></line><line x1="240" y1="458" x2="400" y2="458"></line><line x1="240" y1="466.5" x2="400" y2="466.5"></line><line x1="299" y1="419.5" x2="381.5" y2="473.5" stroke-width="4"></line></g>
+<use href="#mlWinL" transform="translate(138 0)"></use>
+<use href="#mlShutL" transform="translate(138 0)"></use>
+<rect x="0" y="168" width="390" height="312" fill="#080504" opacity="0.6" mask="url(#mlDarkR)"></rect>
+<rect x="0" y="168" width="390" height="312" fill="#22304E" opacity="0.32" style="mix-blend-mode: multiply"></rect>
+<g style="mix-blend-mode: screen"><polygon points="256.8,419.5 340.3,419.5 396.6,473.5 321,473.5" fill="#9FB3D9" opacity="0.1" filter="url(#mlBlur1)"></polygon></g>
+<rect x="0" y="168" width="390" height="312" fill="url(#mlVig)"></rect>
+<rect x="0" y="168" width="390" height="312" filter="url(#mlGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 7px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px">
+<span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 15px">Right · shutters</span>
+<span style="font-size: 12px; color: #9C8B70">7 slats</span>
+</div>
+<div style="font-size: 12px; color: #9C8B70; margin-top: 2px">stripes run into the wall</div>
+</div>
+</div>
+
+<div style="position: absolute; left: 836px; top: 160px; width: 548px; box-sizing: border-box; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 20px 24px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 22px">How the patch is projected</h2>
+<span style="font-size: 12px; color: #9C8B70">left window, worked</span>
+</div>
+<svg viewBox="0 172 500 326" width="500" height="326" role="img" aria-label="Diagram of the room projection. The left window spans X minus 1.7 to minus 0.5 on the back wall. Its sill edge maps to the near edge of the floor patch at y 419.5 and its head edge maps to the far edge at y 473.5, giving the trapezoid 100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5. Rulers show X spreading wider as Z grows." style="display: block; margin-top: 12px; border-radius: 10px">
+<rect x="0" y="172" width="500" height="326" fill="#15100D"></rect>
+<polygon points="0,172 70,172 70,400 0,466.9" fill="#1C1715"></polygon>
+<polygon points="320,172 390,172 390,466.9 320,400" fill="#1C1715"></polygon>
+<rect x="70" y="172" width="250" height="228" fill="#221C19"></rect>
+<polygon points="0,466.9 70,400 320,400 390,466.9 390,498 0,498" fill="#1E1815"></polygon>
+<g fill="none" stroke="#3A302A" stroke-width="1"><line x1="70" y1="172" x2="70" y2="400"></line><line x1="320" y1="172" x2="320" y2="400"></line><line x1="70" y1="400" x2="0" y2="466.9"></line><line x1="320" y1="400" x2="390" y2="466.9"></line><line x1="390" y1="172" x2="390" y2="498"></line></g>
+<circle cx="34" cy="200" r="8" fill="#EFE8D4" opacity="0.85"></circle>
+<circle cx="38" cy="197" r="7" fill="#1C1715"></circle>
+<path d="M44 212 L60 232" stroke="#9FB6E8" stroke-width="1.4" stroke-dasharray="2 3"></path>
+<path d="M56 232 L60 232 L59 228" fill="none" stroke="#9FB6E8" stroke-width="1.4"></path>
+<rect x="88.75" y="189" width="75" height="147" fill="#1A2238"></rect>
+<line x1="126.25" y1="189" x2="126.25" y2="336" stroke="#3A4466" stroke-width="2"></line>
+<line x1="88.75" y1="262" x2="163.75" y2="262" stroke="#3A4466" stroke-width="2"></line>
+<rect x="88.75" y="189" width="75" height="147" fill="none" stroke="#E8A24A" stroke-width="1.5"></rect>
+<polygon points="99.2,473.5 220.2,473.5 180.5,419.5 100.5,419.5" fill="#A9BEE6" opacity="0.3"></polygon>
+<polygon points="99.2,473.5 220.2,473.5 180.5,419.5 100.5,419.5" fill="none" stroke="#9FB6E8" stroke-width="1"></polygon>
+<g fill="none" stroke="#9FB6E8" stroke-width="1.2" stroke-dasharray="3 3"><line x1="88.75" y1="336" x2="100.5" y2="419.5"></line><line x1="163.75" y1="336" x2="180.5" y2="419.5"></line></g>
+<g fill="none" stroke="#C9A27A" stroke-width="1" stroke-dasharray="6 4" opacity="0.75"><line x1="88.75" y1="189" x2="99.2" y2="473.5"></line><line x1="163.75" y1="189" x2="220.2" y2="473.5"></line></g>
+<g stroke="#6A5A48" stroke-width="1"><line x1="70" y1="400" x2="320" y2="400"></line><line x1="49.7" y1="419.5" x2="340.3" y2="419.5" stroke-dasharray="2 3"></line><line x1="0" y1="473.5" x2="390" y2="473.5" stroke-dasharray="2 3"></line></g>
+<g stroke="#9C8B70" stroke-width="1"><path d="M70 396V404M132.5 396V404M195 396V404M257.5 396V404M320 396V404"></path><path d="M49.7 415.5V423.5M122.3 415.5V423.5M195 415.5V423.5M267.7 415.5V423.5M340.3 415.5V423.5"></path><path d="M94.2 469.5V477.5M195 469.5V477.5M295.8 469.5V477.5"></path></g>
+<line x1="88.75" y1="400" x2="163.75" y2="400" stroke="#E8A24A" stroke-width="3"></line>
+<line x1="100.5" y1="419.5" x2="180.5" y2="419.5" stroke="#9FB6E8" stroke-width="3"></line>
+<line x1="99.2" y1="473.5" x2="220.2" y2="473.5" stroke="#9FB6E8" stroke-width="3"></line>
+<g font-family="DM Sans, sans-serif" font-size="12" fill="#9C8B70" text-anchor="middle"><text x="70" y="391">−2</text><text x="132.5" y="391">−1</text><text x="195" y="391">0</text><text x="257.5" y="391">1</text><text x="290" y="391">X</text><text x="320" y="391">2</text></g>
+<g font-family="DM Sans, sans-serif" font-size="12">
+<text x="176" y="204" fill="#E8A24A">window X −1.7 … −0.5</text>
+<text x="176" y="221" fill="#B8A68A">sill Y 1.02 · head Y 3.38</text>
+<text x="206" y="352" fill="#9FB6E8">sill → near edge</text>
+<text x="206" y="369" fill="#C9A27A">head → far edge</text>
+<text x="96" y="434" fill="#B8A68A" text-anchor="end">100.5, 419.5</text>
+<text x="186" y="434" fill="#B8A68A">180.5, 419.5</text>
+<text x="93" y="490" fill="#B8A68A" text-anchor="end">99.2, 473.5</text>
+<text x="226" y="490" fill="#B8A68A">220.2, 473.5</text>
+<text x="400" y="404" fill="#E8A24A">Z 0 · s 62.5</text>
+<text x="400" y="423.5" fill="#9FB6E8">Z 0.70 · s 72.7</text>
+<text x="400" y="477.5" fill="#9FB6E8">Z 1.90 · s 100.8</text>
+<text x="400" y="440" fill="#9C8B70">near edge</text>
+<text x="400" y="494" fill="#9C8B70">far edge</text>
+</g>
+</svg>
+<ol style="margin: 12px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.45; color: #B8A68A">
+<li><span style="color: #F3E6D0">Project</span> with P(X,Y,Z) = [195 + X·s, 280 + (1.92 − Y)·s], s = 62.5·5 / (5 − Z).</li>
+<li><span style="color: #F3E6D0">Sill edge</span> lands at Z 0.70 (y 419.5); <span style="color: #F3E6D0">head edge</span> at Z 1.90 (y 473.5).</li>
+<li><span style="color: #F3E6D0">Slide X right</span> ≈ 0.35 at the near edge and ≈ 0.75 at the far edge: the moon is high and up-left. Past X 2.0 the patch folds up the right wall.</li>
+<li><span style="color: #F3E6D0">Treatments only trim</span> this shape: curtains trim X, blinds trim the far edge, café curtains the near edge, shutters stripe it across.</li>
+</ol>
+<div style="margin-top: 12px; display: grid; grid-template-columns: 96px 92px 1fr; column-gap: 10px; row-gap: 6px; font-size: 12px; line-height: 1.35; font-variant-numeric: tabular-nums">
+<div style="color: #C9A27A; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px">Unit</div><div style="color: #C9A27A; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px">Window X</div><div style="color: #C9A27A; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px">Floor patch, bare</div>
+<div style="color: #F3E6D0">Left</div><div style="color: #B8A68A">−1.7 … −0.5</div><div style="color: #B8A68A">100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5</div>
+<div style="color: #F3E6D0">Centre, arched</div><div style="color: #B8A68A">−0.86 … 0.86</div><div style="color: #B8A68A">158.7,419.5 282.2,419.5 361.3,473.5 179.9,473.5 · far edge rounded</div>
+<div style="color: #F3E6D0">Right</div><div style="color: #B8A68A">0.5 … 1.7</div><div style="color: #B8A68A">256.8,419.5 340.3,419.5 396.6,473.5 321.0,473.5 · clipped at X 2.0</div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

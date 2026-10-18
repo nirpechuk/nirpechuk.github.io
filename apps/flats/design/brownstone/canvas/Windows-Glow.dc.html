@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Windows glow</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E8A24A}a:hover{color:#ffd28f}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #120D0A; color: #F3E6D0; font-family: 'DM Sans', system-ui, sans-serif">
+
+<svg width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="wgStone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E2A21"></stop><stop offset="0.6" stop-color="#553828"></stop><stop offset="1" stop-color="#6A452F"></stop></linearGradient>
+<linearGradient id="wgGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1C2236"></stop><stop offset="0.5" stop-color="#0E1220"></stop><stop offset="1" stop-color="#20263A"></stop></linearGradient>
+<linearGradient id="wgBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0CF86"></stop><stop offset="0.5" stop-color="#B5893F"></stop><stop offset="1" stop-color="#6E4E1E"></stop></linearGradient>
+<radialGradient id="wgR1" cx="0.6" cy="0.55" r="0.85"><stop offset="0" stop-color="#5A3A22"></stop><stop offset="0.5" stop-color="#24160E"></stop><stop offset="1" stop-color="#0E0A0A"></stop></radialGradient>
+<radialGradient id="wgR2" cx="0.3" cy="0.45" r="0.85"><stop offset="0" stop-color="#8A5A30"></stop><stop offset="0.5" stop-color="#3A2214"></stop><stop offset="1" stop-color="#160E0A"></stop></radialGradient>
+<radialGradient id="wgR3" cx="0.3" cy="0.45" r="0.85"><stop offset="0" stop-color="#B8783E"></stop><stop offset="0.5" stop-color="#5A341C"></stop><stop offset="1" stop-color="#1E120A"></stop></radialGradient>
+<radialGradient id="wgR4" cx="0.35" cy="0.42" r="0.85"><stop offset="0" stop-color="#D8964E"></stop><stop offset="0.5" stop-color="#7A4624"></stop><stop offset="1" stop-color="#2A180E"></stop></radialGradient>
+<radialGradient id="wgR5" cx="0.38" cy="0.4" r="0.85"><stop offset="0" stop-color="#EDB064"></stop><stop offset="0.5" stop-color="#9A5A30"></stop><stop offset="1" stop-color="#3A2214"></stop></radialGradient>
+<radialGradient id="wgR6" cx="0.4" cy="0.4" r="0.85"><stop offset="0" stop-color="#F8C880"></stop><stop offset="0.5" stop-color="#B87440"></stop><stop offset="1" stop-color="#4A2A18"></stop></radialGradient>
+<radialGradient id="wgR7" cx="0.42" cy="0.4" r="0.85"><stop offset="0" stop-color="#FFE6B0"></stop><stop offset="0.5" stop-color="#F0A858"></stop><stop offset="1" stop-color="#7A4220"></stop></radialGradient>
+<radialGradient id="wgRS" cx="0.5" cy="0.9" r="0.9"><stop offset="0" stop-color="#2A1E1A"></stop><stop offset="0.5" stop-color="#14101A"></stop><stop offset="1" stop-color="#0A0A12"></stop></radialGradient>
+<radialGradient id="wgSpill"><stop offset="0" stop-color="#FFB45E" stop-opacity="0.6"></stop><stop offset="1" stop-color="#FFB45E" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="wgWarm"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.9"></stop><stop offset="0.4" stop-color="#FF9F45" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FF8A30" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="wgVig" cx="0.5" cy="0.5" r="0.75"><stop offset="0.6" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.55"></stop></radialGradient>
+<filter id="wgTex"><feTurbulence type="fractalNoise" baseFrequency="0.6 0.9" numOctaves="3" seed="12"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0"></feColorMatrix></filter>
+<filter id="wgGrain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.18"></feFuncA></feComponentTransfer></filter>
+<filter id="wgBlur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"></feGaussianBlur></filter>
+<filter id="wgBlur4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"></feGaussianBlur></filter>
+<filter id="wgBlur6" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"></feGaussianBlur></filter>
+
+<g id="wgCasing"><rect x="-5" y="-4" width="120" height="106" fill="#33251C"></rect><rect x="-5" y="-4" width="120" height="2" fill="#4A3428"></rect><rect x="0" y="0" width="110" height="100" fill="#120C0A"></rect></g>
+<g id="wgHood">
+<rect x="-12" y="-21" width="134" height="4" fill="#93684F"></rect>
+<rect x="-9" y="-17" width="128" height="12" fill="#7A5442"></rect>
+<rect x="-9" y="-7" width="128" height="2" fill="#5E3E2E"></rect>
+<path d="M49 -17 L61 -17 L59 -4 L51 -4 Z" fill="#8A5E48"></path>
+<g fill="#6A4636"><path d="M-9 -5 h8 v9 l-4 4 l-4 -4 Z"></path><path d="M111 -5 h8 v9 l-4 4 l-4 -4 Z"></path></g>
+</g>
+<g id="wgSillBox">
+<rect x="-8" y="100" width="126" height="6" fill="#7A5442"></rect>
+<rect x="-8" y="100" width="126" height="1.5" fill="#9A6E54"></rect>
+<rect x="-3" y="106" width="116" height="13" fill="#2A1E18"></rect>
+<line x1="-3" y1="112.5" x2="113" y2="112.5" stroke="#1A120E" stroke-width="0.8"></line>
+<rect x="-3" y="117" width="116" height="2" fill="#000" opacity="0.3"></rect>
+<g fill="#2F4A2A"><ellipse cx="10" cy="106" rx="12" ry="5"></ellipse><ellipse cx="38" cy="105" rx="13" ry="6"></ellipse><ellipse cx="70" cy="105.5" rx="13" ry="5.5"></ellipse><ellipse cx="100" cy="106" rx="12" ry="5"></ellipse></g>
+<g fill="#3E6A3A"><ellipse cx="24" cy="104" rx="7" ry="3"></ellipse><ellipse cx="86" cy="104" rx="7" ry="3"></ellipse><ellipse cx="54" cy="104.5" rx="6" ry="2.6"></ellipse></g>
+<path d="M2 118 C0 124 5 128 2 132 M106 118 C108 124 103 128 106 131 M44 118 C43 122 46 125 44 128" stroke="#3E6A3A" stroke-width="1.3" fill="none"></path>
+<g fill="#F2D6A8"><circle cx="6" cy="102" r="1.8"></circle><circle cx="14" cy="103" r="1.8"></circle><circle cx="64" cy="102" r="1.8"></circle><circle cx="76" cy="103" r="1.8"></circle></g>
+<g fill="#E9A0A0"><circle cx="34" cy="101.5" r="1.8"></circle><circle cx="42" cy="102" r="1.8"></circle><circle cx="96" cy="102" r="1.8"></circle><circle cx="104" cy="103" r="1.8"></circle></g>
+</g>
+<g id="wgSash">
+<rect x="1.5" y="1.5" width="107" height="97" fill="none" stroke="#CDBFA4" stroke-width="3"></rect>
+<rect x="0" y="47" width="110" height="5" fill="#CDBFA4"></rect>
+<rect x="0" y="52" width="110" height="1.4" fill="#000" opacity="0.25"></rect>
+<line x1="55" y1="0" x2="55" y2="100" stroke="#CDBFA4" stroke-width="2.5"></line>
+</g>
+
+<g id="wgOLamp"><line x1="24" y1="44" x2="24" y2="98" stroke="#1E120A" stroke-width="2"></line><ellipse cx="24" cy="98" rx="6" ry="1.6" fill="#1E120A"></ellipse><path d="M14 44 L34 44 L30 30 L18 30 Z" fill="#FFE8BC"></path><path d="M14 44 L34 44 L30 30 L18 30 Z" fill="none" stroke="#C9A15A" stroke-width="0.6"></path></g>
+<g id="wgOChair"><path d="M38 100 L38 74 C38 66 45 63 53 63 L69 63 C77 63 82 66 82 74 L82 100 Z" fill="#3A1C10"></path><path d="M33 100 L33 80 C33 75 37 74 41 74 L44 74 L44 100 Z" fill="#4A2414"></path><path d="M76 100 L76 74 L79 74 C83 74 87 75 87 80 L87 100 Z" fill="#4A2414"></path><rect x="44" y="84" width="32" height="8" rx="3" fill="#5A2C18"></rect><path d="M46 66 C52 64 68 64 74 66" stroke="#8A4A28" stroke-width="0.8" fill="none"></path><g fill="#2A140A"><circle cx="52" cy="71" r="0.8"></circle><circle cx="60" cy="70" r="0.8"></circle><circle cx="68" cy="71" r="0.8"></circle></g></g>
+<g id="wgOShelf"><rect x="88" y="10" width="22" height="90" fill="#24160C"></rect><g fill="#3E2716"><rect x="88" y="30" width="22" height="2"></rect><rect x="88" y="52" width="22" height="2"></rect><rect x="88" y="74" width="22" height="2"></rect></g><rect x="90" y="18" width="3" height="12" fill="#6B2430"></rect><rect x="93" y="16" width="3" height="14" fill="#24324F"></rect><rect x="96" y="19" width="3" height="11" fill="#A87A32"></rect><rect x="101" y="17" width="3" height="13" fill="#2F4A35"></rect><rect x="104" y="20" width="3" height="10" fill="#D9CBA8"></rect><rect x="90" y="40" width="3" height="12" fill="#A87A32"></rect><rect x="93" y="39" width="4" height="13" fill="#6B2430"></rect><rect x="99" y="41" width="3" height="11" fill="#D9CBA8"></rect><rect x="102" y="39" width="3" height="13" fill="#24324F"></rect><rect x="91" y="62" width="3" height="12" fill="#2F4A35"></rect><rect x="95" y="61" width="3" height="13" fill="#D9CBA8"></rect><circle cx="104" cy="69" r="4.5" fill="#4C7046"></circle></g>
+<g id="wgOFrame"><rect x="52" y="22" width="24" height="17" fill="#3A2A1E" stroke="#C9A15A" stroke-width="1.2"></rect><path d="M54 37 C60 31 66 34 74 29 L74 38 L54 38 Z" fill="#8A5A3A"></path></g>
+<g id="wgOPend"><line x1="40" y1="0" x2="40" y2="10" stroke="#1E120A" stroke-width="0.8"></line><path d="M33 17 L47 17 L44 10 L36 10 Z" fill="#FFEAC2"></path></g>
+<g id="wgOPlant"><path d="M8 100 L18 100 L17 92 L9 92 Z" fill="#9C5B3A"></path><path d="M13 92 C4 84 2 72 6 64 C12 70 14 80 13 92 Z" fill="#24361F"></path><path d="M13 92 C18 80 24 74 30 74 C28 84 20 90 13 92 Z" fill="#24361F"></path><path d="M13 92 C10 78 12 66 16 58 C20 68 18 80 13 92 Z" fill="#2F4A2A"></path></g>
+<g id="wgODrapes"><path d="M0 0 L13 0 C12 26 8 46 15 58 C9 66 5 84 7 100 L0 100 Z" fill="#5A1A1A"></path><path d="M110 0 L97 0 C98 26 102 46 95 58 C101 66 105 84 103 100 L110 100 Z" fill="#5A1A1A"></path><g fill="none" stroke="#3A0E0E" stroke-width="0.8"><path d="M5 2 C5 30 4 46 10 58"></path><path d="M105 2 C105 30 106 46 100 58"></path></g><circle cx="14" cy="58" r="1.6" fill="url(#wgBrass)"></circle><circle cx="96" cy="58" r="1.6" fill="url(#wgBrass)"></circle></g>
+<g id="wgOPet"><path d="M47 100 C44 92 46 84 52 81 C49 78 49 72 51 69 L50 63 L55 67 C57 66 61 66 63 67 L68 63 L67 69 C69 72 69 78 66 81 C72 84 74 92 71 100 Z" fill="#0E0805"></path><path d="M71 98 C80 98 82 90 78 86" stroke="#0E0805" stroke-width="2.6" fill="none" stroke-linecap="round"></path><circle cx="55.5" cy="73" r="1.1" fill="#B8E05A"></circle><circle cx="62.5" cy="73" r="1.1" fill="#B8E05A"></circle></g>
+<g id="wgOLights"><path d="M2 5 Q28 13 55 5 Q82 13 108 5" fill="none" stroke="#2A1A10" stroke-width="0.6"></path><g fill="#FFE6A8"><circle cx="8" cy="6.6" r="1.3"></circle><circle cx="16" cy="8.4" r="1.3"></circle><circle cx="24" cy="9.4" r="1.3"></circle><circle cx="32" cy="9.6" r="1.3"></circle><circle cx="40" cy="8.6" r="1.3"></circle><circle cx="48" cy="6.8" r="1.3"></circle><circle cx="62" cy="6.8" r="1.3"></circle><circle cx="70" cy="8.6" r="1.3"></circle><circle cx="78" cy="9.6" r="1.3"></circle><circle cx="86" cy="9.4" r="1.3"></circle><circle cx="94" cy="8.4" r="1.3"></circle><circle cx="102" cy="6.6" r="1.3"></circle></g></g>
+
+<g id="wgL0"><rect width="110" height="100" fill="url(#wgGlass)"></rect><rect width="110" height="16" fill="#1E1C22"></rect><rect y="15" width="110" height="2" fill="#2E2A2C"></rect><polygon points="70,17 96,17 50,100 24,100" fill="#8090B8" opacity="0.08"></polygon><polygon points="100,17 106,17 66,100 60,100" fill="#8090B8" opacity="0.05"></polygon><circle cx="84" cy="30" r="3" fill="#C9D0E6" opacity="0.18"></circle></g>
+<g id="wgL1"><rect width="110" height="100" fill="url(#wgR1)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.28"></rect><circle cx="72" cy="56" r="14" fill="url(#wgWarm)" opacity="0.35"></circle><g transform="translate(54 30) scale(0.7)" opacity="0.6"><use href="#wgOLamp"></use></g><rect width="110" height="100" fill="#0A0606" opacity="0.2"></rect></g>
+<g id="wgL2"><rect width="110" height="100" fill="url(#wgR2)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.26"></rect><circle cx="24" cy="38" r="20" fill="url(#wgWarm)" opacity="0.45"></circle><use href="#wgOLamp"></use></g>
+<g id="wgL3"><rect width="110" height="100" fill="url(#wgR3)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.24"></rect><circle cx="24" cy="38" r="24" fill="url(#wgWarm)" opacity="0.55"></circle><use href="#wgOLamp"></use><use href="#wgOChair"></use></g>
+<g id="wgL4"><rect width="110" height="100" fill="url(#wgR4)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.22"></rect><circle cx="24" cy="38" r="26" fill="url(#wgWarm)" opacity="0.6"></circle><use href="#wgOShelf"></use><use href="#wgOLamp"></use><use href="#wgOChair"></use></g>
+<g id="wgL5"><rect width="110" height="100" fill="url(#wgR5)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.2"></rect><circle cx="24" cy="38" r="28" fill="url(#wgWarm)" opacity="0.65"></circle><use href="#wgOFrame"></use><use href="#wgOShelf"></use><use href="#wgOLamp"></use><use href="#wgOChair"></use><use href="#wgOPlant"></use></g>
+<g id="wgL6"><rect width="110" height="100" fill="url(#wgR6)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.18"></rect><circle cx="24" cy="38" r="30" fill="url(#wgWarm)" opacity="0.7"></circle><circle cx="40" cy="16" r="18" fill="url(#wgWarm)" opacity="0.6"></circle><use href="#wgOFrame"></use><use href="#wgOPend"></use><use href="#wgOShelf"></use><use href="#wgOLamp"></use><use href="#wgOChair"></use><use href="#wgOPlant"></use><use href="#wgODrapes"></use></g>
+<g id="wgL7"><rect width="110" height="100" fill="url(#wgR7)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.16"></rect><circle cx="24" cy="38" r="32" fill="url(#wgWarm)" opacity="0.75"></circle><circle cx="40" cy="16" r="20" fill="url(#wgWarm)" opacity="0.7"></circle><use href="#wgOLights"></use><use href="#wgOFrame"></use><use href="#wgOPend"></use><use href="#wgOShelf"></use><use href="#wgOLamp"></use><use href="#wgOChair"></use><use href="#wgOPlant"></use><use href="#wgODrapes"></use><use href="#wgOPet"></use></g>
+<g id="wgLS"><rect width="110" height="100" fill="url(#wgRS)"></rect><rect y="82" width="110" height="18" fill="#000" opacity="0.3"></rect><polygon points="72,0 92,0 54,100 34,100" fill="#8090B8" opacity="0.05"></polygon></g>
+
+<g id="wgStar"><path d="M0.8 -4 L2 -0.7 L5.5 -0.5 L2.8 1.6 L3.7 5 L0.8 3.1 L-2.1 5 L-1.2 1.6 L-4 -0.5 L-0.4 -0.7 Z" fill="#000" opacity="0.45"></path><path d="M0 -5 L1.23 -1.7 L4.76 -1.55 L2 0.65 L2.94 4.05 L0 2.1 L-2.94 4.05 L-2 0.65 L-4.76 -1.55 L-1.23 -1.7 Z" fill="url(#wgBrass)" stroke="#6E4E1E" stroke-width="0.4"></path><circle cx="0" cy="0" r="0.7" fill="#3A2610"></circle><circle cx="-0.9" cy="-2.4" r="0.6" fill="#FFF3D0" opacity="0.9"></circle></g>
+<g id="wgHeart"><path d="M0 3.2 C-4.5 0.4 -4.6 -2.6 -2.4 -3.3 C-1.3 -3.6 -0.4 -3 0 -2.2 C0.4 -3 1.3 -3.6 2.4 -3.3 C4.6 -2.6 4.5 0.4 0 3.2 Z" fill="#E07A6A"></path><path d="M-2.6 -2 C-2 -2.8 -1.2 -2.6 -1 -2" stroke="#FFD0C4" stroke-width="0.6" fill="none"></path></g>
+</defs>
+</svg>
+
+<div style="position: absolute; left: 56px; top: 44px; width: 800px">
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A; font-weight: 500">Brownstone kit · 03 · Windows</div>
+<h1 style="margin: 8px 0 6px; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.1">Windows from the street</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.4; color: #B8A68A; max-width: 760px">A window glows with how many workouts its resident logged this week: a quiet, cold pane at 0, blazing amber at 7 with the room alive behind the glass. Below, everything else a window can say from the street.</p>
+</div>
+<div style="position: absolute; right: 56px; top: 56px; display: flex; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 6px 12px"><span style="width: 28px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #1C2236, #8A5A30, #FFE6B0); display: inline-block"></span>Glow = workouts this week</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 6px 12px"><span style="width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #F0CF86, #6E4E1E); display: inline-block"></span>Stars stay on the frame</span>
+</div>
+
+<div style="position: absolute; left: 56px; right: 56px; top: 172px; display: flex; justify-content: space-between; align-items: baseline">
+<span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Glow · workouts this week</span>
+<span style="font-size: 12px; color: #9C8B70">spill on the stone 0 → 1 · nothing is ever lost, a quiet week is just a quiet window</span>
+</div>
+
+<div style="position: absolute; left: 56px; right: 56px; top: 192px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 12px">
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Brownstone sash window at night with zero workouts: dark cold glass, blind half down, only the moon reflected." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<g transform="translate(15 46)"><use href="#wgL0"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="#22304E" opacity="0.25" style="mix-blend-mode: multiply"></rect>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">0 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">quiet glass · moon in the pane</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with one workout: a faint ember of a single lamp far back in a dark room." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.12" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL1"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">1 workout</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">one far lamp · spill 0.12</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with two workouts: a lamp lit by the window, a dim warm room." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.22" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL2"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">2 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">lamp on · spill 0.22</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with three workouts: a lamp and an armchair in a warm pool of light." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.35" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL3"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">3 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">chair in the pool · spill 0.35</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with four workouts: brighter amber, a bookshelf of coloured spines visible behind the chair and lamp." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL4"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">4 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">shelves show · spill 0.5</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with five workouts: amber room with a framed picture, bookshelf, lamp, armchair and a plant in the corner." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.65" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL5"></use><use href="#wgSash"></use></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">5 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">plants, frames · spill 0.65</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with six workouts: bright amber, a pendant lit, oxblood drapes tied back, the room full of silhouettes." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="0.82" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL6"></use><use href="#wgSash"></use><rect x="-4" y="-4" width="118" height="108" fill="#FFD9A0" opacity="0.1" filter="url(#wgBlur6)" style="mix-blend-mode: screen"></rect></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">6 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">pendant, drapes · spill 0.82</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 140 186" width="137" height="182" role="img" aria-label="Window with seven workouts: blazing amber, fairy lights across the top, pendant and lamp lit, shelves, chair, plant, drapes, and the cat sitting on the inner sill in silhouette." style="display: block; border-radius: 8px">
+<rect width="140" height="186" fill="url(#wgStone)"></rect>
+<rect width="140" height="186" filter="url(#wgTex)"></rect>
+<path d="M0 12H140M0 178H140M34 0V12M102 0V12M22 178V186M92 178V186" stroke="#2A1C15" stroke-width="1"></path>
+<g transform="translate(15 46)"><use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use></g>
+<ellipse cx="70" cy="98" rx="84" ry="80" fill="url(#wgSpill)" opacity="1" style="mix-blend-mode: screen"></ellipse>
+<g transform="translate(15 46)"><use href="#wgL7"></use><use href="#wgSash"></use><rect x="-6" y="-6" width="122" height="112" fill="#FFD9A0" opacity="0.26" filter="url(#wgBlur6)" style="mix-blend-mode: screen"></rect><g fill="#FFC56E" opacity="0.7" filter="url(#wgBlur2)" style="mix-blend-mode: screen"><circle cx="16" cy="8.4" r="2.6"></circle><circle cx="32" cy="9.6" r="2.6"></circle><circle cx="48" cy="6.8" r="2.6"></circle><circle cx="70" cy="8.6" r="2.6"></circle><circle cx="86" cy="9.4" r="2.6"></circle><circle cx="102" cy="6.6" r="2.6"></circle></g></g>
+<rect width="140" height="186" fill="url(#wgVig)"></rect>
+<rect width="140" height="186" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">7 workouts</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 1.4; color: #9C8B70">blazing · pet in the pane · 1.0</div>
+</div>
+</div>
+
+<div style="position: absolute; left: 56px; right: 56px; top: 470px; display: flex; justify-content: space-between; align-items: baseline">
+<span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">States</span>
+<span style="font-size: 12px; color: #9C8B70">layered over any glow level · gifts from friends sit outside the glass</span>
+</div>
+
+<div style="position: absolute; left: 56px; right: 56px; top: 490px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px">
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="An empty unit: dark glass, blind half down, and a handwritten card taped to the pane reading Room for a friend." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<rect width="110" height="100" fill="url(#wgGlass)"></rect>
+<rect width="110" height="34" fill="#2A2420"></rect><rect y="32" width="110" height="3" fill="#3E352E"></rect>
+<polygon points="70,40 96,40 50,100 24,100" fill="#8090B8" opacity="0.08"></polygon>
+<use href="#wgSash"></use>
+<g transform="rotate(-3 55 70)"><rect x="27" y="56" width="56" height="30" fill="#E8DFC8"></rect><rect x="27" y="56" width="56" height="30" fill="none" stroke="#C9BCA0" stroke-width="0.6"></rect><text x="55" y="68.5" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="9" fill="#3A2A20">Room for</text><text x="55" y="80" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="9" fill="#3A2A20">a friend</text><rect x="24" y="53" width="10" height="5" fill="#F2EBD8" opacity="0.55" transform="rotate(-30 29 55)"></rect><rect x="76" y="53" width="10" height="5" fill="#F2EBD8" opacity="0.55" transform="rotate(30 81 55)"></rect></g>
+</g>
+<rect width="194" height="112" fill="#22304E" opacity="0.2" style="mix-blend-mode: multiply"></rect>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Room for a friend</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">empty unit · invite in the pane</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Resident asleep: lights off, navy curtains half drawn, a single candle burning on the inner sill." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="96" rx="60" ry="34" fill="url(#wgSpill)" opacity="0.18" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgLS"></use>
+<path d="M0 0 L36 0 C34 30 38 64 34 100 L0 100 Z" fill="#1A2236"></path>
+<path d="M110 0 L74 0 C76 30 72 64 76 100 L110 100 Z" fill="#1A2236"></path>
+<g fill="none" stroke="#0E1424" stroke-width="1"><path d="M10 2 C9 40 11 70 10 98"></path><path d="M22 2 C23 40 21 70 23 98"></path><path d="M88 2 C87 40 89 70 88 98"></path><path d="M100 2 C101 40 99 70 100 98"></path></g>
+<rect x="52.5" y="86" width="5" height="13" rx="0.8" fill="#EDE1C6"></rect>
+<line x1="55" y1="86" x2="55" y2="83.6" stroke="#2A1A10" stroke-width="0.6"></line>
+<path d="M55 77 C53.4 80 53.7 82.6 55 83.4 C56.3 82.6 56.6 80 55 77 Z" fill="#FFD27A"></path>
+<circle cx="55" cy="82" r="20" fill="url(#wgWarm)" opacity="0.55" style="mix-blend-mode: screen"></circle>
+<path d="M34 60 C35 72 34 86 34 100" stroke="#C88A48" stroke-width="1" opacity="0.4" fill="none"></path>
+<path d="M76 60 C75 72 76 86 76 100" stroke="#C88A48" stroke-width="1" opacity="0.4" fill="none"></path>
+<use href="#wgSash"></use>
+</g>
+<rect width="194" height="112" fill="#22304E" opacity="0.18" style="mix-blend-mode: multiply"></rect>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Asleep</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">lights out · one candle</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Lit window with one small brass star nailed to the top-left corner of the frame." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use><use href="#wgSash"></use>
+<use href="#wgStar" transform="translate(2 2) scale(1.35)"></use>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">1 visitor star</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">brass, nailed to the frame</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Lit window with three brass stars nailed along the top of the frame." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use><use href="#wgSash"></use>
+<use href="#wgStar" transform="translate(2 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(55 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(108 2) scale(1.35)"></use>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">3 visitor stars</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">they stay, they never fade</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Lit window with seven brass stars nailed all around the frame: three along the top, two more at the corners and one at each side of the meeting rail." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use><use href="#wgSash"></use>
+<use href="#wgStar" transform="translate(2 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(29 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(55 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(81 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(108 2) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(2 49.5) scale(1.35)"></use>
+<use href="#wgStar" transform="translate(108 49.5) scale(1.35)"></use>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">7 visitor stars</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">a frame full of friends</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Lit window with a small glossy red heart left on the stone sill." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use><use href="#wgSash"></use>
+<ellipse cx="84" cy="101" rx="7" ry="1.6" fill="#000" opacity="0.45"></ellipse>
+<use href="#wgHeart" transform="translate(84 95.2) scale(1.8)"></use>
+<circle cx="84" cy="95" r="10" fill="#E07A6A" opacity="0.22" filter="url(#wgBlur4)" style="mix-blend-mode: screen"></circle>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Heart on the sill</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">one per friend, per day</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Lit window with a bone-shaped biscuit treat on a little cream saucer on the sill." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.35" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL3"></use><use href="#wgSash"></use>
+<ellipse cx="28" cy="101.4" rx="11" ry="2" fill="#000" opacity="0.4"></ellipse>
+<ellipse cx="28" cy="99.6" rx="10" ry="2.4" fill="#E6D8C0"></ellipse>
+<ellipse cx="28" cy="99.2" rx="7" ry="1.4" fill="#CFC0A4"></ellipse>
+<g transform="translate(28 96.6) rotate(-8) scale(1.25)"><rect x="-5" y="-1.3" width="10" height="2.6" rx="1" fill="#D9B47E"></rect><g fill="#D9B47E" stroke="#8C5A2A" stroke-width="0.35"><circle cx="-5" cy="-1.3" r="1.7"></circle><circle cx="-5" cy="1.3" r="1.7"></circle><circle cx="5" cy="-1.3" r="1.7"></circle><circle cx="5" cy="1.3" r="1.7"></circle></g><rect x="-4.6" y="-1.1" width="9.2" height="2.2" fill="#D9B47E"></rect><line x1="-3" y1="-0.4" x2="3" y2="-0.4" stroke="#F0D4A0" stroke-width="0.5"></line></g>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Treat on the sill</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">the pet eats it next open</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Cat silhouette sitting on the inner sill against the amber room, ears up, green eyes catching the light." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.62" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL5"></use>
+<path d="M40 100 C36 89 39 78 47 73 C43 68 43 59 45 55 L44 45 L51 51 C53 50 58 50 60 51 L67 45 L66 55 C68 59 68 68 64 73 C72 78 75 89 71 100 Z" fill="#0E0805"></path>
+<path d="M71 98 C84 98 88 86 81 80" stroke="#0E0805" stroke-width="3.2" fill="none" stroke-linecap="round"></path>
+<g fill="#B8E05A"><ellipse cx="51.5" cy="62" rx="1.6" ry="1.2"></ellipse><ellipse cx="59.5" cy="62" rx="1.6" ry="1.2"></ellipse></g>
+<path d="M45.5 49 L47 53 M65.5 49 L64 53" stroke="#3A2010" stroke-width="0.6"></path>
+<use href="#wgSash"></use>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Cat in the window</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">pet · eyes catch the light</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Dog silhouette with floppy ears and paws up on the inner sill, a little pink tongue showing, looking out at the street." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.5" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use>
+<g fill="#120A06">
+<path d="M38 100 C38 92 42 86 47 84 L63 84 C68 86 72 92 72 100 Z"></path>
+<ellipse cx="55" cy="70" rx="11" ry="10"></ellipse>
+<ellipse cx="55" cy="77.5" rx="6.5" ry="4.6"></ellipse>
+<path d="M45 63 C39 65 37 74 40 81 C44 79 46 72 47 66 Z"></path>
+<path d="M65 63 C71 65 73 74 70 81 C66 79 64 72 63 66 Z"></path>
+<rect x="40" y="94" width="11" height="6" rx="3"></rect>
+<rect x="59" y="94" width="11" height="6" rx="3"></rect>
+</g>
+<ellipse cx="55" cy="74.6" rx="2" ry="1.3" fill="#2A1A10"></ellipse>
+<ellipse cx="55" cy="82.4" rx="2" ry="1.6" fill="#E07A6A"></ellipse>
+<g fill="#FFE0A0"><circle cx="50.5" cy="68" r="0.9"></circle><circle cx="59.5" cy="68" r="0.9"></circle></g>
+<use href="#wgSash"></use>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Dog in the window</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">pet · paws up, waiting</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="A window wrapped like a gift by a glowing ribbon of light, crossing down the middle and along the meeting rail, with a bow of light on the stone hood and a few sparkles." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.55" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL4"></use><use href="#wgSash"></use>
+<g style="mix-blend-mode: screen" filter="url(#wgBlur4)" opacity="0.9"><rect x="49" y="-22" width="12" height="130" fill="#FFB45E"></rect><rect x="-10" y="43" width="130" height="12" fill="#FFB45E"></rect><circle cx="55" cy="-24" r="12" fill="#FFB45E"></circle></g>
+<g fill="#FFD27A"><rect x="51.5" y="-20" width="7" height="126"></rect><rect x="-8" y="45.5" width="126" height="7"></rect></g>
+<g fill="#FFF0C8" opacity="0.8"><rect x="54" y="-20" width="1.4" height="126"></rect><rect x="-8" y="48" width="126" height="1.4"></rect></g>
+<path d="M55 -24 C44 -36 36 -26 46 -21 Z" fill="#FFD27A"></path>
+<path d="M55 -24 C66 -36 74 -26 64 -21 Z" fill="#FFD27A"></path>
+<path d="M53 -22 L46 -10 M57 -22 L64 -10" stroke="#FFD27A" stroke-width="3" stroke-linecap="round"></path>
+<circle cx="55" cy="-23" r="3.4" fill="#FFF0C8"></circle>
+<g fill="#FFF0C8"><path d="M-6 14 l1 3 l3 1 l-3 1 l-1 3 l-1 -3 l-3 -1 l3 -1 Z"></path><path d="M118 28 l0.8 2.4 l2.4 0.8 l-2.4 0.8 l-0.8 2.4 l-0.8 -2.4 l-2.4 -0.8 l2.4 -0.8 Z"></path><path d="M112 82 l0.8 2.4 l2.4 0.8 l-2.4 0.8 l-0.8 2.4 l-0.8 -2.4 l-2.4 -0.8 l2.4 -0.8 Z"></path><path d="M24 -30 l0.8 2.4 l2.4 0.8 l-2.4 0.8 l-0.8 2.4 l-0.8 -2.4 l-2.4 -0.8 l2.4 -0.8 Z"></path></g>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">New present</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">unopened · ribbon of light</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Winter: an evergreen wreath with red berries and a red bow hung on the upper sash, snow along the stone hood and the window box." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.6" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL5"></use><use href="#wgSash"></use>
+<line x1="55" y1="1" x2="55" y2="12" stroke="#8A2020" stroke-width="1.6"></line>
+<circle cx="55" cy="25" r="13" fill="none" stroke="#1E3420" stroke-width="7"></circle>
+<g fill="#2F5A34"><ellipse cx="55" cy="12.5" rx="3.4" ry="1.6"></ellipse><ellipse cx="64" cy="16" rx="3.4" ry="1.6" transform="rotate(45 64 16)"></ellipse><ellipse cx="67.5" cy="25" rx="1.6" ry="3.4"></ellipse><ellipse cx="64" cy="34" rx="3.4" ry="1.6" transform="rotate(-45 64 34)"></ellipse><ellipse cx="46" cy="34" rx="3.4" ry="1.6" transform="rotate(45 46 34)"></ellipse><ellipse cx="42.5" cy="25" rx="1.6" ry="3.4"></ellipse><ellipse cx="46" cy="16" rx="3.4" ry="1.6" transform="rotate(-45 46 16)"></ellipse></g>
+<g fill="#4E7A40"><ellipse cx="59.5" cy="13.4" rx="2.4" ry="1.1" transform="rotate(20 59.5 13.4)"></ellipse><ellipse cx="67" cy="20" rx="1.1" ry="2.4"></ellipse><ellipse cx="43" cy="20" rx="1.1" ry="2.4"></ellipse><ellipse cx="50.5" cy="13.4" rx="2.4" ry="1.1" transform="rotate(-20 50.5 13.4)"></ellipse><ellipse cx="67" cy="30" rx="1.1" ry="2.4"></ellipse><ellipse cx="43" cy="30" rx="1.1" ry="2.4"></ellipse></g>
+<g fill="#C2352E"><circle cx="61" cy="14" r="1.3"></circle><circle cx="68" cy="23" r="1.3"></circle><circle cx="42" cy="22" r="1.3"></circle><circle cx="48" cy="14" r="1.3"></circle><circle cx="66" cy="31" r="1.3"></circle><circle cx="44" cy="31" r="1.3"></circle></g>
+<path d="M55 37 C48 31 44 36 49 39 Z M55 37 C62 31 66 36 61 39 Z" fill="#B0262A"></path>
+<path d="M54 38 L50 46 M56 38 L60 46" stroke="#B0262A" stroke-width="1.8" stroke-linecap="round"></path>
+<circle cx="55" cy="37.5" r="1.8" fill="#D04040"></circle>
+<path d="M-12 -21 C-6 -25 2 -23 8 -24 C20 -26 30 -23 42 -25 C56 -27 70 -23 84 -25 C98 -26 112 -23 122 -24 L122 -20 L-12 -20 Z" fill="#E8ECF4"></path>
+<path d="M-8 100 C0 97 8 99 16 97 C30 96 44 99 58 97 C72 96 86 99 100 97 C108 96 114 98 118 99 L118 103 L-8 103 Z" fill="#E8ECF4"></path>
+<path d="M-3 106 C10 104 30 105 50 104 C70 105 92 104 113 106 L113 108 L-3 108 Z" fill="#DCE2EE" opacity="0.9"></path>
+</g>
+<rect width="194" height="112" fill="#22304E" opacity="0.12" style="mix-blend-mode: multiply"></rect>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; display: flex; align-items: center; gap: 8px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Wreath</span><span style="font-size: 11px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 1px 8px">new</span></div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">December · snow on the box</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; padding: 8px">
+<svg viewBox="0 0 194 112" width="193" height="111" role="img" aria-label="Autumn: a carved pumpkin glowing on the window box among fallen leaves, the room warm behind." style="display: block; border-radius: 8px">
+<rect width="194" height="112" fill="url(#wgStone)"></rect>
+<rect width="194" height="112" filter="url(#wgTex)"></rect>
+<g transform="translate(56 19) scale(0.75)">
+<use href="#wgCasing"></use><use href="#wgHood"></use><use href="#wgSillBox"></use>
+<ellipse cx="55" cy="52" rx="96" ry="84" fill="url(#wgSpill)" opacity="0.35" style="mix-blend-mode: screen"></ellipse>
+<use href="#wgL3"></use><use href="#wgSash"></use>
+<ellipse cx="22" cy="106" rx="16" ry="2.4" fill="#000" opacity="0.4"></ellipse>
+<ellipse cx="22" cy="96" rx="15" ry="11" fill="#C8682A"></ellipse>
+<ellipse cx="14" cy="96" rx="7" ry="10.5" fill="#D9782E"></ellipse>
+<ellipse cx="30" cy="96" rx="7" ry="10.5" fill="#D9782E"></ellipse>
+<ellipse cx="22" cy="96" rx="6" ry="11" fill="#E08A3A"></ellipse>
+<g fill="none" stroke="#9A4A1A" stroke-width="0.7"><path d="M17 86 C15 92 15 100 17 106"></path><path d="M27 86 C29 92 29 100 27 106"></path></g>
+<path d="M21 85 C21 81 23 79 25 79" stroke="#4A3A1E" stroke-width="2.2" fill="none" stroke-linecap="round"></path>
+<g fill="#FFD27A"><path d="M14 92 L18 92 L16 88.6 Z"></path><path d="M26 92 L30 92 L28 88.6 Z"></path><path d="M13 98 L31 98 C30 102 26 104 22 104 C18 104 14 102 13 98 Z"></path></g>
+<g fill="#C8682A"><rect x="17" y="98" width="2" height="2.2"></rect><rect x="25" y="98" width="2" height="2.2"></rect><rect x="21" y="101.6" width="2" height="2.4"></rect></g>
+<circle cx="22" cy="96" r="22" fill="url(#wgWarm)" opacity="0.6" style="mix-blend-mode: screen"></circle>
+<g><ellipse cx="46" cy="101" rx="3.4" ry="1.4" fill="#B8562E" transform="rotate(-20 46 101)"></ellipse><ellipse cx="60" cy="102" rx="3" ry="1.3" fill="#C08A3E" transform="rotate(15 60 102)"></ellipse><ellipse cx="96" cy="101" rx="3.4" ry="1.4" fill="#A8443A" transform="rotate(25 96 101)"></ellipse><ellipse cx="78" cy="102" rx="2.8" ry="1.2" fill="#C08A3E" transform="rotate(-10 78 102)"></ellipse></g>
+</g>
+<rect width="194" height="112" fill="url(#wgVig)"></rect>
+<rect width="194" height="112" filter="url(#wgGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="margin-top: 8px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Pumpkin</div>
+<div style="margin-top: 2px; font-size: 12px; color: #9C8B70">pumpkin · seasonal · glows</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

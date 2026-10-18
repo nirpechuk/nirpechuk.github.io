@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lighting system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E8A24A}a:hover{color:#ffd28f}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #120D0A; color: #F3E6D0; font-family: 'DM Sans', system-ui, sans-serif">
+
+<svg width="0" height="0" style="position: absolute; left: 0; top: 0" aria-hidden="true" focusable="false">
+<defs>
+<clipPath id="lyFloor"><polygon points="0,466.9 70,400 320,400 390,466.9 390,600 0,600"></polygon></clipPath>
+<clipPath id="lyGlass"><rect x="90" y="189" width="72" height="147"></rect></clipPath>
+<clipPath id="lyMoonClip"><polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5"></polygon></clipPath>
+<linearGradient id="lyWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E2F25"></stop><stop offset="0.6" stop-color="#2E4636"></stop><stop offset="1" stop-color="#27392D"></stop></linearGradient>
+<linearGradient id="lyWallL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16231B"></stop><stop offset="1" stop-color="#2A4032"></stop></linearGradient>
+<linearGradient id="lyWallR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#1A291F"></stop><stop offset="1" stop-color="#2E4636"></stop></linearGradient>
+<linearGradient id="lyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1230"></stop><stop offset="0.7" stop-color="#27294A"></stop><stop offset="1" stop-color="#4A3550"></stop></linearGradient>
+<linearGradient id="lyDrape" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A1010"></stop><stop offset="0.18" stop-color="#6E2222"></stop><stop offset="0.36" stop-color="#421313"></stop><stop offset="0.55" stop-color="#7C2B27"></stop><stop offset="0.75" stop-color="#4A1515"></stop><stop offset="1" stop-color="#6A2020"></stop></linearGradient>
+<linearGradient id="lyLeather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B56A38"></stop><stop offset="0.35" stop-color="#8C4422"></stop><stop offset="1" stop-color="#4E2410"></stop></linearGradient>
+<linearGradient id="lyWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A3820"></stop><stop offset="1" stop-color="#2E1B0F"></stop></linearGradient>
+<linearGradient id="lyBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0CF86"></stop><stop offset="0.5" stop-color="#B5893F"></stop><stop offset="1" stop-color="#6E4E1E"></stop></linearGradient>
+<linearGradient id="lyCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9A0" stop-opacity="0.38"></stop><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"></stop></linearGradient>
+<linearGradient id="lyShaft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FB6E8" stop-opacity="0.03"></stop><stop offset="1" stop-color="#9FB6E8" stop-opacity="0.16"></stop></linearGradient>
+<linearGradient id="lyPot" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8A7A66"></stop><stop offset="0.4" stop-color="#E6D8C0"></stop><stop offset="1" stop-color="#7A6A56"></stop></linearGradient>
+<linearGradient id="lyCWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E2F25"></stop><stop offset="1" stop-color="#2E4636"></stop></linearGradient>
+<linearGradient id="lyCFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A3822"></stop><stop offset="1" stop-color="#3A2414"></stop></linearGradient>
+<radialGradient id="lyWarm"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.9"></stop><stop offset="0.4" stop-color="#FF9F45" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FF8A30" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="lyHole"><stop offset="0" stop-color="#000" stop-opacity="1"></stop><stop offset="0.55" stop-color="#000" stop-opacity="0.55"></stop><stop offset="1" stop-color="#000" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="lyVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.7"></stop></radialGradient>
+<radialGradient id="lySheen" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFB869" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FFB869" stop-opacity="0"></stop></radialGradient>
+<pattern id="lyChecker" width="52" height="52" patternUnits="userSpaceOnUse"><rect width="52" height="52" fill="#3E352E"></rect><rect width="26" height="26" fill="#4A4038"></rect><rect x="26" y="26" width="26" height="26" fill="#4A4038"></rect></pattern>
+<pattern id="lyCheckerS" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#3E352E"></rect><rect width="12" height="12" fill="#4A4038"></rect><rect x="12" y="12" width="12" height="12" fill="#4A4038"></rect></pattern>
+<filter id="lyBlur2"><feGaussianBlur stdDeviation="2"></feGaussianBlur></filter>
+<filter id="lyBlur1"><feGaussianBlur stdDeviation="1"></feGaussianBlur></filter>
+<filter id="lyGrain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.18"></feFuncA></feComponentTransfer></filter>
+<filter id="lyGrainVis"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.95"></feFuncA></feComponentTransfer></filter>
+<filter id="lyPaperTex"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.12" numOctaves="3" seed="9"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.25 0"></feColorMatrix></filter>
+<mask id="lyDark" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="520">
+<rect width="390" height="520" fill="#fff"></rect>
+<circle cx="187" cy="200" r="150" fill="url(#lyHole)"></circle>
+<circle cx="221" cy="320" r="125" fill="url(#lyHole)"></circle>
+<circle cx="110" cy="330" r="60" fill="url(#lyHole)"></circle>
+<ellipse cx="200" cy="410" rx="120" ry="40" fill="url(#lyHole)" opacity="0.7"></ellipse>
+<ellipse cx="160" cy="446" rx="70" ry="32" fill="url(#lyHole)" opacity="0.5"></ellipse>
+</mask>
+<mask id="lyCA" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="150">
+<rect width="180" height="150" fill="#fff"></rect>
+<circle cx="30" cy="50" r="84" fill="url(#lyHole)"></circle>
+<ellipse cx="44" cy="128" rx="64" ry="18" fill="url(#lyHole)"></ellipse>
+<circle cx="162" cy="78" r="32" fill="url(#lyHole)"></circle>
+</mask>
+<mask id="lyCB" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="150">
+<rect width="180" height="150" fill="#fff"></rect>
+<circle cx="30" cy="50" r="64" fill="url(#lyHole)" opacity="0.7"></circle>
+<ellipse cx="44" cy="128" rx="48" ry="14" fill="url(#lyHole)" opacity="0.55"></ellipse>
+<circle cx="162" cy="78" r="32" fill="url(#lyHole)"></circle>
+</mask>
+<mask id="lyCC" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="150">
+<rect width="180" height="150" fill="#fff"></rect>
+<circle cx="162" cy="80" r="46" fill="url(#lyHole)"></circle>
+<ellipse cx="120" cy="134" rx="44" ry="12" fill="url(#lyHole)" opacity="0.35"></ellipse>
+</mask>
+
+<g id="lyRoom">
+<polygon points="0,0 390,0 390,30.4 320,120 70,120 0,30.4" fill="#1A1410"></polygon>
+<polygon points="0,30.4 70,120 70,400 0,466.9" fill="url(#lyWallL)"></polygon>
+<polygon points="390,30.4 320,120 320,400 390,466.9" fill="url(#lyWallR)"></polygon>
+<rect x="70" y="120" width="250" height="280" fill="url(#lyWall)"></rect>
+<rect x="70" y="120" width="250" height="280" filter="url(#lyPaperTex)" opacity="0.6"></rect>
+<polygon points="0,30.4 70,120 70,131.3 0,48.3" fill="#3B3226"></polygon>
+<polygon points="390,30.4 320,120 320,131.3 390,48.3" fill="#3B3226"></polygon>
+<rect x="70" y="120" width="250" height="11.3" fill="#4A3F2F"></rect>
+<rect x="70" y="129" width="250" height="2.3" fill="#1C1610"></rect>
+<g stroke="#4A3F2F" stroke-width="2.5"><line x1="70" y1="187.5" x2="0.3" y2="135.9"></line><line x1="320" y1="187.5" x2="389.7" y2="135.9"></line><line x1="70" y1="187.5" x2="320" y2="187.5"></line></g>
+<polygon points="70,337.5 0.3,369.6 0.3,466.9 70,400" fill="#1B2A20"></polygon>
+<polygon points="320,337.5 389.7,369.6 389.7,466.9 320,400" fill="#1F3024"></polygon>
+<rect x="70" y="337.5" width="250" height="62.5" fill="#22352A"></rect>
+<g fill="none" stroke="#3A5544" stroke-width="1.2"><rect x="78" y="347" width="42" height="42"></rect><rect x="128" y="347" width="42" height="42"></rect><rect x="178" y="347" width="42" height="42"></rect></g>
+<g stroke="#0F1A13" stroke-width="1.5"><line x1="59.1" y1="342.5" x2="59.1" y2="407"></line><line x1="46.2" y1="348.5" x2="46.2" y2="419.1"></line><line x1="30.5" y1="355.7" x2="30.5" y2="433.8"></line><line x1="11.2" y1="364.6" x2="11.2" y2="451.9"></line><line x1="330.9" y1="342.5" x2="330.9" y2="407"></line><line x1="343.8" y1="348.5" x2="343.8" y2="419.1"></line><line x1="359.5" y1="355.7" x2="359.5" y2="433.8"></line><line x1="378.8" y1="364.6" x2="378.8" y2="451.9"></line></g>
+<g stroke="#4F6B58" stroke-width="2.2"><line x1="70" y1="337.5" x2="0.3" y2="369.6"></line><line x1="320" y1="337.5" x2="389.7" y2="369.6"></line><line x1="70" y1="337.5" x2="320" y2="337.5"></line></g>
+<rect x="70" y="393" width="250" height="7" fill="#3A2A1C"></rect>
+<g clip-path="url(#lyFloor)">
+<rect x="0" y="380" width="390" height="230" fill="#4A2E1B"></rect>
+<polygon points="70,400 95,400 -82.8,613.3 -152.2,613.3" fill="#5A3822"></polygon>
+<polygon points="95,400 120,400 -13.3,613.3 -82.8,613.3" fill="#4C2F1C"></polygon>
+<polygon points="120,400 145,400 56.1,613.3 -13.3,613.3" fill="#61402A"></polygon>
+<polygon points="145,400 170,400 125.6,613.3 56.1,613.3" fill="#54351F"></polygon>
+<polygon points="170,400 195,400 195,613.3 125.6,613.3" fill="#5E3C25"></polygon>
+<polygon points="195,400 220,400 264.4,613.3 195,613.3" fill="#4E301C"></polygon>
+<polygon points="220,400 245,400 333.9,613.3 264.4,613.3" fill="#633F27"></polygon>
+<polygon points="245,400 270,400 403.3,613.3 333.9,613.3" fill="#55361F"></polygon>
+<polygon points="270,400 295,400 472.8,613.3 403.3,613.3" fill="#5B3A23"></polygon>
+<polygon points="295,400 320,400 542.2,613.3 472.8,613.3" fill="#4B2E1A"></polygon>
+<g stroke="#24150B" stroke-width="0.8"><line x1="95" y1="400" x2="-82.8" y2="613.3"></line><line x1="120" y1="400" x2="-13.3" y2="613.3"></line><line x1="145" y1="400" x2="56.1" y2="613.3"></line><line x1="170" y1="400" x2="125.6" y2="613.3"></line><line x1="195" y1="400" x2="195" y2="613.3"></line><line x1="220" y1="400" x2="264.4" y2="613.3"></line><line x1="245" y1="400" x2="333.9" y2="613.3"></line><line x1="270" y1="400" x2="403.3" y2="613.3"></line><line x1="295" y1="400" x2="472.8" y2="613.3"></line></g>
+<path d="M60.6 409L87.5 409M110 416.1L138.3 416.1M167.4 412.5L195 412.5M221.9 409L248.8 409M280 416.1L308.4 416.1M72.5 427.1L103.1 427.1M135.5 422.9L165.2 422.9M195 431.5L226.6 431.5M256.3 427.1L286.9 427.1M314 422.9L343.8 422.9M26.1 442.2L59.9 442.2M86.6 453.4L122.7 453.4M160.1 447.6L195 447.6M228.8 442.2L262.6 442.2M303.4 453.4L339.5 453.4M369.6 447.6L404.5 447.6M30 478L71.2 478M115.6 470.5L155.3 470.5M195 486.2L238 486.2M277.5 478L318.8 478M353.7 470.5L393.4 470.5" stroke="#24150B" stroke-width="0.9"></path>
+</g>
+<polygon points="57.8,426.3 301.7,426.3 385.2,540.9 -49.6,540.9" fill="#5E1A1A"></polygon>
+<polygon points="63.1,430.8 295.5,430.8 360.3,527.9 -21.9,527.9" fill="#1F2A44"></polygon>
+<polygon points="63.1,430.8 295.5,430.8 360.3,527.9 -21.9,527.9" fill="none" stroke="#C9A15A" stroke-width="2.5" stroke-dasharray="3 4"></polygon>
+<polygon points="71.6,437.9 285.5,437.9 327.2,510.8 14.7,510.8" fill="#7E2620"></polygon>
+<polygon points="77.8,443 278.2,443 307.6,500.6 36.5,500.6" fill="none" stroke="#D9B878" stroke-width="1" opacity="0.7"></polygon>
+<polygon points="102.2,467.5 177.9,444.4 248.7,467.5 172.3,498.2" fill="#1F2A44"></polygon>
+<ellipse cx="175.5" cy="469" rx="44" ry="15" fill="#C9A15A"></ellipse>
+<ellipse cx="175.5" cy="469" rx="30" ry="10" fill="#7E2620"></ellipse>
+<ellipse cx="175.5" cy="469" rx="14" ry="5" fill="#E8D6A8"></ellipse>
+<rect x="90" y="189" width="72" height="147" fill="url(#lyNight)"></rect>
+<g clip-path="url(#lyGlass)">
+<circle cx="146" cy="208" r="6" fill="#F2E6C4"></circle>
+<path d="M90 336 V292 H100 V280 H110 V300 H118 V270 H132 V296 H140 V284 H152 V262 H162 V336 Z" fill="#141522"></path>
+<g fill="#E9B864"><rect x="103" y="286" width="2" height="2"></rect><rect x="121" y="276" width="2" height="2"></rect><rect x="121" y="300" width="2" height="2"></rect><rect x="145" y="290" width="2" height="2" opacity="0.7"></rect><rect x="155" y="270" width="2" height="2"></rect><rect x="112" y="310" width="2" height="2" opacity="0.8"></rect></g>
+<polygon points="90,189 112,189 90,240" fill="#fff" opacity="0.05"></polygon>
+</g>
+<g fill="none" stroke="#B9AD94" stroke-width="3.5"><rect x="88" y="187" width="76" height="151"></rect><line x1="126" y1="189" x2="126" y2="336"></line></g>
+<rect x="88" y="259" width="76" height="6" fill="#B9AD94"></rect>
+<rect x="82" y="336" width="88" height="6" rx="1" fill="#CFC3A8"></rect>
+<rect x="96" y="320" width="7" height="16" rx="1" fill="#EDE1C6"></rect><rect x="105" y="314" width="7" height="22" rx="1" fill="#F2E8D2"></rect><rect x="114" y="324" width="6" height="12" rx="1" fill="#E3D4B4"></rect>
+<path d="M99.5 314 C97.5 317 98 319 99.5 319.5 C101 319 101.5 317 99.5 314 Z" fill="#FFD27A"></path>
+<path d="M108.5 307.5 C106.5 310.5 107 312.5 108.5 313 C110 312.5 110.5 310.5 108.5 307.5 Z" fill="#FFD27A"></path>
+<path d="M117 318 C115.2 320.6 115.6 322.4 117 322.8 C118.4 322.4 118.8 320.6 117 318 Z" fill="#FFD27A"></path>
+<path d="M146 336 L156 336 L154.5 328 L147.5 328 Z" fill="#9C5B3A"></path>
+<circle cx="148" cy="325" r="3.5" fill="#557A4C"></circle><circle cx="153" cy="324" r="3" fill="#6A8F5A"></circle><circle cx="150.5" cy="321" r="3" fill="#4C6E44"></circle>
+<rect x="74" y="176" width="104" height="3" rx="1.5" fill="url(#lyBrass)"></rect>
+<circle cx="74" cy="177.5" r="3.5" fill="url(#lyBrass)"></circle><circle cx="178" cy="177.5" r="3.5" fill="url(#lyBrass)"></circle>
+<path d="M74 179 L96 179 C93 240 98 320 97 400 L72 400 C74 320 70 240 74 179 Z" fill="url(#lyDrape)"></path>
+<path d="M156 179 L178 179 C180 240 176 320 180 400 L155 400 C154 320 159 240 156 179 Z" fill="url(#lyDrape)"></path>
+<rect x="183" y="205" width="32" height="40" fill="url(#lyBrass)"></rect>
+<rect x="186" y="208" width="26" height="34" fill="#E9C48A"></rect>
+<path d="M186 230 C194 222 200 226 212 218 L212 242 L186 242 Z" fill="#7E5A3A"></path>
+<path d="M186 236 C196 230 204 234 212 230 L212 242 L186 242 Z" fill="#4D3A2A"></path>
+<circle cx="205" cy="216" r="4" fill="#F7E3B8"></circle>
+<rect x="219" y="213" width="16" height="23" fill="#2A1C12"></rect>
+<rect x="221" y="215" width="12" height="19" fill="#EFE5CF"></rect>
+<path d="M227 232 C223 226 223 220 227 217 C231 220 231 226 227 232 Z" fill="#4F7346"></path>
+<rect x="182" y="250" width="19" height="23" fill="#1A1A1A"></rect>
+<rect x="184" y="252" width="15" height="19" fill="#D9CDB4"></rect>
+<circle cx="189" cy="259" r="4" fill="#C2552E"></circle><rect x="191" y="262" width="6" height="6" fill="#1F2A44"></rect>
+<rect x="237" y="192" width="82" height="208" fill="#2E1C10"></rect>
+<rect x="241" y="196" width="74" height="178" fill="#1C120A"></rect>
+<g fill="#3E2716"><rect x="241" y="230" width="74" height="3"></rect><rect x="241" y="266" width="74" height="3"></rect><rect x="241" y="302" width="74" height="3"></rect><rect x="241" y="338" width="74" height="3"></rect></g>
+<rect x="241" y="374" width="74" height="26" fill="#3A2415"></rect>
+<g fill="none" stroke="#24160C" stroke-width="1"><rect x="244" y="377" width="33" height="20"></rect><rect x="279" y="377" width="33" height="20"></rect></g>
+<rect x="243" y="206" width="5" height="24" fill="#6B2430"></rect><rect x="248" y="204" width="4" height="26" fill="#24324F"></rect><rect x="252" y="208" width="5" height="22" fill="#A87A32"></rect><rect x="257" y="205" width="3" height="25" fill="#D9CBA8"></rect><rect x="260" y="203" width="5" height="27" fill="#2F4A35"></rect><rect x="265" y="207" width="4" height="23" fill="#1A1A1A"></rect>
+<path d="M285 230 L297 230 L295 220 L287 220 Z" fill="#B9AD94"></path>
+<circle cx="288" cy="217" r="4" fill="#4C7046"></circle><circle cx="294" cy="216" r="4" fill="#5E8752"></circle>
+<rect x="302" y="210" width="4" height="20" fill="#24324F"></rect><rect x="306" y="206" width="6" height="24" fill="#6B2430"></rect>
+<rect x="243" y="261" width="22" height="5" fill="#2F4A35"></rect><rect x="244" y="256" width="20" height="5" fill="#D9CBA8"></rect><rect x="245" y="251" width="18" height="5" fill="#6B2430"></rect>
+<rect x="268" y="242" width="4" height="24" fill="#A87A32"></rect><rect x="272" y="240" width="5" height="26" fill="#1F2A44"></rect><rect x="277" y="244" width="4" height="22" fill="#D9CBA8"></rect>
+<rect x="300" y="246" width="13" height="20" fill="url(#lyBrass)"></rect>
+<rect x="243" y="278" width="4" height="24" fill="#8C4A2A"></rect><rect x="247" y="276" width="5" height="26" fill="#1A1A1A"></rect><rect x="252" y="279" width="4" height="23" fill="#2F4A35"></rect><rect x="256" y="277" width="6" height="25" fill="#6B2430"></rect><rect x="262" y="280" width="4" height="22" fill="#D9CBA8"></rect><rect x="266" y="278" width="5" height="24" fill="#24324F"></rect>
+<path d="M278 302 C276 292 280 284 286 284 C292 284 296 292 294 302 Z" fill="#C9B79A"></path>
+<rect x="300" y="282" width="3" height="20" fill="#A87A32"></rect><rect x="303" y="280" width="4" height="22" fill="#6B2430"></rect><rect x="307" y="283" width="5" height="19" fill="#2F4A35"></rect>
+<rect x="243" y="314" width="5" height="24" fill="#24324F"></rect><rect x="248" y="312" width="4" height="26" fill="#A87A32"></rect><rect x="252" y="316" width="5" height="22" fill="#6B2430"></rect>
+<rect x="276" y="318" width="38" height="20" fill="#1A1A1A"></rect><rect x="294" y="318" width="14" height="20" fill="#C2552E"></rect>
+<rect x="243" y="350" width="5" height="24" fill="#2F4A35"></rect><rect x="248" y="348" width="5" height="26" fill="#D9CBA8"></rect><rect x="253" y="351" width="4" height="23" fill="#8C4A2A"></rect>
+<ellipse cx="275" cy="371" rx="12" ry="3" fill="#7A5A3A"></ellipse><path d="M263 371 C263 362 287 362 287 371 Z" fill="#9C7A54"></path>
+<rect x="296" y="349" width="5" height="25" fill="#6B2430"></rect><rect x="301" y="351" width="4" height="23" fill="#24324F"></rect><rect x="305" y="350" width="6" height="24" fill="#A87A32"></rect>
+<ellipse cx="146" cy="414" rx="84" ry="6" fill="#000" opacity="0.45" filter="url(#lyBlur2)"></ellipse>
+<path d="M74 384 C72 362 76 356 90 355 L200 355 C214 356 218 362 216 384 Z" fill="url(#lyLeather)"></path>
+<g fill="#3E1C0C" opacity="0.65"><circle cx="90" cy="364" r="1.2"></circle><circle cx="104" cy="364" r="1.2"></circle><circle cx="118" cy="364" r="1.2"></circle><circle cx="132" cy="364" r="1.2"></circle><circle cx="146" cy="364" r="1.2"></circle><circle cx="160" cy="364" r="1.2"></circle><circle cx="174" cy="364" r="1.2"></circle><circle cx="188" cy="364" r="1.2"></circle><circle cx="202" cy="364" r="1.2"></circle><circle cx="97" cy="373" r="1.2"></circle><circle cx="111" cy="373" r="1.2"></circle><circle cx="125" cy="373" r="1.2"></circle><circle cx="139" cy="373" r="1.2"></circle><circle cx="153" cy="373" r="1.2"></circle><circle cx="167" cy="373" r="1.2"></circle><circle cx="181" cy="373" r="1.2"></circle><circle cx="195" cy="373" r="1.2"></circle></g>
+<rect x="84" y="380" width="124" height="22" rx="4" fill="#7A3A1A"></rect>
+<rect x="84" y="380" width="124" height="5" rx="2.5" fill="#A2582C"></rect>
+<line x1="146" y1="382" x2="146" y2="402" stroke="#4E2410" stroke-width="1"></line>
+<rect x="84" y="400" width="124" height="10" fill="#5A2A12"></rect>
+<path d="M64 412 L64 376 C64 366 72 364 76 364 C82 364 90 366 90 376 L90 412 Z" fill="url(#lyLeather)"></path>
+<path d="M202 412 L202 376 C202 366 210 364 214 364 C218 364 228 366 228 376 L228 412 Z" fill="url(#lyLeather)"></path>
+<ellipse cx="77" cy="368" rx="12" ry="5" fill="#B56A38" opacity="0.8"></ellipse>
+<ellipse cx="215" cy="368" rx="12" ry="5" fill="#B56A38" opacity="0.8"></ellipse>
+<g fill="url(#lyBrass)"><rect x="68" y="411" width="4" height="4"></rect><rect x="220" y="411" width="4" height="4"></rect></g>
+<rect x="94" y="361" width="28" height="24" rx="6" fill="#C89A3A" transform="rotate(-8 108 373)"></rect>
+<rect x="124" y="364" width="24" height="20" rx="6" fill="#2F4A35" transform="rotate(6 136 374)"></rect>
+<rect x="172" y="362" width="26" height="22" rx="6" fill="#B57B72" transform="rotate(7 185 373)"></rect>
+<path d="M196 364 C214 360 226 366 226 380 C226 394 218 404 210 412 L196 412 C200 400 194 390 186 386 C190 376 190 368 196 364 Z" fill="#E8DCC4"></path>
+<g stroke="#CDBE9F" stroke-width="1.2" fill="none"><path d="M200 368 C212 370 218 380 214 398"></path><path d="M194 376 C204 380 208 392 204 408"></path><path d="M206 366 C220 370 224 386 220 402"></path></g>
+<path d="M284 423 L284 282 C284 238 236 238 222 274" fill="none" stroke="url(#lyBrass)" stroke-width="2.6"></path>
+<ellipse cx="284" cy="423" rx="12" ry="3.5" fill="#1A1A1A"></ellipse>
+<path d="M205 291 C205 273 237 273 237 291 Z" fill="url(#lyBrass)"></path>
+<ellipse cx="221" cy="291" rx="16" ry="2.5" fill="#FFE1A8"></ellipse>
+<line x1="186.8" y1="69.5" x2="186.8" y2="186" stroke="#1A1410" stroke-width="1"></line>
+<path d="M170 186 L204 186 L206 211 L168 211 Z" fill="#F5D9A8"></path>
+<g stroke="#D9B47E" stroke-width="0.7"><line x1="173" y1="186" x2="172" y2="211"></line><line x1="177" y1="186" x2="176.5" y2="211"></line><line x1="181" y1="186" x2="181" y2="211"></line><line x1="185" y1="186" x2="185" y2="211"></line><line x1="189" y1="186" x2="189" y2="211"></line><line x1="193" y1="186" x2="193" y2="211"></line><line x1="197" y1="186" x2="197.5" y2="211"></line><line x1="201" y1="186" x2="202" y2="211"></line></g>
+<polygon points="119,406.7 220.3,406.7 225.2,431.2 104.3,431.2" fill="#5A3820"></polygon>
+<polygon points="119,406.7 220.3,406.7 221.5,412 117,412" fill="#7A5232" opacity="0.6"></polygon>
+<rect x="104.3" y="431.2" width="120.9" height="5" fill="#2E1B0F"></rect>
+<rect x="108" y="436" width="4" height="37" fill="#2E1B0F"></rect><rect x="218" y="436" width="4" height="37" fill="#2E1B0F"></rect>
+<ellipse cx="164" cy="476" rx="66" ry="5" fill="#000" opacity="0.4" filter="url(#lyBlur2)"></ellipse>
+<rect x="126" y="414" width="34" height="5" fill="#1F2A44"></rect><rect x="128" y="409" width="31" height="5" fill="#D9CBA8"></rect><rect x="130" y="405" width="27" height="4" fill="#6B2430"></rect>
+<path d="M176 410 L188 410 L187 421 L177 421 Z" fill="#E8DCC4"></path>
+<path d="M188 412 C193 412 193 418 188 418" fill="none" stroke="#E8DCC4" stroke-width="1.5"></path>
+<ellipse cx="292" cy="486" rx="40" ry="12" fill="#000" opacity="0.4" filter="url(#lyBlur2)"></ellipse>
+<ellipse cx="290" cy="480" rx="36" ry="13" fill="#8C7656"></ellipse>
+<ellipse cx="290" cy="477" rx="28" ry="8.5" fill="#5A4A36"></ellipse>
+<path d="M266 478 C266 466 280 462 294 464 C306 466 314 472 310 480 C302 486 276 486 266 478 Z" fill="#C88A52"></path>
+<path d="M276 470 C284 466 292 468 298 472" fill="none" stroke="#E2AE7A" stroke-width="1.5"></path>
+<ellipse cx="305" cy="473" rx="9" ry="7" fill="#C88A52"></ellipse>
+<path d="M300 470 C296 474 296 480 301 482" fill="#7E4E28"></path>
+<path d="M306 472 q2 1.5 4 0" fill="none" stroke="#3A2414" stroke-width="1"></path>
+<circle cx="313" cy="476" r="1.6" fill="#2A1A10"></circle>
+<path d="M268 476 C262 472 262 466 268 464" fill="none" stroke="#C88A52" stroke-width="4" stroke-linecap="round"></path>
+<path d="M24 432 C24 380 22 340 26 300" fill="none" stroke="#4A3220" stroke-width="3"></path>
+<g fill="#2C4A2B">
+<path d="M26 300 C10 284 8 268 22 262 C34 266 36 286 26 300 Z"></path>
+<path d="M26 318 C46 306 62 312 60 326 C50 336 34 330 26 318 Z"></path>
+<path d="M24 330 C4 324 -12 332 -8 346 C2 354 18 346 24 330 Z"></path>
+<path d="M25 352 C42 344 58 352 54 366 C44 372 30 366 25 352 Z" fill="#355A33"></path>
+<path d="M24 366 C8 362 -8 372 -4 384 C6 390 20 382 24 366 Z" fill="#355A33"></path>
+<path d="M25 284 C40 270 54 274 52 288 C44 298 30 294 25 284 Z" fill="#3E6A3A"></path>
+<path d="M25 392 C40 386 54 394 50 406 C40 412 28 404 25 392 Z"></path>
+</g>
+<g stroke="#5E8A52" stroke-width="0.7" fill="none" opacity="0.8"><path d="M26 300 L22 266"></path><path d="M26 318 L56 322"></path><path d="M24 330 L-4 342"></path><path d="M25 352 L50 360"></path><path d="M25 284 L48 282"></path></g>
+<path d="M4 432 L44 432 L40 476 L8 476 Z" fill="url(#lyPot)"></path>
+<rect x="2" y="429" width="44" height="5" rx="2" fill="#EADDC6"></rect>
+</g>
+
+<g id="lyGhost" fill="none" stroke="#F3E6D0" stroke-opacity="0.22" stroke-width="2">
+<rect x="70" y="120" width="250" height="280"></rect>
+<line x1="0" y1="30.4" x2="70" y2="120"></line><line x1="390" y1="30.4" x2="320" y2="120"></line>
+<line x1="70" y1="400" x2="0" y2="466.9"></line><line x1="320" y1="400" x2="390" y2="466.9"></line>
+<rect x="88" y="187" width="76" height="151"></rect>
+</g>
+
+<g id="lyGlows">
+<polygon points="160,400 285,400 236,290 206,290" fill="url(#lyCone)"></polygon>
+<circle cx="187" cy="205" r="64" fill="url(#lyWarm)" opacity="0.85"></circle>
+<ellipse cx="187" cy="84" rx="80" ry="30" fill="url(#lyWarm)" opacity="0.35"></ellipse>
+<circle cx="199" cy="210" r="18" fill="url(#lyWarm)" opacity="0.5"></circle>
+<circle cx="221" cy="296" r="52" fill="url(#lyWarm)" opacity="0.75"></circle>
+<ellipse cx="200" cy="405" rx="90" ry="26" fill="url(#lyWarm)" opacity="0.35"></ellipse>
+<circle cx="108" cy="316" r="22" fill="url(#lyWarm)" opacity="0.9"></circle>
+<ellipse cx="215" cy="430" rx="150" ry="55" fill="url(#lySheen)"></ellipse>
+</g>
+
+<g id="lyMoonLight">
+<rect x="90" y="189" width="72" height="147" fill="#9FB6E8" opacity="0.08"></rect>
+<polygon points="90,337 162,337 220.2,473.5 99.2,473.5" fill="url(#lyShaft)"></polygon>
+<polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#A9BEE6" opacity="0.36"></polygon>
+</g>
+<g id="lyMullions" clip-path="url(#lyMoonClip)" stroke="#0E1424" stroke-width="4" opacity="0.55"><line x1="140.5" y1="419.5" x2="159.7" y2="473.5"></line><line x1="96" y1="444" x2="210" y2="444"></line></g>
+
+<g id="lyCorner">
+<rect width="180" height="104" fill="url(#lyCWall)"></rect>
+<rect y="70" width="180" height="34" fill="#22352A"></rect>
+<line x1="0" y1="70" x2="180" y2="70" stroke="#4F6B58" stroke-width="1.4"></line>
+<g fill="none" stroke="#3A5544" stroke-width="0.9"><rect x="6" y="75" width="34" height="22"></rect><rect x="46" y="75" width="34" height="22"></rect><rect x="86" y="75" width="34" height="22"></rect><rect x="126" y="75" width="34" height="22"></rect></g>
+<rect x="132" y="24" width="32" height="40" fill="url(#lyBrass)"></rect>
+<rect x="135" y="27" width="26" height="34" fill="#E9C48A"></rect>
+<path d="M135 49 C142 42 148 46 161 38 L161 61 L135 61 Z" fill="#7E5A3A"></path>
+<circle cx="153" cy="34" r="3" fill="#F7E3B8"></circle>
+<rect y="104" width="180" height="46" fill="url(#lyCFloor)"></rect>
+<path d="M10 104L-47.5 150M40 104L4 150M70 104L55.6 150M90 104L90 150M110 104L124.4 150M140 104L176 150M170 104L227.5 150M20 114L52 114M96 120L130 120M140 112L170 112M10 132L48 132M130 140L170 140" stroke="#24150B" stroke-width="0.8"></path>
+<rect y="100" width="180" height="4" fill="#3A2A1C"></rect>
+<ellipse cx="100" cy="137" rx="82" ry="11" fill="#7E2620"></ellipse>
+<ellipse cx="100" cy="137" rx="72" ry="8" fill="none" stroke="#C9A15A" stroke-width="1.2" stroke-dasharray="2 3"></ellipse>
+<ellipse cx="100" cy="137" rx="40" ry="4.5" fill="#1F2A44"></ellipse>
+<ellipse cx="151" cy="128" rx="26" ry="3" fill="#000" opacity="0.45" filter="url(#lyBlur1)"></ellipse>
+<polygon points="132,92 170,92 174,96 128,96" fill="#7A5232"></polygon>
+<rect x="128" y="96" width="46" height="4" fill="#2E1B0F"></rect>
+<rect x="132" y="100" width="3" height="28" fill="#2E1B0F"></rect><rect x="167" y="100" width="3" height="28" fill="#2E1B0F"></rect>
+<rect x="134" y="86" width="18" height="6" fill="#6B2430"></rect><rect x="135" y="82" width="15" height="4" fill="#D9CBA8"></rect><rect x="136" y="78.5" width="13" height="3.5" fill="#24324F"></rect>
+<rect x="157" y="88" width="10" height="4" fill="url(#lyBrass)"></rect>
+<rect x="159.5" y="77" width="5" height="11" fill="#EFE5CF"></rect>
+<line x1="162" y1="77" x2="162" y2="75" stroke="#2A2018" stroke-width="0.7"></line>
+<ellipse cx="92" cy="127" rx="38" ry="4" fill="#000" opacity="0.45" filter="url(#lyBlur1)"></ellipse>
+<path d="M66 124 L66 66 C66 54 76 50 92 50 C108 50 118 54 118 66 L118 124 Z" fill="url(#lyLeather)"></path>
+<g fill="#3E1C0C" opacity="0.65"><circle cx="76" cy="62" r="1"></circle><circle cx="86" cy="60" r="1"></circle><circle cx="96" cy="60" r="1"></circle><circle cx="106" cy="62" r="1"></circle><circle cx="81" cy="70" r="1"></circle><circle cx="91" cy="69" r="1"></circle><circle cx="101" cy="69" r="1"></circle><circle cx="111" cy="70" r="1"></circle></g>
+<path d="M58 98 C58 86 62 80 70 80 C76 80 80 86 80 94 L80 124 L60 124 Z" fill="#8C4422"></path>
+<path d="M104 96 C104 86 108 80 116 80 C122 80 126 86 126 98 L124 124 L104 124 Z" fill="#6E3418"></path>
+<ellipse cx="69" cy="83" rx="10" ry="4" fill="#B56A38" opacity="0.8"></ellipse>
+<ellipse cx="115" cy="83" rx="10" ry="4" fill="#9A5228" opacity="0.8"></ellipse>
+<rect x="74" y="94" width="38" height="10" rx="4" fill="#A2582C"></rect>
+<rect x="72" y="102" width="42" height="20" fill="#5A2A12"></rect>
+<g fill="url(#lyBrass)"><rect x="62" y="123" width="3" height="4"></rect><rect x="121" y="123" width="3" height="4"></rect></g>
+<path d="M110 80 C122 78 128 84 128 94 C128 104 122 112 118 118 L110 118 C112 108 108 100 102 96 C104 88 104 82 110 80 Z" fill="#E6D8C0"></path>
+<g stroke="#CDBE9F" stroke-width="0.9" fill="none"><path d="M112 84 C120 86 124 94 120 108"></path><path d="M108 90 C114 94 116 102 112 114"></path></g>
+<rect x="80" y="62" width="18" height="16" rx="5" fill="#C89A3A" transform="rotate(-8 89 70)"></rect>
+<ellipse cx="30" cy="128" rx="10" ry="3" fill="#1A1A1A"></ellipse>
+<line x1="30" y1="128" x2="30" y2="40" stroke="url(#lyBrass)" stroke-width="2"></line>
+</g>
+</defs>
+</svg>
+
+<div style="position: absolute; left: 56px; top: 48px; width: 760px">
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Brownstone kit · 05 · Light system</div>
+<h1 style="margin: 6px 0 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.1">The lighting system</h1>
+<p style="margin: 6px 0 0; font-size: 15px; line-height: 20px; color: #B8A68A; max-width: 720px">One room pulled apart into the seven layers that paint every flat, back to front.</p>
+</div>
+
+<div style="position: absolute; right: 56px; top: 56px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 520px">
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="width: 10px; height: 10px; border-radius: 3px; background: #2E4636"></span>normal</span>
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="width: 10px; height: 10px; border-radius: 3px; background: #22304E; box-shadow: inset 0 0 0 1px rgba(159,182,232,0.4)"></span>multiply</span>
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="width: 10px; height: 10px; border-radius: 3px; background: radial-gradient(circle, #4A4038 30%, #080504 70%)"></span>masked</span>
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle, #FFC77A, #FF9F45 50%, rgba(255,138,48,0) 100%)"></span>screen</span>
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(243,230,208,0.14); font-size: 12px; color: #B8A68A"><span style="width: 10px; height: 10px; border-radius: 3px; background: repeating-linear-gradient(45deg, #8A7F70 0 2px, #3E352E 2px 4px)"></span>overlay</span>
+</div>
+
+<div style="position: absolute; right: 316px; top: 136px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #9C8B70">paint order · back to front</div>
+<svg width="1072" height="12" viewBox="0 0 1072 12" style="position: absolute; left: 56px; top: 150px" aria-hidden="true"><line x1="0" y1="6" x2="1062" y2="6" stroke="#C9A27A" stroke-opacity="0.45" stroke-width="1"></line><path d="M1060 1 L1068 6 L1060 11" fill="none" stroke="#C9A27A" stroke-opacity="0.7" stroke-width="1.2"></path></svg>
+
+<div style="position: absolute; left: 56px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 1, base art: the room drawn flat, every item in full colour with no shadows or lamp light" style="display: block">
+<use href="#lyRoom"></use>
+</svg>
+</div>
+<div style="position: absolute; left: 208px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 2, cool tint: a flat navy sheet multiplied over the room, strongest on day one" style="display: block">
+<rect width="390" height="520" fill="url(#lyChecker)"></rect>
+<rect width="390" height="520" fill="#22304E" opacity="0.82"></rect>
+<rect width="390" height="520" fill="#9FB6E8" opacity="0.05"></rect>
+<use href="#lyGhost"></use>
+</svg>
+</div>
+<div style="position: absolute; left: 360px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 3, darkness: a near-black sheet with soft round holes cut where the pendant, the arc lamp, the sill candles and the moonlight fall" style="display: block">
+<rect width="390" height="520" fill="url(#lyChecker)"></rect>
+<rect width="390" height="520" fill="#080504" opacity="0.9" mask="url(#lyDark)"></rect>
+<use href="#lyGhost"></use>
+<g fill="none" stroke="#E8A24A" stroke-width="3" stroke-dasharray="10 8" opacity="0.8"><circle cx="187" cy="200" r="74"></circle><circle cx="221" cy="310" r="62"></circle><circle cx="110" cy="326" r="30"></circle></g>
+<ellipse cx="160" cy="446" rx="50" ry="22" fill="none" stroke="#9FB6E8" stroke-width="3" stroke-dasharray="10 8" opacity="0.8"></ellipse>
+<g fill="#E8A24A"><circle cx="187" cy="200" r="7"></circle><circle cx="221" cy="292" r="7"></circle><circle cx="108" cy="318" r="6"></circle></g>
+</svg>
+</div>
+<div style="position: absolute; left: 512px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 4, warm glows: amber pools for the pendant, the arc lamp cone, the sill candles and a sheen on the floor" style="display: block">
+<rect width="390" height="520" fill="#1E1814"></rect>
+<rect width="390" height="520" fill="url(#lyChecker)" opacity="0.35"></rect>
+<g style="mix-blend-mode: screen"><use href="#lyGlows"></use></g>
+<use href="#lyGhost"></use>
+</svg>
+</div>
+<div style="position: absolute; left: 664px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 5, moonlight: a cool blue patch on the floor below the window, a faint shaft, and the mullion cross shadow" style="display: block">
+<rect width="390" height="520" fill="#1E1814"></rect>
+<rect width="390" height="520" fill="url(#lyChecker)" opacity="0.35"></rect>
+<g style="mix-blend-mode: screen"><use href="#lyMoonLight"></use><polygon points="100.5,419.5 180.5,419.5 220.2,473.5 99.2,473.5" fill="#9FB6E8" opacity="0.25" filter="url(#lyBlur2)"></polygon></g>
+<use href="#lyMullions"></use>
+<use href="#lyGhost"></use>
+</svg>
+</div>
+<div style="position: absolute; left: 816px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 6, vignette: clear in the middle, falling to black at the edges" style="display: block">
+<rect width="390" height="520" fill="url(#lyChecker)"></rect>
+<rect width="390" height="520" fill="url(#lyVig)"></rect>
+<use href="#lyGhost"></use>
+</svg>
+</div>
+<div style="position: absolute; left: 968px; top: 172px; width: 180px; height: 240px; transform: perspective(800px) rotateY(-36deg); transform-origin: 50% 50%; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(243,230,208,0.16)">
+<svg width="180" height="240" viewBox="0 0 390 520" role="img" aria-label="Layer 7, grain: fine grey film noise over the whole frame, shown stronger here than it renders" style="display: block">
+<rect width="390" height="520" fill="url(#lyChecker)"></rect>
+<rect width="390" height="520" filter="url(#lyGrainVis)"></rect>
+<use href="#lyGhost"></use>
+</svg>
+</div>
+
+<div style="position: absolute; left: 1150px; top: 262px; font-family: Fraunces, Georgia, serif; font-size: 36px; line-height: 40px; color: #C9A27A" aria-hidden="true">=</div>
+<div style="position: absolute; left: 1184px; top: 164px; width: 200px; height: 267px; border-radius: 10px; overflow: hidden; box-shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,162,74,0.4), 0 0 40px rgba(232,162,74,0.15)">
+<svg width="200" height="267" viewBox="0 0 390 520" role="img" aria-label="The finished frame: the green room at night with the pendant, arc lamp and sill candles glowing warm, moonlight on the rug, dark corners, vignette and grain" style="display: block">
+<use href="#lyRoom"></use>
+<rect width="390" height="520" fill="#080504" opacity="0.6" mask="url(#lyDark)"></rect>
+<g style="mix-blend-mode: screen"><use href="#lyGlows"></use><use href="#lyMoonLight"></use></g>
+<use href="#lyMullions"></use>
+<rect width="390" height="520" fill="#22304E" opacity="0.07" style="mix-blend-mode: multiply"></rect>
+<rect width="390" height="520" fill="url(#lyVig)"></rect>
+<rect width="390" height="520" filter="url(#lyGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+</div>
+
+<div style="position: absolute; left: 66px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">1</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Base art</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Flat-lit room, every item in full colour.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">normal · 1.0</div>
+</div>
+<div style="position: absolute; left: 218px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">2</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Cool tint</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">#22304E, strength 1.0 on Day 1, 0.1 once homey.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">multiply · up to 0.22</div>
+</div>
+<div style="position: absolute; left: 370px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">3</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Darkness</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">#080504 with a soft hole cut at each light.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">masked · 0.66 → 0.55</div>
+</div>
+<div style="position: absolute; left: 522px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">4</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Warm glows</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Pools, cones and patterns, one per lamp.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">screen · #FFC77A</div>
+</div>
+<div style="position: absolute; left: 674px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">5</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Moonlight</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Floor patch, faint shaft, mullion shadows.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">screen · #9FB6E8</div>
+</div>
+<div style="position: absolute; left: 826px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">6</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Vignette</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Edges fall to black so lamps hold the eye.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">normal · radial 0.7</div>
+</div>
+<div style="position: absolute; left: 978px; top: 432px; width: 136px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; background: #E8A24A; color: #1D130B; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">7</span><span style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px">Grain</span></div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Fractal noise, the film-photo feel.</div>
+<div style="margin-top: 2px; font-size: 12px; line-height: 16px; color: #9C8B70">overlay · 0.18</div>
+</div>
+<div style="position: absolute; left: 1184px; top: 442px; width: 200px">
+<div style="font-family: Fraunces, Georgia, serif; font-size: 15px; font-weight: 500; line-height: 20px; color: #F0C27A">What you see</div>
+<div style="margin-top: 4px; font-size: 12px; line-height: 16px; color: #B8A68A">Settled · 14 things · 3 lamps and the moon, each layer at its stage strength.</div>
+</div>
+
+<div style="position: absolute; left: 56px; top: 524px; width: 760px; height: 344px; box-sizing: border-box; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<div style="position: absolute; left: 24px; top: 18px; right: 24px; display: flex; justify-content: space-between; align-items: baseline">
+<span style="font-family: Fraunces, Georgia, serif; font-size: 18px; font-weight: 600; line-height: 24px">As the flat fills, the light changes hands</span>
+<span style="font-size: 12px; color: #9C8B70">the night never gets brighter</span>
+</div>
+<div style="position: absolute; left: 24px; top: 54px; display: flex; gap: 18px; font-size: 12px; line-height: 16px; color: #B8A68A">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 3px; border-radius: 2px; background: #D9C6A4"></span>darkness 0.66 → 0.55</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 0; border-top: 3px dashed #8FA2D6"></span>cool tint 1.0 → 0.1</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(159,182,232,0.35)"></span>moonlight share 80% → 15%</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(232,162,74,0.3)"></span>lamplight share</span>
+</div>
+<svg width="712" height="220" viewBox="0 0 712 220" style="position: absolute; left: 24px; top: 96px" role="img" aria-label="Chart against items placed from 0 to 23. Darkness eases only from 0.66 to 0.55. Cool tint strength falls from 1.0 on Day 1 to 0.1 when homey. Moonlight's share of the total light shrinks from about 80 percent to 15 percent while lamplight grows to fill the rest. Stage markers at Day 1 (0), Unpacked (6), Settled (14) and Homey (23).">
+<g stroke="#F3E6D0" stroke-opacity="0.06" stroke-width="1"><line x1="44" y1="26" x2="692" y2="26"></line><line x1="44" y1="63.5" x2="692" y2="63.5"></line><line x1="44" y1="101" x2="692" y2="101"></line><line x1="44" y1="138.5" x2="692" y2="138.5"></line></g>
+<path d="M44 26 L692 26 L692 153.5 C620 147 530 135 438.4 126.5 C370 121 300 111 213 93.5 C165 84 112 70 44 56 Z" fill="#E8A24A" opacity="0.13"></path>
+<path d="M44 56 C112 70 165 84 213 93.5 C300 111 370 121 438.4 126.5 C530 135 620 147 692 153.5 L692 176 L44 176 Z" fill="#9FB6E8" opacity="0.24"></path>
+<path d="M44 56 C112 70 165 84 213 93.5 C300 111 370 121 438.4 126.5 C530 135 620 147 692 153.5" fill="none" stroke="#9FB6E8" stroke-opacity="0.7" stroke-width="1.2"></path>
+<g stroke="#F3E6D0" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="3 4"><line x1="44" y1="26" x2="44" y2="176"></line><line x1="213" y1="26" x2="213" y2="176"></line><line x1="438.4" y1="26" x2="438.4" y2="176"></line><line x1="692" y1="26" x2="692" y2="176"></line></g>
+<path d="M44 26 C112 42 165 58 213 71 C300 95 370 123 438.4 131 C530 142 620 156 692 161" fill="none" stroke="#8FA2D6" stroke-width="2.5" stroke-dasharray="7 5" stroke-linecap="round"></path>
+<path d="M44 77 C112 79.5 165 81.5 213 83 C300 85.5 370 87.5 438.4 89 C530 91 620 92.6 692 93.5" fill="none" stroke="#D9C6A4" stroke-width="2.5" stroke-linecap="round"></path>
+<g fill="#D9C6A4"><circle cx="44" cy="77" r="3.5"></circle><circle cx="213" cy="83" r="3.5"></circle><circle cx="438.4" cy="89" r="3.5"></circle><circle cx="692" cy="93.5" r="3.5"></circle></g>
+<g fill="#8FA2D6"><circle cx="44" cy="26" r="3.5"></circle><circle cx="213" cy="71" r="3.5"></circle><circle cx="438.4" cy="131" r="3.5"></circle><circle cx="692" cy="161" r="3.5"></circle></g>
+<g fill="#9FB6E8" stroke="#1A130F" stroke-width="1.5"><circle cx="44" cy="56" r="3.5"></circle><circle cx="213" cy="93.5" r="3.5"></circle><circle cx="438.4" cy="126.5" r="3.5"></circle><circle cx="692" cy="153.5" r="3.5"></circle></g>
+<line x1="44" y1="176" x2="692" y2="176" stroke="#F3E6D0" stroke-opacity="0.3" stroke-width="1"></line>
+<g stroke="#F3E6D0" stroke-opacity="0.3" stroke-width="1"><line x1="44" y1="176" x2="44" y2="180"></line><line x1="128.5" y1="176" x2="128.5" y2="180"></line><line x1="213" y1="176" x2="213" y2="180"></line><line x1="297.6" y1="176" x2="297.6" y2="180"></line><line x1="410.3" y1="176" x2="410.3" y2="180"></line><line x1="523" y1="176" x2="523" y2="180"></line><line x1="692" y1="176" x2="692" y2="180"></line></g>
+</svg>
+<div style="position: absolute; left: 24px; top: 114px; width: 36px; text-align: right; font-size: 11px; line-height: 16px; color: #9C8B70">100%</div>
+<div style="position: absolute; left: 24px; top: 189px; width: 36px; text-align: right; font-size: 11px; line-height: 16px; color: #9C8B70">50%</div>
+<div style="position: absolute; left: 24px; top: 264px; width: 36px; text-align: right; font-size: 11px; line-height: 16px; color: #9C8B70">0</div>
+<div style="position: absolute; left: 68px; top: 100px; font-size: 12px; line-height: 16px; color: #F3E6D0; white-space: nowrap">Day 1 · 0</div>
+<div style="position: absolute; left: 187px; top: 100px; width: 100px; text-align: center; font-size: 12px; line-height: 16px; color: #F3E6D0; white-space: nowrap">Unpacked · 6</div>
+<div style="position: absolute; left: 412px; top: 100px; width: 100px; text-align: center; font-size: 12px; line-height: 16px; color: #F3E6D0; white-space: nowrap">Settled · 14</div>
+<div style="position: absolute; left: 616px; top: 100px; width: 100px; text-align: right; font-size: 12px; line-height: 16px; color: #F3E6D0; white-space: nowrap">Homey · 23</div>
+<div style="position: absolute; left: 82px; top: 232px; font-size: 12px; line-height: 16px; color: #C9D6EA">moonlight</div>
+<div style="position: absolute; left: 600px; top: 128px; font-size: 12px; line-height: 16px; color: #F0C27A">lamplight</div>
+<div style="position: absolute; left: 470px; top: 158px; font-size: 11px; line-height: 14px; color: #D9C6A4">darkness barely moves</div>
+<div style="position: absolute; left: 53px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">0</div>
+<div style="position: absolute; left: 137.5px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">3</div>
+<div style="position: absolute; left: 222px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">6</div>
+<div style="position: absolute; left: 306.6px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">9</div>
+<div style="position: absolute; left: 419.3px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">13</div>
+<div style="position: absolute; left: 532px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">17</div>
+<div style="position: absolute; left: 701px; top: 278px; width: 30px; text-align: center; font-size: 11px; line-height: 14px; color: #9C8B70">23</div>
+<div style="position: absolute; left: 68px; right: 24px; top: 300px; font-size: 12px; line-height: 16px; color: #9C8B70">Cosiness · items placed · Bare little box 0 → Snug nook 6 → Dreamy den 13 → Storybook flat 17</div>
+</div>
+
+<div style="position: absolute; left: 840px; top: 524px; width: 544px; height: 344px; box-sizing: border-box; background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px">
+<div style="position: absolute; left: 24px; top: 18px; font-family: Fraunces, Georgia, serif; font-size: 18px; font-weight: 600; line-height: 24px">Missed weeks never take anything</div>
+<div style="position: absolute; left: 24px; top: 46px; font-size: 13px; line-height: 18px; color: #B8A68A">Quiet weeks only dim the lamps. Every item stays put.</div>
+
+<div style="position: absolute; left: 24px; top: 78px; width: 156px; height: 130px; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px rgba(243,230,208,0.1)">
+<svg width="156" height="130" viewBox="0 0 180 150" role="img" aria-label="This week: the reading corner fully lit, floor lamp glowing over a cognac armchair, a candle on the side table, and the dog sitting up perky on the rug" style="display: block">
+<use href="#lyCorner"></use>
+<path d="M16 40 L44 40 L41 20 L19 20 Z" fill="#F5D9A8"></path>
+<g stroke="#D9B47E" stroke-width="0.6"><line x1="24" y1="20" x2="22" y2="40"></line><line x1="30" y1="20" x2="30" y2="40"></line><line x1="36" y1="20" x2="38" y2="40"></line></g>
+<path d="M162 69 C159.6 72.6 160 75 162 75.6 C164 75 164.4 72.6 162 69 Z" fill="#FFD27A"></path>
+<g transform="translate(97 146) scale(0.62) translate(-206 -470)">
+<ellipse cx="206" cy="469" rx="22" ry="4" fill="#000" opacity="0.5"></ellipse>
+<path d="M192 468 C190 450 196 440 206 440 C216 440 222 450 220 468 Z" fill="#B88252"></path>
+<path d="M199 468 C199 458 202 452 206 452 C210 452 213 458 213 468 Z" fill="#E2C29C"></path>
+<ellipse cx="206" cy="430" rx="12" ry="11" fill="#B88252"></ellipse>
+<path d="M195 424 C190 430 191 440 196 442 C198 436 198 430 197 425 Z" fill="#7A4E2A"></path>
+<path d="M217 424 C222 430 221 440 216 442 C214 436 214 430 215 425 Z" fill="#7A4E2A"></path>
+<ellipse cx="206" cy="436" rx="6" ry="4.5" fill="#E2C29C"></ellipse>
+<circle cx="206" cy="434" r="1.8" fill="#1E140C"></circle>
+<circle cx="202" cy="428" r="1.6" fill="#1E140C"></circle><circle cx="210" cy="428" r="1.6" fill="#1E140C"></circle>
+<path d="M219 462 C230 458 232 448 228 440" fill="none" stroke="#B88252" stroke-width="3.5" stroke-linecap="round"></path>
+<g fill="none" stroke="#F0C27A" stroke-width="1.2" stroke-linecap="round"><path d="M234 442 q4 2 3 7"></path><path d="M238 438 q6 3 4 11"></path></g>
+</g>
+<rect width="180" height="150" fill="#080504" opacity="0.6" mask="url(#lyCA)"></rect>
+<g style="mix-blend-mode: screen">
+<polygon points="16,40 44,40 72,128 -12,128" fill="url(#lyCone)"></polygon>
+<circle cx="30" cy="32" r="40" fill="url(#lyWarm)" opacity="0.85"></circle>
+<ellipse cx="30" cy="12" rx="26" ry="10" fill="url(#lyWarm)" opacity="0.35"></ellipse>
+<ellipse cx="44" cy="126" rx="56" ry="10" fill="url(#lyWarm)" opacity="0.4"></ellipse>
+<ellipse cx="78" cy="78" rx="34" ry="28" fill="url(#lyWarm)" opacity="0.2"></ellipse>
+<circle cx="162" cy="72" r="11" fill="url(#lyWarm)" opacity="0.9"></circle>
+</g>
+<rect width="180" height="150" fill="url(#lyVig)"></rect>
+<rect width="180" height="150" filter="url(#lyGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+</div>
+<div style="position: absolute; left: 194px; top: 78px; width: 156px; height: 130px; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px rgba(243,230,208,0.1)">
+<svg width="156" height="130" viewBox="0 0 180 150" role="img" aria-label="One quiet week: the same corner with the floor lamp dimmed to a softer glow, the candle still lit, and the dog lying down content on the rug" style="display: block">
+<use href="#lyCorner"></use>
+<path d="M16 40 L44 40 L41 20 L19 20 Z" fill="#E2C496"></path>
+<g stroke="#C9A878" stroke-width="0.6"><line x1="24" y1="20" x2="22" y2="40"></line><line x1="30" y1="20" x2="30" y2="40"></line><line x1="36" y1="20" x2="38" y2="40"></line></g>
+<path d="M162 69 C159.6 72.6 160 75 162 75.6 C164 75 164.4 72.6 162 69 Z" fill="#FFD27A"></path>
+<g transform="translate(97 146) scale(0.62) translate(-205 -494)">
+<ellipse cx="206" cy="492" rx="36" ry="6" fill="#000" opacity="0.4"></ellipse>
+<path d="M172 488 C170 476 184 470 204 470 C222 470 236 476 234 486 C230 494 182 496 172 488 Z" fill="#B88252"></path>
+<ellipse cx="232" cy="480" rx="10" ry="7.5" fill="#B88252"></ellipse>
+<path d="M225 476 C220 480 220 488 226 490" fill="#7A4E2A"></path>
+<circle cx="236" cy="478" r="1.5" fill="#1E140C"></circle>
+<circle cx="241" cy="483" r="1.6" fill="#1E140C"></circle>
+<path d="M174 484 C166 480 166 474 172 470" fill="none" stroke="#B88252" stroke-width="4" stroke-linecap="round"></path>
+</g>
+<rect width="180" height="150" fill="#080504" opacity="0.66" mask="url(#lyCB)"></rect>
+<g style="mix-blend-mode: screen">
+<polygon points="16,40 44,40 72,128 -12,128" fill="url(#lyCone)" opacity="0.45"></polygon>
+<circle cx="30" cy="32" r="30" fill="url(#lyWarm)" opacity="0.55"></circle>
+<ellipse cx="44" cy="126" rx="44" ry="8" fill="url(#lyWarm)" opacity="0.22"></ellipse>
+<circle cx="162" cy="72" r="11" fill="url(#lyWarm)" opacity="0.9"></circle>
+<polygon points="0,112 26,112 42,150 0,150" fill="#9FB3D9" opacity="0.08"></polygon>
+</g>
+<rect width="180" height="150" fill="#22304E" opacity="0.06" style="mix-blend-mode: multiply"></rect>
+<rect width="180" height="150" fill="url(#lyVig)"></rect>
+<rect width="180" height="150" filter="url(#lyGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+</div>
+<div style="position: absolute; left: 364px; top: 78px; width: 156px; height: 130px; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px rgba(243,230,208,0.1)">
+<svg width="156" height="130" viewBox="0 0 180 150" role="img" aria-label="Three quiet weeks, candle level: the floor lamp is dark, only the candle on the side table glows, every item is still in place, and the dog is curled up asleep on the rug" style="display: block">
+<use href="#lyCorner"></use>
+<path d="M16 40 L44 40 L41 20 L19 20 Z" fill="#6E6454"></path>
+<g stroke="#5A5244" stroke-width="0.6"><line x1="24" y1="20" x2="22" y2="40"></line><line x1="30" y1="20" x2="30" y2="40"></line><line x1="36" y1="20" x2="38" y2="40"></line></g>
+<path d="M162 68 C159.4 72 159.8 74.6 162 75.2 C164.2 74.6 164.6 72 162 68 Z" fill="#FFD27A"></path>
+<g transform="translate(96 147) scale(0.72) translate(-290 -486)">
+<ellipse cx="292" cy="486" rx="30" ry="6" fill="#000" opacity="0.4"></ellipse>
+<path d="M266 478 C266 466 280 462 294 464 C306 466 314 472 310 480 C302 486 276 486 266 478 Z" fill="#B88252"></path>
+<path d="M276 470 C284 466 292 468 298 472" fill="none" stroke="#D2A070" stroke-width="1.5"></path>
+<ellipse cx="305" cy="473" rx="9" ry="7" fill="#B88252"></ellipse>
+<path d="M300 470 C296 474 296 480 301 482" fill="#7A4E2A"></path>
+<path d="M306 472 q2 1.5 4 0" fill="none" stroke="#3A2414" stroke-width="1"></path>
+<circle cx="313" cy="476" r="1.6" fill="#2A1A10"></circle>
+<path d="M268 476 C262 472 262 466 268 464" fill="none" stroke="#B88252" stroke-width="4" stroke-linecap="round"></path>
+</g>
+<rect width="180" height="150" fill="#080504" opacity="0.72" mask="url(#lyCC)"></rect>
+<g style="mix-blend-mode: screen">
+<circle cx="162" cy="74" r="38" fill="url(#lyWarm)" opacity="0.35"></circle>
+<circle cx="162" cy="72" r="13" fill="url(#lyWarm)" opacity="0.95"></circle>
+<ellipse cx="150" cy="94" rx="26" ry="4" fill="url(#lyWarm)" opacity="0.45"></ellipse>
+<circle cx="30" cy="32" r="10" fill="url(#lyWarm)" opacity="0.1"></circle>
+<polygon points="0,112 26,112 42,150 0,150" fill="#9FB3D9" opacity="0.16"></polygon>
+</g>
+<g fill="none" stroke="#CDBB9C" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"><path d="M118 118 h4 l-4 4 h4"></path><path d="M125 110 h5 l-5 5 h5"></path></g>
+<rect width="180" height="150" fill="#22304E" opacity="0.12" style="mix-blend-mode: multiply"></rect>
+<rect width="180" height="150" fill="url(#lyVig)"></rect>
+<rect width="180" height="150" filter="url(#lyGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+</div>
+
+<div style="position: absolute; left: 24px; top: 216px; width: 156px">
+<div style="font-size: 13px; font-weight: 500; line-height: 18px; color: #F3E6D0">This week</div>
+<div style="margin-top: 4px; display: flex; align-items: center; gap: 6px"><span style="width: 56px; height: 4px; border-radius: 2px; background: rgba(243,230,208,0.12)"><span style="display: block; width: 56px; height: 4px; border-radius: 2px; background: #E8A24A"></span></span><span style="font-size: 12px; line-height: 16px; color: #9C8B70">lamps 100%</span></div>
+<div style="font-size: 12px; line-height: 16px; color: #9C8B70">pet perky</div>
+</div>
+<div style="position: absolute; left: 194px; top: 216px; width: 156px">
+<div style="font-size: 13px; font-weight: 500; line-height: 18px; color: #F3E6D0">1 week quiet</div>
+<div style="margin-top: 4px; display: flex; align-items: center; gap: 6px"><span style="width: 56px; height: 4px; border-radius: 2px; background: rgba(243,230,208,0.12)"><span style="display: block; width: 34px; height: 4px; border-radius: 2px; background: #C98A40"></span></span><span style="font-size: 12px; line-height: 16px; color: #9C8B70">lamps 60%</span></div>
+<div style="font-size: 12px; line-height: 16px; color: #9C8B70">pet content</div>
+</div>
+<div style="position: absolute; left: 364px; top: 216px; width: 156px">
+<div style="font-size: 13px; font-weight: 500; line-height: 18px; color: #F3E6D0">3 weeks quiet</div>
+<div style="margin-top: 4px; display: flex; align-items: center; gap: 6px"><span style="width: 56px; height: 4px; border-radius: 2px; background: rgba(243,230,208,0.12)"><span style="display: block; width: 8px; height: 4px; border-radius: 2px; background: #A8743A"></span></span><span style="font-size: 12px; line-height: 16px; color: #9C8B70">candle level</span></div>
+<div style="font-size: 12px; line-height: 16px; color: #9C8B70">pet asleep · nothing gone</div>
+</div>
+
+<svg width="496" height="28" viewBox="0 0 496 28" style="position: absolute; left: 24px; top: 270px" aria-hidden="true">
+<path d="M418 2 C418 22 380 24 248 24 C116 24 78 22 78 6" fill="none" stroke="#E8A24A" stroke-opacity="0.6" stroke-width="1.4" stroke-dasharray="4 4"></path>
+<path d="M73 11 L78 3 L83 11" fill="none" stroke="#E8A24A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div style="position: absolute; left: 24px; right: 24px; top: 298px; text-align: center; font-family: Fraunces, Georgia, serif; font-style: italic; font-weight: 500; font-size: 18px; line-height: 24px; color: #F3E6D0">Log one workout and <span style="color: #F0B25C">every lamp comes back on</span>.</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

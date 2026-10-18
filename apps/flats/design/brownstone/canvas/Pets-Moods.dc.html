@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pets — kinds and moods</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E8A24A}a:hover{color:#ffd28f}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; overflow: hidden; background: #120D0A; color: #F3E6D0; font-family: 'DM Sans', system-ui, sans-serif">
+
+<svg width="0" height="0" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<linearGradient id="pmWallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15100C"></stop><stop offset="0.55" stop-color="#2A1F17"></stop><stop offset="1" stop-color="#231912"></stop></linearGradient>
+<linearGradient id="pmFloorG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E2716"></stop><stop offset="0.5" stop-color="#58371F"></stop><stop offset="1" stop-color="#3A2313"></stop></linearGradient>
+<linearGradient id="pmBrass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0CF86"></stop><stop offset="0.5" stop-color="#B5893F"></stop><stop offset="1" stop-color="#6E4E1E"></stop></linearGradient>
+<linearGradient id="pmGinger" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EC9E56"></stop><stop offset="0.5" stop-color="#C9702E"></stop><stop offset="1" stop-color="#8E4618"></stop></linearGradient>
+<linearGradient id="pmTabby" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#AE8C64"></stop><stop offset="0.5" stop-color="#806246"></stop><stop offset="1" stop-color="#4E3A28"></stop></linearGradient>
+<linearGradient id="pmBlack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#302825"></stop><stop offset="0.45" stop-color="#171311"></stop><stop offset="1" stop-color="#0A0807"></stop></linearGradient>
+<linearGradient id="pmTan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D2AA72"></stop><stop offset="0.5" stop-color="#A88050"></stop><stop offset="1" stop-color="#6A4E2C"></stop></linearGradient>
+<linearGradient id="pmSpot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAF5EC"></stop><stop offset="0.55" stop-color="#E6DECF"></stop><stop offset="1" stop-color="#B4AA98"></stop></linearGradient>
+<linearGradient id="pmGrey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ABABB3"></stop><stop offset="0.5" stop-color="#8E8E96"></stop><stop offset="1" stop-color="#5E5E66"></stop></linearGradient>
+<linearGradient id="pmLop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B07E56"></stop><stop offset="0.5" stop-color="#86593A"></stop><stop offset="1" stop-color="#553623"></stop></linearGradient>
+<linearGradient id="pmWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF3"></stop><stop offset="0.55" stop-color="#E9E1D3"></stop><stop offset="1" stop-color="#B6AC9C"></stop></linearGradient>
+<linearGradient id="pmFrogG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#94C25E"></stop><stop offset="0.5" stop-color="#5E8A3E"></stop><stop offset="1" stop-color="#32541C"></stop></linearGradient>
+<linearGradient id="pmFrogA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEBC60"></stop><stop offset="0.5" stop-color="#C4862C"></stop><stop offset="1" stop-color="#7C4C14"></stop></linearGradient>
+<linearGradient id="pmMalHead" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3E9A62"></stop><stop offset="0.5" stop-color="#1C5638"></stop><stop offset="1" stop-color="#0C2A1C"></stop></linearGradient>
+<linearGradient id="pmMalGrey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFC9BD"></stop><stop offset="1" stop-color="#8A8478"></stop></linearGradient>
+<linearGradient id="pmChestnut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A5230"></stop><stop offset="1" stop-color="#5A2A16"></stop></linearGradient>
+<linearGradient id="pmKnit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9A24E"></stop><stop offset="1" stop-color="#9A6A2A"></stop></linearGradient>
+<radialGradient id="pmPool"><stop offset="0" stop-color="#FFC77A" stop-opacity="0.9"></stop><stop offset="0.4" stop-color="#FF9F45" stop-opacity="0.35"></stop><stop offset="1" stop-color="#FF8A30" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="pmEmber"><stop offset="0" stop-color="#FFB060" stop-opacity="0.85"></stop><stop offset="0.45" stop-color="#E8702C" stop-opacity="0.32"></stop><stop offset="1" stop-color="#C8501E" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="pmSpark"><stop offset="0" stop-color="#FFE9C0" stop-opacity="0.9"></stop><stop offset="1" stop-color="#FFC77A" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="pmCellVig" cx="0.5" cy="0.78" r="0.72"><stop offset="0" stop-color="#080504" stop-opacity="0"></stop><stop offset="0.5" stop-color="#080504" stop-opacity="0.28"></stop><stop offset="1" stop-color="#080504" stop-opacity="0.86"></stop></radialGradient>
+<filter id="pmBlur2" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="1.8"></feGaussianBlur></filter>
+<filter id="pmGrain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"></feTurbulence><feColorMatrix type="saturate" values="0"></feColorMatrix><feComponentTransfer><feFuncA type="linear" slope="0.18"></feFuncA></feComponentTransfer></filter>
+</defs>
+</svg>
+
+<div style="position: absolute; left: 56px; top: 40px; right: 56px; display: flex; justify-content: space-between; align-items: flex-end">
+<div>
+<div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A27A">Brownstone kit · 07 · Pets</div>
+<h1 style="margin: 8px 0 6px; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 40px; line-height: 1.15">Five kinds, three moods</h1>
+<p style="margin: 0; max-width: 720px; font-size: 15px; line-height: 1.45; color: #B8A68A">Every flat has one pet. Its mood follows your week: perky when you worked out today, content most days, sleepy and curled up somewhere warm after a quiet week.</p>
+</div>
+<div style="display: flex; gap: 8px; padding-bottom: 4px">
+<span style="font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 5px 12px">5 kinds</span>
+<span style="font-size: 12px; color: #B8A68A; border: 1px solid rgba(243,230,208,0.14); border-radius: 999px; padding: 5px 12px">12 coats</span>
+<span style="font-size: 12px; color: #E8A24A; border: 1px solid #E8A24A55; border-radius: 999px; padding: 5px 12px">Sleepy is cosy, never sad</span>
+</div>
+</div>
+
+<div style="position: absolute; left: 56px; top: 160px; display: grid; grid-template-columns: 236px 350px 350px 350px; grid-template-rows: 36px repeat(5, 124px); column-gap: 14px; row-gap: 12px">
+
+<div style="display: flex; align-items: flex-end; padding-bottom: 2px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #9C8B70">Kind · coats</div>
+
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#E8A24A" opacity="0.16"></circle><path d="M11 3.5L12.6 9.4L18.5 11L12.6 12.6L11 18.5L9.4 12.6L3.5 11L9.4 9.4Z" fill="#F0B25C"></path></svg>
+<div><div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 18px; line-height: 1.1">Perky</div><div style="font-size: 12px; color: #9C8B70">Worked out today · up and about, a little sparkle</div></div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#E8A24A" opacity="0.16"></circle><circle cx="11" cy="11" r="5.5" fill="none" stroke="#F0B25C" stroke-width="1.8"></circle><circle cx="11" cy="11" r="2" fill="#F0B25C"></circle></svg>
+<div><div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 18px; line-height: 1.1">Content</div><div style="font-size: 12px; color: #9C8B70">Most days · sitting, relaxed, slow blinks</div></div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#E8A24A" opacity="0.16"></circle><path d="M13.5 4.5C9.5 5 7 8 7 11.5C7 15 9.8 17.6 13.4 17.6C15 17.6 16.4 17 17.4 16C12.6 16.2 9.6 11.2 13.5 4.5Z" fill="#F0B25C"></path></svg>
+<div><div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 18px; line-height: 1.1">Sleepy</div><div style="font-size: 12px; color: #9C8B70">7+ quiet days · curled up in warm light</div></div>
+</div>
+
+<div style="border-top: 1px solid rgba(243,230,208,0.1); padding-top: 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.1">Cat</div>
+<div style="font-size: 12px; color: #B8A68A; margin-top: 3px">Talks with its tail. Loafs when sleepy.</div>
+<div style="display: flex; gap: 14px; margin-top: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#1A1614" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M6 8C8 5.5 11 4.6 14 5.2" fill="none" stroke="#4A3E38" stroke-width="1.4" stroke-linecap="round"></path><circle cx="14.5" cy="12" r="1.2" fill="#B8E05A"></circle></svg><span style="font-size: 11px; color: #B8A68A">Black</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#D07A36" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><g fill="none" stroke="#9A4818" stroke-width="1.6" stroke-linecap="round"><path d="M7 5.6C6 9 6.4 12 8 14"></path><path d="M11.6 3.4C10.6 7 11 10 12.4 12.6"></path><path d="M16.4 4.8C15.4 8 15.8 11 17.2 13.4"></path></g></svg><span style="font-size: 11px; color: #B8A68A">Ginger</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#8A6A48" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><g fill="none" stroke="#3A2A1C" stroke-width="1.6" stroke-linecap="round"><path d="M5 9C8 8 9 11 8 14"></path><path d="M10 4.6C12.6 6 13 9.4 11.6 12"></path><path d="M15.6 5.4C18 7.4 18 11 16.4 13.6"></path><path d="M9 17C11 16 13.4 16.6 15 18"></path></g></svg><span style="font-size: 11px; color: #B8A68A">Tabby</span></div>
+</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Perky ginger cat standing alert with its tail held up in a question-mark curl, ears forward, green collar with a brass bell, sparkles above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="174" cy="79" rx="30" ry="3.2" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.12)">
+<path d="M-20 -23 C-28 -31 -30 -45 -25 -55 C-22 -61 -15 -61 -16 -56" fill="none" stroke="#C9702E" stroke-width="4.6" stroke-linecap="round"></path>
+<path d="M-20 -23 C-28 -31 -30 -45 -25 -55 C-22 -61 -15 -61 -16 -56" fill="none" stroke="#9A4818" stroke-width="4.8" stroke-dasharray="2.2 3.6"></path>
+<path d="M-16 -14 L-17 -2 C-17 0 -13.5 0.4 -13 -1 L-11 -13 Z" fill="#9A4E1E"></path>
+<path d="M15 -14 L15.5 -2 C15.5 0 19 0.4 19.4 -1 L19.5 -14 Z" fill="#9A4E1E"></path>
+<path d="M-22 -22 C-23 -30 -12 -33 2 -32 C12 -32 19 -30 21 -24 C23 -18 19 -12 12 -12 L-14 -11 C-20 -12 -22 -16 -22 -22 Z" fill="url(#pmGinger)"></path>
+<g fill="none" stroke="#A2521E" stroke-width="1.8" stroke-linecap="round" opacity="0.85"><path d="M-14 -31 C-16 -26 -15 -20 -13 -16"></path><path d="M-7 -32 C-9 -27 -8 -21 -6 -17"></path><path d="M0 -32 C-1 -27 0 -22 1 -19"></path><path d="M7 -31.6 C6 -27 7 -23 8 -20"></path></g>
+<path d="M-8 -12.5 C-2 -11 6 -11 12 -12.4" fill="none" stroke="#F0B070" stroke-width="1.6" opacity="0.6"></path>
+<path d="M-24 -20 C-25 -12 -21 -8 -18 -6 L-19 -2 C-19 0 -15 0.8 -13.6 -0.4 L-12 -3.6 C-10 -8 -8.6 -14 -10.4 -19.6 C-13 -25 -21 -25 -24 -20 Z" fill="#D47E3A"></path>
+<g fill="none" stroke="#A2521E" stroke-width="1.4" stroke-linecap="round"><path d="M-21 -19 C-18 -21.5 -14 -21 -12.4 -17"></path><path d="M-20.6 -14 C-17.6 -16 -14 -15.4 -12 -12"></path></g>
+<path d="M10 -16 L9 -2 C9 0 13 0.8 14 -0.4 L15.4 -15 Z" fill="#D8853E"></path>
+<g fill="#F2B878"><ellipse cx="-15.6" cy="-0.9" rx="3.6" ry="1.6"></ellipse><ellipse cx="11.6" cy="-0.9" rx="3.4" ry="1.6"></ellipse></g>
+<path d="M14 -28 C20 -30 24 -26 23 -20 C22 -16 18 -15 16 -17 Z" fill="#F2B878"></path>
+<path d="M15 -40 L14.4 -51.6 L21 -44 Z" fill="#9A4818"></path>
+<path d="M13 -36 C13 -44 19 -47 24 -46 C30 -45 33 -40 33 -35 C33 -30 29 -27 23 -27 C17 -27 13 -30 13 -36 Z" fill="url(#pmGinger)"></path>
+<path d="M24 -44.6 L30.4 -53.4 L31.4 -40.6 Z" fill="#D07A36"></path>
+<path d="M26 -44.6 L29.8 -50.4 L30.4 -42.4 Z" fill="#E7A08A"></path>
+<path d="M14.6 -32 L11.6 -30.4 L15.4 -29.4 Z" fill="#E89A52"></path>
+<g fill="none" stroke="#A2521E" stroke-width="1" stroke-linecap="round"><path d="M19.6 -44.4 L20.6 -41.4"></path><path d="M23 -45.4 L23 -42.2"></path><path d="M26.4 -45 L25.6 -42"></path><path d="M14 -37 L16.6 -37.4"></path><path d="M14.2 -34.6 L16.6 -34.4"></path></g>
+<ellipse cx="29.6" cy="-31.8" rx="4.6" ry="3.3" fill="#F6CC98"></ellipse>
+<ellipse cx="27" cy="-38" rx="2.3" ry="2.7" fill="#CFE06A"></ellipse><ellipse cx="27.3" cy="-38" rx="1" ry="2.1" fill="#140C08"></ellipse><circle cx="27.9" cy="-38.9" r="0.6" fill="#FFFFFF"></circle>
+<ellipse cx="20.4" cy="-38" rx="1.7" ry="2.4" fill="#CFE06A"></ellipse><ellipse cx="20.7" cy="-38" rx="0.75" ry="1.8" fill="#140C08"></ellipse>
+<path d="M32.4 -34.4 L34.4 -34.6 L33.6 -32.9 Z" fill="#C26A64"></path>
+<path d="M33.5 -32.9 C33.2 -31.4 32.2 -31 31 -31.4" fill="none" stroke="#6A3418" stroke-width="0.6"></path>
+<g stroke="#FBEBD2" stroke-width="0.45" opacity="0.85"><line x1="31" y1="-32.4" x2="40" y2="-34.6"></line><line x1="31.2" y1="-31.6" x2="40.4" y2="-31.4"></line><line x1="31" y1="-31" x2="39" y2="-28.4"></line></g>
+<path d="M15 -28.4 C18 -26.4 22 -26 25.6 -27.6" fill="none" stroke="#2F4A35" stroke-width="2.2"></path>
+<circle cx="21" cy="-25.6" r="1.7" fill="url(#pmBrass)"></circle>
+<path d="M-20 -30 C-12 -33 2 -33 12 -31.6 M14 -43 C17 -46.6 22 -47 26 -45.6" fill="none" stroke="#FFC77A" stroke-width="1" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="104" ry="16" fill="url(#pmPool)" opacity="0.9"></ellipse>
+<ellipse cx="174" cy="36" rx="140" ry="50" fill="url(#pmPool)" opacity="0.26"></ellipse>
+<circle cx="214" cy="22" r="9" fill="url(#pmSpark)" opacity="0.7"></circle>
+</g>
+<g fill="#FFE1A8"><path d="M214 15.5L215.5 20.5L220.5 22L215.5 23.5L214 28.5L212.5 23.5L207.5 22L212.5 20.5Z"></path><path d="M146 14.5L146.9 17.1L149.5 18L146.9 18.9L146 21.5L145.1 18.9L142.5 18L145.1 17.1Z" opacity="0.8"></path><path d="M230 37.5L230.6 39.4L232.5 40L230.6 40.6L230 42.5L229.4 40.6L227.5 40L229.4 39.4Z" opacity="0.7"></path></g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Ginger</span><span style="font-size: 12px; color: #9C8B70">tail up · ears forward · bell collar</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Content tabby cat sitting with its striped tail wrapped round its front paws, eyes half closed in a slow blink" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="172" cy="80" rx="26" ry="3.4" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.12)">
+<path d="M3 -14 L3 -1 L7.4 -1 L7.4 -14 Z" fill="#5E4630"></path>
+<path d="M-18 -2 C-22 -12 -20 -26 -8 -32 C0 -36 10 -34 13 -27 C16 -20 14 -10 15 -2 C10 0 -14 0 -18 -2 Z" fill="url(#pmTabby)"></path>
+<g fill="none" stroke="#3E2C1C" stroke-width="1.6" stroke-linecap="round" opacity="0.85"><path d="M-12 -29 C-10 -26 -10 -22 -12.4 -19"></path><path d="M-6.4 -32 C-4.6 -29 -4.6 -25 -6.4 -22"></path><path d="M-0.6 -33.4 C0.8 -30.6 0.8 -27 -0.4 -24.6"></path></g>
+<path d="M-20 -6 C-22 -16 -14 -22 -6 -20 C0 -18 2 -10 0 -3 C-6 -1 -16 -1 -20 -6 Z" fill="#8A6A48"></path>
+<g fill="none" stroke="#3E2C1C" stroke-width="1.6" stroke-linecap="round" opacity="0.85"><path d="M-17 -16 C-13 -15 -10.6 -11 -10.6 -6.4"></path><path d="M-12.4 -19.4 C-7.6 -17.6 -5.4 -12.6 -5.4 -7"></path><path d="M-7 -20 C-3 -18 -1.6 -14 -1.4 -10"></path></g>
+<path d="M6 -30 C12 -30 15 -24 14 -14 C13 -8 10 -4 8 -2 C6 -10 4 -20 6 -30 Z" fill="#D8C3A0"></path>
+<path d="M8 -16 C8 -10 8 -5 8 -1 L13 -1 C13 -6 13 -12 12 -18 Z" fill="#B8956C"></path>
+<path d="M8.4 -9 L12.8 -9 M8.4 -5.6 L12.8 -5.6" stroke="#6E5238" stroke-width="0.9"></path>
+<path d="M-16 -2 C-24 -1 -24 4 -14 4 C-4 4 8 3 15 0.6" fill="none" stroke="#7E6044" stroke-width="5.4" stroke-linecap="round"></path>
+<path d="M-16 -2 C-24 -1 -24 4 -14 4 C-4 4 8 3 15 0.6" fill="none" stroke="#3E2C1C" stroke-width="5.6" stroke-dasharray="2.4 3.6"></path>
+<g fill="#D8C3A0"><ellipse cx="5" cy="-0.9" rx="3" ry="1.5"></ellipse><ellipse cx="10.6" cy="-0.9" rx="3.2" ry="1.6"></ellipse></g>
+<path d="M-3 -45 L-4.4 -56 L3 -50 Z" fill="#5E4630"></path>
+<path d="M-4 -41 C-4 -49 2 -52 6 -52 C11 -52 16 -49 16 -42 C16 -36 12 -33 6 -33 C0 -33 -4 -36 -4 -41 Z" fill="url(#pmTabby)"></path>
+<path d="M8.6 -50.6 L15.2 -58 L16.2 -45.6 Z" fill="#8A6A48"></path>
+<path d="M10.6 -50.4 L14.6 -55.4 L15 -47.6 Z" fill="#C98A7A"></path>
+<g fill="none" stroke="#3E2C1C" stroke-width="1.1" stroke-linecap="round"><path d="M1 -49.4 L2 -46.2"></path><path d="M4.6 -50.8 L4.6 -47.2"></path><path d="M8.2 -50.4 L7.2 -46.8"></path><path d="M-3.6 -40.6 L-0.4 -40.4"></path><path d="M-3.4 -38.2 L-0.4 -38.6"></path></g>
+<ellipse cx="10.4" cy="-37.4" rx="5" ry="3.4" fill="#D8C3A0"></ellipse>
+<path d="M7.8 -43.2 C9 -44.6 11.4 -44.6 12.6 -43.2 C11.4 -42.4 9 -42.4 7.8 -43.2 Z" fill="#D8B04A"></path>
+<path d="M7.6 -43.3 C9 -44.8 11.4 -44.8 12.8 -43.3" fill="none" stroke="#2A1E14" stroke-width="1"></path>
+<path d="M0.6 -43.2 C1.6 -44.3 3.4 -44.3 4.4 -43.2 C3.4 -42.6 1.6 -42.6 0.6 -43.2 Z" fill="#D8B04A"></path>
+<path d="M0.4 -43.3 C1.6 -44.5 3.4 -44.5 4.6 -43.3" fill="none" stroke="#2A1E14" stroke-width="0.9"></path>
+<path d="M11.8 -40 L14 -40 L13 -38.6 Z" fill="#B8746A"></path>
+<path d="M13 -38.6 C12.8 -37.4 11.8 -37 11 -37.4 M13 -38.6 C13.4 -37.4 14.2 -37.2 14.8 -37.6" fill="none" stroke="#4A3424" stroke-width="0.55"></path>
+<g stroke="#EFE2C8" stroke-width="0.4" opacity="0.8"><line x1="13" y1="-38" x2="22" y2="-40"></line><line x1="13.2" y1="-37.4" x2="22.4" y2="-37"></line><line x1="13" y1="-36.8" x2="21" y2="-34.2"></line></g>
+<path d="M-14 -27 C-8 -33 2 -35.6 9 -33.6 M-2 -47 C1 -51 6 -52.4 11 -51" fill="none" stroke="#FFC77A" stroke-width="1" opacity="0.4"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="92" ry="14" fill="url(#pmPool)" opacity="0.75"></ellipse>
+<circle cx="40" cy="20" r="80" fill="url(#pmPool)" opacity="0.4"></circle>
+</g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Tabby</span><span style="font-size: 12px; color: #9C8B70">sitting · tail wrapped · slow blink</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Sleepy black cat curled into a loaf in warm firelight, eyes shut, nose tucked behind its tail, a small z above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="174" cy="79" rx="34" ry="3.6" fill="#000" opacity="0.6" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.12)">
+<path d="M-26 -2 C-28 -12 -18 -21 -2 -21 C12 -21 24 -15 25 -6 C25 -1 21 0 16 0 L-20 0 C-24 0 -26 -1 -26 -2 Z" fill="url(#pmBlack)"></path>
+<ellipse cx="-6" cy="-15" rx="11" ry="3" fill="#4A3E38" opacity="0.35"></ellipse>
+<path d="M-22 -4 C-22 -12 -14 -17 -6 -15 C0 -13 2 -7 0 -1" fill="none" stroke="#3A302C" stroke-width="1"></path>
+<path d="M11 -16 L9.4 -23.4 L15 -18.6 Z" fill="#141010"></path>
+<path d="M8 -9 C8 -16 13 -19 18 -19 C24 -19 28 -15 28 -10 C28 -5 24 -3 18 -3 C12 -3 8 -5 8 -9 Z" fill="#1E1816"></path>
+<path d="M19.6 -18.6 L25 -24.2 L26.2 -15 Z" fill="#221A18"></path>
+<path d="M21.4 -18.6 L24.6 -22.2 L25.2 -16.6 Z" fill="#4A2E2E"></path>
+<path d="M14.6 -12.2 C15.6 -11 17.6 -11 18.6 -12.2" fill="none" stroke="#8A7E72" stroke-width="0.9" stroke-linecap="round"></path>
+<path d="M22.2 -12.4 C23.2 -11.2 24.8 -11.2 25.8 -12.4" fill="none" stroke="#8A7E72" stroke-width="0.9" stroke-linecap="round"></path>
+<path d="M26.4 -9.6 L28 -9.8 L27.4 -8.6 Z" fill="#4A3434"></path>
+<g stroke="#8A7E72" stroke-width="0.35" opacity="0.6"><line x1="27" y1="-8" x2="33" y2="-9.4"></line><line x1="27" y1="-7.4" x2="33" y2="-6.6"></line></g>
+<path d="M-24 -3 C-20 3 2 3 14 -1 C19 -2.6 23 -4 27 -5.4" fill="none" stroke="#161210" stroke-width="5" stroke-linecap="round"></path>
+<path d="M-22 -1.4 C-16 2 2 2 13 -1.4" fill="none" stroke="#3A302C" stroke-width="0.8" opacity="0.7"></path>
+<path d="M-23 -12 C-17 -19 -6 -21.4 4 -21 C12 -20.6 20 -17.6 24 -12 M10 -15.6 C12 -18.4 16 -19.4 20 -19" fill="none" stroke="#FFB869" stroke-width="1.2" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="180" cy="78" rx="88" ry="14" fill="url(#pmEmber)" opacity="0.8"></ellipse>
+<ellipse cx="348" cy="62" rx="120" ry="52" fill="url(#pmEmber)" opacity="0.45"></ellipse>
+</g>
+<text x="210" y="52" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#F3E6D0" opacity="0.85">z</text>
+<text x="219" y="42" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="8" fill="#F3E6D0" opacity="0.6">z</text>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Black</span><span style="font-size: 12px; color: #9C8B70">curled loaf · nose under tail</span></div>
+</div>
+
+<div style="border-top: 1px solid rgba(243,230,208,0.1); padding-top: 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.1">Dog</div>
+<div style="font-size: 12px; color: #B8A68A; margin-top: 3px">Whole-body wagger. First to the door.</div>
+<div style="display: flex; gap: 14px; margin-top: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#B89060" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M3 10C6 5 18 5 21 10C16 8 8 8 3 10Z" fill="#6E5030"></path><g stroke="#E2C898" stroke-width="0.8"><path d="M7 15l-1 2M10 16l0 2M13 16l1 2M16 15l1 2"></path></g></svg><span style="font-size: 11px; color: #B8A68A">Terrier</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#EEE8DC" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><g fill="#2A2420"><circle cx="8" cy="8" r="1.8"></circle><circle cx="15" cy="7" r="1.3"></circle><circle cx="13" cy="13" r="2"></circle><circle cx="7" cy="15" r="1.3"></circle><circle cx="17" cy="16" r="1.5"></circle></g></svg><span style="font-size: 11px; color: #B8A68A">Spotted</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#8E8E96" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M4 16C8 13 16 13 20 16L20 18C16 15.6 8 15.6 4 18Z" fill="#C08A3E"></path><path d="M6 7C9 5 14 5 17 6.4" fill="none" stroke="#BEBEC6" stroke-width="1.2" stroke-linecap="round"></path></svg><span style="font-size: 11px; color: #B8A68A">Greyhound</span></div>
+</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Perky scruffy tan terrier standing square with its tail up and wagging, bushy eyebrows raised, tongue out, red collar with a brass tag" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="176" cy="79" rx="32" ry="3.2" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.12)">
+<path d="M-18 -27 C-22 -32 -23 -38 -21 -44" fill="none" stroke="#A07A48" stroke-width="4.8" stroke-linecap="round"></path>
+<g stroke="#6A4E2C" stroke-width="0.8"><path d="M-22.6 -36 l-2 -0.6 M-22.8 -40 l-2 -0.4 M-19 -34 l1.8 -1 M-19.4 -39 l1.8 -0.8"></path></g>
+<g fill="none" stroke="#E8A24A" stroke-width="0.9" stroke-linecap="round" opacity="0.65"><path d="M-28 -42 C-29 -38 -28 -35 -26 -33"></path><path d="M-15 -48 C-12 -47.4 -10 -45.6 -9 -43.4"></path></g>
+<path d="M-14 -14 L-15 -1 C-15 0.5 -11.5 0.5 -11 -0.5 L-10 -13 Z" fill="#7A5A34"></path>
+<path d="M14 -14 L14 -1 C14 0.5 17.5 0.5 18 -0.5 L18 -14 Z" fill="#7A5A34"></path>
+<path d="M-21 -22 C-21 -29 -12 -31 2 -31 C12 -31 20 -30 22 -24 L22 -16 L20 -13 L18 -15 L16 -12 L13 -14 L10 -11.5 L7 -13.5 L4 -11.5 L1 -13.5 L-2 -11.5 L-5 -13.5 L-8 -11.5 L-11 -13.5 L-14 -11.5 L-17 -13.5 L-20 -12 C-21 -15 -21 -18 -21 -22 Z" fill="url(#pmTan)"></path>
+<path d="M-17 -28.6 C-8 -32 6 -32 15 -29.6 C10 -26.6 -8 -26 -17 -28.6 Z" fill="#5E4428" opacity="0.6"></path>
+<g stroke="#5E4428" stroke-width="0.8" stroke-linecap="round"><path d="M-16 -29 l-1 -2 M-11 -30.5 l-1 -2 M-6 -31 l0 -2 M-1 -31.2 l0.5 -2 M4 -31 l1 -2 M9 -30.5 l1 -2 M14 -30 l1 -2"></path></g>
+<g stroke="#D8BC8C" stroke-width="0.7" stroke-linecap="round" opacity="0.7"><path d="M-12 -22 l1 3 M-6 -21 l0.6 3 M0 -21.4 l0.6 3 M6 -21 l0.6 3 M12 -22 l0.4 3"></path></g>
+<path d="M-20 -18 C-22 -12 -20 -7 -17 -5 L-17 -1 C-17 0.5 -13 0.5 -12.5 -0.5 L-12 -5 C-10 -10 -11 -16 -14 -19 Z" fill="#B89060"></path>
+<path d="M11 -16 L10 -1 C10 0.5 14 0.5 14.5 -0.5 L15.5 -15 Z" fill="#B89060"></path>
+<g stroke="#8A6A40" stroke-width="0.8" stroke-linecap="round"><path d="M10.2 -6 l-1.4 1 M15.4 -6 l1.4 1 M-17 -6 l-1.4 1 M-12 -6 l1.4 1"></path></g>
+<g fill="#C8A272"><ellipse cx="-14.8" cy="-0.8" rx="3.6" ry="1.5"></ellipse><ellipse cx="12.4" cy="-0.8" rx="3.4" ry="1.5"></ellipse></g>
+<path d="M20 -46 L21 -53.4 C22.5 -54.4 24 -53.4 24 -51.4 L23.6 -47 Z" fill="#6A4E2C"></path>
+<path d="M17 -36 C16 -43 21 -48 27 -47 C31 -46.5 33 -44 34 -41 L40 -39.5 C41.5 -39 42 -37 41 -35 L40 -32 C38 -28 32 -27 28 -28 C22 -27 17 -30 17 -36 Z" fill="url(#pmTan)"></path>
+<path d="M27 -47 L31 -53.4 C33 -54.6 34.4 -52.6 33.4 -50.4 L31.4 -46.2 Z" fill="#8A6A40"></path>
+<path d="M30 -33 L41 -34 L40 -30 L38.5 -28 L37 -29.5 L35.5 -27 L34 -29 L32 -26.5 L30.5 -29 L29 -28 Z" fill="#DCC292"></path>
+<path d="M18 -36 C20 -40 24 -42 28 -41" fill="none" stroke="#6A4E2C" stroke-width="0.7" opacity="0.6"></path>
+<path d="M26.6 -43.2 l3 -1.8 l3.2 0.6" fill="none" stroke="#E6CEA0" stroke-width="1.5" stroke-linecap="round"></path>
+<circle cx="29.6" cy="-40.6" r="1.7" fill="#1A120A"></circle><circle cx="30.2" cy="-41.2" r="0.55" fill="#FFFFFF"></circle>
+<circle cx="23" cy="-41" r="1.2" fill="#1A120A"></circle>
+<path d="M21.6 -43 l1.6 -1.2 l2 0.4" fill="none" stroke="#E6CEA0" stroke-width="1.2" stroke-linecap="round"></path>
+<ellipse cx="41" cy="-37.2" rx="1.9" ry="1.5" fill="#1A1210"></ellipse><circle cx="40.6" cy="-37.8" r="0.5" fill="#6A5E54"></circle>
+<path d="M35 -30 C35 -27 36.5 -25.4 38 -26 C39 -26.4 39 -28.6 38.4 -30.4 Z" fill="#D46A6A"></path>
+<path d="M36.6 -29.6 L37.2 -27" stroke="#A84848" stroke-width="0.5"></path>
+<path d="M18 -31 C21 -29 25 -28.6 28.4 -29.2" fill="none" stroke="#8A2E28" stroke-width="2.4"></path>
+<circle cx="24" cy="-26.8" r="1.6" fill="url(#pmBrass)"></circle>
+<path d="M-18 -29 C-8 -32.6 6 -32.6 16 -30.6 M19 -42 C22 -46.4 27 -47.6 31 -46" fill="none" stroke="#FFC77A" stroke-width="1" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="104" ry="16" fill="url(#pmPool)" opacity="0.9"></ellipse>
+<ellipse cx="174" cy="36" rx="140" ry="50" fill="url(#pmPool)" opacity="0.26"></ellipse>
+<circle cx="214" cy="22" r="9" fill="url(#pmSpark)" opacity="0.7"></circle>
+</g>
+<g fill="#FFE1A8"><path d="M214 15.5L215.5 20.5L220.5 22L215.5 23.5L214 28.5L212.5 23.5L207.5 22L212.5 20.5Z"></path><path d="M146 14.5L146.9 17.1L149.5 18L146.9 18.9L146 21.5L145.1 18.9L142.5 18L145.1 17.1Z" opacity="0.8"></path><path d="M232 33.5L232.6 35.4L234.5 36L232.6 36.6L232 38.5L231.4 36.6L229.5 36L231.4 35.4Z" opacity="0.7"></path></g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Tan terrier</span><span style="font-size: 12px; color: #9C8B70">tail wagging · tongue out · eyebrows up</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Content spotted dog sitting neatly, one dark floppy ear, a little tongue showing, teal collar with a brass tag" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="170" cy="80" rx="30" ry="3.4" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.12)">
+<path d="M-16 -2 C-24 -2 -28 -4 -31 -8" fill="none" stroke="#E2DACB" stroke-width="3.4" stroke-linecap="round"></path>
+<circle cx="-27" cy="-4.6" r="1" fill="#2A2420"></circle>
+<path d="M5 -20 L4 -1 L8.5 -1 L9 -20 Z" fill="#C8BFAE"></path>
+<path d="M-18 -1 C-23 -10 -21 -26 -9 -33 C-1 -38 12 -37 15 -29 C18 -20 16 -10 17 -1 C10 1 -12 1 -18 -1 Z" fill="url(#pmSpot)"></path>
+<path d="M-21 -5 C-23 -16 -14 -24 -5 -21 C2 -18 3 -9 1 -2 C-6 0 -17 0 -21 -5 Z" fill="#ECE5D8"></path>
+<path d="M-21 -5 C-23 -16 -14 -24 -5 -21 C2 -18 3 -9 1 -2" fill="none" stroke="#B8AE9C" stroke-width="0.8"></path>
+<ellipse cx="-1" cy="-1" rx="5" ry="1.8" fill="#E6DFD2"></ellipse>
+<path d="M7 -33 C14 -33 17 -26 16 -16 L12 -16 C10 -22 8 -28 7 -33 Z" fill="#FFFCF5"></path>
+<path d="M10 -20 L9.5 -1 L14.5 -1 L15 -19 Z" fill="#EEE8DC"></path>
+<g fill="#E8E1D4"><ellipse cx="6.6" cy="-0.8" rx="3" ry="1.4"></ellipse><ellipse cx="12.4" cy="-0.8" rx="3.2" ry="1.5"></ellipse></g>
+<g stroke="#B8AE9C" stroke-width="0.5"><path d="M11.4 -1.8 L11.4 -0.2 M13.2 -1.8 L13.2 -0.2"></path></g>
+<g fill="#2A2420"><circle cx="-12" cy="-24" r="2.2"></circle><circle cx="-6" cy="-29" r="1.8"></circle><circle cx="-15" cy="-14" r="2.6"></circle><circle cx="-4" cy="-12" r="1.6"></circle><circle cx="2" cy="-26" r="2"></circle><circle cx="-9" cy="-6" r="1.4"></circle><circle cx="12" cy="-8" r="1.2"></circle><circle cx="11.4" cy="-13" r="0.9"></circle><circle cx="-18" cy="-20" r="1.4"></circle><circle cx="-1" cy="-19" r="1"></circle><circle cx="-10" cy="-31" r="1"></circle><circle cx="6" cy="-4" r="0.8"></circle></g>
+<path d="M5 -46 C5 -53 10 -56 15 -56 C20 -56 23 -53 24 -49 L30 -47 C32 -46.4 32.6 -44 31.6 -42 C30 -39.5 27 -38.6 24 -39 C21 -37 17 -36.5 13 -37.5 C8 -38.5 5 -41 5 -46 Z" fill="url(#pmSpot)"></path>
+<path d="M24 -39 C27 -38.6 30.5 -39.6 31.6 -42" fill="none" stroke="#B8AE9C" stroke-width="0.7"></path>
+<circle cx="21.6" cy="-52.4" r="1.7" fill="#2A2420"></circle><circle cx="14" cy="-41" r="1" fill="#2A2420"></circle>
+<path d="M9 -53 C5 -53 2.5 -50 3 -45 C3.5 -41 5 -38 7.5 -38.5 C9.5 -39 10 -42 10 -46 C10.5 -49 11 -52 9 -53 Z" fill="#3A3230"></path>
+<path d="M8 -51 C6 -48 5.6 -44 6.4 -41" fill="none" stroke="#5A504C" stroke-width="0.8"></path>
+<ellipse cx="18.6" cy="-49" rx="1.5" ry="1.7" fill="#1A1210"></ellipse><circle cx="19.1" cy="-49.6" r="0.5" fill="#FFFFFF"></circle>
+<path d="M16.8 -50 C17.8 -51.2 19.6 -51.2 20.4 -50" fill="none" stroke="#8E8676" stroke-width="0.7"></path>
+<ellipse cx="31.6" cy="-45.4" rx="1.8" ry="1.3" fill="#1A1412"></ellipse>
+<g fill="#5A504C"><circle cx="27" cy="-43.8" r="0.4"></circle><circle cx="28.4" cy="-43" r="0.4"></circle><circle cx="26.6" cy="-42.4" r="0.4"></circle></g>
+<path d="M31 -42.4 C28.5 -41 26 -41.2 24.5 -42.4" fill="none" stroke="#3A2A20" stroke-width="0.8"></path>
+<path d="M27.4 -41.6 C27.6 -40 28.8 -39.6 29.4 -40.8 Z" fill="#D46A6A"></path>
+<path d="M8 -38 C11 -35.6 15 -35 19 -36" fill="none" stroke="#1F4A4A" stroke-width="2.4"></path>
+<circle cx="14" cy="-34" r="1.5" fill="url(#pmBrass)"></circle>
+<path d="M-16 -26 C-10 -34 0 -38 10 -36 M7 -51 C10 -55 15 -56.4 20 -55" fill="none" stroke="#FFC77A" stroke-width="1" opacity="0.4"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="92" ry="14" fill="url(#pmPool)" opacity="0.75"></ellipse>
+<circle cx="40" cy="20" r="80" fill="url(#pmPool)" opacity="0.4"></circle>
+</g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Spotted</span><span style="font-size: 12px; color: #9C8B70">sitting pretty · one soft ear · tongue blep</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Sleepy grey greyhound curled up asleep in a mustard knitted jumper, long front legs stretched out, chin resting on its paws, a small z above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="176" cy="79" rx="44" ry="3.6" fill="#000" opacity="0.6" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(170 78) scale(1.12)">
+<path d="M-30 -4 C-34 -1 -30 2 -20 2 C-10 2 -2 1 4 -1" fill="none" stroke="#7E7E86" stroke-width="2" stroke-linecap="round"></path>
+<path d="M-30 -6 C-32 -14 -24 -20 -16 -18 C-10 -16 -10 -8 -14 -3 C-18 -1 -28 -1 -30 -6 Z" fill="#9A9AA2"></path>
+<path d="M-14 -2 L2 -1.6" stroke="#8A8A92" stroke-width="3" stroke-linecap="round"></path>
+<ellipse cx="3" cy="-1.6" rx="3" ry="1.5" fill="#A4A4AC"></ellipse>
+<path d="M-28 -10 C-28 -20 -16 -25 -2 -24 C10 -23 18 -19 20 -12 C21 -6 18 -3 12 -3 L-20 -3 C-26 -4 -28 -6 -28 -10 Z" fill="url(#pmGrey)"></path>
+<path d="M-26 -7 C-26 -14 -20 -17 -15 -15" fill="none" stroke="#6E6E76" stroke-width="0.8"></path>
+<path d="M-14 -23.5 C-4 -25 8 -23.5 16 -18 C18 -14 18 -9 16 -6 L-10 -5 C-14 -10 -16 -18 -14 -23.5 Z" fill="url(#pmKnit)"></path>
+<g fill="none" stroke="#8E6224" stroke-width="0.7" opacity="0.9"><path d="M-10 -20 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4"></path><path d="M-10 -15 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4"></path><path d="M-9 -10 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4 l1.4 1.4 l1.4 -1.4"></path></g>
+<path d="M-14 -23.5 C-16 -18 -14 -10 -10 -5" fill="none" stroke="#8E6224" stroke-width="2.2"></path>
+<path d="M-14 -23.5 C-16 -18 -14 -10 -10 -5" fill="none" stroke="#E0B060" stroke-width="0.6" stroke-dasharray="0.8 1"></path>
+<path d="M16 -18 C18.4 -14 18.4 -9 16 -6" fill="none" stroke="#E0B060" stroke-width="2.4"></path>
+<path d="M12 -4 L34 -3" stroke="#9A9AA2" stroke-width="3.2" stroke-linecap="round"></path>
+<path d="M10 -1.8 L32 -0.8" stroke="#86868E" stroke-width="3.2" stroke-linecap="round"></path>
+<path d="M16 -11 C17 -16 22 -18 27 -17 C33 -16 39 -12 42 -8.5 C43 -7 42 -5.4 40 -5.4 L24 -5 C19 -5 16 -7 16 -11 Z" fill="#9C9CA4"></path>
+<path d="M28 -16 C33 -15 38 -12 41 -9" fill="none" stroke="#C2C2CA" stroke-width="0.7"></path>
+<path d="M21 -15.5 C18 -18.5 15 -17.5 15.5 -14.5 C17 -13.5 19 -13.5 21 -14 Z" fill="#6E6E76"></path>
+<path d="M27 -12.4 C28.2 -11.4 30 -11.4 31 -12.6" fill="none" stroke="#3A3A40" stroke-width="0.9" stroke-linecap="round"></path>
+<ellipse cx="42" cy="-7.2" rx="1.4" ry="1.1" fill="#2A2A2E"></ellipse>
+<path d="M41 -5.8 C37 -5.4 34 -5.6 32 -6.4" fill="none" stroke="#6E6E76" stroke-width="0.6"></path>
+<path d="M-26 -14 C-20 -22 -8 -25 2 -24.4 M18 -13.6 C21 -17 26 -17.6 30 -16.4" fill="none" stroke="#FFB869" stroke-width="1.2" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="180" cy="78" rx="96" ry="14" fill="url(#pmEmber)" opacity="0.8"></ellipse>
+<ellipse cx="348" cy="62" rx="120" ry="52" fill="url(#pmEmber)" opacity="0.45"></ellipse>
+</g>
+<text x="222" y="56" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#F3E6D0" opacity="0.85">z</text>
+<text x="231" y="46" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="8" fill="#F3E6D0" opacity="0.6">z</text>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Greyhound</span><span style="font-size: 12px; color: #9C8B70">curled up in a mustard jumper</span></div>
+</div>
+
+<div style="border-top: 1px solid rgba(243,230,208,0.1); padding-top: 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.1">Bunny</div>
+<div style="font-size: 12px; color: #B8A68A; margin-top: 3px">Binkies when perky, flops when cosy.</div>
+<div style="display: flex; gap: 14px; margin-top: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#8A5E3C" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M8 5C5 6 4.6 11 6 15C7 16 8.4 15 8.6 13C8.8 10 10 7 8 5Z" fill="#5E3E26"></path><circle cx="16" cy="15" r="2.2" fill="#E8D6BC"></circle></svg><span style="font-size: 11px; color: #B8A68A">Lop brown</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#EDE6DA" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M9 4.4C8 7 8.4 10 9.6 11.4M14 4C15.2 6.6 15 9.6 14 11.2" fill="none" stroke="#D9A0A0" stroke-width="1.4" stroke-linecap="round"></path></svg><span style="font-size: 11px; color: #B8A68A">White</span></div>
+</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Perky white bunny mid-binky, all four feet off the floor, ears streaming back, a dotted arc showing the hop" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="176" cy="80" rx="18" ry="2.4" fill="#000" opacity="0.4" filter="url(#pmBlur2)"></ellipse>
+<path d="M118 79 C126 58 146 52 160 60" fill="none" stroke="#E8A24A" stroke-width="0.9" stroke-dasharray="1.5 2.6" opacity="0.6"></path>
+<g transform="translate(174 70) scale(1.12)">
+<path d="M12 -32 C10 -40 6 -45 2 -46 C1 -45 1.5 -43 3.5 -41 C6 -38 9 -34 10 -31 Z" fill="#D6CEC0"></path>
+<path d="M-12 -11 C-18 -9 -24 -6 -28 -3 C-29 -2 -28 -0.5 -26.5 -1 L-12 -6 Z" fill="#E2DACB"></path>
+<path d="M-26.5 -1 C-28 -1.4 -29.4 -2 -28.6 -3" fill="none" stroke="#C9BFAE" stroke-width="0.6"></path>
+<path d="M-16 -14 C-18 -22 -10 -28 0 -27 C9 -26 14 -21 14 -15 C13 -10 8 -8 0 -8 C-8 -8 -14 -9 -16 -14 Z" fill="url(#pmWhite)"></path>
+<path d="M-13 -21 C-8 -26 0 -27.6 6 -26" fill="none" stroke="#FFC77A" stroke-width="1" opacity="0.45"></path>
+<path d="M-11 -12 C-12 -16 -9 -19 -5 -18" fill="none" stroke="#C9BFAE" stroke-width="0.8"></path>
+<path d="M8 -10 C10 -7 12 -5 14 -5 C15.5 -5 15.5 -6.6 14 -7.4 L10 -11 Z" fill="#EDE6DA"></path>
+<path d="M5 -10 C6 -6.6 8 -4.4 10 -4.2 C11.4 -4.2 11.2 -5.6 10 -6.4 L7.6 -10 Z" fill="#D6CEC0"></path>
+<circle cx="-16" cy="-18" r="3.8" fill="#FFFDF8"></circle>
+<path d="M-19 -19.6 l-1.2 -0.6 M-18.6 -16 l-1.4 0.4 M-16.6 -21.4 l-0.4 -1.2" stroke="#E6DED0" stroke-width="0.6"></path>
+<path d="M8 -24 C8 -30 12 -33 17 -33 C22 -33 25 -29 25 -25 C25 -21 22 -19 17 -19 C12 -19 8 -20 8 -24 Z" fill="url(#pmWhite)"></path>
+<path d="M14 -31 C10 -38 4 -42 -1 -42 C-2 -41 -1 -39 2 -37.6 C6 -36 10 -33 12 -30 Z" fill="#F2ECE2"></path>
+<path d="M12.6 -31.4 C9.4 -36 5.4 -39.2 1 -40" fill="none" stroke="#D9A0A0" stroke-width="1.6" stroke-linecap="round"></path>
+<ellipse cx="19" cy="-27" rx="1.6" ry="1.9" fill="#2A1414"></ellipse><circle cx="19.5" cy="-27.6" r="0.55" fill="#FFFFFF"></circle>
+<ellipse cx="20.4" cy="-23" rx="2.2" ry="1.2" fill="#E8B0A8" opacity="0.5"></ellipse>
+<path d="M24 -25.6 L25.4 -25.6 L24.7 -24.6 Z" fill="#D98A8A"></path>
+<path d="M24.7 -24.6 L24.7 -23.6 M24.7 -23.6 C24.2 -23 23.6 -23 23.2 -23.4" fill="none" stroke="#8A6A64" stroke-width="0.5"></path>
+<g stroke="#FFFFFF" stroke-width="0.4" opacity="0.7"><line x1="24" y1="-24.4" x2="31" y2="-26.4"></line><line x1="24" y1="-23.8" x2="31" y2="-23.4"></line></g>
+</g>
+<g fill="none" stroke="#E8A24A" stroke-width="0.9" stroke-linecap="round" opacity="0.55"><path d="M132 50 l-8 0"></path><path d="M134 56 l-10 0"></path></g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="104" ry="16" fill="url(#pmPool)" opacity="0.9"></ellipse>
+<ellipse cx="174" cy="36" rx="140" ry="50" fill="url(#pmPool)" opacity="0.26"></ellipse>
+<circle cx="214" cy="22" r="9" fill="url(#pmSpark)" opacity="0.7"></circle>
+</g>
+<g fill="#FFE1A8"><path d="M214 15.5L215.5 20.5L220.5 22L215.5 23.5L214 28.5L212.5 23.5L207.5 22L212.5 20.5Z"></path><path d="M146 14.5L146.9 17.1L149.5 18L146.9 18.9L146 21.5L145.1 18.9L142.5 18L145.1 17.1Z" opacity="0.8"></path><path d="M230 37.5L230.6 39.4L232.5 40L230.6 40.6L230 42.5L229.4 40.6L227.5 40L229.4 39.4Z" opacity="0.7"></path></g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">White</span><span style="font-size: 12px; color: #9C8B70">mid-binky · ears streaming back</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Content brown lop-eared bunny sitting in a loaf, one long ear hanging down its cheek, cotton tail, nose twitching" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="174" cy="80" rx="26" ry="3.4" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(172 78) scale(1.25)">
+<path d="M-18 -1 C-23 -10 -17 -24 -3 -25 C9 -26 17 -19 17 -10 C17 -4 14 -1 10 -1 Z" fill="url(#pmLop)"></path>
+<path d="M-14 -4 C-16 -12 -10 -17 -3 -15" fill="none" stroke="#4A2E1C" stroke-width="0.9" opacity="0.7"></path>
+<ellipse cx="-6" cy="-1.2" rx="7" ry="2" fill="#7A5034"></ellipse>
+<path d="M-12 -1.4 L-11 -0.4 M-9.6 -1.6 L-9 -0.4" stroke="#B8875E" stroke-width="0.5"></path>
+<circle cx="-19" cy="-8" r="3.4" fill="#EADCC4"></circle>
+<path d="M-21.4 -10 l-1 -0.8 M-21.6 -6.4 l-1.2 0.4" stroke="#CBB89A" stroke-width="0.6"></path>
+<path d="M8 -18 C13 -18 16 -12 15 -4 L10 -3 C9 -9 8 -14 8 -18 Z" fill="#CBA27A"></path>
+<g fill="#B8875E"><ellipse cx="11.6" cy="-1.4" rx="2.6" ry="1.6"></ellipse><ellipse cx="15.6" cy="-1.2" rx="2.6" ry="1.6"></ellipse></g>
+<path d="M5 -21 C5 -28 10 -31 15 -31 C21 -31 25 -27 25 -21 C25 -16 21 -13 15 -13 C10 -13 5 -15 5 -21 Z" fill="url(#pmLop)"></path>
+<path d="M8 -28 C9 -32.5 15 -33.6 18 -30 Z" fill="#7A5034"></path>
+<ellipse cx="22.4" cy="-19" rx="3.2" ry="2.3" fill="#CBA27A"></ellipse>
+<path d="M11 -29 C7 -29 5 -25 5 -18 C5 -11 6.5 -7 9 -6.5 C11.5 -6.2 12.5 -9 12.4 -13 C12.2 -20 13.6 -27 11 -29 Z" fill="#6A442C"></path>
+<path d="M9.4 -26 C8.4 -20 8.4 -12 9.6 -8.4" fill="none" stroke="#A87650" stroke-width="1" opacity="0.75"></path>
+<ellipse cx="18.5" cy="-23.4" rx="1.6" ry="1.9" fill="#1A0E08"></ellipse><circle cx="19" cy="-24" r="0.55" fill="#FFFFFF"></circle>
+<path d="M16.8 -24.6 C17.8 -25.6 19.4 -25.6 20.2 -24.6" fill="none" stroke="#3A2416" stroke-width="0.6"></path>
+<path d="M23.6 -21.2 L25.2 -21.2 L24.4 -20 Z" fill="#C98A7A"></path>
+<path d="M24.4 -20 L24.4 -18.8 M24.4 -18.8 C23.8 -18 23 -18 22.6 -18.6" fill="none" stroke="#4A2E1C" stroke-width="0.5"></path>
+<g stroke="#EAD8BC" stroke-width="0.35" opacity="0.75"><line x1="23.6" y1="-19.8" x2="30" y2="-21.6"></line><line x1="23.6" y1="-19.2" x2="30.4" y2="-18.6"></line></g>
+<path d="M-15 -15 C-10 -23 -2 -25.6 6 -24 M8 -28.6 C11 -31.6 15 -32 18 -30.4" fill="none" stroke="#FFC77A" stroke-width="0.9" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="92" ry="14" fill="url(#pmPool)" opacity="0.75"></ellipse>
+<circle cx="40" cy="20" r="80" fill="url(#pmPool)" opacity="0.4"></circle>
+</g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Lop brown</span><span style="font-size: 12px; color: #9C8B70">loaf · one ear down · nose going</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Sleepy brown lop bunny doing the flop, lying low with a back foot stretched out and its ear draped on the floor, eyes shut, a small z above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="172" cy="79.4" rx="38" ry="3.4" fill="#000" opacity="0.6" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(172 78) scale(1.25)">
+<path d="M-20 -2 L-30 -1.6 C-31.5 -1.4 -31.5 0 -30 0 L-18 0 Z" fill="#7A5034"></path>
+<path d="M-22 -1 C-26 -8 -18 -18 -4 -18 C8 -18 16 -13 17 -6 C17 -2 14 -1 10 -1 Z" fill="url(#pmLop)"></path>
+<path d="M-17 -4 C-18 -10 -13 -13 -7 -12" fill="none" stroke="#4A2E1C" stroke-width="0.8" opacity="0.7"></path>
+<circle cx="-22" cy="-6" r="2.9" fill="#EADCC4"></circle>
+<path d="M8 -9 C8 -15 12 -18 17 -18 C23 -18 27 -14 27 -9 C27 -4 23 -1.5 17 -1.5 C12 -1.5 8 -4 8 -9 Z" fill="url(#pmLop)"></path>
+<ellipse cx="24.4" cy="-6.8" rx="3" ry="2.2" fill="#CBA27A"></ellipse>
+<path d="M13 -16.5 C8 -18 2 -15 -1 -9 C-2.5 -5 -1 -1.5 2 -1.5 C5 -1.5 7 -5 9 -9 C11 -12 13.5 -14 13 -16.5 Z" fill="#6A442C"></path>
+<path d="M10 -15 C6 -14 2.6 -10 1 -5" fill="none" stroke="#A87650" stroke-width="0.9" opacity="0.7"></path>
+<path d="M18.4 -11 C19.6 -9.8 21 -9.8 22.2 -11.2" fill="none" stroke="#2E1C10" stroke-width="0.9" stroke-linecap="round"></path>
+<path d="M25.8 -9.2 L27.2 -9.2 L26.5 -8.2 Z" fill="#C98A7A"></path>
+<g fill="#B8875E"><ellipse cx="24" cy="-1" rx="3" ry="1.3"></ellipse><ellipse cx="28.6" cy="-0.9" rx="2.6" ry="1.2"></ellipse></g>
+<path d="M-19 -9 C-14 -16 -6 -18.4 2 -18 M10 -14.4 C12 -17 15 -18 18.4 -17.6" fill="none" stroke="#FFB869" stroke-width="1" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="180" cy="78" rx="88" ry="14" fill="url(#pmEmber)" opacity="0.8"></ellipse>
+<ellipse cx="348" cy="62" rx="120" ry="52" fill="url(#pmEmber)" opacity="0.45"></ellipse>
+</g>
+<text x="210" y="56" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#F3E6D0" opacity="0.85">z</text>
+<text x="219" y="46" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="8" fill="#F3E6D0" opacity="0.6">z</text>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Lop brown</span><span style="font-size: 12px; color: #9C8B70">the flop · back foot out</span></div>
+</div>
+
+<div style="border-top: 1px solid rgba(243,230,208,0.1); padding-top: 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.1">Frog</div>
+<div style="font-size: 12px; color: #B8A68A; margin-top: 3px">Unbothered. Excellent at sitting.</div>
+<div style="display: flex; gap: 14px; margin-top: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#5E8A3E" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><g fill="#2E4A1E"><circle cx="8" cy="9" r="1.8"></circle><circle cx="14" cy="7" r="1.2"></circle><circle cx="15" cy="13" r="1.6"></circle></g><path d="M5 17C9 19 15 19 19 17" fill="none" stroke="#D8D0A0" stroke-width="1.6"></path></svg><span style="font-size: 11px; color: #B8A68A">Green</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C88A2E" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><g fill="#6A3E12"><circle cx="8" cy="9" r="1.8"></circle><circle cx="14" cy="7" r="1.2"></circle><circle cx="15" cy="13" r="1.6"></circle></g><path d="M5 17C9 19 15 19 19 17" fill="none" stroke="#EAD8A8" stroke-width="1.6"></path></svg><span style="font-size: 11px; color: #B8A68A">Amber</span></div>
+</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Perky green frog mid-hop, back legs stretched long behind, front toes reaching for the floor, wide grin" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="178" cy="80" rx="20" ry="2.4" fill="#000" opacity="0.4" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 72) scale(1.25)">
+<path d="M-4 -10 C-12 -12 -20 -8 -26 -2 L-30 0 C-32 1 -30 2.5 -28 1.6 L-24 0.4 C-18 -2 -10 -4 -2 -6 Z" fill="#4E7A32"></path>
+<g stroke="#4E7A32" stroke-width="1.1" stroke-linecap="round"><path d="M-30 0.2 l-3 -1.8 M-30 0.6 l-3.6 0.8 M-29.6 1.2 l-2 2.4"></path></g>
+<g fill="#9CC46A"><circle cx="-33" cy="-1.6" r="0.8"></circle><circle cx="-33.6" cy="1.4" r="0.8"></circle><circle cx="-31.6" cy="3.6" r="0.8"></circle></g>
+<path d="M-8 -12 C-8 -20 0 -27 10 -27 C18 -27 22 -22 22 -17 C22 -11 16 -7 8 -7 C0 -7 -8 -7 -8 -12 Z" fill="url(#pmFrogG)"></path>
+<path d="M-6 -9 C0 -11 12 -11 21.4 -14 C20 -9 15 -7 8 -7 C0 -7 -5 -7.4 -6 -9 Z" fill="#D8D0A0"></path>
+<g fill="#2E4A1E" opacity="0.8"><circle cx="0" cy="-20" r="1.8"></circle><circle cx="-4" cy="-15" r="1.4"></circle><circle cx="5" cy="-23" r="1.2"></circle><circle cx="7" cy="-16" r="1.4"></circle><circle cx="-2" cy="-24" r="0.9"></circle></g>
+<path d="M-6 -16 C-2 -22 4 -25.5 10 -26" fill="none" stroke="#B8DC86" stroke-width="0.9"></path>
+<path d="M14 -9 C18 -6 22 -3 26 -2" fill="none" stroke="#6E9A48" stroke-width="2.4" stroke-linecap="round"></path>
+<g fill="#9CC46A"><circle cx="27" cy="-3" r="0.9"></circle><circle cx="27.4" cy="-1.2" r="0.9"></circle><circle cx="26.2" cy="0.2" r="0.9"></circle></g>
+<circle cx="8.5" cy="-27" r="3.4" fill="#4E7A32"></circle><circle cx="8.6" cy="-27.4" r="2.4" fill="#E8C84A"></circle><ellipse cx="8.8" cy="-27.4" rx="1.3" ry="0.8" fill="#120E06"></ellipse>
+<circle cx="15" cy="-26" r="4.4" fill="#6E9A48"></circle><circle cx="15.4" cy="-26.4" r="3.2" fill="#E8C84A"></circle><ellipse cx="15.8" cy="-26.4" rx="1.8" ry="1.1" fill="#120E06"></ellipse><circle cx="16.6" cy="-27.4" r="0.7" fill="#FFFFFF"></circle>
+<path d="M21.6 -17 C19 -14.4 15 -13.6 11 -14.6" fill="none" stroke="#2E4A1E" stroke-width="0.9" stroke-linecap="round"></path>
+<circle cx="20.8" cy="-21" r="0.45" fill="#2E4A1E"></circle>
+<ellipse cx="18" cy="-15.6" rx="1.8" ry="1" fill="#E8A08A" opacity="0.4"></ellipse>
+<path d="M-6 -15 C-3 -22 3 -26 10 -27" fill="none" stroke="#FFC77A" stroke-width="0.9" opacity="0.4"></path>
+</g>
+<g fill="none" stroke="#E8A24A" stroke-width="0.9" stroke-linecap="round" opacity="0.55"><path d="M128 52 l-9 0"></path><path d="M130 58 l-11 0"></path><path d="M134 64 l-8 0"></path></g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="104" ry="16" fill="url(#pmPool)" opacity="0.9"></ellipse>
+<ellipse cx="174" cy="36" rx="140" ry="50" fill="url(#pmPool)" opacity="0.26"></ellipse>
+<circle cx="214" cy="22" r="9" fill="url(#pmSpark)" opacity="0.7"></circle>
+</g>
+<g fill="#FFE1A8"><path d="M214 15.5L215.5 20.5L220.5 22L215.5 23.5L214 28.5L212.5 23.5L207.5 22L212.5 20.5Z"></path><path d="M146 14.5L146.9 17.1L149.5 18L146.9 18.9L146 21.5L145.1 18.9L142.5 18L145.1 17.1Z" opacity="0.8"></path><path d="M230 37.5L230.6 39.4L232.5 40L230.6 40.6L230 42.5L229.4 40.6L227.5 40L229.4 39.4Z" opacity="0.7"></path></g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Green</span><span style="font-size: 12px; color: #9C8B70">mid-hop · arms out · big grin</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Content amber frog squatting with its legs folded, half-lidded golden eyes and a long satisfied smile" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="174" cy="80" rx="28" ry="3.4" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(172 78) scale(1.3)">
+<path d="M-14 -2 C-18 -10 -14 -22 -1 -24 C10 -25.5 19 -20 19 -12 C19 -5 15 -1.5 10 -1.5 Z" fill="url(#pmFrogA)"></path>
+<ellipse cx="2" cy="-19" rx="6" ry="2" fill="#FFE3A0" opacity="0.35" transform="rotate(-14 2 -19)"></ellipse>
+<g fill="#6A3E12" opacity="0.75"><circle cx="-6" cy="-18" r="2"></circle><circle cx="0" cy="-21" r="1.4"></circle><circle cx="3" cy="-15" r="1.2"></circle><circle cx="-2" cy="-9" r="1"></circle><circle cx="-10" cy="-13" r="1.1"></circle></g>
+<path d="M-16 -4 C-18 -12 -10 -16 -4 -13 C0 -11 0 -5 -3 -2 Z" fill="#B47624"></path>
+<path d="M-16 -4 C-18 -12 -10 -16 -4 -13 C0 -11 0 -5 -3 -2" fill="none" stroke="#7E4E14" stroke-width="0.7"></path>
+<circle cx="-10" cy="-10" r="1.2" fill="#6A3E12" opacity="0.7"></circle>
+<path d="M-6 -2 C-2 -3 3 -2.6 6 -1.4 L7.4 -0.4 L5 0 L4 -0.6 L2.4 0.2 L1 -0.4 L-6 -0.2 Z" fill="#B47624"></path>
+<g fill="#E8B860"><circle cx="7.4" cy="-0.4" r="0.7"></circle><circle cx="4.6" cy="0" r="0.7"></circle><circle cx="2.2" cy="0.2" r="0.7"></circle></g>
+<path d="M8 -14 C13 -15 18 -13 19 -10 C18 -5 15 -2 10 -1.8 C9 -6 8 -10 8 -14 Z" fill="#EAD8A8"></path>
+<path d="M12 -8 C13 -5 13 -3 13.6 -1.2" fill="none" stroke="#C88A2E" stroke-width="2.4" stroke-linecap="round"></path>
+<g fill="#E8B860"><circle cx="12.6" cy="-0.6" r="0.75"></circle><circle cx="14.4" cy="-0.4" r="0.75"></circle><circle cx="16" cy="-0.9" r="0.75"></circle></g>
+<circle cx="6" cy="-24" r="3.6" fill="#B47624"></circle><circle cx="6.2" cy="-24.2" r="2.6" fill="#F0D070"></circle><ellipse cx="6.4" cy="-23.8" rx="1.4" ry="0.8" fill="#120E06"></ellipse>
+<path d="M3.4 -24 C3.4 -27 9 -27 9 -24 Z" fill="#B47624"></path>
+<circle cx="13" cy="-23" r="4.6" fill="#C88A2E"></circle><circle cx="13.3" cy="-23.2" r="3.4" fill="#F0D070"></circle><ellipse cx="13.6" cy="-22.6" rx="1.9" ry="1" fill="#120E06"></ellipse><circle cx="14.6" cy="-22" r="0.5" fill="#FFFFFF" opacity="0.8"></circle>
+<path d="M9.6 -23 C9.6 -26.8 17 -26.8 17 -23 Z" fill="#C88A2E"></path>
+<path d="M9.6 -23 C11.6 -22.2 15 -22.2 17 -23" fill="none" stroke="#7E4E14" stroke-width="0.6"></path>
+<path d="M3.4 -24 C4.6 -23.4 7.6 -23.4 9 -24" fill="none" stroke="#7E4E14" stroke-width="0.5"></path>
+<path d="M19.4 -14 C16 -11.8 11 -11.6 7 -13.2" fill="none" stroke="#6A3E12" stroke-width="0.9" stroke-linecap="round"></path>
+<circle cx="18.6" cy="-18.6" r="0.45" fill="#6A3E12"></circle>
+<path d="M-12 -14 C-8 -21 0 -24.4 8 -24" fill="none" stroke="#FFC77A" stroke-width="0.9" opacity="0.4"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="92" ry="14" fill="url(#pmPool)" opacity="0.75"></ellipse>
+<circle cx="40" cy="20" r="80" fill="url(#pmPool)" opacity="0.4"></circle>
+</g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Amber</span><span style="font-size: 12px; color: #9C8B70">squat · half-lidded · quietly smug</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Sleepy green frog flattened out like a pancake, eyelids closed, arms tucked, a small z above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="174" cy="79.4" rx="30" ry="3.2" fill="#000" opacity="0.6" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(172 78) scale(1.3)">
+<path d="M-18 -1 C-20 -8 -12 -16 0 -16 C12 -16 20 -11 20 -6 C20 -2 16 -1 10 -1 Z" fill="url(#pmFrogG)"></path>
+<g fill="#2E4A1E" opacity="0.75"><circle cx="-6" cy="-12" r="1.6"></circle><circle cx="0" cy="-14" r="1.1"></circle><circle cx="4" cy="-10" r="1.2"></circle></g>
+<path d="M-19 -2 C-21 -8 -13 -11 -7 -8 C-4 -6 -4 -2 -6 -1 Z" fill="#4E7A32"></path>
+<path d="M-8 -1.2 C-4 -2 0 -1.8 3 -1 L4 0 L1.6 0.2 L0.4 -0.4 L-1 0.2 L-8 0 Z" fill="#4E7A32"></path>
+<path d="M2 -5 C8 -6 14 -6 19.6 -6.4 C18 -2.6 14 -1.2 9 -1.2 C5 -1.2 2 -2 2 -5 Z" fill="#D8D0A0"></path>
+<path d="M11 -4 C13 -2 15 -1.2 17 -1" fill="none" stroke="#6E9A48" stroke-width="2.2" stroke-linecap="round"></path>
+<circle cx="5" cy="-16" r="3" fill="#4E7A32"></circle>
+<path d="M2.6 -16 C3.6 -15 6.4 -15 7.4 -16" fill="none" stroke="#2E4A1E" stroke-width="0.8" stroke-linecap="round"></path>
+<circle cx="12" cy="-15" r="3.8" fill="#6E9A48"></circle>
+<path d="M8.8 -15 C10.2 -13.6 13.8 -13.6 15.2 -15" fill="none" stroke="#2E4A1E" stroke-width="0.9" stroke-linecap="round"></path>
+<path d="M9.2 -16.6 C10.6 -18 13.4 -18 14.8 -16.6" fill="none" stroke="#9CC46A" stroke-width="0.6" opacity="0.8"></path>
+<path d="M20 -8.6 C17 -7.6 14 -7.6 11.6 -8.4" fill="none" stroke="#2E4A1E" stroke-width="0.8" stroke-linecap="round"></path>
+<path d="M-15 -8 C-10 -14 -2 -16.4 6 -16" fill="none" stroke="#FFB869" stroke-width="0.9" opacity="0.45"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="180" cy="78" rx="88" ry="14" fill="url(#pmEmber)" opacity="0.8"></ellipse>
+<ellipse cx="348" cy="62" rx="120" ry="52" fill="url(#pmEmber)" opacity="0.45"></ellipse>
+</g>
+<text x="204" y="54" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#F3E6D0" opacity="0.85">z</text>
+<text x="213" y="44" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="8" fill="#F3E6D0" opacity="0.6">z</text>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Green</span><span style="font-size: 12px; color: #9C8B70">flat as a pancake · eyes shut</span></div>
+</div>
+
+<div style="border-top: 1px solid rgba(243,230,208,0.1); padding-top: 12px">
+<div style="font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.1">Duck</div>
+<div style="font-size: 12px; color: #B8A68A; margin-top: 3px">Flaps at good news. Tucks in at night.</div>
+<div style="display: flex; gap: 14px; margin-top: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#F4EEE2" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M14 11L21 12.4L14 14Z" fill="#F0A43A"></path></svg><span style="font-size: 11px; color: #B8A68A">White</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#9E988C" stroke="rgba(243,230,208,0.3)" stroke-width="1"></circle><path d="M2.4 11A9.6 9.6 0 0 1 21.6 11Z" fill="#1C5638"></path><path d="M2.6 11.6H21.4" stroke="#F3EEE4" stroke-width="1.4"></path><path d="M3 13.4H21A9.4 9.4 0 0 1 15 20.6C11 18 6 17 3 13.4Z" fill="#7E3E22"></path></svg><span style="font-size: 11px; color: #B8A68A">Mallard</span></div>
+</div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Perky white duck standing on orange feet with both wings raised and flapping, bill open mid-quack, a tuft on its head" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="176" cy="79.4" rx="22" ry="3" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.18)">
+<path d="M-6 -22 C-10 -30 -10 -40 -4 -46 C-2 -40 2 -32 4 -24 Z" fill="#D6CEC0"></path>
+<path d="M-4.6 -40 C-4 -36 -2 -30 0 -25" fill="none" stroke="#B8AE9E" stroke-width="0.6"></path>
+<g stroke="#E08A2A" stroke-width="1.5" stroke-linecap="round"><path d="M-2 -5 L-2 -1"></path><path d="M4 -5 L4 -1"></path></g>
+<path d="M-5.4 0 L-2 -1.6 L1.2 0 C0 0.6 -4 0.6 -5.4 0 Z" fill="#E89A3A"></path>
+<path d="M0.6 0 L4 -1.6 L7.4 0 C6 0.6 2 0.6 0.6 0 Z" fill="#F0A43A"></path>
+<path d="M-20 -18 C-22 -20 -24 -24 -22 -26.4 C-18 -24 -14 -23 -8 -22 C0 -24 10 -22 14 -16 C17 -11 13 -5 4 -4 C-6 -3 -16 -6 -20 -12 C-21 -14 -21 -16 -20 -18 Z" fill="url(#pmWhite)"></path>
+<path d="M-16 -9 C-8 -5.6 4 -5 12 -8" fill="none" stroke="#C9BFAE" stroke-width="0.8"></path>
+<path d="M-22 -26.4 C-23.6 -27.6 -23.4 -29 -21.6 -28.6" fill="none" stroke="#E9E1D3" stroke-width="1.2" stroke-linecap="round"></path>
+<path d="M6 -20 C6 -26 8 -30 10 -32 L16 -30 C15 -26 14 -22 14 -18 Z" fill="#F4EEE2"></path>
+<circle cx="12" cy="-34" r="6.6" fill="url(#pmWhite)"></circle>
+<path d="M10 -40.4 C9 -43.4 11 -44.4 12 -42.2 C12.4 -44 14.6 -43.4 13.6 -40.6 Z" fill="#F4EEE2"></path>
+<path d="M17.4 -35.6 C21 -36.8 25 -36.2 26.6 -34.6 C24 -33.8 21 -33.6 17.8 -33.4 Z" fill="#F0A43A"></path>
+<path d="M17.8 -32.8 C21 -32.8 24 -32.4 25.2 -31.2 C22.6 -30.2 20 -30.4 17.6 -31.2 Z" fill="#D8862A"></path>
+<path d="M18 -33.2 L25.6 -33" stroke="#7A3A12" stroke-width="0.5"></path>
+<circle cx="20.4" cy="-35.2" r="0.4" fill="#7A3A12"></circle>
+<circle cx="14" cy="-35.6" r="1.25" fill="#1A1210"></circle><circle cx="14.4" cy="-36" r="0.45" fill="#FFFFFF"></circle>
+<ellipse cx="14.6" cy="-31.8" rx="1.8" ry="1" fill="#F0B0A0" opacity="0.45"></ellipse>
+<path d="M-2 -20 C-10 -24 -16 -32 -18 -44 C-16 -45 -14 -43 -13 -41 C-13 -44 -11 -46 -9.4 -44.4 C-9.6 -46.6 -7.4 -47.6 -6 -45.6 C-5 -47 -3 -46.6 -2.8 -44.6 C-2 -36 0 -28 2 -22 Z" fill="#FFFBF3"></path>
+<path d="M-4 -24 C-8 -30 -11 -36 -13 -41 M-2.6 -24 C-5 -31 -7 -38 -8 -44 M-1 -23 C-2 -30 -3.4 -38 -4 -44" fill="none" stroke="#C9BFAE" stroke-width="0.6"></path>
+<path d="M-16 -22 C-8 -25 2 -25.6 10 -22" fill="none" stroke="#FFC77A" stroke-width="0.9" opacity="0.4"></path>
+<g fill="none" stroke="#E8A24A" stroke-width="0.8" stroke-linecap="round" opacity="0.65"><path d="M-22 -44 C-21 -48 -18 -51 -15 -52"></path><path d="M-24 -38 C-25 -41 -24.6 -43 -23.4 -45"></path></g>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="104" ry="16" fill="url(#pmPool)" opacity="0.9"></ellipse>
+<ellipse cx="174" cy="36" rx="140" ry="50" fill="url(#pmPool)" opacity="0.26"></ellipse>
+<circle cx="214" cy="22" r="9" fill="url(#pmSpark)" opacity="0.7"></circle>
+</g>
+<g fill="#FFE1A8"><path d="M214 15.5L215.5 20.5L220.5 22L215.5 23.5L214 28.5L212.5 23.5L207.5 22L212.5 20.5Z"></path><path d="M134 18.5L134.9 21.1L137.5 22L134.9 22.9L134 25.5L133.1 22.9L130.5 22L133.1 21.1Z" opacity="0.8"></path><path d="M230 37.5L230.6 39.4L232.5 40L230.6 40.6L230 42.5L229.4 40.6L227.5 40L229.4 39.4Z" opacity="0.7"></path></g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">White</span><span style="font-size: 12px; color: #9C8B70">wings up · mid-quack</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Content mallard drake settled on the floor: iridescent green head, white neck ring, chestnut breast, grey flanks, blue wing patch and a curled black tail feather" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="172" cy="79.6" rx="30" ry="3.2" fill="#000" opacity="0.55" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(172 78) scale(1.4)">
+<path d="M-22 -10 C-22 -14 -20 -16 -16 -16 C-8 -18 4 -18 12 -14 C17 -11 17 -5 12 -2 C4 0 -10 0 -18 -3 C-21 -5 -22 -7 -22 -10 Z" fill="url(#pmMalGrey)"></path>
+<g fill="none" stroke="#A49E92" stroke-width="0.35"><path d="M-14 -8 C-8 -9 0 -9 6 -8"></path><path d="M-13 -5.6 C-7 -6.4 0 -6.4 5 -5.4"></path><path d="M-12 -3.4 C-6 -4 0 -4 4 -3.2"></path></g>
+<path d="M8 -16 C14 -16 18 -12 17 -7 C16 -4 13 -2.4 10 -2.6 C11 -6 10 -12 8 -16 Z" fill="url(#pmChestnut)"></path>
+<path d="M-18 -14 C-10 -17 2 -17 8 -13 C4 -10 -6 -9 -16 -10 Z" fill="#8A7E6E"></path>
+<path d="M-15 -12.6 C-9 -14.6 0 -14.8 5 -12.6" fill="none" stroke="#6E6456" stroke-width="0.4"></path>
+<path d="M-12 -11.2 L-4 -12 L-3.4 -10.2 L-11.4 -9.6 Z" fill="#3A5AB8"></path>
+<path d="M-12 -11.2 L-4 -12 M-11.4 -9.6 L-3.4 -10.2" stroke="#F3EEE4" stroke-width="0.5"></path>
+<path d="M-22 -10 C-24 -12 -24 -14 -22 -15 L-17 -15.4 Z" fill="#161616"></path>
+<path d="M-23 -11 L-27.4 -12.4 L-23 -13.8 Z" fill="#E6E0D4"></path>
+<path d="M-20.4 -15.2 C-21 -19 -18.2 -20.6 -17.4 -18.6 C-17 -17.4 -18.2 -16.8 -18.8 -17.6" fill="none" stroke="#141414" stroke-width="1.1" stroke-linecap="round"></path>
+<path d="M8 -15 C8 -20 9 -24 10 -27 L16 -26 C15 -22 14 -18 14 -15 Z" fill="#1C5638"></path>
+<path d="M8.4 -17.6 C10.6 -16.2 12.8 -16.2 14.4 -17.4" fill="none" stroke="#F3EEE4" stroke-width="1.4"></path>
+<path d="M7.5 -29 C7.5 -33.4 10.4 -35.6 13.4 -35.6 C17 -35.6 19 -33 19 -29.6 C19 -26.6 16.6 -24.6 13.4 -24.6 C10 -24.6 7.5 -26 7.5 -29 Z" fill="url(#pmMalHead)"></path>
+<ellipse cx="11.6" cy="-32" rx="3" ry="1.4" fill="#6ED69A" opacity="0.45" transform="rotate(-20 11.6 -32)"></ellipse>
+<ellipse cx="10" cy="-27.6" rx="2" ry="1" fill="#6A4AA8" opacity="0.35"></ellipse>
+<path d="M18.6 -30.4 C21 -30.8 24.6 -30.2 25.6 -28.8 C25.6 -27.6 22 -27.4 18.6 -27.8 Z" fill="#D8C04A"></path>
+<path d="M24.4 -29.6 C25.2 -29.2 25.6 -28.6 25.4 -28 L24.2 -28 Z" fill="#3A3A2A"></path>
+<circle cx="20.6" cy="-29.6" r="0.35" fill="#6A5A1A"></circle>
+<circle cx="15.4" cy="-30.4" r="1" fill="#120E08"></circle><circle cx="15.7" cy="-30.8" r="0.35" fill="#FFFFFF"></circle>
+<path d="M-18 -15 C-10 -18 2 -18 11 -15 M9 -32 C10 -34.6 13 -35.6 16 -35" fill="none" stroke="#FFC77A" stroke-width="0.8" opacity="0.4"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="174" cy="78" rx="92" ry="14" fill="url(#pmPool)" opacity="0.75"></ellipse>
+<circle cx="40" cy="20" r="80" fill="url(#pmPool)" opacity="0.4"></circle>
+</g>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">Mallard</span><span style="font-size: 12px; color: #9C8B70">settled · curl in the tail</span></div>
+</div>
+
+<div style="background: #1A130F; border: 1px solid rgba(243,230,208,0.08); border-radius: 14px; overflow: hidden; box-sizing: border-box">
+<svg width="348" height="90" viewBox="0 0 348 90" role="img" aria-label="Sleepy white duck settled low with its head turned back and bill tucked into its back feathers, eyes shut, a small z above" style="display: block">
+<rect width="348" height="90" fill="url(#pmWallG)"></rect>
+<g fill="none" stroke="#3B2B1F" stroke-width="1" opacity="0.6"><rect x="10" y="18" width="70" height="32"></rect><rect x="94" y="18" width="70" height="32"></rect><rect x="184" y="18" width="70" height="32"></rect><rect x="268" y="18" width="70" height="32"></rect></g>
+<rect y="10" width="348" height="2" fill="#3B2B1F"></rect>
+<rect y="55" width="348" height="5" fill="#2A1A10"></rect><rect y="55" width="348" height="1" fill="#6A4A30" opacity="0.7"></rect>
+<rect y="60" width="348" height="30" fill="url(#pmFloorG)"></rect>
+<path d="M24 60L-88.5 90M49 60L-44.8 90M74 60L-1 90M99 60L42.8 90M124 60L86.5 90M149 60L130.3 90M174 60L174 90M199 60L217.8 90M224 60L261.5 90M249 60L305.3 90M274 60L349 90M299 60L392.8 90M324 60L436.5 90" stroke="#1E120A" stroke-width="0.8" opacity="0.85"></path>
+<path d="M8 66L30 66M112 64L136 64M226 66L252 66M300 70L330 70M46 76L80 76M150 79L182 79M250 82L290 82M90 86L130 86M200 88L240 88" stroke="#1E120A" stroke-width="0.8" opacity="0.7"></path>
+<ellipse cx="172" cy="79.6" rx="28" ry="3.2" fill="#000" opacity="0.6" filter="url(#pmBlur2)"></ellipse>
+<g transform="translate(174 78) scale(1.4)">
+<path d="M-19 -9 C-22 -11 -24 -14 -23 -15.4 C-20 -14 -18 -13 -16 -13 Z" fill="#E9E1D3"></path>
+<path d="M-20 -9 C-20 -14 -14 -18 -4 -18 C8 -18 16 -14 16 -8 C16 -3 10 -1 2 -1 C-8 -1 -16 -2 -19 -5 C-20 -6 -20 -7.6 -20 -9 Z" fill="url(#pmWhite)"></path>
+<path d="M-16 -12 C-8 -15 4 -15 10 -11 C4 -8 -6 -7 -14 -8 Z" fill="#E6DED0"></path>
+<path d="M-14 -8 C-15 -9.4 -15.6 -10.6 -15.4 -11.6 M-11 -7.6 C-12 -9 -12.6 -10.4 -12.4 -11.6 M-8 -7.4 C-9 -8.8 -9.4 -10.2 -9.2 -11.4" fill="none" stroke="#C9BFAE" stroke-width="0.5"></path>
+<path d="M-16 -4 C-8 -2 4 -2 12 -4" fill="none" stroke="#C9BFAE" stroke-width="0.6"></path>
+<path d="M-3 -19 C-6 -19.6 -9 -18.6 -10 -17 C-7 -16.4 -4.6 -16.6 -2.6 -17.4 Z" fill="#E89A3A"></path>
+<circle cx="2" cy="-20" r="6" fill="url(#pmWhite)"></circle>
+<path d="M-12 -16 C-8 -18 -4.4 -17.6 -2.4 -16 L-12 -14.2 Z" fill="#F4EEE2"></path>
+<path d="M2.6 -26 C2.2 -28.4 4 -29 4.6 -27.2 C5.2 -28.6 7 -28 6.2 -25.6 Z" fill="#F4EEE2"></path>
+<path d="M3 -21.6 C4 -20.6 5.4 -20.6 6.2 -21.8" fill="none" stroke="#6A6058" stroke-width="0.8" stroke-linecap="round"></path>
+<path d="M-17 -12 C-10 -17 0 -18.4 8 -16 M-2 -23.4 C0 -25.6 3 -26.2 6 -25" fill="none" stroke="#FFB869" stroke-width="0.9" opacity="0.5"></path>
+</g>
+<rect width="348" height="90" fill="url(#pmCellVig)"></rect>
+<g style="mix-blend-mode: screen">
+<ellipse cx="180" cy="78" rx="88" ry="14" fill="url(#pmEmber)" opacity="0.8"></ellipse>
+<ellipse cx="348" cy="62" rx="120" ry="52" fill="url(#pmEmber)" opacity="0.45"></ellipse>
+</g>
+<text x="196" y="44" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#F3E6D0" opacity="0.85">z</text>
+<text x="205" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="8" fill="#F3E6D0" opacity="0.6">z</text>
+<rect width="348" height="90" filter="url(#pmGrain)" style="mix-blend-mode: overlay"></rect>
+</svg>
+<div style="height: 32px; display: flex; align-items: baseline; gap: 10px; padding: 0 14px; line-height: 32px"><span style="font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 16px">White</span><span style="font-size: 12px; color: #9C8B70">bill tucked into its back</span></div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
