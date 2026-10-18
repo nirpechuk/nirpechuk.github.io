@@ -2,17 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { CATALOG, validateCatalog } from "./catalog";
 import { addDays, weekStart } from "./dates";
-import {
-  cosinessTitle,
-  drawChoices,
-  nextPresent,
-  petMood,
-  plantStage,
-  presentTiers,
-  presentsWaiting,
-  weekRecap,
-  weekStreak,
-} from "./progression";
+import { cosinessTitle, drawChoices, nextPresent, petMood, plantStage, presentTiers, presentsWaiting, weekRecap, weekStreak } from "./progression";
 import { emptyLayout, placeItem, SLOTS, storedItemIds, validSlots } from "./room";
 import type { Catalog, Player } from "./types";
 
@@ -55,6 +45,18 @@ describe("catalogue", () => {
 
   it("gives every item at least one valid slot", () => {
     for (const item of CATALOG.items) expect(validSlots(item).length).toBeGreaterThan(0);
+  });
+
+  it("lets every wall decoration move between all three walls", () => {
+    for (const item of CATALOG.items.filter((entry) => entry.zones.includes("wall") || entry.zones.includes("wallTop"))) {
+      let layout = emptyLayout();
+      for (const wall of ["back", "left", "right"] as const) {
+        const slot = validSlots(item).find((candidate) => candidate.wall === wall);
+        expect(slot, `${item.id} should fit the ${wall} wall`).toBeDefined();
+        layout = placeItem(CATALOG, layout, slot!.id, { itemId: item.id, palette: 0, flip: false }).layout;
+        expect(Object.keys(layout.slots)).toEqual([slot!.id]);
+      }
+    }
   });
 
   it("rejects duplicate ids and unknown colours", () => {
@@ -110,9 +112,12 @@ describe("presents", () => {
     const tierOneIds = [...CATALOG.items, ...CATALOG.surfaces]
       .filter((entry) => entry.tier === 1 || entry.rarity !== "standard")
       .map((entry) => entry.id);
-    const player = makePlayer(Array.from({ length: tierOneIds.length + 1 }, (_, index) => addDays(MONDAY, index * 7)), {
-      unlocks: tierOneIds.map((id) => ({ id, atWorkout: 0, day: MONDAY })),
-    });
+    const player = makePlayer(
+      Array.from({ length: tierOneIds.length + 1 }, (_, index) => addDays(MONDAY, index * 7)),
+      {
+        unlocks: tierOneIds.map((id) => ({ id, atWorkout: 0, day: MONDAY })),
+      }
+    );
     const choices = drawChoices(CATALOG, player, { index: tierOneIds.length, tier: 1 }, "2026-10-12");
     expect(choices).toHaveLength(3);
   });

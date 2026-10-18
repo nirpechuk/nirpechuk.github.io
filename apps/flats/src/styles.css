@@ -694,7 +694,8 @@ h3 {
   fill: rgba(140, 170, 230, 0.12);
 }
 
-.slot-marker.is-hover rect {
+.slot-marker.is-hover rect,
+.slot-marker:focus-visible rect {
   fill: rgba(255, 200, 130, 0.28);
   stroke-dasharray: none;
   stroke-width: 2;

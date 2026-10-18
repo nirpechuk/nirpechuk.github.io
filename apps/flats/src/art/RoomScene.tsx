@@ -23,6 +23,7 @@ import {
   slotById,
   SLOTS,
   WINDOW_FRAME,
+  wallProjection,
 } from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
 import { ItemArt } from "./ItemArt";
@@ -84,7 +85,7 @@ const BOX_DEPTH = 0.1;
 function slotTransform(item: ItemDef, slot: Slot, flip: boolean): string {
   const anchorOffset = slot.anchor === "top" ? 0 : slot.anchor === "bottom" ? -item.h : -item.h / 2;
   const scale = itemScale(item, slot);
-  return `translate(${slot.x} ${slot.y}) scale(${flip ? -scale : scale} ${scale}) translate(${-item.w / 2} ${anchorOffset})`;
+  return `translate(${slot.x} ${slot.y}) ${wallProjection(slot)} scale(${flip ? -scale : scale} ${scale}) translate(${-item.w / 2} ${anchorOffset})`;
 }
 
 function napSpot(item: ItemDef, slot: Slot, placement: Placement): PetSpot | null {
@@ -496,7 +497,7 @@ export function RoomScene(props: RoomSceneProps) {
       ref={svgRef}
       className={`room-scene room-${variant} phase-${lighting.phase}${animate ? " is-animated" : ""}`}
       viewBox={`${-FRAME} ${-FRAME} ${ROOM_WIDTH + FRAME * 2} ${ROOM_HEIGHT + FRAME * 2}`}
-      role={interactive ? "group" : "img"}
+      role={interactive || editing ? "group" : "img"}
       aria-label={`${player.name}'s flat with ${player.petName} the ${player.petKind}`}
     >
       <defs>
@@ -615,9 +616,28 @@ export function RoomScene(props: RoomSceneProps) {
                 key={slot.id}
                 className={`slot-marker${editing?.hoverSlotId === slot.id ? " is-hover" : ""}${occupied ? " is-occupied" : ""}`}
                 data-slot={slot.id}
+                role={onSlotTap ? "button" : undefined}
+                tabIndex={onSlotTap ? 0 : undefined}
+                aria-label={
+                  onSlotTap
+                    ? `Place ${heldItem.name} on the ${slot.wall ?? slot.zone}${slot.wall ? " wall" : ""}${slot.wall === "back" && slot.zone === "wall" ? (slot.x < 180 ? ", left spot" : ", right spot") : ""}`
+                    : undefined
+                }
                 onClick={onSlotTap ? () => onSlotTap(slot.id) : undefined}
+                onKeyDown={
+                  onSlotTap
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onSlotTap(slot.id);
+                        }
+                      }
+                    : undefined
+                }
               >
-                <rect x={slot.x - width / 2} y={y} width={width} height={height} rx="10" />
+                <g transform={`translate(${slot.x} ${slot.y}) ${wallProjection(slot)}`}>
+                  <rect x={-width / 2} y={y - slot.y} width={width} height={height} rx="10" />
+                </g>
                 <text x={slot.x} y={y + height / 2 + 4}>
                   {occupied ? "swap" : "+"}
                 </text>

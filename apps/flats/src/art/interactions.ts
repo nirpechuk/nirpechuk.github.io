@@ -88,4 +88,21 @@ export const OBJECT_REACTIONS: Record<string, ReactionPart[]> = {
   "snail-terrarium": [part("snail", range(4, 7)), part("gleam", [9])],
   "candle-cluster": [part("flicker", [0]), ...ripple("flame", [7, 8, 9], 0.15)],
   "bar-cart": [part("clink", [8, 9], [39, 24]), part("clink", [10, 11], [49, 24], 0.1)],
+  "pressed-flowers": [part("rustle", range(3, 22), [22, 45])],
+  "postcard-string": [
+    part("swing", range(1, 5), [13.5, 13], 0.0),
+    part("swing", range(7, 10), [34.5, 17], 0.12),
+    part("swing", range(12, 16), [55.5, 13], 0.24),
+  ],
+  "woven-wall-hanging": [part("curtain", range(2, 21), [22, 11])],
+  "scalloped-mirror": [part("gleam", [3, 4, 5, 6])],
+  "cuckoo-clock": [part("swing", [0, 1], [24, 42]), part("squish", [5, 6, 7, 8], [24, 23]), part("clock", [11], [24, 34])],
+  "quilt-bunting": [
+    part("curtain", range(1, 3), [22, 6], 0.0),
+    part("curtain", range(4, 5), [53, 11], 0.09),
+    part("curtain", range(6, 8), [84, 15], 0.18),
+    part("curtain", range(9, 10), [115, 15], 0.27),
+    part("curtain", range(11, 13), [146, 11], 0.36),
+    part("curtain", range(14, 15), [177, 6], 0.45),
+  ],
 };

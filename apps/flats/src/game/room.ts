@@ -66,6 +66,8 @@ export type SlotAnchor = "top" | "center" | "bottom";
 export interface Slot {
   id: string;
   zone: Zone;
+  /** Wall plane for decorations; omitted for furniture and the window. */
+  wall?: "left" | "back" | "right";
   /** Screen position of the anchor point. */
   x: number;
   y: number;
@@ -80,7 +82,41 @@ export interface Slot {
 }
 
 function backWallSlot(id: string, zone: Zone, x: number, y: number, capacity: number, anchor: SlotAnchor, layer: number): Slot {
-  return { id, zone, x, y, capacity, anchor, scale: BACK_ITEM_SCALE, depth: layer, world: null };
+  return {
+    id,
+    zone,
+    x,
+    y,
+    capacity,
+    anchor,
+    scale: BACK_ITEM_SCALE,
+    depth: layer,
+    world: null,
+    wall: zone === "wall" || zone === "wallTop" ? "back" : undefined,
+  };
+}
+
+function sideWallSlot(id: string, wall: "left" | "right", zone: "wall" | "wallTop"): Slot {
+  return {
+    id,
+    zone,
+    wall,
+    x: wall === "left" ? 34 : ROOM_WIDTH - 34,
+    y: zone === "wallTop" ? 67 : 146,
+    capacity: zone === "wallTop" ? 3 : 2,
+    anchor: "center",
+    scale: BACK_ITEM_SCALE,
+    depth: 1,
+    world: null,
+  };
+}
+
+/** Foreshorten side-wall art; its horizontal edges follow the room's vanishing point. */
+export function wallProjection(slot: Slot): string {
+  if (!slot.wall || slot.wall === "back") return "";
+  const widthScale = slot.zone === "wallTop" ? 0.26 : 0.6;
+  const slope = (VANISHING_POINT.y - slot.y) / (VANISHING_POINT.x - slot.x);
+  return `matrix(${widthScale} ${widthScale * slope} 0 1 0 0)`;
 }
 
 function floorSlot(id: string, zone: Zone, worldX: number, depth: number, capacity: number): Slot {
@@ -92,7 +128,17 @@ function floorSlot(id: string, zone: Zone, worldX: number, depth: number, capaci
 
 function ceilingSlot(id: string, worldX: number, depth: number): Slot {
   const point = project(worldX, 0, depth);
-  return { id, zone: "ceiling", x: point.x, y: point.y, capacity: 2, anchor: "top", scale: point.k * ITEM_SCALE, depth: depthOrder(depth), world: null };
+  return {
+    id,
+    zone: "ceiling",
+    x: point.x,
+    y: point.y,
+    capacity: 2,
+    anchor: "top",
+    scale: point.k * ITEM_SCALE,
+    depth: depthOrder(depth),
+    world: null,
+  };
 }
 
 const WINDOW_CENTER_Y = WINDOW_FRAME.top + WINDOW_FRAME.height / 2;
@@ -106,6 +152,10 @@ export const SLOTS: Slot[] = [
   backWallSlot("wallR", "wall", 254, WINDOW_CENTER_Y + 6, 2, "center", 1),
   backWallSlot("window", "window", 180, WINDOW_CENTER_Y, 3, "center", 2),
   backWallSlot("sill", "sill", 180, WINDOW_FRAME.top + WINDOW_FRAME.height + 4, 1, "bottom", 4),
+  sideWallSlot("sideWallL", "left", "wall"),
+  sideWallSlot("sideWallR", "right", "wall"),
+  sideWallSlot("sideTopL", "left", "wallTop"),
+  sideWallSlot("sideTopR", "right", "wallTop"),
   floorSlot("rug", "rug", 180, 0.48, 3),
   floorSlot("floorBL", "floor", 72, 0.9, 2),
   floorSlot("floorBC", "floor", 180, 0.93, 3),
