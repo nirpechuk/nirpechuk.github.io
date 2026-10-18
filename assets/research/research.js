@@ -58,18 +58,20 @@
       get("traffic-status").textContent = "Traffic explorer couldn’t load. Reload this page to try again.";
     }
   }
-  // The research password persists in this browser, so every report opens without asking again;
-  // the admin password stays per tab.
-  const persistentKey = "research-password";
+  // Remember each password across tabs and visits; Lock clears both saved credentials.
   const savedPassword = () => {
-    try {
-      return sessionStorage.getItem(sessionKey) || (sessionKey === persistentKey ? localStorage.getItem(persistentKey) : null);
-    } catch {
-      return null;
+    for (const storage of ["sessionStorage", "localStorage"]) {
+      try {
+        const password = window[storage].getItem(sessionKey);
+        if (password) return password;
+      } catch {
+        /* Try the other storage if this one is unavailable. */
+      }
     }
+    return null;
   };
   const remember = (password, key = sessionKey) => {
-    for (const storage of key === persistentKey ? ["sessionStorage", "localStorage"] : ["sessionStorage"]) {
+    for (const storage of ["sessionStorage", "localStorage"]) {
       try {
         password ? window[storage].setItem(key, password) : window[storage].removeItem(key);
       } catch {
