@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { seededRandom } from "../game/progression";
 import type { SurfaceDef } from "../game/types";
 
-function tile(id: string, width: number, height: number, children: ReactNode, transform?: string) {
+function patternTile(id: string, width: number, height: number, children: ReactNode, transform?: string) {
   return (
     <pattern id={id} width={width} height={height} patternUnits="userSpaceOnUse" patternTransform={transform}>
       {children}
@@ -23,8 +23,11 @@ function starPath(centerX: number, centerY: number, radius: number): string {
   return `${path}Z`;
 }
 
-export function SurfacePattern({ id, surface }: { id: string; surface: SurfaceDef }) {
+export function SurfacePattern({ id, surface, scale }: { id: string; surface: SurfaceDef; scale?: number }) {
   const [base, second = base, third = second, fourth = third] = surface.colors;
+  const scaled = scale === undefined ? undefined : `scale(${scale})`;
+  const tile = (tileId: string, width: number, height: number, children: ReactNode, transform?: string) =>
+    patternTile(tileId, width, height, children, [scaled, transform].filter(Boolean).join(" ") || undefined);
   switch (surface.pattern) {
     case "plain":
       return tile(

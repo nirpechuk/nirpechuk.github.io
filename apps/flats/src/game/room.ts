@@ -1,44 +1,119 @@
-/** Apartment geometry (snap slots in room SVG coordinates) and placement rules. */
+/**
+ * Apartment geometry and placement rules.
+ *
+ * The room is drawn in one-point perspective. World positions use the coordinates of the room's
+ * front opening (360 x 420, floor at y = 420) plus a depth `t` from 0 (front edge) to 1 (back
+ * wall); `project` maps them to screen space. Things shrink with depth, so the back wall is a
+ * smaller rectangle inside the front opening and nearer furniture overlaps farther furniture.
+ */
 
 import type { Catalog, ItemDef, Layout, Placement, Player, Zone } from "./types";
 
 export const ROOM_WIDTH = 360;
 export const ROOM_HEIGHT = 420;
+export const FLOOR_Y = ROOM_HEIGHT;
+export const VANISHING_POINT = { x: 180, y: 120 };
+/** Screen size of the back wall relative to the front opening. Lower is deeper. */
+export const BACK_SCALE = 0.62;
+/** Item art units per world unit, so furniture reads at a pleasant size in the deeper room. */
+export const ITEM_SCALE = 1.25;
+/**
+ * Screen scale of things hung on the back wall. Slightly larger than strict perspective would
+ * give, so the window and wall art hold the composition instead of floating on a tall wall.
+ */
+export const BACK_ITEM_SCALE = 0.9;
+/** Height of the panelled dado below the rail, in world units. */
+export const DADO_HEIGHT = 100;
 
-/** Back wall rectangle of the diorama box. */
-export const BACK_WALL = { left: 22, right: 338, top: 30, bottom: 292 };
-export const WINDOW_FRAME = { cx: 180, top: 68, width: 88, height: 104 };
-export const PET_FLOOR = { minX: 46, maxX: 314, minY: 326, maxY: 402 };
+export function depthScale(depth: number): number {
+  return 1 / (1 + depth * (1 / BACK_SCALE - 1));
+}
+
+export interface ScreenPoint {
+  x: number;
+  y: number;
+  /** Perspective scale at this depth. */
+  k: number;
+}
+
+export function project(worldX: number, worldY: number, depth: number): ScreenPoint {
+  const k = depthScale(depth);
+  return { x: VANISHING_POINT.x + (worldX - VANISHING_POINT.x) * k, y: VANISHING_POINT.y + (worldY - VANISHING_POINT.y) * k, k };
+}
+
+/** Draw order for something standing at `depth`: farther first. */
+export function depthOrder(depth: number): number {
+  return 100 + (1 - depth) * 1000;
+}
+
+const backTopLeft = project(0, 0, 1);
+const backBottomRight = project(ROOM_WIDTH, FLOOR_Y, 1);
+export const BACK_WALL = { left: backTopLeft.x, right: backBottomRight.x, top: backTopLeft.y, bottom: backBottomRight.y };
+
+/** The window opening on the back wall, in screen coordinates. */
+export const WINDOW_FRAME = {
+  cx: 180,
+  top: 90,
+  width: 88 * BACK_ITEM_SCALE,
+  height: 104 * BACK_ITEM_SCALE,
+};
+
+/** Where the pet may wander, in world coordinates. */
+export const PET_FLOOR = { minX: 60, maxX: 300, minDepth: 0.14, maxDepth: 0.8 };
 
 export type SlotAnchor = "top" | "center" | "bottom";
 
 export interface Slot {
   id: string;
   zone: Zone;
+  /** Screen position of the anchor point. */
   x: number;
   y: number;
   capacity: number;
   anchor: SlotAnchor;
+  /** Screen scale applied to the item's art. */
   scale: number;
-  /** Draw order: lower first. Floor slots use their baseline so nearer items overlap farther ones. */
+  /** Draw order: lower first. */
   depth: number;
+  /** World position for floor slots (used for pet nap and play spots). */
+  world: { x: number; depth: number } | null;
 }
 
+function backWallSlot(id: string, zone: Zone, x: number, y: number, capacity: number, anchor: SlotAnchor, layer: number): Slot {
+  return { id, zone, x, y, capacity, anchor, scale: BACK_ITEM_SCALE, depth: layer, world: null };
+}
+
+function floorSlot(id: string, zone: Zone, worldX: number, depth: number, capacity: number): Slot {
+  const point = project(worldX, FLOOR_Y, depth);
+  const anchor: SlotAnchor = zone === "rug" ? "center" : "bottom";
+  const order = zone === "rug" ? 50 : depthOrder(depth);
+  return { id, zone, x: point.x, y: point.y, capacity, anchor, scale: point.k * ITEM_SCALE, depth: order, world: { x: worldX, depth } };
+}
+
+function ceilingSlot(id: string, worldX: number, depth: number): Slot {
+  const point = project(worldX, 0, depth);
+  return { id, zone: "ceiling", x: point.x, y: point.y, capacity: 2, anchor: "top", scale: point.k * ITEM_SCALE, depth: depthOrder(depth), world: null };
+}
+
+const WINDOW_CENTER_Y = WINDOW_FRAME.top + WINDOW_FRAME.height / 2;
+
 export const SLOTS: Slot[] = [
-  { id: "ceilL", zone: "ceiling", x: 92, y: 30, capacity: 2, anchor: "top", scale: 1, depth: 40 },
-  { id: "ceilC", zone: "ceiling", x: 180, y: 30, capacity: 2, anchor: "top", scale: 1, depth: 40 },
-  { id: "ceilR", zone: "ceiling", x: 268, y: 30, capacity: 2, anchor: "top", scale: 1, depth: 40 },
-  { id: "wallTop", zone: "wallTop", x: 180, y: 50, capacity: 3, anchor: "center", scale: 1, depth: 20 },
-  { id: "wallL", zone: "wall", x: 80, y: 122, capacity: 2, anchor: "center", scale: 1, depth: 10 },
-  { id: "wallR", zone: "wall", x: 280, y: 122, capacity: 2, anchor: "center", scale: 1, depth: 10 },
-  { id: "window", zone: "window", x: 180, y: 120, capacity: 3, anchor: "center", scale: 1, depth: 15 },
-  { id: "sill", zone: "sill", x: 180, y: 177, capacity: 1, anchor: "bottom", scale: 1, depth: 16 },
-  { id: "rug", zone: "rug", x: 180, y: 356, capacity: 3, anchor: "center", scale: 1, depth: 100 },
-  { id: "floorBL", zone: "floor", x: 80, y: 300, capacity: 2, anchor: "bottom", scale: 1, depth: 300 },
-  { id: "floorBC", zone: "floor", x: 180, y: 302, capacity: 3, anchor: "bottom", scale: 1, depth: 302 },
-  { id: "floorBR", zone: "floor", x: 280, y: 300, capacity: 2, anchor: "bottom", scale: 1, depth: 300 },
-  { id: "floorFL", zone: "floor", x: 54, y: 410, capacity: 2, anchor: "bottom", scale: 1.08, depth: 410 },
-  { id: "floorFR", zone: "floor", x: 306, y: 410, capacity: 2, anchor: "bottom", scale: 1.08, depth: 410 },
+  ceilingSlot("ceilL", 72, 0.55),
+  ceilingSlot("ceilC", 180, 0.55),
+  ceilingSlot("ceilR", 288, 0.55),
+  backWallSlot("wallTop", "wallTop", 180, WINDOW_FRAME.top - 14, 3, "center", 3),
+  backWallSlot("wallL", "wall", 106, WINDOW_CENTER_Y + 6, 2, "center", 1),
+  backWallSlot("wallR", "wall", 254, WINDOW_CENTER_Y + 6, 2, "center", 1),
+  backWallSlot("window", "window", 180, WINDOW_CENTER_Y, 3, "center", 2),
+  backWallSlot("sill", "sill", 180, WINDOW_FRAME.top + WINDOW_FRAME.height + 4, 1, "bottom", 4),
+  floorSlot("rug", "rug", 180, 0.48, 3),
+  floorSlot("floorBL", "floor", 72, 0.9, 2),
+  floorSlot("floorBC", "floor", 180, 0.93, 3),
+  floorSlot("floorBR", "floor", 288, 0.9, 2),
+  floorSlot("floorML", "floor", 34, 0.5, 2),
+  floorSlot("floorMR", "floor", 326, 0.5, 2),
+  floorSlot("floorFL", "floor", 44, 0.08, 2),
+  floorSlot("floorFR", "floor", 316, 0.08, 2),
 ];
 
 const SLOT_BY_ID = new Map(SLOTS.map((slot) => [slot.id, slot]));

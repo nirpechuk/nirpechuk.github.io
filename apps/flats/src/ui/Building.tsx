@@ -181,6 +181,7 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, recapBa
           <span className="sky-orb" />
         </div>
         <div className="building">
+          <span className="building-side" aria-hidden="true" />
           <div className="roof" aria-hidden="true">
             <div className="roof-garden">
               <span className="roof-plant plant-a" />

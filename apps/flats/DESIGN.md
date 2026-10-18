@@ -31,7 +31,11 @@ friend's window glows brighter the more they moved that week. Served at
 
 ## Apartment
 
-A front-on cutaway room with named snap slots. Each item lists the zones it fits
+A cutaway room in one-point perspective: world positions (the front opening's coordinates
+plus a depth from the front edge to the back wall) project onto the screen, so the back
+wall sits deep in the frame, side walls and a beamed ceiling recede, floors converge on the
+vanishing point (generated as projected polygons, since SVG patterns can't do perspective),
+and furniture and the pet shrink with depth. The room has named snap slots. Each item lists the zones it fits
 (`ceiling`, `wall`, `wallTop`, `window`, `sill`, `floor`, `rug`) and a size; a slot
 accepts items of its zone whose size fits its capacity. Wallpapers and floorings are
 items applied to the room surfaces instead of slots. Editing: drag (or tap an item,
@@ -61,7 +65,8 @@ to store it away. Dropping onto an occupied slot swaps the occupant back to stor
 
 ## Social
 
-A group has a short invite code. The group view is the building at night: one window
+A group has a short invite code. The group view is the building at night, turned slightly
+so its brick flank shows: one window
 per friend (a live miniature of their room) whose glow and window-box flowers follow
 that week's workouts, with a name tag below. Tapping a window swings its panes open
 and zooms into the flat. Visitors can leave a heart, a star or a pet treat (one of each

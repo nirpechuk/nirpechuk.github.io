@@ -31,14 +31,13 @@ export interface PetSpec {
 }
 
 const INK = "#3b2c26";
-const BLUSH = "#e08a8a";
 
-function eyePair(leftX: number, rightX: number, y: number, rx = 1.5, ry = 2): Layer[] {
+function eyePair(leftX: number, rightX: number, y: number, rx = 1.15, ry = 1.45): Layer[] {
   return [
     { t: "ellipse", cx: leftX, cy: y, rx, ry, fill: INK, flat: true },
     { t: "ellipse", cx: rightX, cy: y, rx, ry, fill: INK, flat: true },
-    { t: "circle", cx: leftX + 0.5, cy: y - 0.7, r: 0.55, fill: "#ffffff", flat: true },
-    { t: "circle", cx: rightX + 0.5, cy: y - 0.7, r: 0.55, fill: "#ffffff", flat: true },
+    { t: "circle", cx: leftX + 0.35, cy: y - 0.5, r: 0.32, fill: "#f5e6d0", o: 0.8, flat: true },
+    { t: "circle", cx: rightX + 0.35, cy: y - 0.5, r: 0.32, fill: "#f5e6d0", o: 0.8, flat: true },
   ];
 }
 
@@ -49,18 +48,12 @@ function closedEyes(leftX: number, rightX: number, y: number): Layer[] {
   ];
 }
 
-function blush(leftX: number, rightX: number, y: number): Layer[] {
-  return [
-    { t: "circle", cx: leftX, cy: y, r: 1.9, fill: BLUSH, o: 0.35, flat: true },
-    { t: "circle", cx: rightX, cy: y, r: 1.9, fill: BLUSH, o: 0.35, flat: true },
-  ];
-}
+
 
 function legs(xs: number[], fill: string, height = 8): Layer[] {
   return xs.map((x) => ({ t: "rect" as const, x, y: -height, w: 5, h: height, r: 2.5, fill }));
 }
 
-const happyHeart = (x: number, y: number): Layer => ({ t: "heart", cx: x, cy: y, r: 3.2, fill: "#d9707a", flat: true });
 
 export const PETS: PetSpec[] = [
   {
@@ -90,11 +83,9 @@ export const PETS: PetSpec[] = [
       eyesOpen: eyePair(7.8, 14.6, -24),
       eyesClosed: closedEyes(7.8, 14.6, -23.6),
       face: [
-        ...blush(5.6, 16.8, -20.2),
         { t: "poly", pts: [10.5, -21.4, 12.3, -21.4, 11.4, -20.3], fill: "#f08a8a", flat: true },
-        { t: "path", d: "M9.7 -19.6 Q10.55 -18.7 11.4 -19.6 Q12.25 -18.7 13.1 -19.6", stroke: INK, sw: 0.8, fill: "none", flat: true },
       ],
-      happy: [happyHeart(22, -38)],
+      happy: [],
     },
   },
   {
@@ -125,13 +116,11 @@ export const PETS: PetSpec[] = [
       eyesOpen: eyePair(7.6, 15.2, -25),
       eyesClosed: closedEyes(7.6, 15.2, -24.6),
       face: [
-        ...blush(5.8, 17.2, -21),
         { t: "ellipse", cx: 11.5, cy: -20.6, rx: 1.7, ry: 1.15, fill: INK, flat: true },
         { t: "path", d: "M11.5 -19.5 L11.5 -18.5 M9.8 -17.9 Q11.5 -16.6 13.2 -17.9", stroke: INK, sw: 0.8, fill: "none", flat: true },
       ],
       happy: [
         { t: "ellipse", cx: 12, cy: -16.4, rx: 1.4, ry: 1.9, fill: "#f28c8c", flat: true },
-        happyHeart(22, -36),
       ],
     },
   },
@@ -161,11 +150,9 @@ export const PETS: PetSpec[] = [
       eyesOpen: eyePair(7, 13.6, -23),
       eyesClosed: closedEyes(7, 13.6, -22.6),
       face: [
-        ...blush(5, 15.6, -19.4),
         { t: "poly", pts: [9.4, -20.5, 11.2, -20.5, 10.3, -19.4], fill: "#f08a8a", flat: true },
-        { t: "path", d: "M8.6 -18.7 Q9.45 -17.8 10.3 -18.7 Q11.15 -17.8 12 -18.7", stroke: INK, sw: 0.8, fill: "none", flat: true },
       ],
-      happy: [happyHeart(21, -44)],
+      happy: [],
     },
   },
   {
@@ -200,10 +187,9 @@ export const PETS: PetSpec[] = [
       eyesOpen: eyePair(0.4, 12.4, -27, 1.7, 1.9),
       eyesClosed: closedEyes(0, 12, -26.6),
       face: [
-        ...blush(-1.5, 13.5, -19.6),
-        { t: "path", d: "M0.5 -18.2 Q6 -14.4 11.5 -18.2", stroke: "#3b5b34", sw: 1, fill: "none", flat: true },
+        { t: "path", d: "M2 -17.6 Q6 -15.6 10 -17.6", stroke: "#3b5b34", sw: 0.8, fill: "none", flat: true },
       ],
-      happy: [happyHeart(18, -36)],
+      happy: [],
     },
   },
   {
@@ -233,8 +219,8 @@ export const PETS: PetSpec[] = [
       earsFront: [{ t: "ellipse", cx: 17, cy: -22.5, rx: 4.6, ry: 2.2, fill: "a" }],
       eyesOpen: eyePair(6.5, 12, -25.5, 1.3, 1.7),
       eyesClosed: closedEyes(6.5, 12, -25.2),
-      face: blush(4.8, 13.4, -22.3),
-      happy: [happyHeart(20, -36)],
+      face: [],
+      happy: [],
     },
   },
 ];

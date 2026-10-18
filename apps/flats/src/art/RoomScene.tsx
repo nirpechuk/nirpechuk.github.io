@@ -11,14 +11,14 @@ import { itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
 import { plantStage } from "../game/progression";
 import type { Slot } from "../game/room";
-import { BACK_WALL, PET_FLOOR, ROOM_HEIGHT, ROOM_WIDTH, SLOTS, WINDOW_FRAME } from "../game/room";
+import { BACK_ITEM_SCALE, FLOOR_Y, ITEM_SCALE, PET_FLOOR, project, ROOM_HEIGHT, ROOM_WIDTH, slotById, SLOTS, WINDOW_FRAME } from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
 import { ItemArt } from "./ItemArt";
 import type { Lighting } from "./lighting";
 import { PetFigure } from "./Pet";
-import { SurfacePattern } from "./Surfaces";
+import { RoomArchitecture } from "./RoomShell";
 import type { PetSpot } from "./usePetBehaviour";
-import { usePetBehaviour } from "./usePetBehaviour";
+import { floorSpot, usePetBehaviour } from "./usePetBehaviour";
 
 export interface EditingState {
   /** Item currently held (selected in the drawer or being dragged). */
@@ -62,6 +62,12 @@ const STICKER_SPOTS: [number, number, number][] = [
 ];
 const WINDOW_LEFT = WINDOW_FRAME.cx - WINDOW_FRAME.width / 2;
 const WINDOW_BOTTOM = WINDOW_FRAME.top + WINDOW_FRAME.height;
+/** The window is drawn in its own art coordinates, then scaled onto the back wall. */
+const WINDOW_ART = { left: 136, top: 68, width: 88, height: 104 };
+const WINDOW_TRANSFORM = `translate(${WINDOW_LEFT} ${WINDOW_FRAME.top}) scale(${BACK_ITEM_SCALE}) translate(${-WINDOW_ART.left} ${-WINDOW_ART.top})`;
+/** Pets are drawn a little larger than furniture art so they stay readable at the back. */
+const PET_SCALE = 1.2;
+const BOX_DEPTH = 0.1;
 
 function slotTransform(item: ItemDef, slot: Slot, flip: boolean): string {
   const anchorOffset = slot.anchor === "top" ? 0 : slot.anchor === "bottom" ? -item.h : -item.h / 2;
@@ -70,19 +76,19 @@ function slotTransform(item: ItemDef, slot: Slot, flip: boolean): string {
 }
 
 function napSpot(item: ItemDef, slot: Slot, placement: Placement): PetSpot | null {
-  if (!item.tags?.includes("nap")) return null;
-  const seatX = (item.seatX ?? 0) * (placement.flip ? -1 : 1) * slot.scale;
-  if (slot.zone === "rug") return { x: slot.x + seatX, y: slot.y + 4, depth: slot.depth + 1 };
-  const y = slot.y - (item.seat ?? 0) * slot.scale;
-  return { x: slot.x + seatX, y, depth: slot.depth + 0.5 };
+  if (!item.tags?.includes("nap") || !slot.world) return null;
+  const seatX = (item.seatX ?? 0) * (placement.flip ? -1 : 1) * ITEM_SCALE;
+  const depth = Math.min(slot.world.depth, PET_FLOOR.maxDepth + 0.12);
+  if (slot.zone === "rug") return floorSpot(slot.world.x + seatX, depth);
+  return { x: slot.world.x + seatX, depth: slot.world.depth - 0.02, lift: (item.seat ?? 0) * ITEM_SCALE, order: slot.depth + 0.5 };
 }
 
 function playSpot(item: ItemDef, slot: Slot): PetSpot | null {
-  if (!item.tags?.includes("play")) return null;
-  const besideDistance = (item.w / 2) * slot.scale + 16;
-  const side = slot.x > 180 ? -besideDistance : besideDistance;
-  const y = Math.max(PET_FLOOR.minY, Math.min(PET_FLOOR.maxY, slot.y - 6));
-  return { x: slot.x + side, y, depth: slot.depth + 1 };
+  if (!item.tags?.includes("play") || !slot.world) return null;
+  const besideDistance = (item.w / 2) * ITEM_SCALE + 20;
+  const side = slot.world.x > 180 ? -besideDistance : besideDistance;
+  const depth = Math.max(PET_FLOOR.minDepth, Math.min(PET_FLOOR.maxDepth, slot.world.depth - 0.04));
+  return floorSpot(slot.world.x + side, depth);
 }
 
 interface PlacedEntry {
@@ -94,21 +100,23 @@ interface PlacedEntry {
 
 function WindowView({ lighting, idPrefix, animate }: { lighting: Lighting; idPrefix: string; animate: boolean }) {
   const isNight = lighting.phase === "night";
-  const { top, width, height } = WINDOW_FRAME;
+  const { top, width, height } = WINDOW_ART;
+  const left = WINDOW_ART.left;
+  const bottom = top + height;
   const windowGlow = isNight ? "#ffe39a" : "#fff7e3";
   return (
-    <g className="window-view">
+    <g className="window-view" transform={WINDOW_TRANSFORM}>
       <defs>
         <linearGradient id={`${idPrefix}-sky`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor={lighting.skyTop} />
           <stop offset="1" stopColor={lighting.skyBottom} />
         </linearGradient>
         <clipPath id={`${idPrefix}-window`}>
-          <rect x={WINDOW_LEFT} y={top} width={width} height={height} rx="3" />
+          <rect x={left} y={top} width={width} height={height} rx="3" />
         </clipPath>
       </defs>
       <g clipPath={`url(#${idPrefix}-window)`}>
-        <rect x={WINDOW_LEFT} y={top} width={width} height={height} fill={`url(#${idPrefix}-sky)`} />
+        <rect x={left} y={top} width={width} height={height} fill={`url(#${idPrefix}-sky)`} />
         {isNight ? (
           <>
             <path d="M206 84 A9 9 0 1 0 214 98 A7 7 0 1 1 206 84Z" fill="#fff3c4" />
@@ -160,42 +168,53 @@ function WindowView({ lighting, idPrefix, animate }: { lighting: Lighting; idPre
             ].map(([x, y], index) => <rect key={index} x={x} y={y} width="2.6" height="3" fill="#ffcf7a" className={animate && index % 3 === 0 ? "anim anim-flicker-soft" : undefined} />)}
         </g>
       </g>
-      <rect x={WINDOW_LEFT - 4} y={top - 4} width={width + 8} height={height + 8} rx="5" fill="none" stroke="#2b2228" strokeWidth="7" />
-      <rect x={WINDOW_LEFT - 7.5} y={top - 7.5} width={width + 15} height={height + 15} rx="7" fill="none" stroke="rgba(255,220,170,0.1)" strokeWidth="1.2" />
-      <line x1={WINDOW_FRAME.cx} y1={top} x2={WINDOW_FRAME.cx} y2={WINDOW_BOTTOM} stroke="#2b2228" strokeWidth="4" />
-      <line x1={WINDOW_LEFT} y1={top + height * 0.46} x2={WINDOW_LEFT + width} y2={top + height * 0.46} stroke="#2b2228" strokeWidth="4" />
-      <rect x={WINDOW_LEFT - 12} y={WINDOW_BOTTOM + 3} width={width + 24} height="6" rx="2" fill="#352a31" />
-      <rect x={WINDOW_LEFT - 12} y={WINDOW_BOTTOM + 8.5} width={width + 24} height="1.6" fill="rgba(0,0,0,0.3)" />
-      {isNight && <rect x={WINDOW_LEFT} y={top} width={width} height={height} fill={windowGlow} opacity="0.05" />}
+      <rect x={left - 4} y={top - 4} width={width + 8} height={height + 8} rx="5" fill="none" stroke="#2b2228" strokeWidth="7" />
+      <rect x={left - 7.5} y={top - 7.5} width={width + 15} height={height + 15} rx="7" fill="none" stroke="rgba(255,220,170,0.1)" strokeWidth="1.2" />
+      <line x1={left + width / 2} y1={top} x2={left + width / 2} y2={bottom} stroke="#2b2228" strokeWidth="4" />
+      <line x1={left} y1={top + height * 0.46} x2={left + width} y2={top + height * 0.46} stroke="#2b2228" strokeWidth="4" />
+      <rect x={left} y={top} width={width} height={height} rx="3" fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="5" />
+      <path d={`M${left - 10} ${bottom + 3} L${left + width + 10} ${bottom + 3} L${left + width + 16} ${bottom + 9} L${left - 16} ${bottom + 9} Z`} fill="#3d3038" />
+      <rect x={left - 16} y={bottom + 9} width={width + 32} height="4" fill="#271e24" />
+      <rect x={left - 16} y={bottom + 13} width={width + 32} height="2" fill="rgba(0,0,0,0.35)" />
+      {isNight && <rect x={left} y={top} width={width} height={height} fill={windowGlow} opacity="0.05" />}
     </g>
   );
 }
 
 function BareBulb({ glowPass, glow }: { glowPass: boolean; glow: number }) {
+  const slot = slotById("ceilC");
+  const pool = project(180, FLOOR_Y, 0.55);
   if (glowPass) {
     return (
       <g className="bulb-glow">
-        <circle cx="180" cy="80" r="70" fill="#ffb865" opacity={0.18 + glow * 0.22} />
-        <ellipse cx="180" cy="370" rx="130" ry="40" fill="#ffb865" opacity={0.12 + glow * 0.14} />
-        <circle cx="180" cy="78" r="26" fill="#ffd89a" opacity={0.35 + glow * 0.4} />
+        <ellipse cx={pool.x} cy={pool.y} rx="125" ry="30" fill="#ffb865" opacity={0.14 + glow * 0.16} />
+        <g transform={`translate(${slot.x} ${slot.y}) scale(${slot.scale})`}>
+          <circle cx="0" cy="48" r="70" fill="#ffb865" opacity={0.18 + glow * 0.22} />
+          <circle cx="0" cy="48" r="24" fill="#ffd89a" opacity={0.35 + glow * 0.4} />
+        </g>
       </g>
     );
   }
   return (
-    <g className="anim anim-sway-top bare-bulb">
-      <line x1="180" y1={BACK_WALL.top} x2="180" y2="66" stroke="#6b5548" strokeWidth="1.2" />
-      <rect x="176.5" y="64" width="7" height="6" rx="1" fill="#8a8f9a" />
-      <circle cx="180" cy="76" r="6.5" fill="#ffe6b0" className="bulb-core" />
-      <path d="M178 74 Q180 78 182 74" stroke="#ff9d3a" strokeWidth="0.9" fill="none" />
+    <g transform={`translate(${slot.x} ${slot.y}) scale(${slot.scale})`}>
+      <g className="anim anim-sway-top bare-bulb">
+        <line x1="0" y1="0" x2="0" y2="38" stroke="#6b5548" strokeWidth="1.2" />
+        <rect x="-3.5" y="36" width="7" height="6" rx="1" fill="#8a8f9a" />
+        <circle cx="0" cy="48" r="6.5" fill="#ffe6b0" className="bulb-core" />
+        <path d="M-2 46 Q0 50 2 46" stroke="#ff9d3a" strokeWidth="0.9" fill="none" />
+      </g>
     </g>
   );
 }
+
+const boxPoint = project(180, FLOOR_Y, BOX_DEPTH);
+const sunbeamFar = { left: project(105, FLOOR_Y, 0.22), right: project(255, FLOOR_Y, 0.22) };
 
 function PresentBox({ state, onTap }: { state: Exclude<BoxState, null>; onTap?: () => void }) {
   return (
     <g
       className={`present-box ${state === "present" ? "is-ready" : "is-teaser"}`}
-      transform="translate(180 412)"
+      transform={`translate(${boxPoint.x} ${boxPoint.y}) scale(${boxPoint.k * ITEM_SCALE * 0.95})`}
       onClick={onTap}
       role="button"
       aria-label={state === "present" ? "Unpack your present" : "Your first box"}
@@ -269,6 +288,7 @@ export function RoomScene(props: RoomSceneProps) {
   });
 
   const wallpaper = surfaceById(player.layout.wallpaper);
+  const petPoint = project(pose.x, FLOOR_Y - pose.lift, pose.depth);
   const flooring = surfaceById(player.layout.flooring);
   const heldItem = editing?.heldItemId ? itemById(editing.heldItemId) : null;
   const ceilingCentreEmpty = !player.layout.slots.ceilC;
@@ -306,19 +326,22 @@ export function RoomScene(props: RoomSceneProps) {
     });
 
   if (ceilingCentreEmpty) {
-    drawables.push({ depth: 40, key: "bulb", node: <BareBulb key="bulb" glowPass={false} glow={lighting.glow} /> });
+    drawables.push({ depth: slotById("ceilC").depth, key: "bulb", node: <BareBulb key="bulb" glowPass={false} glow={lighting.glow} /> });
   }
   if (box && variant === "home") {
-    drawables.push({ depth: 404, key: "box", node: <PresentBox key="box" state={box} onTap={onBoxTap} /> });
+    drawables.push({ depth: 100 + (1 - BOX_DEPTH) * 1000, key: "box", node: <PresentBox key="box" state={box} onTap={onBoxTap} /> });
   }
   drawables.push({
-    depth: pose.depth + 0.1,
+    depth: pose.order,
     key: "pet",
     node: (
       <g
         key="pet"
         className="pet-position"
-        style={{ transform: `translate(${pose.x}px, ${pose.y}px)`, transitionDuration: `${pose.moveMs}ms` }}
+        style={{
+          transform: `translate(${petPoint.x}px, ${petPoint.y}px) scale(${petPoint.k * PET_SCALE})`,
+          transitionDuration: `${pose.moveMs}ms`,
+        }}
       >
         <g
           className="pet-facing"
@@ -352,13 +375,6 @@ export function RoomScene(props: RoomSceneProps) {
       aria-label={`${player.name}'s flat with ${player.petName} the ${player.petKind}`}
     >
       <defs>
-        <SurfacePattern id={`${idPrefix}-wall`} surface={wallpaper} />
-        <SurfacePattern id={`${idPrefix}-floor`} surface={flooring} />
-        <linearGradient id={`${idPrefix}-floorshade`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0c0610" stopOpacity="0.45" />
-          <stop offset="0.4" stopColor="#0c0610" stopOpacity="0.12" />
-          <stop offset="1" stopColor="#0c0610" stopOpacity="0.25" />
-        </linearGradient>
         <radialGradient id={`${idPrefix}-vignette`} cx="0.5" cy="0.45" r="0.75">
           <stop offset="0.45" stopColor="#0c0610" stopOpacity="0" />
           <stop offset="1" stopColor="#0c0610" stopOpacity="0.55" />
@@ -375,22 +391,15 @@ export function RoomScene(props: RoomSceneProps) {
         </filter>
       </defs>
 
-      <g className="room-shell">
-        <polygon points={`0,0 ${ROOM_WIDTH},0 ${BACK_WALL.right},${BACK_WALL.top} ${BACK_WALL.left},${BACK_WALL.top}`} fill="#2a2129" />
-        <rect x={BACK_WALL.left} y={BACK_WALL.top} width={BACK_WALL.right - BACK_WALL.left} height={BACK_WALL.bottom - BACK_WALL.top} fill={`url(#${idPrefix}-wall)`} />
-        <polygon points={`0,0 ${BACK_WALL.left},${BACK_WALL.top} ${BACK_WALL.left},${BACK_WALL.bottom} 0,${ROOM_HEIGHT}`} fill={`url(#${idPrefix}-wall)`} />
-        <polygon points={`0,0 ${BACK_WALL.left},${BACK_WALL.top} ${BACK_WALL.left},${BACK_WALL.bottom} 0,${ROOM_HEIGHT}`} fill="#0c0610" opacity="0.32" />
-        <polygon points={`${ROOM_WIDTH},0 ${BACK_WALL.right},${BACK_WALL.top} ${BACK_WALL.right},${BACK_WALL.bottom} ${ROOM_WIDTH},${ROOM_HEIGHT}`} fill={`url(#${idPrefix}-wall)`} />
-        <polygon points={`${ROOM_WIDTH},0 ${BACK_WALL.right},${BACK_WALL.top} ${BACK_WALL.right},${BACK_WALL.bottom} ${ROOM_WIDTH},${ROOM_HEIGHT}`} fill="#0c0610" opacity="0.38" />
-        <polygon points={`${BACK_WALL.left},${BACK_WALL.bottom} ${BACK_WALL.right},${BACK_WALL.bottom} ${ROOM_WIDTH},${ROOM_HEIGHT} 0,${ROOM_HEIGHT}`} fill={`url(#${idPrefix}-floor)`} />
-        <polygon points={`${BACK_WALL.left},${BACK_WALL.bottom} ${BACK_WALL.right},${BACK_WALL.bottom} ${ROOM_WIDTH},${ROOM_HEIGHT} 0,${ROOM_HEIGHT}`} fill={`url(#${idPrefix}-floorshade)`} />
-        <rect x={BACK_WALL.left} y={BACK_WALL.bottom - 8} width={BACK_WALL.right - BACK_WALL.left} height="8" fill="#241c22" />
-        <rect x={BACK_WALL.left} y={BACK_WALL.bottom - 8} width={BACK_WALL.right - BACK_WALL.left} height="1.2" fill="rgba(255,220,170,0.12)" />
-        <rect x={BACK_WALL.left} y={BACK_WALL.top} width={BACK_WALL.right - BACK_WALL.left} height="6" fill="rgba(12,6,16,0.3)" />
+      <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
+      <g className="room-openings">
         <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
         {(lighting.phase === "day" || lighting.phase === "dawn") && (
           <g className="sunbeam" pointerEvents="none">
-            <polygon points={`${WINDOW_LEFT + 6},${WINDOW_BOTTOM + 10} ${WINDOW_LEFT + WINDOW_FRAME.width - 6},${WINDOW_BOTTOM + 10} 262,402 118,402`} fill={`url(#${idPrefix}-beam)`} />
+            <polygon
+              points={`${WINDOW_LEFT + 3},${WINDOW_BOTTOM + 6} ${WINDOW_LEFT + WINDOW_FRAME.width - 3},${WINDOW_BOTTOM + 6} ${sunbeamFar.right.x},${sunbeamFar.right.y} ${sunbeamFar.left.x},${sunbeamFar.left.y}`}
+              fill={`url(#${idPrefix}-beam)`}
+            />
             {animate &&
               [
                 [168, 230],
