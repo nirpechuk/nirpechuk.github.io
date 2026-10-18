@@ -14,8 +14,10 @@ import type { GroupSnapshot, Player } from "../game/types";
 import { playPop } from "./sound";
 
 const FLATS_PER_FLOOR = 2;
-/** The zoom starts while the panes are still swinging, so opening reads as one motion. */
-const ZOOM_START_DELAY_MS = 150;
+/** Keep in sync with the `.pane` transition in styles.css. */
+const PANE_OPEN_MS = 700;
+/** A short beat with the window fully open before the zoom begins. */
+const PAUSE_BEFORE_ZOOM_MS = 250;
 const FLOWER_COLORS = ["#d9707a", "#e8a050", "#b08ad0", "#d98a9a", "#8ab0d8"];
 /** Window brightness by workouts this week: a quiet week is a dim window, a busy one glows. */
 const GLOW_BY_WEEKLY_COUNT = [0.08, 0.42, 0.62, 0.8, 1];
@@ -93,7 +95,7 @@ function FlatWindow({
           const room = event.currentTarget.querySelector(".window-glass .room-scene");
           if (!room) throw new Error("Window room element missing.");
           setOpening(true);
-          window.setTimeout(() => onOpen(room.getBoundingClientRect(), glow), reducedMotion ? 0 : ZOOM_START_DELAY_MS);
+          window.setTimeout(() => onOpen(room.getBoundingClientRect(), glow), reducedMotion ? 0 : PANE_OPEN_MS + PAUSE_BEFORE_ZOOM_MS);
         }}
       >
         <div className="window-glass">

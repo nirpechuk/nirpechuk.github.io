@@ -9,10 +9,10 @@ import type { Player, Reaction, ReactionKind } from "../game/types";
 import { playChime, playPop } from "./sound";
 
 export const STICKERS = ["✦", "♥", "☾", "❀", "★", "✧"];
-const ZOOM_IN_MS = 720;
-const ZOOM_OUT_MS = 560;
-/** Ease-out-quint for zooming in (fast start, long gentle landing); ease-in-out for zooming out. */
-const ZOOM_IN_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const ZOOM_IN_MS = 1150;
+const ZOOM_OUT_MS = 650;
+/** A soft start and a long, gentle landing for zooming in; plain ease-in-out for zooming out. */
+const ZOOM_IN_EASING = "cubic-bezier(0.45, 0, 0.15, 1)";
 const ZOOM_OUT_EASING = "cubic-bezier(0.65, 0, 0.35, 1)";
 /** Match the building window's tint (see .window-dim / .window-warm) so the zoom starts seamlessly. */
 const windowDimOpacity = (glow: number) => (1 - glow) * 0.72;

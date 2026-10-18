@@ -1533,7 +1533,7 @@ h3 {
   background:
     linear-gradient(transparent calc(50% - 1.25px), #2b2228 calc(50% - 1.25px) calc(50% + 1.25px), transparent calc(50% + 1.25px)),
     linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
-  transition: transform 0.4s cubic-bezier(0.45, 0, 0.3, 1);
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
 }
 
@@ -1873,7 +1873,7 @@ h3 {
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-  animation: fade-in 0.45s 0.5s ease both;
+  animation: fade-in 0.5s 1s ease both;
 }
 
 .back-button {
@@ -1932,7 +1932,7 @@ h3 {
 .reaction-bar {
   margin-top: 16px;
   text-align: center;
-  animation: rise-in 0.5s 0.55s var(--ease) both;
+  animation: rise-in 0.55s 1.05s var(--ease) both;
 }
 
 .reaction-buttons {
