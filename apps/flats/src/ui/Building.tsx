@@ -229,7 +229,9 @@ export function Building({ snapshot, meId, day, lighting, reducedMotion, openPla
           <span className="sky-cloud cloud-a" />
           <span className="sky-cloud cloud-b" />
           <span className="sky-cloud cloud-c" />
-          <span className="sky-orb" />
+          <svg className="sky-orb" viewBox="0 0 34 34" aria-hidden="true">
+            {lighting.phase === "night" ? <path d="M22 1.8A16 16 0 1 0 22 32.2C10 27 10 7 22 1.8Z" /> : <circle cx="17" cy="17" r="16" />}
+          </svg>
         </div>
         <div className="neighbourhood" aria-hidden="true">
           <div className="townhouses">

@@ -1210,6 +1210,7 @@ h3 {
 }
 
 .sky-layer {
+  z-index: -3;
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -1288,16 +1289,14 @@ h3 {
   right: 28px;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background: #ffe2b0;
-  box-shadow: 0 0 40px 12px rgba(255, 200, 140, 0.35);
+  overflow: visible;
+  fill: #ffe2b0;
+  filter: drop-shadow(0 0 16px rgba(255, 200, 140, 0.45));
 }
 
 .phase-night .sky-orb {
-  background: #f3e6c8;
-  box-shadow:
-    inset -10px -4px 0 0 #121733,
-    0 0 30px 6px rgba(243, 230, 200, 0.2);
+  fill: #f3e6c8;
+  filter: drop-shadow(0 0 12px rgba(243, 230, 200, 0.3));
 }
 
 /* Flat layers keep the illustrated depth without interfering with window hit testing. */
