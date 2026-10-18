@@ -244,8 +244,8 @@
       "rarity": "standard",
       "zones": ["window"],
       "size": 3,
-      "w": 130,
-      "h": 128,
+      "w": 136,
+      "h": 170,
       "palettes": [
         {
           "name": "Oatmeal linen",
@@ -320,7 +320,8 @@
           "r": 3.5,
           "fill": "a"
         }
-      ]
+      ],
+      "moonShape": "curtains"
     },
     {
       "id": "paper-lantern",
@@ -423,7 +424,15 @@
           "fill": "a"
         }
       ],
-      "scale": 1.1
+      "scale": 1.1,
+      "light": {
+        "x": 0.5,
+        "y": 0.7,
+        "radius": 120,
+        "warmth": 2700,
+        "pattern": "none",
+        "throw": "room"
+      }
     },
     {
       "id": "woven-rug",
@@ -508,7 +517,7 @@
     },
     {
       "id": "mountain-poster",
-      "name": "Framed mountain print",
+      "name": "Taped mountain print",
       "blurb": "A quiet view for slow mornings.",
       "category": "wallart",
       "tier": 1,
@@ -693,7 +702,7 @@
     },
     {
       "id": "crate-shelf",
-      "name": "Low bookcase",
+      "name": "Stacked wooden crates",
       "blurb": "Paperbacks, a plant, a basket of odds and ends.",
       "category": "furniture",
       "tier": 1,
@@ -1016,7 +1025,15 @@
           "flat": true
         }
       ],
-      "scale": 1.16
+      "scale": 1.16,
+      "light": {
+        "x": 0.5,
+        "y": 0.13,
+        "radius": 104,
+        "warmth": 2600,
+        "pattern": "cone",
+        "throw": "down"
+      }
     },
     {
       "id": "eucalyptus-garland",
@@ -1194,7 +1211,7 @@
       "zones": ["floor"],
       "size": 3,
       "w": 118,
-      "h": 62,
+      "h": 48,
       "tags": ["nap"],
       "seat": 30,
       "palettes": [
@@ -1332,7 +1349,7 @@
       "zones": ["floor"],
       "size": 2,
       "w": 62,
-      "h": 58,
+      "h": 76,
       "tags": ["nap"],
       "seat": 27,
       "palettes": [
@@ -1353,6 +1370,12 @@
           "p": "#5a3a5e",
           "s": "#432a46",
           "a": "#c9a96b"
+        },
+        {
+          "name": "Mustard velvet",
+          "p": "#B0802C",
+          "s": "#6E4E16",
+          "a": "#D8A848"
         }
       ],
       "layers": [
@@ -1463,7 +1486,7 @@
       "anim": "sway",
       "palettes": [
         {
-          "name": "Terracotta",
+          "name": "Ivory ceramic",
           "p": "#a85a3c",
           "s": "#8a4730",
           "a": "#6fae73"
@@ -1820,8 +1843,8 @@
       "rarity": "standard",
       "zones": ["window"],
       "size": 3,
-      "w": 130,
-      "h": 128,
+      "w": 136,
+      "h": 170,
       "palettes": [
         {
           "name": "Dark floral",
@@ -1988,7 +2011,8 @@
           "d": "M2 4 L128 4 L128 14 Q120 22 112 14 Q104 22 96 14 Q88 22 80 14 Q72 22 64 14 Q56 22 48 14 Q40 22 32 14 Q24 22 16 14 Q8 22 2 14Z",
           "fill": "s"
         }
-      ]
+      ],
+      "moonShape": "curtains"
     },
     {
       "id": "gallery-trio",
@@ -2138,7 +2162,7 @@
       "zones": ["floor"],
       "size": 2,
       "w": 56,
-      "h": 112,
+      "h": 145,
       "palettes": [
         {
           "name": "Walnut",
@@ -2446,7 +2470,15 @@
           "flat": true
         }
       ],
-      "scale": 1.23
+      "scale": 1.23,
+      "light": {
+        "x": 0.84,
+        "y": 0.3,
+        "radius": 135,
+        "warmth": 2400,
+        "pattern": "cone",
+        "throw": "down"
+      }
     },
     {
       "id": "striped-rug",
@@ -2941,8 +2973,8 @@
       "rarity": "standard",
       "zones": ["floor"],
       "size": 1,
-      "w": 44,
-      "h": 48,
+      "w": 88,
+      "h": 60,
       "tags": ["play"],
       "palettes": [
         {
@@ -3099,22 +3131,22 @@
       "tags": ["play"],
       "palettes": [
         {
-          "name": "Brass",
-          "p": "#e0a050",
-          "s": "#3e3030",
-          "a": "#d96a5a"
-        },
-        {
-          "name": "Black",
-          "p": "#f0c070",
-          "s": "#1f1a1c",
-          "a": "#e58a5a"
-        },
-        {
           "name": "Walnut",
-          "p": "#e8b070",
-          "s": "#5c3c28",
-          "a": "#c95a6a"
+          "p": "#6A4428",
+          "s": "#2E1B0F",
+          "a": "#9A6A44"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Honey oak",
+          "p": "#AC8050",
+          "s": "#684428",
+          "a": "#DCBA82"
         }
       ],
       "layers": [
@@ -3621,7 +3653,15 @@
           "fill": "p",
           "flat": true
         }
-      ]
+      ],
+      "light": {
+        "x": 0.5,
+        "y": 0.6,
+        "radius": 150,
+        "warmth": 2200,
+        "pattern": "none",
+        "throw": "wall"
+      }
     },
     {
       "id": "garden-door",
@@ -3892,7 +3932,15 @@
           "fill": "a"
         }
       ],
-      "scale": 0.75
+      "scale": 0.75,
+      "light": {
+        "x": 0.5,
+        "y": 0.5,
+        "radius": 65,
+        "warmth": 2000,
+        "pattern": "none",
+        "throw": "room"
+      }
     },
     {
       "id": "fireplace",
@@ -4039,7 +4087,15 @@
           "fill": "#c9a96b",
           "flat": true
         }
-      ]
+      ],
+      "light": {
+        "x": 0.5,
+        "y": 0.7,
+        "radius": 135,
+        "warmth": 1900,
+        "pattern": "flicker",
+        "throw": "room"
+      }
     },
     {
       "id": "globe-chandelier",
@@ -4180,7 +4236,15 @@
           "fill": "p"
         }
       ],
-      "scale": 1.15
+      "scale": 1.15,
+      "light": {
+        "x": 0.5,
+        "y": 0.65,
+        "radius": 150,
+        "warmth": 2700,
+        "pattern": "none",
+        "throw": "room"
+      }
     },
     {
       "id": "egg-chair",
@@ -4565,7 +4629,15 @@
           "anim": "twinkle"
         }
       ],
-      "scale": 1.6
+      "scale": 1.6,
+      "light": {
+        "x": 0.5,
+        "y": 0.5,
+        "radius": 85,
+        "warmth": 2300,
+        "pattern": "none",
+        "throw": "room"
+      }
     },
     {
       "id": "dried-roses",
@@ -4967,7 +5039,15 @@
           "flat": true,
           "anim": "twinkle"
         }
-      ]
+      ],
+      "light": {
+        "x": 0.5,
+        "y": 0.45,
+        "radius": 75,
+        "warmth": 2800,
+        "pattern": "none",
+        "throw": "wall"
+      }
     },
     {
       "id": "snail-terrarium",
@@ -5218,7 +5298,15 @@
           "r": 1,
           "fill": "a"
         }
-      ]
+      ],
+      "light": {
+        "x": 0.5,
+        "y": 0.22,
+        "radius": 65,
+        "warmth": 1800,
+        "pattern": "flicker",
+        "throw": "room"
+      }
     },
     {
       "id": "bar-cart",
@@ -5383,8 +5471,8 @@
       "rarity": "standard",
       "zones": ["wall"],
       "size": 1,
-      "w": 44,
-      "h": 58,
+      "w": 66,
+      "h": 46,
       "palettes": [
         {
           "name": "Honey",
@@ -6009,7 +6097,7 @@
       "zones": ["wall"],
       "size": 1,
       "w": 44,
-      "h": 58,
+      "h": 44,
       "palettes": [
         {
           "name": "Honey",
@@ -6239,7 +6327,7 @@
       "zones": ["wallTop"],
       "size": 3,
       "w": 200,
-      "h": 36,
+      "h": 58,
       "palettes": [
         {
           "name": "Rose",
@@ -6375,6 +6463,618 @@
           "o": 0.65
         }
       ]
+    },
+    {
+      "id": "velvet-drapes",
+      "name": "Velvet drapes",
+      "blurb": "Heavy velvet, a thin ribbon of moonlight.",
+      "category": "textiles",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["window"],
+      "size": 1,
+      "w": 148,
+      "h": 174,
+      "palettes": [
+        {
+          "name": "Oxblood velvet",
+          "p": "#7A2828",
+          "s": "#3A1010",
+          "a": "#B04848"
+        },
+        {
+          "name": "Midnight",
+          "p": "#2a3350",
+          "s": "#1d243b",
+          "a": "#c9a96b"
+        },
+        {
+          "name": "Moss velvet",
+          "p": "#48694b",
+          "s": "#1f3526",
+          "a": "#8da275"
+        }
+      ],
+      "layers": [],
+      "moonShape": "curtains"
+    },
+    {
+      "id": "walnut-shutters",
+      "name": "Walnut shutters",
+      "blurb": "Walnut slats stripe the floor with moonlight.",
+      "category": "textiles",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["window"],
+      "size": 1,
+      "w": 91,
+      "h": 148,
+      "palettes": [
+        {
+          "name": "Walnut",
+          "p": "#6A4428",
+          "s": "#2E1B0F",
+          "a": "#9A6A44"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "moonShape": "shutters"
+    },
+    {
+      "id": "roller-blind",
+      "name": "Roller blind",
+      "blurb": "Cream linen and a little brass pull.",
+      "category": "textiles",
+      "tier": 1,
+      "rarity": "standard",
+      "zones": ["window"],
+      "size": 1,
+      "w": 91,
+      "h": 148,
+      "palettes": [
+        {
+          "name": "Oatmeal linen",
+          "p": "#cdbb9f",
+          "s": "#a99778",
+          "a": "#3b2b22"
+        },
+        {
+          "name": "Midnight",
+          "p": "#2a3350",
+          "s": "#1d243b",
+          "a": "#c9a96b"
+        },
+        {
+          "name": "Rust",
+          "p": "#9a4a32",
+          "s": "#7a3826",
+          "a": "#3b2b22"
+        }
+      ],
+      "layers": [],
+      "moonShape": "blind"
+    },
+    {
+      "id": "cafe-curtain",
+      "name": "Lace caf\u00e9 curtain",
+      "blurb": "An embroidered hem, patterned moonlight.",
+      "category": "textiles",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["window"],
+      "size": 1,
+      "w": 91,
+      "h": 148,
+      "palettes": [
+        {
+          "name": "Oatmeal linen",
+          "p": "#cdbb9f",
+          "s": "#a99778",
+          "a": "#3b2b22"
+        },
+        {
+          "name": "Midnight",
+          "p": "#2a3350",
+          "s": "#1d243b",
+          "a": "#c9a96b"
+        },
+        {
+          "name": "Rust",
+          "p": "#9a4a32",
+          "s": "#7a3826",
+          "a": "#3b2b22"
+        }
+      ],
+      "layers": [],
+      "moonShape": "lace"
+    },
+    {
+      "id": "wingback-chair",
+      "name": "Wingback chair",
+      "blurb": "Teal velvet and a book left open.",
+      "category": "furniture",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 2,
+      "w": 67,
+      "h": 83,
+      "palettes": [
+        {
+          "name": "Teal velvet",
+          "p": "#2A5E5A",
+          "s": "#143634",
+          "a": "#5E9E96"
+        },
+        {
+          "name": "Oxblood velvet",
+          "p": "#7a2f3a",
+          "s": "#5c222b",
+          "a": "#d9b07a"
+        },
+        {
+          "name": "Midnight velvet",
+          "p": "#2a3350",
+          "s": "#1d243b",
+          "a": "#c08a3e"
+        },
+        {
+          "name": "Cognac leather",
+          "p": "#8a4f2e",
+          "s": "#6b3b21",
+          "a": "#d8cbb6"
+        }
+      ],
+      "layers": [],
+      "tags": ["nap"],
+      "seat": 30
+    },
+    {
+      "id": "peacock-chair",
+      "name": "Peacock chair",
+      "blurb": "A fan of woven cane, a warm little throne.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 2,
+      "w": 73,
+      "h": 98,
+      "palettes": [
+        {
+          "name": "Natural cane",
+          "p": "#B08048",
+          "s": "#6A4420",
+          "a": "#E8BE84"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "tags": ["nap"],
+      "seat": 26
+    },
+    {
+      "id": "spindle-daybed",
+      "name": "Spindle daybed",
+      "blurb": "Walnut spindles, striped linen, room to stretch.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 3,
+      "w": 124,
+      "h": 63,
+      "palettes": [
+        {
+          "name": "Walnut",
+          "p": "#6A4428",
+          "s": "#2E1B0F",
+          "a": "#9A6A44"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "tags": ["nap"],
+      "seat": 20
+    },
+    {
+      "id": "chaise-longue",
+      "name": "Chaise longue",
+      "blurb": "An ochre velvet invitation to do very little.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 3,
+      "w": 118,
+      "h": 66,
+      "palettes": [
+        {
+          "name": "Ochre velvet",
+          "p": "#C89238",
+          "s": "#8A6220",
+          "a": "#E8BE62"
+        },
+        {
+          "name": "Oxblood velvet",
+          "p": "#7a2f3a",
+          "s": "#5c222b",
+          "a": "#d9b07a"
+        },
+        {
+          "name": "Midnight velvet",
+          "p": "#2a3350",
+          "s": "#1d243b",
+          "a": "#c08a3e"
+        },
+        {
+          "name": "Cognac leather",
+          "p": "#8a4f2e",
+          "s": "#6b3b21",
+          "a": "#d8cbb6"
+        }
+      ],
+      "layers": [],
+      "tags": ["nap"],
+      "seat": 24
+    },
+    {
+      "id": "upright-piano",
+      "name": "Upright piano",
+      "blurb": "Black lacquer, brass pedals, a song waiting.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 3,
+      "w": 132,
+      "h": 102,
+      "palettes": [
+        {
+          "name": "Black lacquer",
+          "p": "#1A1212",
+          "s": "#0A0707",
+          "a": "#4A3A36"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "light": {
+        "x": 0.18,
+        "y": 0.15,
+        "radius": 54,
+        "warmth": 1900,
+        "pattern": "flicker",
+        "throw": "room"
+      }
+    },
+    {
+      "id": "artists-easel",
+      "name": "Artist\u2019s easel",
+      "blurb": "A canvas in progress. Your next idea can wait.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 3,
+      "w": 82,
+      "h": 130,
+      "palettes": [
+        {
+          "name": "Walnut",
+          "p": "#6A4428",
+          "s": "#2E1B0F",
+          "a": "#9A6A44"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "light": {
+        "x": 0.3,
+        "y": 0.09,
+        "radius": 60,
+        "warmth": 3000,
+        "pattern": "cone",
+        "throw": "down"
+      }
+    },
+    {
+      "id": "built-in-bookcase",
+      "name": "Built-in bookcase",
+      "blurb": "A wall of stories, brass details and little treasures.",
+      "category": "furniture",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["floor"],
+      "size": 3,
+      "w": 126,
+      "h": 143,
+      "palettes": [
+        {
+          "name": "Walnut",
+          "p": "#6A4428",
+          "s": "#2E1B0F",
+          "a": "#9A6A44"
+        },
+        {
+          "name": "Black oak",
+          "p": "#34302C",
+          "s": "#161412",
+          "a": "#68605A"
+        },
+        {
+          "name": "Forest",
+          "p": "#355744",
+          "s": "#172B21",
+          "a": "#68806A"
+        }
+      ],
+      "layers": [],
+      "light": {
+        "x": 0.14,
+        "y": 0.24,
+        "radius": 40,
+        "warmth": 1900,
+        "pattern": "flicker",
+        "throw": "room"
+      }
+    },
+    {
+      "id": "gilt-mirror",
+      "name": "Gilt arched mirror",
+      "blurb": "A shell-carved crest catches the lamplight.",
+      "category": "wallart",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["wall"],
+      "size": 1,
+      "w": 44,
+      "h": 76,
+      "palettes": [
+        {
+          "name": "Gilt",
+          "p": "#5a3a5e",
+          "s": "#b8904a",
+          "a": "#c9763e"
+        },
+        {
+          "name": "Black frames",
+          "p": "#2f6b57",
+          "s": "#1c1a1d",
+          "a": "#e0b45a"
+        },
+        {
+          "name": "Walnut",
+          "p": "#7a2f3a",
+          "s": "#6b4630",
+          "a": "#8ab0c4"
+        }
+      ],
+      "layers": []
+    },
+    {
+      "id": "pleated-pendant",
+      "name": "Pleated pendant",
+      "blurb": "A warm pool of light, a different kind of evening.",
+      "category": "lighting",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["ceiling"],
+      "size": 1,
+      "w": 58,
+      "h": 66,
+      "palettes": [
+        {
+          "name": "Pleated linen",
+          "p": "#f4dfb8",
+          "s": "#d8bf92",
+          "a": "#2a1f1c"
+        },
+        {
+          "name": "Amber",
+          "p": "#e2a35c",
+          "s": "#c08440",
+          "a": "#2a1f1c"
+        },
+        {
+          "name": "Rose",
+          "p": "#d99a8c",
+          "s": "#b87a6c",
+          "a": "#2a1f1c"
+        }
+      ],
+      "layers": [],
+      "tags": ["light"],
+      "light": {
+        "x": 0.5,
+        "y": 0.78,
+        "radius": 92,
+        "warmth": 2800,
+        "pattern": "cone",
+        "throw": "down"
+      }
+    },
+    {
+      "id": "wicker-pendant",
+      "name": "Wicker pendant",
+      "blurb": "A warm pool of light, a different kind of evening.",
+      "category": "lighting",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["ceiling"],
+      "size": 1,
+      "w": 62,
+      "h": 66,
+      "palettes": [
+        {
+          "name": "Natural rattan",
+          "p": "#9A6A3A",
+          "s": "#4A2A14",
+          "a": "#E0B47A"
+        },
+        {
+          "name": "Dark wicker",
+          "p": "#4B3322",
+          "s": "#1A120C",
+          "a": "#8A6038"
+        },
+        {
+          "name": "Pale cane",
+          "p": "#CEBA92",
+          "s": "#786044",
+          "a": "#F0E0BE"
+        }
+      ],
+      "layers": [],
+      "tags": ["light"],
+      "light": {
+        "x": 0.5,
+        "y": 0.78,
+        "radius": 100,
+        "warmth": 2500,
+        "pattern": "dapple",
+        "throw": "down"
+      }
+    },
+    {
+      "id": "pierced-lantern",
+      "name": "Pierced brass lantern",
+      "blurb": "A warm pool of light, a different kind of evening.",
+      "category": "lighting",
+      "tier": 3,
+      "rarity": "standard",
+      "zones": ["ceiling"],
+      "size": 1,
+      "w": 36,
+      "h": 92,
+      "palettes": [
+        {
+          "name": "Brass",
+          "p": "#B5893F",
+          "s": "#6E4E1E",
+          "a": "#F0CF86"
+        },
+        {
+          "name": "Copper",
+          "p": "#B7714F",
+          "s": "#713D2A",
+          "a": "#E0A07A"
+        },
+        {
+          "name": "Pewter",
+          "p": "#969187",
+          "s": "#56534D",
+          "a": "#D5D0C5"
+        }
+      ],
+      "layers": [],
+      "tags": ["light"],
+      "light": {
+        "x": 0.5,
+        "y": 0.78,
+        "radius": 95,
+        "warmth": 2200,
+        "pattern": "stars",
+        "throw": "down"
+      }
+    },
+    {
+      "id": "wall-sconce",
+      "name": "Brass wall sconce",
+      "blurb": "A warm pool of light, a different kind of evening.",
+      "category": "lighting",
+      "tier": 2,
+      "rarity": "standard",
+      "zones": ["wall"],
+      "size": 1,
+      "w": 24,
+      "h": 36,
+      "palettes": [
+        {
+          "name": "Cream shade",
+          "p": "#f4dfb8",
+          "s": "#d8bf92",
+          "a": "#2a1f1c"
+        },
+        {
+          "name": "Amber",
+          "p": "#e2a35c",
+          "s": "#c08440",
+          "a": "#2a1f1c"
+        },
+        {
+          "name": "Rose",
+          "p": "#d99a8c",
+          "s": "#b87a6c",
+          "a": "#2a1f1c"
+        }
+      ],
+      "layers": [],
+      "tags": ["light"],
+      "light": {
+        "x": 0.5,
+        "y": 0.5,
+        "radius": 68,
+        "warmth": 2400,
+        "pattern": "cone",
+        "throw": "down"
+      }
     }
   ],
   "surfaces": [
@@ -6386,7 +7086,7 @@
       "tier": 1,
       "rarity": "starter",
       "pattern": "plain",
-      "colors": ["#4a3f45"]
+      "colors": ["#625e55", "#504e49"]
     },
     {
       "id": "bare-boards",
@@ -6396,7 +7096,7 @@
       "tier": 1,
       "rarity": "starter",
       "pattern": "plain",
-      "colors": ["#3b2f2a", "#30261f"]
+      "colors": ["#62584c", "#534b40", "#726555"]
     },
     {
       "id": "soft-stripes",
@@ -6497,6 +7197,96 @@
       "rarity": "standard",
       "pattern": "terrazzo",
       "colors": ["#3a3236", "#c9a96b", "#8c3a4b", "#2f6b57"]
+    },
+    {
+      "id": "paint-bottle-green",
+      "name": "Bottle green",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#344C37", "#182C20", "#8A7046"]
+    },
+    {
+      "id": "paint-oxblood",
+      "name": "Oxblood lacquer",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#6B2430", "#2A0A0C", "#B39050"]
+    },
+    {
+      "id": "paint-terracotta",
+      "name": "Terracotta limewash",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#B56C4C", "#788267", "#D6BFA0"]
+    },
+    {
+      "id": "paint-navy",
+      "name": "Midnight navy",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#293650", "#141E32", "#B3ADA0"]
+    },
+    {
+      "id": "paint-ochre",
+      "name": "Golden ochre",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#AF833E", "#49321D", "#DECDA9"]
+    },
+    {
+      "id": "paint-plum",
+      "name": "Dusky plum",
+      "blurb": "A coat of colour, from the picture rail to the skirting.",
+      "kind": "wallpaper",
+      "tier": 1,
+      "rarity": "standard",
+      "pattern": "plain",
+      "colors": ["#684666", "#312133", "#AA839C"]
+    },
+    {
+      "id": "clay-tiles",
+      "name": "Terracotta tiles",
+      "blurb": "A new foundation for your favourite things.",
+      "kind": "flooring",
+      "tier": 2,
+      "rarity": "standard",
+      "pattern": "tiles",
+      "colors": ["#A35A3B", "#402C22", "#C37550"]
+    },
+    {
+      "id": "painted-boards",
+      "name": "Painted floorboards",
+      "blurb": "A new foundation for your favourite things.",
+      "kind": "flooring",
+      "tier": 2,
+      "rarity": "standard",
+      "pattern": "planks",
+      "colors": ["#A09C89", "#8D907F", "#B0AA98"]
+    },
+    {
+      "id": "dark-parquet",
+      "name": "Dark parquet",
+      "blurb": "A new foundation for your favourite things.",
+      "kind": "flooring",
+      "tier": 2,
+      "rarity": "standard",
+      "pattern": "herringbone",
+      "colors": ["#503820", "#3C291B", "#705036"]
     }
   ]
 }

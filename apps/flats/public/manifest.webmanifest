@@ -5,8 +5,8 @@
   "start_url": "/flats/",
   "scope": "/flats/",
   "display": "standalone",
-  "background_color": "#17121a",
-  "theme_color": "#17121a",
+  "background_color": "#120d0a",
+  "theme_color": "#120d0a",
   "icons": [
     { "src": "/flats/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "/flats/icon-192.png", "sizes": "192x192", "type": "image/png" },

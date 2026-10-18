@@ -3,7 +3,8 @@
 A cosy workout game for friends. Log a workout with one tap, unpack a present, furnish
 your flat, and watch your window glow brighter in the shared building. Live at
 [nirpechuk.github.io/flats](https://nirpechuk.github.io/flats/). Design notes are in
-[DESIGN.md](DESIGN.md).
+[DESIGN.md](DESIGN.md); the implemented Brownstone direction is documented in
+[BROWNSTONE.md](BROWNSTONE.md).
 
 The app connects to Supabase for shared buildings, progress, room layouts, and
 reactions. Existing device-only players migrate automatically; their original local
@@ -18,23 +19,25 @@ player. Several players can still share one device.
 
 ```bash
 cd apps/flats
-npm install
+npm install        # Node 22.12+ (Node 24 recommended)
 npm run dev        # http://localhost:5173/flats/
 npm test           # game rules, catalogue validation, local backend
 ```
 
 The building fills the viewport. Open your window to log a workout or decorate;
 use the back arrow to return. Opening a window moves the whole street toward the
-room, then reveals its controls against softly shaded brickwork; going back reverses
+room, then reveals its controls against a warm dark background; going back reverses
 the camera move. Reduced motion skips the travel. A present drops in only after
 earning it with a workout.
-Tap room objects for small, individually authored reactions: lamps flicker, books tip,
-leaves rustle, cushions squish, and more. Tap your pet to say hello. Reactions also
-work with Enter or Space and respect reduced motion. The layer choreography lives
-in `src/art/interactions.ts`.
+Tap room objects for small responses: lamps brighten, hanging objects sway,
+plants rustle and furniture settles. Tap your pet to say hello. Reactions also
+work with Enter or Space and respect reduced motion. Brownstone artwork and materials live in `src/art/brownstone/`; legacy seasonal
+items retain their layer choreography in `src/art/interactions.ts`.
 In neighbours' flats, treats fly to the pet before it eats them.
 
-Add `?hour=21` to the URL to preview night lighting (any hour 0–23 works).
+Rooms always use night lighting. `?hour=21` overrides the sky for art previews
+(any hour 0–23 works). `?studio` is available **only in development** for testing
+room personalities, quiet weeks, all items and colour variants.
 
 ## Deploy
 
@@ -63,7 +66,7 @@ Items live in [`src/game/catalog.json`](src/game/catalog.json); no code changes 
   "zones": ["floor", "sill"], // ceiling, wall, wallTop, window, sill, floor, rug
   "size": 1, // must fit a slot's capacity (see SLOTS in src/game/room.ts)
   "w": 30,
-  "h": 40, // art box in room units (the room is 360 × 420)
+  "h": 40, // art box in room units (the room is 360 × 554)
   "tags": ["light"], // nap, play, light, grow
   "palettes": [{ "name": "Brass", "p": "#c9a050", "s": "#8a6a32", "a": "#fff0c8" }],
   "layers": [

@@ -10,11 +10,11 @@
 import type { Catalog, ItemDef, Layout, Placement, Player, Zone } from "./types";
 
 export const ROOM_WIDTH = 360;
-export const ROOM_HEIGHT = 420;
-export const FLOOR_Y = ROOM_HEIGHT;
-export const VANISHING_POINT = { x: 180, y: 120 };
+export const ROOM_HEIGHT = 554;
+export const FLOOR_Y = 420;
+export const VANISHING_POINT = { x: 180, y: 258.46 };
 /** Screen size of the back wall relative to the front opening. Lower is deeper. */
-export const BACK_SCALE = 0.62;
+export const BACK_SCALE = 250 / 390;
 /** Item art units per world unit, so furniture reads at a pleasant size in the deeper room. */
 export const ITEM_SCALE = 1.25;
 /**
@@ -38,7 +38,11 @@ export interface ScreenPoint {
 
 export function project(worldX: number, worldY: number, depth: number): ScreenPoint {
   const k = depthScale(depth);
-  return { x: VANISHING_POINT.x + (worldX - VANISHING_POINT.x) * k, y: VANISHING_POINT.y + (worldY - VANISHING_POINT.y) * k, k };
+  return {
+    x: VANISHING_POINT.x + (worldX - VANISHING_POINT.x) * k,
+    y: VANISHING_POINT.y + (28.06 + worldY * (402.91 / FLOOR_Y) - VANISHING_POINT.y) * k,
+    k,
+  };
 }
 
 /** Draw order for something standing at `depth`: farther first. */
@@ -53,9 +57,9 @@ export const BACK_WALL = { left: backTopLeft.x, right: backBottomRight.x, top: b
 /** The window opening on the back wall, in screen coordinates. */
 export const WINDOW_FRAME = {
   cx: 180,
-  top: 90,
+  top: 174,
   width: 88 * BACK_ITEM_SCALE,
-  height: 104 * BACK_ITEM_SCALE,
+  height: 156 * BACK_ITEM_SCALE,
 };
 
 /** Where the pet may wander, in world coordinates. */
@@ -102,7 +106,7 @@ function sideWallSlot(id: string, wall: "left" | "right", zone: "wall" | "wallTo
     zone,
     wall,
     x: wall === "left" ? 34 : ROOM_WIDTH - 34,
-    y: zone === "wallTop" ? 67 : 146,
+    y: zone === "wallTop" ? 151 : 245,
     capacity: zone === "wallTop" ? 3 : 2,
     anchor: "center",
     scale: BACK_ITEM_SCALE,
@@ -177,7 +181,7 @@ export const SLOTS: Slot[] = [
   sideWallSlot("sideWallR", "right", "wall"),
   sideWallSlot("sideTopL", "left", "wallTop"),
   sideWallSlot("sideTopR", "right", "wallTop"),
-  floorSlot("rug", "rug", 180, 0.48, 3),
+  floorSlot("rug", "rug", 180, 0.1, 3),
   floorSlot("floorBL", "floor", 72, 0.9, 2),
   floorSlot("floorBC", "floor", 180, 0.93, 3),
   floorSlot("floorBR", "floor", 288, 0.9, 2),
@@ -266,4 +270,30 @@ export function storedItemIds(catalog: Catalog, player: Player): string[] {
 /** The first empty slot this item fits in, preferring the order slots are declared. */
 export function firstFreeSlot(item: ItemDef, layout: Layout): Slot | null {
   return validSlots(item).find((slot) => !layout.slots[slot.id]) ?? null;
+}
+
+/** Stable architectural variety, independent of the ordering of residents. */
+export function windowSideFor(playerId: string): "left" | "center" | "right" {
+  let hash = 0;
+  for (const char of playerId) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  return (["left", "center", "right"] as const)[(hash >>> 0) % 3];
+}
+
+export function windowOffsetFor(playerId: string): number {
+  return { left: -54, center: 0, right: 54 }[windowSideFor(playerId)];
+}
+
+/** Keep persisted slot IDs, adapting their screen anchors to the unit's window. */
+export function roomSlots(playerId: string): Slot[] {
+  const offset = windowOffsetFor(playerId);
+  return SLOTS.map((slot) => {
+    if (slot.zone === "window" || slot.zone === "sill") return { ...slot, x: slot.x + offset };
+    if (slot.id === "floorBC" && offset && slot.world) {
+      const x = slot.x - offset * 0.85;
+      return { ...slot, x, world: { ...slot.world, x: VANISHING_POINT.x + (x - VANISHING_POINT.x) / depthScale(slot.world.depth) } };
+    }
+    if (slot.id === "wallL") return { ...slot, x: offset < 0 ? 218 : 101 };
+    if (slot.id === "wallR") return { ...slot, x: offset > 0 ? 142 : 263, y: slot.y + (offset ? 55 : 0) };
+    return slot;
+  });
 }

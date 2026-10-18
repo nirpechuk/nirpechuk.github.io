@@ -45,7 +45,7 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
   };
 
   return (
-    <main className="onboarding">
+    <main className={`onboarding${step === "welcome" ? " is-welcome" : ""}`}>
       {step === "welcome" && (
         <div className="welcome-room" aria-hidden="true">
           <RoomScene player={showcaseFlat} variant="visit" lighting={lightingForHour(hour)} mood="perky" reducedMotion={reducedMotion} />
@@ -54,10 +54,18 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
       {step === "welcome" && (
         <section className="onboarding-card welcome-card card enter-flutter">
           <h1 className="logo">Flats</h1>
+          <h2 className="welcome-lede">
+            A little movement.
+            <br />A place of your own.
+          </h2>
+          <p className="welcome-copy">
+            Log a workout. Unwrap a present. Make a bare little room feel like home, with a pet for company and friends next door.
+          </p>
           {joinGroupName && <p className="join-note">{joinGroupName}</p>}
           <button type="button" className="big-button" onClick={() => setStep("name")}>
             Move in
           </button>
+          <p className="welcome-caption">No streaks to lose. Your home is always here.</p>
           {onRestore && (
             <details className="room-key-entry">
               <summary>Already moved in?</summary>
@@ -106,7 +114,21 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
             if (name.trim()) setStep("pet");
           }}
         >
-          <input className="field" autoFocus maxLength={20} placeholder="Your name" value={name} onChange={(event) => setName(event.target.value)} />
+          <button type="button" className="chip step-back" onClick={() => setStep("welcome")}>
+            Back
+          </button>
+          <h2>Who’s moving in?</h2>
+          <p>This is the name your neighbours will see.</p>
+          <label htmlFor="resident-name">Your name</label>
+          <input
+            id="resident-name"
+            className="field"
+            autoFocus
+            maxLength={20}
+            placeholder="Your name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
           <button type="submit" className="big-button" disabled={!name.trim()}>
             Next
           </button>
@@ -115,6 +137,11 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
 
       {step === "pet" && (
         <section className="onboarding-card card enter-flutter">
+          <button type="button" className="chip step-back" onClick={() => setStep("name")}>
+            Back
+          </button>
+          <h2>A little company</h2>
+          <p>Pick someone to come home to.</p>
           <div className="pet-picker" role="radiogroup" aria-label="Pet">
             {PETS.map((pet) => (
               <button
@@ -130,6 +157,7 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
                 }}
               >
                 <PetPortrait kind={pet.kind} action={petKind === pet.kind ? "happy" : "idle"} size={78} />
+                <span>{pet.label}</span>
               </button>
             ))}
           </div>
@@ -147,8 +175,14 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
             if (petName.trim() && !busy) void finish();
           }}
         >
+          <button type="button" className="chip step-back" onClick={() => setStep("pet")}>
+            Back
+          </button>
+          <h2>And their name?</h2>
           <PetPortrait kind={petKind} action="happy" size={120} />
+          <label htmlFor="pet-name">Your pet’s name</label>
           <input
+            id="pet-name"
             className="field"
             autoFocus
             maxLength={16}

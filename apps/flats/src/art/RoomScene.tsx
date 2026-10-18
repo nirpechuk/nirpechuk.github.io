@@ -21,11 +21,16 @@ import {
   ROOM_HEIGHT,
   ROOM_WIDTH,
   slotById,
-  SLOTS,
+  roomSlots,
+  windowOffsetFor,
   WINDOW_FRAME,
   wallProjection,
 } from "../game/room";
 import type { ItemDef, Placement, Player } from "../game/types";
+import { today } from "../game/dates";
+import { BrownstoneLight } from "./brownstone/RoomLight";
+import { placedLight, roomAtmosphere, type RoomLight } from "./brownstone/lightModel";
+import { KitArt } from "./brownstone/KitArt";
 import { ItemArt } from "./ItemArt";
 import type { Lighting } from "./lighting";
 import { PetFigure } from "./Pet";
@@ -59,6 +64,7 @@ interface RoomSceneProps {
   stickers?: string[];
   svgRef?: Ref<SVGSVGElement>;
   onSlotTap?: (slotId: string) => void;
+  onItemActivate?: (slotId: string) => void;
   onItemPointerDown?: (event: ReactPointerEvent<SVGGElement>, slotId: string) => void;
   onBoxTap?: () => void;
   onPetTap?: () => void;
@@ -76,7 +82,7 @@ const STICKER_SPOTS: [number, number, number][] = [
 const WINDOW_LEFT = WINDOW_FRAME.cx - WINDOW_FRAME.width / 2;
 const WINDOW_BOTTOM = WINDOW_FRAME.top + WINDOW_FRAME.height;
 /** The window is drawn in its own art coordinates, then scaled onto the back wall. */
-const WINDOW_ART = { left: 136, top: 68, width: 88, height: 104 };
+const WINDOW_ART = { left: 136, top: 68, width: 88, height: 156 };
 const WINDOW_TRANSFORM = `translate(${WINDOW_LEFT} ${WINDOW_FRAME.top}) scale(${BACK_ITEM_SCALE}) translate(${-WINDOW_ART.left} ${-WINDOW_ART.top})`;
 /** Pets are drawn a little larger than furniture art so they stay readable at the back. */
 const PET_SCALE = 1.2;
@@ -342,6 +348,7 @@ export function RoomScene(props: RoomSceneProps) {
     svgRef,
     onSlotTap,
     onItemPointerDown,
+    onItemActivate,
     onBoxTap,
     onPetTap,
   } = props;
@@ -391,16 +398,17 @@ export function RoomScene(props: RoomSceneProps) {
       : undefined,
   });
 
+  const slots = useMemo(() => roomSlots(player.id), [player.id]);
   const placed: PlacedEntry[] = useMemo(() => {
     const unlockById = new Map(player.unlocks.map((unlock) => [unlock.id, unlock]));
-    return SLOTS.flatMap((slot) => {
+    return slots.flatMap((slot) => {
       const placement = player.layout.slots[slot.id];
       if (!placement) return [];
       const item = itemById(placement.itemId);
       const stage = item.tags?.includes("grow") ? plantStage(unlockById.get(item.id), player) : 2;
       return [{ slot, item, placement, stage }];
     });
-  }, [player]);
+  }, [player, slots]);
 
   const napSpots = placed.flatMap(({ item, slot, placement }) => napSpot(item, slot, placement) ?? []);
   const playSpots = placed.flatMap(({ item, slot }) => playSpot(item, slot) ?? []);
@@ -420,6 +428,24 @@ export function RoomScene(props: RoomSceneProps) {
   const heldItem = editing?.heldItemId ? itemById(editing.heldItemId) : null;
   const ceilingCentreEmpty = !player.layout.slots.ceilC;
 
+  const strength = roomAtmosphere(player, today()).strength;
+  const lights: RoomLight[] = placed
+    .filter(({ item }) => item.id !== editing?.hiddenItemId)
+    .flatMap(({ item, slot, placement }) => placedLight(item, slot, placement.flip, strength) ?? []);
+  if (ceilingCentreEmpty) {
+    const bulb = slotById("ceilC");
+    lights.push({
+      id: "bare-bulb",
+      x: bulb.x,
+      y: bulb.y + 48 * bulb.scale,
+      radius: 65,
+      warmth: 4000,
+      pattern: "none",
+      throw: "room",
+      strength: 0.45,
+    });
+  }
+
   type Drawable = { depth: number; key: string; node: ReactNode };
   const drawables: Drawable[] = placed
     .filter(({ item }) => item.id !== editing?.hiddenItemId)
@@ -434,6 +460,16 @@ export function RoomScene(props: RoomSceneProps) {
             key={`item-${slot.id}-${item.id}`}
             {...interaction(item.id, `Play with ${item.name}`, index)}
             className={`placed-item${onItemPointerDown ? " is-grabbable" : ""}${activeObjects[item.id] ? " is-energized" : ""}`}
+            role={onItemActivate ? "button" : interactive ? "button" : undefined}
+            tabIndex={onItemActivate || interactive ? 0 : undefined}
+            aria-label={onItemActivate ? `Edit ${item.name}` : interactive ? `Play with ${item.name}` : undefined}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                if (onItemActivate) onItemActivate(slot.id);
+                else if (interactive) energize(item.id);
+              }
+            }}
             data-slot={slot.id}
             data-item={item.id}
             onPointerDown={onItemPointerDown ? (event) => onItemPointerDown(event, slot.id) : undefined}
@@ -447,6 +483,7 @@ export function RoomScene(props: RoomSceneProps) {
                   <ItemArt
                     item={item}
                     paletteIndex={placement.palette}
+                    wallColor={wallpaper.colors[0]}
                     stage={stage}
                     glowStrength={lighting.glow}
                     pass="body"
@@ -460,6 +497,17 @@ export function RoomScene(props: RoomSceneProps) {
       };
     });
 
+  if (placed.length < 3) {
+    drawables.push({
+      depth: 900,
+      key: "moving-boxes",
+      node: (
+        <g key="moving-boxes" transform="translate(42 389)" pointerEvents="none">
+          <KitArt id="moving-boxes" width={62} height={59} />
+        </g>
+      ),
+    });
+  }
   if (ceilingCentreEmpty) {
     drawables.push({
       depth: slotById("ceilC").depth,
@@ -528,16 +576,16 @@ export function RoomScene(props: RoomSceneProps) {
   drawables.sort((a, b) => a.depth - b.depth);
 
   const validSlotIds = new Set(
-    heldItem ? SLOTS.filter((slot) => heldItem.zones.includes(slot.zone) && heldItem.size <= slot.capacity).map((slot) => slot.id) : []
+    heldItem ? slots.filter((slot) => heldItem.zones.includes(slot.zone) && heldItem.size <= slot.capacity).map((slot) => slot.id) : []
   );
 
   return (
     <svg
       ref={svgRef}
       className={`room-scene room-${variant} phase-${lighting.phase}${animate ? " is-animated" : ""}`}
-      viewBox={`${-FRAME} ${-FRAME} ${ROOM_WIDTH + FRAME * 2} ${ROOM_HEIGHT + FRAME * 2}`}
+      viewBox={`0 0 ${ROOM_WIDTH} ${ROOM_HEIGHT}`}
       role={interactive || editing ? "group" : "img"}
-      aria-label={`${player.name}'s flat with ${player.petName} the ${player.petKind}`}
+      aria-label={`${player.name}'s flat, ${placed.length} ${placed.length === 1 ? "thing" : "things"} placed, with ${player.petName} the ${player.petKind}`}
     >
       <defs>
         <radialGradient id={`${idPrefix}-vignette`} cx="0.5" cy="0.45" r="0.75">
@@ -571,7 +619,7 @@ export function RoomScene(props: RoomSceneProps) {
           <RoomArchitecture idPrefix={idPrefix} wallpaper={wallpaper} flooring={flooring} />
         </g>
       </g>
-      <g className="room-openings">
+      <g className="room-openings" transform={`translate(${windowOffsetFor(player.id)} 0)`}>
         <g {...interaction("window", "Play with the window", 0)}>
           <g key={activeObjects.window ?? 0} className={animate && activeObjects.window ? "surface-response" : undefined}>
             <WindowView lighting={lighting} idPrefix={idPrefix} animate={animate} />
@@ -596,94 +644,60 @@ export function RoomScene(props: RoomSceneProps) {
 
       {drawables.map((drawable) => drawable.node)}
 
-      <rect x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT} fill="#120a1c" opacity={lighting.dim} className="night-dim" pointerEvents="none" />
-      <rect x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT} fill={`url(#${idPrefix}-vignette)`} pointerEvents="none" />
-      <rect
-        className="ambient-light"
-        x="0"
-        y="0"
-        width={ROOM_WIDTH}
-        height={ROOM_HEIGHT}
-        fill={`url(#${idPrefix}-ambient)`}
-        opacity={(0.45 + lighting.glow * 0.4) * 1.1}
-        pointerEvents="none"
+      <BrownstoneLight
+        id={idPrefix}
+        player={player}
+        lights={lights}
+        moonShape={placed.find(({ slot }) => slot.zone === "window")?.item.moonShape ?? "bare"}
+        hasSillPlant={placed.some(({ slot, item }) => slot.zone === "sill" && item.category === "plants")}
+        freshItemId={freshItemId}
+        celebrateKey={celebrateKey}
+        editing={Boolean(editing)}
+        reducedMotion={!animate}
       />
-      <g className="glow-pass" pointerEvents="none" filter={`url(#${idPrefix}-soft)`}>
-        {ceilingCentreEmpty && (
-          <g
-            key={`bulb-glow-${activeObjects.bulb ?? 0}`}
-            style={motionStyle("bulb")}
-            className={animate && activeObjects.bulb ? "item-reaction reaction-flicker" : undefined}
-          >
-            <BareBulb glowPass glow={lighting.glow} glowFill={`url(#${idPrefix}-bulb-halo)`} />
-          </g>
-        )}
-        {placed
-          .filter(({ item }) => item.layers.some((layer) => layer.glow) && item.id !== editing?.hiddenItemId)
-          .map(({ slot, item, placement, stage }) => (
-            <g
-              key={`glow-${slot.id}`}
-              style={motionStyle(
-                item.id,
-                placed.findIndex((entry) => entry.item.id === item.id)
-              )}
-            >
-              <ItemPlacement item={item} slot={slot} flip={placement.flip} hitTest={false}>
-                <g className={item.anim ? `anim anim-${item.anim}${slot.anchor === "top" ? "-top" : ""}` : undefined}>
-                  <ItemArt
-                    item={item}
-                    paletteIndex={placement.palette}
-                    stage={stage}
-                    glowStrength={lighting.glow}
-                    pass="glow"
-                    reactionKey={animate ? activeObjects[item.id] : 0}
-                  />
-                </g>
-              </ItemPlacement>
-            </g>
-          ))}
-      </g>
 
       {heldItem && (
         <g className="slot-markers">
-          {SLOTS.filter((slot) => validSlotIds.has(slot.id)).map((slot) => {
-            const width = Math.min(heldItem.w * itemScale(heldItem, slot), 190) + 10;
-            const height = Math.min(heldItem.h * itemScale(heldItem, slot), 170) + 10;
-            const y = slot.anchor === "top" ? slot.y - 4 : slot.anchor === "bottom" ? slot.y - height + 5 : slot.y - height / 2;
-            const occupied = Boolean(player.layout.slots[slot.id]);
-            return (
-              <g
-                key={slot.id}
-                className={`slot-marker${editing?.hoverSlotId === slot.id ? " is-hover" : ""}${occupied ? " is-occupied" : ""}`}
-                data-slot={slot.id}
-                role={onSlotTap ? "button" : undefined}
-                tabIndex={onSlotTap ? 0 : undefined}
-                aria-label={
-                  onSlotTap
-                    ? `Place ${heldItem.name} on the ${slot.wall ?? slot.zone}${slot.wall ? " wall" : ""}${slot.wall === "back" && slot.zone === "wall" ? (slot.x < 180 ? ", left spot" : ", right spot") : ""}`
-                    : undefined
-                }
-                onClick={onSlotTap ? () => onSlotTap(slot.id) : undefined}
-                onKeyDown={
-                  onSlotTap
-                    ? (event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          onSlotTap(slot.id);
+          {slots
+            .filter((slot) => validSlotIds.has(slot.id))
+            .map((slot) => {
+              const width = Math.min(heldItem.w * itemScale(heldItem, slot), 190) + 10;
+              const height = Math.min(heldItem.h * itemScale(heldItem, slot), 170) + 10;
+              const y = slot.anchor === "top" ? slot.y - 4 : slot.anchor === "bottom" ? slot.y - height + 5 : slot.y - height / 2;
+              const occupied = Boolean(player.layout.slots[slot.id]);
+              return (
+                <g
+                  key={slot.id}
+                  className={`slot-marker${editing?.hoverSlotId === slot.id ? " is-hover" : ""}${occupied ? " is-occupied" : ""}`}
+                  data-slot={slot.id}
+                  role={onSlotTap ? "button" : undefined}
+                  tabIndex={onSlotTap ? 0 : undefined}
+                  aria-label={
+                    onSlotTap
+                      ? `Place ${heldItem.name}: ${slot.zone}, ${slot.x < 145 ? "left" : slot.x > 215 ? "right" : "centre"}${slot.world ? (slot.world.depth > 0.5 ? ", back" : ", front") : ""}${occupied ? ", swaps with the current item" : ""}`
+                      : undefined
+                  }
+                  onClick={onSlotTap ? () => onSlotTap(slot.id) : undefined}
+                  onKeyDown={
+                    onSlotTap
+                      ? (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            onSlotTap(slot.id);
+                          }
                         }
-                      }
-                    : undefined
-                }
-              >
-                <WallPlane slot={slot}>
-                  <rect x={-width / 2} y={y - slot.y} width={width} height={height} rx="10" />
-                </WallPlane>
-                <text x={slot.x} y={y + height / 2 + 4}>
-                  {occupied ? "swap" : "+"}
-                </text>
-              </g>
-            );
-          })}
+                      : undefined
+                  }
+                >
+                  <WallPlane slot={slot}>
+                    <rect x={-width / 2} y={y - slot.y} width={width} height={height} rx="10" />
+                  </WallPlane>
+                  <text x={slot.x} y={y + height / 2 + 4}>
+                    {occupied ? "swap" : "+"}
+                  </text>
+                </g>
+              );
+            })}
         </g>
       )}
 
@@ -691,7 +705,7 @@ export function RoomScene(props: RoomSceneProps) {
         className="room-frame"
         fillRule="evenodd"
         d={`M${-FRAME} ${-FRAME} H${ROOM_WIDTH + FRAME} V${ROOM_HEIGHT + FRAME} H${-FRAME} Z M0 0 V${ROOM_HEIGHT} H${ROOM_WIDTH} V0 Z`}
-        fill="#1e171c"
+        fill="#1a130e"
       />
       <rect x="0" y="0" width={ROOM_WIDTH} height={ROOM_HEIGHT} fill="none" stroke="rgba(255,214,160,0.12)" strokeWidth="1.2" />
       {stickers.slice(0, STICKER_SPOTS.length).map((sticker, index) => {

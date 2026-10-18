@@ -18,3 +18,7 @@ apps/flats/node_modules/
 
 # Brownstone design kit: raw design-canvas exports, kept as-is
 apps/flats/design/
+
+# Reproducible, compiled Brownstone art
+apps/flats/src/art/brownstone/assets.json
+apps/flats/public/brownstone/street.svg

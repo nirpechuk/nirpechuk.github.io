@@ -1,7 +1,9 @@
 # Brownstone design kit (raw exports)
 
-Design exploration for the "Brownstone" visual direction of Flats. Nothing here is wired into the app or the site build
-(`apps/` is excluded from Jekyll, and this folder is in `.prettierignore`). Files are kept exactly as exported.
+Design exploration for the "Brownstone" visual direction of Flats. These source exports
+are preserved as delivered. The app now compiles selected SVG artwork from these boards;
+see [the implementation notes](../../BROWNSTONE.md). `apps/` remains excluded from
+Jekyll, and this raw export folder stays in `.prettierignore`.
 
 - `spec.html` — the formal design writeup: lighting model, four-stage progression, variety levers, street, asset
   inventory, implementation notes, open questions. A page body only; it relies on a host adding the doctype/head.

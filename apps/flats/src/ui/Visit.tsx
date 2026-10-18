@@ -5,11 +5,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { Lighting } from "../art/lighting";
 import { RoomScene } from "../art/RoomScene";
-import { petMood } from "../game/progression";
+import { petMood, cosinessTitle, workoutsInWeekOf } from "../game/progression";
 import type { Player, Reaction, ReactionKind } from "../game/types";
 import { playChime, playPop } from "./sound";
 
-export const STICKERS = ["✦", "♥", "☾", "❀", "★", "✧"];
+export const STICKERS = ["✦", "★", "✧"];
 const ZOOM_IN_MS = 1150;
 const ZOOM_OUT_MS = 650;
 /** A soft start and a long, gentle landing for zooming in; plain ease-in-out for zooming out. */
@@ -202,7 +202,7 @@ export function Visit(props: VisitProps) {
         setSending(false);
         return;
       }
-      const emoji = kind === "heart" ? "♥" : kind === "sticker" ? STICKERS[variant ?? 0] : "🍬";
+      const emoji = kind === "heart" ? "♥" : kind === "sticker" ? STICKERS[variant ?? 0] : "🍪";
       setFlying({ id: Date.now(), emoji, kind, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
       playPop();
     } catch (error) {
@@ -238,8 +238,16 @@ export function Visit(props: VisitProps) {
                 stickers={stickers}
               />
             </div>
+            <div className="room-summary">
+              <h2>{cosinessTitle(Object.keys(player.layout.slots).length)}</h2>
+              <p>
+                {Object.keys(player.layout.slots).length} things placed · {workoutsInWeekOf(player, day)} workouts this week
+                <br />
+                Make yourself at home. {player.petName} likes visitors.
+              </p>
+            </div>
             <div className="reaction-bar">
-              <p className="room-hint">Send a heart, star, or pet treat</p>
+              <p className="room-hint">Leave a little kindness</p>
               <div className="reaction-buttons">
                 <button
                   type="button"
@@ -248,7 +256,7 @@ export function Visit(props: VisitProps) {
                   onClick={(event) => void send("heart", event.currentTarget)}
                   aria-label="Leave a heart"
                 >
-                  ♥
+                  ♥ <span>{sentToday("heart") ? "Sent" : "Heart"}</span>
                 </button>
                 <button
                   type="button"
@@ -257,7 +265,7 @@ export function Visit(props: VisitProps) {
                   onClick={(event) => void send("sticker", event.currentTarget)}
                   aria-label="Leave a star"
                 >
-                  ✦
+                  ✦ <span>{sentToday("sticker") ? "Sent" : "Star"}</span>
                 </button>
                 <button
                   type="button"
@@ -266,11 +274,13 @@ export function Visit(props: VisitProps) {
                   onClick={(event) => void send("treat", event.currentTarget)}
                   aria-label={`Give ${player.petName} a treat`}
                 >
-                  🍬
+                  <span aria-hidden="true">🍪</span> <span>{sentToday("treat") ? "Sent" : `Treat for ${player.petName}`}</span>
                 </button>
               </div>
+              <p className="reaction-explainer">
+                Stars stay on {player.name}’s window frame. Treats make {player.petName}’s day. One of each, every day.
+              </p>
             </div>
-            <p className="room-hint">Tap around. Say hello.</p>
           </>
         )}
       </div>

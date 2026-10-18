@@ -6,18 +6,7 @@ export type Tier = 1 | 2 | 3;
 export type Rarity = "starter" | "standard" | "seasonal" | "surprise";
 export type ColorRole = "p" | "s" | "a";
 
-export type AnimKey =
-  | "sway"
-  | "drift"
-  | "twinkle"
-  | "spin"
-  | "bob"
-  | "swim"
-  | "glow"
-  | "flicker"
-  | "tick"
-  | "float"
-  | "wag";
+export type AnimKey = "sway" | "drift" | "twinkle" | "spin" | "bob" | "swim" | "glow" | "flicker" | "tick" | "float" | "wag";
 
 interface LayerBase {
   /** Fill colour: a palette role or any CSS colour. */
@@ -57,6 +46,18 @@ export interface Palette {
   a: string;
 }
 
+export interface LightDef {
+  /** Emitter in normalized item-art coordinates. */
+  x: number;
+  y: number;
+  radius: number;
+  warmth: number;
+  pattern: "none" | "cone" | "dapple" | "stars" | "stripes" | "flicker";
+  throw: "down" | "up" | "wall" | "room";
+}
+
+export type MoonShape = "bare" | "curtains" | "shutters" | "blind" | "lace";
+
 export interface ItemDef {
   id: string;
   name: string;
@@ -80,21 +81,12 @@ export interface ItemDef {
   seatX?: number;
   /** Real-world size multiplier applied to the art (furniture is drawn at true scale). */
   scale?: number;
+  light?: LightDef;
+  moonShape?: MoonShape;
 }
 
 export type PatternKind =
-  | "plain"
-  | "stripes"
-  | "dots"
-  | "checker"
-  | "stars"
-  | "scallop"
-  | "planks"
-  | "herringbone"
-  | "tiles"
-  | "gingham"
-  | "terrazzo"
-  | "vines";
+  "plain" | "stripes" | "dots" | "checker" | "stars" | "scallop" | "planks" | "herringbone" | "tiles" | "gingham" | "terrazzo" | "vines";
 
 export interface SurfaceDef {
   id: string;

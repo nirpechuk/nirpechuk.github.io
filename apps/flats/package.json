@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build && node scripts/jekyll-wrap.mjs",
     "preview": "vite preview",
     "test": "vitest run",
-    "check-catalog": "node scripts/check-catalog.mjs"
+    "art": "python3 scripts/compile-brownstone.py",
+    "catalog:sql": "node scripts/export-catalog-sql.mjs",
+    "check-catalog": "vitest run src/game/game.test.ts src/art/brownstone/brownstone.test.tsx"
   },
   "dependencies": {
     "react": "^19.3.1",

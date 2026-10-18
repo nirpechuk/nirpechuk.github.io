@@ -11,9 +11,9 @@ import { SurfaceThumb } from "../art/Surfaces";
 import { CATALOG, itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
 import { addDays, weekStart } from "../game/dates";
-import { hasLoggedOn, presentsWaiting } from "../game/progression";
+import { hasLoggedOn, presentsWaiting, cosinessTitle, workoutsInWeekOf } from "../game/progression";
 import type { Slot } from "../game/room";
-import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, SLOTS, storedItemIds } from "../game/room";
+import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, roomSlots, storedItemIds } from "../game/room";
 import type { ItemDef, Layout, Player, WorkoutType } from "../game/types";
 import { playPop, playRustle } from "./sound";
 
@@ -78,11 +78,13 @@ function WeekDots({ player, day, large = false }: { player: Player; day: string;
   const count = days.filter((weekDay) => hasLoggedOn(player, weekDay)).length;
   return (
     <div className={`week-dots${large ? " is-large" : ""}`} role="img" aria-label={`${count} workout${count === 1 ? "" : "s"} this week`}>
-      {days.map((weekDay) => (
+      {days.map((weekDay, index) => (
         <span
           key={weekDay}
           className={`week-dot${hasLoggedOn(player, weekDay) ? " is-done" : ""}${weekDay === day ? " is-today" : ""}${weekDay > day ? " is-future" : ""}`}
-        />
+        >
+          <small>{["M", "T", "W", "T", "F", "S", "S"][index]}</small>
+        </span>
       ))}
     </div>
   );
@@ -92,6 +94,23 @@ export function Home(props: HomeProps) {
   const { me, day, lighting, mood, reducedMotion, celebrateKey, treatKey, placeRequest, onPlaceRequestHandled } = props;
   const { onLog, onSetType, onSaveLayout, onOpenPresent, onOpenSettings, onBack } = props;
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const savingRef = useRef(false);
+  const save = async (layout: Layout) => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await onSaveLayout(layout);
+    } catch {
+      setSaveError("That change didn’t save. Your things are safe — try again when you’re connected.");
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
+  };
   const [heldItemId, setHeldItemId] = useState<string | null>(null);
   const [drag, setDrag] = useState<DragView | null>(null);
   const [hoverSlotId, setHoverSlotId] = useState<string | null>(null);
@@ -105,6 +124,7 @@ export function Home(props: HomeProps) {
   const pendingRef = useRef<PendingDrag | null>(null);
   const hoverRef = useRef<string | null>(null);
 
+  const slots = roomSlots(me.id);
   const loggedToday = hasLoggedOn(me, day);
   const todaysWorkout = me.workouts.find((workout) => workout.day === day);
   const waiting = presentsWaiting(me);
@@ -130,19 +150,22 @@ export function Home(props: HomeProps) {
   };
 
   const place = async (itemId: string, slotId: string) => {
+    if (savingRef.current) return;
     const existingSlot = Object.entries(me.layout.slots).find(([, placement]) => placement.itemId === itemId);
     const placement = existingSlot ? existingSlot[1] : { itemId, palette: 0, flip: slotById(slotId).x > 200 };
     const result = placeItem(CATALOG, me.layout, slotId, placement);
+    setMenuSlotId(null);
     playRustle();
     flutter(itemId);
     setHeldItemId(null);
-    await onSaveLayout(result.layout);
+    await save(result.layout);
   };
 
   const storeAway = async (itemId: string) => {
+    if (savingRef.current) return;
     playPop();
     setMenuSlotId(null);
-    await onSaveLayout(removeItem(me.layout, itemId));
+    await save(removeItem(me.layout, itemId));
   };
 
   const svgPoint = (clientX: number, clientY: number) => {
@@ -157,7 +180,7 @@ export function Home(props: HomeProps) {
     if (!point) return null;
     const item = itemById(itemId);
     let best: { id: string; distance: number } | null = null;
-    for (const slot of SLOTS) {
+    for (const slot of slots) {
       if (!item.zones.includes(slot.zone) || item.size > slot.capacity) continue;
       const distance = Math.hypot(point.x - slot.x, point.y - slotCenterY(slot, item));
       if (distance < SNAP_DISTANCE && (!best || distance < best.distance)) best = { id: slot.id, distance };
@@ -213,13 +236,21 @@ export function Home(props: HomeProps) {
         playPop();
       }
     };
+    const onCancel = () => {
+      if (pendingRef.current?.longPress) clearTimeout(pendingRef.current.longPress);
+      pendingRef.current = null;
+      hoverRef.current = null;
+      setDrag(null);
+      setHoverSlotId(null);
+      setHeldItemId(null);
+    };
     window.addEventListener("pointermove", onMove, { passive: false });
     window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("pointercancel", onCancel);
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("pointercancel", onCancel);
     };
   });
 
@@ -251,7 +282,7 @@ export function Home(props: HomeProps) {
     if (!menuSlotId || !svgRef.current || !roomWrapRef.current) return null;
     const placement = me.layout.slots[menuSlotId];
     if (!placement) return null;
-    const slot = slotById(menuSlotId);
+    const slot = slots.find((slot) => slot.id === menuSlotId)!;
     const matrix = svgRef.current.getScreenCTM();
     if (!matrix) return null;
     const point = new DOMPoint(slot.x, slotCenterY(slot, itemById(placement.itemId))).matrixTransform(matrix);
@@ -269,13 +300,13 @@ export function Home(props: HomeProps) {
     const placement = me.layout.slots[slotId];
     playPop();
     flutter(placement.itemId);
-    await onSaveLayout({ ...me.layout, slots: { ...me.layout.slots, [slotId]: { ...placement, ...change } } });
+    await save({ ...me.layout, slots: { ...me.layout.slots, [slotId]: { ...placement, ...change } } });
   };
 
   const applySurface = async (surfaceId: string) => {
     const surface = surfaceById(surfaceId);
     playRustle();
-    await onSaveLayout(surface.kind === "wallpaper" ? { ...me.layout, wallpaper: surfaceId } : { ...me.layout, flooring: surfaceId });
+    await save(surface.kind === "wallpaper" ? { ...me.layout, wallpaper: surfaceId } : { ...me.layout, flooring: surfaceId });
   };
 
   const ownedSurfaces = [DEFAULT_WALLPAPER, DEFAULT_FLOORING, ...me.unlocks.map((unlock) => unlock.id)]
@@ -288,7 +319,7 @@ export function Home(props: HomeProps) {
   const menuItem = menuPlacement ? itemById(menuPlacement.itemId) : null;
 
   return (
-    <main className={`home${editing ? " is-editing" : ""}`}>
+    <main className={`home${editing ? " is-editing" : ""}${saving ? " is-saving" : ""}`} aria-busy={saving}>
       <div className="home-topbar">
         <button type="button" className="back-button" onClick={onBack} aria-label="Back to the building">
           ←
@@ -313,11 +344,20 @@ export function Home(props: HomeProps) {
           treatKey={treatKey}
           svgRef={svgRef}
           onSlotTap={(slotId) => heldItemId && void place(heldItemId, slotId)}
+          onItemActivate={
+            editing
+              ? (slotId) => {
+                  setMenuSlotId(slotId);
+                  setHeldItemId(null);
+                }
+              : undefined
+          }
           onItemPointerDown={editing ? startItemDrag : undefined}
           onBoxTap={onOpenPresent}
         />
         {menuSlotId && menuItem && menuPlacement && menuPosition && (
           <div className="item-menu card" style={{ left: menuPosition.left, top: menuPosition.top }}>
+            <p className="item-menu-name">{menuItem.name}</p>
             <div className="item-menu-swatches">
               {menuItem.palettes.map((palette, index) => (
                 <button
@@ -334,6 +374,16 @@ export function Home(props: HomeProps) {
               <button
                 type="button"
                 className="icon-chip"
+                onClick={() => {
+                  setHeldItemId(menuPlacement.itemId);
+                  setMenuSlotId(null);
+                }}
+              >
+                Move
+              </button>
+              <button
+                type="button"
+                className="icon-chip"
                 onClick={() => void updatePlacement(menuSlotId, { flip: !menuPlacement.flip })}
                 aria-label="Flip"
               >
@@ -347,14 +397,45 @@ export function Home(props: HomeProps) {
         )}
       </div>
 
+      {!editing && (
+        <div className="room-summary">
+          <h2>{cosinessTitle(Object.keys(me.layout.slots).length)}</h2>
+          <p>
+            {Object.keys(me.layout.slots).length} {Object.keys(me.layout.slots).length === 1 ? "thing" : "things"} placed ·{" "}
+            {workoutsInWeekOf(me, day)} {workoutsInWeekOf(me, day) === 1 ? "workout" : "workouts"} this week
+            <br />
+            {me.petName} is {mood === "perky" ? "feeling perky" : mood === "sleepy" ? "having a quiet evening" : "right at home"}.
+          </p>
+        </div>
+      )}
+      {editing && heldItemId && (
+        <div className="placement-guidance">
+          <span>
+            Find a spot for your <strong>{itemById(heldItemId).name.toLowerCase()}</strong>.{itemById(heldItemId).light ? " Light up a corner." : ""}
+          </span>
+          <button className="chip" onClick={() => setHeldItemId(null)}>
+            Cancel
+          </button>
+        </div>
+      )}
       <p className="room-hint">
         {editing
-          ? "Select an item for colors. Drag to move."
+          ? "Tap an item to choose colours, move it or put it away."
           : waiting > 0
             ? "You earned a little something. Tap to unwrap ✦"
-            : "Tap around. Say hello."}
+            : "Every little workout makes this place more yours."}
       </p>
 
+      {saveError && (
+        <p className="save-status" role="alert">
+          {saveError}
+        </p>
+      )}
+      {saving && (
+        <p className="save-status" role="status">
+          Making it feel like home…
+        </p>
+      )}
       {editing ? (
         <section className="drawer card">
           <div className="drawer-header">
@@ -392,6 +473,13 @@ export function Home(props: HomeProps) {
           </div>
           {drawerTab === "items" && (
             <div className="drawer-row">
+              {stored.length === 0 && (
+                <p className="drawer-empty">
+                  {me.unlocks.length
+                    ? "Everything you own is in your flat. Tap a placed item to move it or put it away."
+                    : "Your shelf is empty. Log a workout and unpack a present to find something for your flat."}
+                </p>
+              )}
               {stored.map((itemId) => {
                 const item = itemById(itemId);
                 return (
@@ -400,9 +488,13 @@ export function Home(props: HomeProps) {
                     type="button"
                     className={`drawer-card${heldItemId === itemId ? " is-held" : ""}`}
                     onPointerDown={(event) => startDrawerDrag(event, itemId)}
+                    onClick={(event) => {
+                      if (event.detail === 0) setHeldItemId(itemId);
+                    }}
                     aria-label={item.name}
                   >
                     <ItemThumb item={item} size={66} />
+                    <span>{item.name}</span>
                   </button>
                 );
               })}
@@ -421,6 +513,7 @@ export function Home(props: HomeProps) {
                     aria-label={surface.name}
                   >
                     <SurfaceThumb surface={surface} size={66} />
+                    <span>{surface.name}</span>
                   </button>
                 );
               })}
@@ -431,6 +524,7 @@ export function Home(props: HomeProps) {
         <section className="log-panel">
           {loggedToday ? (
             <>
+              <p className="logged-message">You showed up today. Nicely done.</p>
               <WeekDots player={me} day={day} large />
               {todaysWorkout && !todaysWorkout.type && typeDismissedDay !== day && (
                 <div className="type-row">
@@ -464,6 +558,11 @@ export function Home(props: HomeProps) {
           )}
           {!loggedToday && <WeekDots player={me} day={day} />}
           <div className="home-actions">
+            {waiting > 0 && (
+              <button className="chip chip-present" onClick={onOpenPresent}>
+                Unpack {waiting > 1 ? `${waiting} presents` : "a present"}
+              </button>
+            )}
             <button type="button" className="chip chip-large" onClick={() => setEditing(true)}>
               Decorate {stored.length > 0 && <span className="badge">{stored.length}</span>}
             </button>

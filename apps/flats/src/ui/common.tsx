@@ -1,8 +1,8 @@
 /** Shared UI pieces: embers, toasts, sheets and tags. */
 
 import type { CSSProperties, ReactNode } from "react";
+import { useModalDialog } from "./hooks";
 import { useMemo } from "react";
-
 
 const EMBER_COLORS = ["#ffb35c", "#ffd38a", "#ff8a5c", "#f0c97a", "#ffe6b0"];
 
@@ -75,15 +75,19 @@ export function Sheet({
   children: ReactNode;
   className?: string;
 }) {
+  const dialog = useModalDialog();
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div
-        className={`sheet card ${className}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        onClick={(event) => event.stopPropagation()}
-      >
+    <dialog
+      ref={dialog}
+      className="sheet-backdrop"
+      aria-label={title}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose?.();
+      }}
+      onClick={onClose}
+    >
+      <div className={`sheet card ${className}`} aria-label={title} onClick={(event) => event.stopPropagation()}>
         {onClose && (
           <button type="button" className="sheet-close" onClick={onClose} aria-label="Close">
             ✕
@@ -92,6 +96,6 @@ export function Sheet({
         {title && <h2 className="sheet-title">{title}</h2>}
         {children}
       </div>
-    </div>
+    </dialog>
   );
 }

@@ -195,7 +195,7 @@ export function App() {
     for (const reaction of fresh.slice(-3)) {
       const from = names.get(reaction.from) ?? "A neighbour";
       if (reaction.kind === "heart") toast(`${from} left you a heart`, "♥");
-      if (reaction.kind === "sticker") toast(`${from} left a star on your door`, "✦");
+      if (reaction.kind === "sticker") toast(`${from} left a star on your window`, "✦");
       if (reaction.kind === "treat") toast(`${from} sent ${me.petName} a ${treat.name}`, "🍬");
     }
     if (fresh.some((reaction) => reaction.kind === "treat")) window.setTimeout(() => setTreatKey((count) => count + 1), 900);
@@ -229,7 +229,7 @@ export function App() {
             </button>
           </>
         ) : (
-          "Unfolding your flat…"
+          "Turning on the lights…"
         )}
       </div>
     );
@@ -329,7 +329,12 @@ export function App() {
                       if (await run(() => backend.setWorkoutType(session, day, type))) await run(() => refresh(session));
                     }}
                     onSaveLayout={async (layout: Layout) => {
-                      if (await run(() => backend.saveLayout(session, layout))) await run(() => refresh(session));
+                      const updated = await run(() => backend.saveLayout(session, layout));
+                      if (!updated) throw new Error("Layout save failed.");
+                      ++refreshVersion.current;
+                      setSnapshot((current) =>
+                        current ? { ...current, players: current.players.map((player) => (player.id === updated.id ? updated : player)) } : current
+                      );
                     }}
                     onOpenPresent={() => setUnpackPresent(nextPresent(me))}
                     onOpenSettings={() => setSheet("settings")}

@@ -5,6 +5,7 @@ import { memo, useId } from "react";
 
 import type { ItemDef, Layer, Palette } from "../game/types";
 import { layerCenter, layerPath } from "./paper";
+import { KitArt, hasKitArt } from "./brownstone/KitArt";
 import { OBJECT_REACTIONS } from "./interactions";
 
 /** A soft contact shadow under every layer, giving furniture depth in the dim rooms. */
@@ -97,11 +98,25 @@ export interface ItemArtProps {
   pass?: ItemPass;
   /** Changes on each tap, so a repeated tap starts the response again. */
   reactionKey?: number;
+  wallColor?: string;
 }
 
-function ItemArtInner({ item, paletteIndex, stage = 0, glowStrength = 0.6, pass = "all", reactionKey = 0 }: ItemArtProps) {
+function ItemArtInner({ item, paletteIndex, stage = 0, glowStrength = 0.6, pass = "all", reactionKey = 0, wallColor }: ItemArtProps) {
   const palette = item.palettes[paletteIndex % item.palettes.length];
   const glowId = useId();
+  if (hasKitArt(item.id) && pass !== "glow")
+    return (
+      <g
+        className={
+          reactionKey
+            ? `item-reaction kit-react-${item.light ? "light" : item.category === "plants" ? "plant" : item.zones.includes("ceiling") || item.zones.includes("window") ? "hanging" : "furniture"}`
+            : undefined
+        }
+        key={reactionKey}
+      >
+        <KitArt wallColor={wallColor} id={item.id} item={item} paletteIndex={paletteIndex} width={item.w} height={item.h} stage={stage} />
+      </g>
+    );
   return (
     <>
       {pass !== "body" && (

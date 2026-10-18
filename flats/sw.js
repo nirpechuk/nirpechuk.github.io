@@ -1,5 +1,5 @@
 // Offline shell for Flats: network-first for pages, cache-first for hashed assets.
-const CACHE = "flats-v1";
+const CACHE = "flats-brownstone-v2";
 const SCOPE = "/flats/";
 
 self.addEventListener("install", (event) => {
@@ -9,7 +9,7 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))),
+    caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("flats-") && key !== CACHE).map((key) => caches.delete(key))))
   );
   self.clients.claim();
 });
@@ -26,7 +26,7 @@ self.addEventListener("fetch", (event) => {
           void caches.open(CACHE).then((cache) => cache.put(SCOPE, copy));
           return response;
         })
-        .catch(() => caches.match(SCOPE)),
+        .catch(() => caches.match(SCOPE))
     );
     return;
   }
@@ -40,7 +40,7 @@ self.addEventListener("fetch", (event) => {
             void caches.open(CACHE).then((cache) => cache.put(request, copy));
           }
           return response;
-        }),
-    ),
+        })
+    )
   );
 });
