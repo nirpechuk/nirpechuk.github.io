@@ -103,3 +103,11 @@ Supabase's advisor reports the intentionally callable SECURITY DEFINER RPCs. Eac
 ## Verification
 
 The tests execute the SQL against PostgreSQL via PGlite with mocked Supabase auth/storage schemas. They cover owner/stranger/anonymous access, history protection, invalid input, revisions, private photo policies, idempotent agent logging, and revocation. Date/math tests cover DST boundaries, incomplete journals, unit conversion, and calendar-based smoothing. Production policies are additionally checked through the live Supabase API.
+
+## Private context
+
+The approved Fitness connection loads `fitness_private.context` through the owner/client-checked `fitness_plugin_context` RPC on every authenticated MCP request. Initialization instructions and successful read/save responses include the latest context, revision, and update time. No personal values are included in source files, plugin packages, migrations, or public website assets. Context failure prevents a write with silently missing context. The plugin cannot edit this profile, access photos, or change settings. Profile updates are explicit owner-authorized backend changes; advance revision and updated_at when changing it.
+
+Agents should read entries at the start of each logging/advice conversation, distinguish plans from completed sessions, and preserve the difference between user-reported facts, tentative goals, and assistant assessments. Context delivery supplies information; it cannot guarantee every model will follow every preference.
+
+The private context table intentionally has no direct client grants or RLS policies (deny by default). Its security-definer RPC checks the verified owner and approved OAuth client before reading. These intentional restrictions can appear in the [no-policy advisory](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) and [authenticated-function advisory](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable); access and revocation are covered by the security tests.

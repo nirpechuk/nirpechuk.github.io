@@ -3,11 +3,19 @@ import { createHandler } from "../supabase/functions/fitness-mcp/server";
 const base = "https://project.supabase.co/functions/v1/fitness-mcp";
 const config = { supabaseUrl: "https://project.supabase.co", publicBase: base, publishableKey: "public-test-key" };
 const calls: { name: string; args: any }[] = [];
+let context = { profile: { goal: "Example goal" }, revision: 1 };
 const fakeFetch: typeof fetch = async (input, init) => {
   const name = String(input).split("/").pop()!;
   const args = JSON.parse(String(init?.body));
   calls.push({ name, args });
-  const value = name === "fitness_plugin_access" ? true : name === "fitness_plugin_read" ? [] : { ...args.p_entry, revision: 1 };
+  const value =
+    name === "fitness_plugin_access"
+      ? true
+      : name === "fitness_plugin_context"
+        ? context
+        : name === "fitness_plugin_read"
+          ? []
+          : { ...args.p_entry, revision: 1 };
   return new Response(JSON.stringify(value), { headers: { "Content-Type": "application/json" } });
 };
 const handler = createHandler(config, fakeFetch);
@@ -48,6 +56,7 @@ test("MCP initializes and advertises only two bounded tools with correct annotat
     await handler(request("initialize", { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "test", version: "1" } }))
   );
   expect(initialized.result.serverInfo.name).toBe("fitness");
+  expect(initialized.result.instructions).toContain("Example goal");
   const list = await decode(await handler(request("tools/list")));
   expect(list.result.tools.map((t: any) => t.name)).toEqual(["read_fitness_entries", "log_fitness_entry"]);
   expect(list.result.tools[0].annotations.readOnlyHint).toBe(true);
@@ -63,6 +72,7 @@ test("tools round-trip structured entries, keep UUID/revision, and reject photo/
   };
   const saved = await decode(await handler(request("tools/call", { name: "log_fitness_entry", arguments: { entry, expected_revision: 2 } })));
   expect(saved.result.isError).not.toBe(true);
+  expect(JSON.parse(saved.result.content[0].text).context).toEqual(context);
   expect(calls.at(-1)).toEqual({ name: "fitness_plugin_save", args: { p_entry: entry, p_expected_revision: 2 } });
   const before = calls.filter((c) => c.name === "fitness_plugin_save").length;
   for (const bad of [
@@ -75,4 +85,32 @@ test("tools round-trip structured entries, keep UUID/revision, and reject photo/
   expect(calls.filter((c) => c.name === "fitness_plugin_save")).toHaveLength(before);
   const read = await decode(await handler(request("tools/call", { name: "read_fitness_entries", arguments: { since: "2026-10-01" } })));
   expect(JSON.parse(read.result.content[0].text).entries).toEqual([]);
+  expect(JSON.parse(read.result.content[0].text).context).toEqual(context);
+});
+
+test("context refreshes each request and a failed context load cannot save", async () => {
+  context = { profile: { goal: "Updated example goal" }, revision: 2 };
+  const read = await decode(await handler(request("tools/call", { name: "read_fitness_entries", arguments: {} })));
+  expect(JSON.parse(read.result.content[0].text).context.revision).toBe(2);
+  const before = calls.filter((c) => c.name === "fitness_plugin_save").length;
+  const broken = createHandler(config, async (input, init) =>
+    String(input).endsWith("/fitness_plugin_context") ? new Response("private diagnostic", { status: 500 }) : fakeFetch(input, init)
+  );
+  const response = await broken(
+    request("tools/call", {
+      name: "log_fitness_entry",
+      arguments: {
+        entry: {
+          id: "99999999-9999-4999-8999-999999999999",
+          day: "2026-10-19",
+          kind: "measurement",
+          title: "Test only",
+          data: { weight: 170, unit: "lb" },
+        },
+      },
+    })
+  );
+  expect(response.status).toBe(503);
+  expect(await response.text()).not.toContain("private diagnostic");
+  expect(calls.filter((c) => c.name === "fitness_plugin_save")).toHaveLength(before);
 });

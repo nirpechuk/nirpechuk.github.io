@@ -30,10 +30,26 @@ beforeAll(async () => {
  insert into auth.users values('${owner}','owner@example.test',now()),('${stranger}','stranger@example.test',now());`);
   await pg.exec(readFileSync(new URL("../supabase/migrations/001_fitness.sql", import.meta.url), "utf8"));
   await pg.exec(readFileSync(new URL("../supabase/migrations/002_fitness_plugin.sql", import.meta.url), "utf8"));
+  await pg.exec(readFileSync(new URL("../supabase/migrations/20261019182028_fitness_context.sql", import.meta.url), "utf8"));
   await pg.exec("insert into fitness_private.owner(email) values('owner@example.test')");
 }, 30000);
 afterAll(async () => {
   await pg.close();
+});
+
+test("private context is read-only for approved clients and denied to anonymous, outsiders and revoked clients", async () => {
+  const client = "88888888-8888-4888-8888-888888888888";
+  await pg.query("insert into fitness_private.context(owner_id,profile) values($1,$2)", [owner, JSON.stringify({ goal: "Example private goal" })]);
+  const read = () => as("authenticated", owner, "select public.fitness_plugin_context() as context", [], client);
+  await expect(read()).rejects.toThrow(/not authorized/);
+  await expect(as("anon", "", "select public.fitness_plugin_context()")).rejects.toThrow(/permission denied/);
+  await as("authenticated", owner, "select public.fitness_allow_plugin_client($1,'Context test')", [client]);
+  expect(((await read()).rows[0] as any).context.profile.goal).toBe("Example private goal");
+  await expect(as("authenticated", stranger, "select public.fitness_plugin_context()", [], client)).rejects.toThrow(/not authorized/);
+  await expect(as("authenticated", owner, "select * from fitness_private.context", [], client)).rejects.toThrow(/permission denied/);
+  await expect(as("authenticated", owner, "update fitness_private.context set profile='{}'", [], client)).rejects.toThrow(/permission denied/);
+  await as("authenticated", owner, "select public.fitness_revoke_plugin_client($1)", [client]);
+  await expect(read()).rejects.toThrow(/not authorized/);
 });
 test("owner can create a meal and the database records an immutable audit", async () => {
   await as(
