@@ -148,3 +148,22 @@ FLATS_LIVE_TEST=1 FLATS_CONNECTION_FILE=/private/path/connection.json npm test -
 
 The suite removes its fixtures afterward. Ordinary `npm test` skips live tests.
 For explicit device-only development, start Vite with `VITE_FLATS_OFFLINE=true`.
+
+## Friends-and-family building
+
+During the family preview, `004_shared_family_building.sql` makes Nir's existing
+building (`F5D912`) the shared home. New move-ins (with or without an invite),
+returning residents and restored room keys all use that building. Existing
+profiles, keys, workouts and rooms are preserved; original memberships are saved
+in the private `community_original_membership` table.
+
+The UI reads `flats_default_building()` rather than embedding this temporary
+policy in a bundle. To allow separate buildings again, an administrator can set
+`flats_private.community_settings.shared_building_code` to `NULL`. This does not
+move residents back automatically. Any membership reversal should be explicit.
+
+`005_merged_room_keys.sql` supports administrator-approved duplicate merges.
+An entry in private `room_merges` lets a duplicate's saved key resolve to the kept
+resident at startup or during room-key restoration. The source can be soft deleted;
+its room remains recoverable. Only the administrator can register a merge. Deleting
+the kept resident blocks both keys. The client never receives another device's key.

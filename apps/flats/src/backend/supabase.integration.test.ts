@@ -77,11 +77,21 @@ describe.skipIf(!live)("Live Supabase contract", () => {
   }, 20000);
   it("shares buildings, keeps room keys private, and blocks forged keys and cross-building reactions", async () => {
     const snapshot = await alice.fetchGroup(a);
-    expect(snapshot.players.map((p) => p.name)).toEqual(["Test Alice", "Test Bob"]);
+    expect(snapshot.players.map((p) => p.id)).toEqual(expect.arrayContaining([a.playerId, b.playerId]));
+    const shared = await alice.defaultBuilding();
+    if (shared) expect([a.groupCode, b.groupCode, e.groupCode]).toEqual([shared.code, shared.code, shared.code]);
     expect(JSON.stringify(snapshot)).not.toContain(token(aStore, a.playerId));
-    expect(await eve.groupName(a.groupCode.toLowerCase())).toBe("Test Alice's building");
+    expect(await eve.groupName(a.groupCode.toLowerCase())).toBe((await alice.fetchGroup(a)).group.name);
     await expect(rpc("flats_fetch_group", { p_player_id: a.playerId, p_token: token(eStore, e.playerId) })).rejects.toThrow("no longer available");
-    await expect(eve.react(e, a.playerId, "heart", DAY)).rejects.toThrow("not in your building");
+    const isolated = "Q" + randomUUID().replaceAll("-", "").slice(0, 5).toUpperCase();
+    groups.add(isolated);
+    await db.query("insert into flats_private.groups(code,name) values($1,'Isolated QA')", [isolated]);
+    await db.query("update flats_private.players set group_code=$1 where id=$2", [isolated, e.playerId]);
+    try {
+      await expect(eve.react(e, a.playerId, "heart", DAY)).rejects.toThrow("not in your building");
+    } finally {
+      await db.query("update flats_private.players set group_code=$1 where id=$2", [e.groupCode, e.playerId]);
+    }
     const permissions = await db.query(
       "select has_schema_privilege('anon','flats_private','usage') as exposed,has_table_privilege('anon','flats_private.players','select') as readable"
     );
@@ -91,7 +101,7 @@ describe.skipIf(!live)("Live Supabase contract", () => {
     const alias = "Z" + randomUUID().replaceAll("-", "").slice(0, 5).toUpperCase();
     groups.add(alias);
     await db.query("insert into flats_private.groups(code,name,redirect_code) values($1,$2,$3)", [alias, "Old building", a.groupCode]);
-    expect(await alice.groupName(alias)).toBe("Test Alice's building");
+    expect(await alice.groupName(alias)).toBe((await alice.fetchGroup(a)).group.name);
     const newcomer = new SupabaseBackend(store());
     const movedIn = remember(await newcomer.createPlayer({ name: "Test Invite", petKind: "cat", petName: "Bean", groupCode: alias }));
     expect(movedIn.groupCode).toBe(a.groupCode);
@@ -134,7 +144,9 @@ describe.skipIf(!live)("Live Supabase contract", () => {
   }, 30000);
   it("persists reactions and prevents duplicate or self deliveries", async () => {
     await bob.react(b, a.playerId, "treat", DAY);
-    expect((await alice.fetchGroup(a)).reactions[0].kind).toBe("treat");
+    expect((await alice.fetchGroup(a)).reactions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ from: b.playerId, to: a.playerId, kind: "treat" })])
+    );
     await expect(bob.react(b, a.playerId, "treat", DAY)).rejects.toThrow("already sent");
     await expect(alice.react(a, a.playerId, "heart", DAY)).rejects.toThrow("friends");
   });
@@ -155,7 +167,7 @@ describe.skipIf(!live)("Live Supabase contract", () => {
     ).rejects.toThrow("no longer available");
     await rpc("flats_admin", { p_token: adminToken, p_action: "restore", p_player_id: b.playerId });
     const restored = await bob.restorePlayer(`${b.playerId}.${token(bStore, b.playerId)}`);
-    expect((await bob.fetchGroup(restored)).players).toHaveLength(2);
+    expect((await bob.fetchGroup(restored)).players.map((p) => p.id)).toContain(b.playerId);
   });
   it("imports device saves once, keeps their backup, and restores on another device", async () => {
     const localId = randomUUID(),
@@ -181,7 +193,7 @@ describe.skipIf(!live)("Live Supabase contract", () => {
     storage.setItem("flats:v1", saved);
     const migrated = new SupabaseBackend(storage);
     const session = remember((await migrated.initialize())!);
-    const p = (await migrated.fetchGroup(session)).players[0];
+    const p = (await migrated.fetchGroup(session)).players.find((p) => p.id === session.playerId)!;
     expect(p.unlocks[0].id).toBe("floor-cushion");
     expect(p.layout.slots.floorBC.itemId).toBe("floor-cushion");
     expect(storage.getItem("flats:v1")).toBe(saved);
@@ -206,6 +218,6 @@ describe.skipIf(!live)("Live Supabase contract", () => {
     const pending = Object.keys(JSON.parse(storage.getItem(ONLINE_STORAGE_KEY)!).profiles)[0];
     const session = remember(await new SupabaseBackend(storage).createPlayer(input));
     expect(session.playerId).toBe(pending);
-    expect((await first.fetchGroup(session)).players).toHaveLength(1);
+    expect((await first.fetchGroup(session)).players.filter((p) => p.id === pending)).toHaveLength(1);
   });
 });

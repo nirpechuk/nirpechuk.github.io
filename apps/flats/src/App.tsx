@@ -52,7 +52,7 @@ export function App() {
   const [treatKey, setTreatKey] = useState(0);
   const [confettiKey, setConfettiKey] = useState(0);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [joinCode, setJoinCode] = useState<string | null>(joinCodeFromUrl);
+  const [joinCode, setJoinCode] = useState<string | null>(() => (backend.mode === "online" ? null : joinCodeFromUrl()));
   const [joinGroupName, setJoinGroupName] = useState<string | null>(null);
   const toastId = useRef(0);
   const hour = useHour();
@@ -106,10 +106,12 @@ export function App() {
   useEffect(() => {
     let cancelled = false;
     setLoadError(null);
-    Promise.resolve(backend.initialize ? backend.initialize() : backend.currentSession())
-      .then((active) => {
+    Promise.all([backend.initialize ? backend.initialize() : backend.currentSession(), backend.defaultBuilding ? backend.defaultBuilding() : null])
+      .then(([active, sharedBuilding]) => {
         if (!cancelled) {
           setSession(active);
+          setJoinCode(sharedBuilding?.code ?? joinCodeFromUrl());
+          setJoinGroupName(sharedBuilding?.name ?? null);
           setReady(true);
         }
       })

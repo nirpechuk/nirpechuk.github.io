@@ -11,7 +11,7 @@ export interface NewPlayerInput {
   name: string;
   petKind: PetKind;
   petName: string;
-  /** Join this group; omit to create a new one. */
+  /** Join this group; the server may instead use the shared family building. */
   groupCode?: string;
 }
 
@@ -27,6 +27,7 @@ export interface Backend {
   readonly mode: "local" | "online";
   currentSession(): Session | null;
   initialize?(): Promise<Session | null>;
+  defaultBuilding?(): Promise<{ code: string; name: string } | null>;
   roomKey?(session: Session): string;
   restorePlayer?(key: string): Promise<Session>;
   createPlayer(input: NewPlayerInput): Promise<Session>;

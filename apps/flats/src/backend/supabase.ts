@@ -81,11 +81,35 @@ export class SupabaseBackend implements Backend {
     return profile && !profile.pending && !profile.unavailable ? { playerId: profile.playerId, groupCode: profile.groupCode } : null;
   }
   initialize(): Promise<Session | null> {
-    this.initializing ??= this.migrate().catch((error) => {
-      this.initializing = undefined;
-      throw error;
-    });
+    this.initializing ??= this.migrate()
+      .then(() => this.resolveSavedRooms())
+      .catch((error) => {
+        this.initializing = undefined;
+        throw error;
+      });
     return this.initializing.then(() => this.currentSession());
+  }
+  defaultBuilding(): Promise<{ code: string; name: string } | null> {
+    return this.rpc("rpc/flats_default_building", {});
+  }
+  private resolveRoom(playerId: string, token: string): Promise<Session & ProfileSummary> {
+    return this.rpc("rpc/flats_resolve_room", { p_player_id: playerId, p_token: token });
+  }
+  private async resolveSavedRooms(): Promise<Session | null> {
+    for (const profile of Object.values(this.rooms.profiles)) {
+      if (profile.pending) continue;
+      try {
+        const resolved = await this.resolveRoom(profile.playerId, profile.token);
+        this.rooms.profiles[resolved.playerId] = { ...profile, ...resolved, unavailable: false };
+        if (resolved.playerId !== profile.playerId) delete this.rooms.profiles[profile.playerId];
+        if (this.rooms.activePlayerId === profile.playerId) this.rooms.activePlayerId = resolved.playerId;
+      } catch (error) {
+        if (!(error instanceof SessionUnavailableError)) throw error;
+        if (this.rooms.activePlayerId === profile.playerId) this.rooms.activePlayerId = null;
+      }
+    }
+    this.persist();
+    return this.currentSession();
   }
   private async migrate(): Promise<Session | null> {
     for (const profile of Object.values(this.rooms.profiles)) {
@@ -221,9 +245,10 @@ export class SupabaseBackend implements Backend {
     const [id, token, extra] = key.trim().split(".");
     if (extra || !/^[0-9a-f-]{36}$/i.test(id ?? "") || !/^[a-f0-9]{64}$/.test(token ?? ""))
       throw new GameRuleError("That room key doesn't look quite right.");
-    const snapshot = await this.rpc<GroupSnapshot>("rpc/flats_fetch_group", { p_player_id: id, p_token: token });
-    const p = snapshot.players.find((p) => p.id === id)!;
-    this.rooms.profiles[id] = { playerId: id, name: p.name, petKind: p.petKind, petName: p.petName, groupCode: snapshot.group.code, token };
-    return this.switchProfile(id);
+    const resolved = await this.resolveRoom(id, token);
+    const snapshot = await this.rpc<GroupSnapshot>("rpc/flats_fetch_group", { p_player_id: resolved.playerId, p_token: token });
+    this.rooms.profiles[resolved.playerId] = { ...resolved, groupCode: snapshot.group.code, token };
+    if (resolved.playerId !== id) delete this.rooms.profiles[id];
+    return this.switchProfile(resolved.playerId);
   }
 }
