@@ -1951,6 +1951,26 @@ button {
 .gate .error {
   margin-top: 16px;
 }
+.plugin-consent {
+  max-width: 580px;
+  margin: 70px auto;
+  padding: 0 24px;
+}
+.plugin-consent h1 {
+  font:
+    42px Georgia,
+    serif;
+  letter-spacing: -1px;
+}
+.plugin-consent p {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.plugin-consent-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
 html {
   min-height: 100%;
   background: var(--paper);

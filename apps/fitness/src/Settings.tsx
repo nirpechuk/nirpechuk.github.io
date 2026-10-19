@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { db } from "./backend";
 import { type Settings as Preferences, type Unit } from "./model";
+import { PluginConnections } from "./PluginConsent";
 interface Key {
   id: string;
   name: string;
@@ -128,6 +129,7 @@ export function Settings({
           </div>
         </section>
         <section>
+          <PluginConnections demo={demo} />
           <h3>Log through an agent</h3>
           <p className="muted">
             Create a revocable key for logging meals, workouts, weigh-ins, and complete days. It can read text entries from the past year, but cannot

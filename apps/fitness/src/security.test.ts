@@ -5,8 +5,10 @@ let pg: PGlite;
 const owner = "11111111-1111-4111-8111-111111111111",
   stranger = "22222222-2222-4222-8222-222222222222";
 const entry = "33333333-3333-4333-8333-333333333333";
-async function as(role: string, id: string, sql: string, params: unknown[] = []) {
-  await pg.exec(`reset role; select set_config('request.jwt.claim.sub','${id}',false); set role ${role};`);
+async function as(role: string, id: string, sql: string, params: unknown[] = [], client = "") {
+  await pg.exec(`reset role; select set_config('request.jwt.claim.sub','${id}',false);`);
+  await pg.query("select set_config('request.jwt.claims',$1,false)", [JSON.stringify(client ? { client_id: client } : {})]);
+  await pg.exec(`set role ${role};`);
   try {
     return await pg.query(sql, params);
   } finally {
@@ -18,6 +20,7 @@ beforeAll(async () => {
   await pg.exec(`create role anon; create role authenticated; create schema auth; create schema storage;
  create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
  grant usage on schema auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;
  create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
  create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);
@@ -26,6 +29,7 @@ beforeAll(async () => {
  create function storage.foldername(text) returns text[] language sql immutable as $$select string_to_array($1,'/')$$;
  insert into auth.users values('${owner}','owner@example.test',now()),('${stranger}','stranger@example.test',now());`);
   await pg.exec(readFileSync(new URL("../supabase/migrations/001_fitness.sql", import.meta.url), "utf8"));
+  await pg.exec(readFileSync(new URL("../supabase/migrations/002_fitness_plugin.sql", import.meta.url), "utf8"));
   await pg.exec("insert into fitness_private.owner(email) values('owner@example.test')");
 }, 30000);
 afterAll(async () => {
@@ -104,4 +108,59 @@ test("agent keys support retry-safe logging, optimistic corrections, revocation,
   await expect(as("anon", "", "select public.fitness_create_agent_key('Bad')")).rejects.toThrow(/permission denied/);
   await as("authenticated", owner, "select public.fitness_revoke_agent_key($1)", [key.id]);
   await expect(call()).rejects.toThrow(/Invalid or expired/);
+});
+
+test("OAuth clients must be approved and cannot use direct journal, photo, settings, history, or key access", async () => {
+  const client = "55555555-5555-4555-8555-555555555555";
+  const oauth = (sql: string, params: unknown[] = []) => as("authenticated", owner, sql, params, client);
+  expect((await oauth("select public.fitness_plugin_access() as allowed")).rows[0]).toEqual({ allowed: false });
+  await expect(oauth("select public.fitness_plugin_read()")).rejects.toThrow(/not authorized/);
+  await expect(oauth("select public.fitness_allow_plugin_client($1,'Escalation')", [client])).rejects.toThrow(/Not authorized/);
+  await as("authenticated", owner, "select public.fitness_allow_plugin_client($1,'Fitness')", [client]);
+  expect((await oauth("select public.fitness_plugin_access() as allowed")).rows[0]).toEqual({ allowed: true });
+  for (const table of ["fitness_entries", "fitness_settings", "fitness_history"]) {
+    expect((await oauth(`select * from public.${table}`)).rows).toHaveLength(0);
+  }
+  expect((await oauth("select * from storage.objects")).rows).toHaveLength(0);
+  await expect(oauth("select public.fitness_create_agent_key('Escalation')")).rejects.toThrow(/Not authorized/);
+  await expect(oauth("select fitness_private.save_text_entry($1,'{}',null)", [owner])).rejects.toThrow(/permission denied/);
+  await expect(oauth("insert into storage.objects(bucket_id,name) values('fitness-photos',$1)", [owner + "/blocked.jpg"])).rejects.toThrow(
+    /row-level security/
+  );
+  await expect(oauth("insert into public.fitness_settings(owner_id) values($1)", [owner])).rejects.toThrow(/row-level security/);
+  await expect(as("authenticated", stranger, "select public.fitness_plugin_read()", [], client)).rejects.toThrow(/not authorized/);
+  await expect(as("authenticated", owner, "select public.fitness_plugin_read()")).rejects.toThrow(/not authorized/);
+});
+
+test("OAuth text logging keeps retries and revision history, excludes photos, and revokes immediately", async () => {
+  const client = "55555555-5555-4555-8555-555555555555";
+  const body = {
+    id: "66666666-6666-4666-8666-666666666666",
+    day: "2026-10-19",
+    kind: "measurement",
+    title: "Weigh-in",
+    data: { weight: 170, unit: "lb" },
+  };
+  const save = (value: unknown, revision: number | null = null) =>
+    as("authenticated", owner, "select public.fitness_plugin_save($1,$2) as entry", [JSON.stringify(value), revision], client);
+  await save(body);
+  const retry = await save(body);
+  expect((retry.rows[0] as any).entry.revision).toBe(1);
+  const corrected = { ...body, data: { ...body.data, weight: 171 } };
+  await expect(save(corrected)).rejects.toThrow(/changed/);
+  expect(((await save(corrected, 1)).rows[0] as any).entry.revision).toBe(2);
+  await expect(save({ ...body, kind: "photo" }, 2)).rejects.toThrow(/text entries only/);
+  await as(
+    "authenticated",
+    owner,
+    `insert into public.fitness_entries(owner_id,day,kind,title,data) values($1,'2026-10-19','photo','Private photo',$2)`,
+    [owner, JSON.stringify({ path: owner + "/77777777-7777-4777-8777-777777777777.jpg", view: "front" })]
+  );
+  const read = await as("authenticated", owner, "select public.fitness_plugin_read('2026-10-01') as entries", [], client);
+  expect((read.rows[0] as any).entries.some((e: any) => e.kind === "photo")).toBe(false);
+  expect((read.rows[0] as any).entries.some((e: any) => e.id === body.id)).toBe(true);
+  await as("authenticated", owner, "select public.fitness_revoke_plugin_client($1)", [client]);
+  await expect(save(body)).rejects.toThrow(/not authorized/);
+  // First-party website access still works after OAuth revocation.
+  expect((await as("authenticated", owner, "select public.fitness_is_owner() as allowed")).rows[0]).toEqual({ allowed: true });
 });

@@ -1,0 +1,12 @@
+[functions.fitness-mcp]
+# The handler validates the user's JWT through PostgREST and the restricted
+# fitness_plugin_access RPC. OAuth discovery itself must be public.
+verify_jwt = false
+
+[auth]
+site_url = "https://nirpechuk.github.io"
+
+[auth.oauth_server]
+enabled = true
+authorization_url_path = "/fitness/"
+allow_dynamic_registration = true

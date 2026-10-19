@@ -74,7 +74,31 @@ Kinds/data:
 
 Remote agents can call POST `/rest/v1/rpc/fitness_agent_read` with `{p_token,p_since}` or `/rest/v1/rpc/fitness_agent_save` with `{p_token,p_entry,p_expected_revision}`. Supply the project's publishable key in the `apikey` header. Keep the agent token in a private secret store and in the request body, never a URL. Read returns at most 2,000 active text entries from the last 366 days, ordered chronologically; default lookback is 30 days. Keys expire after 90 days and can be revoked in Settings. They cannot access photos, change settings, create keys, archive entries, or directly read tables.
 
-A ChatGPT/dot connection is not automatically installed. It requires a supported custom action/connector for these endpoints. The local Codex agent is ready via the CLI.
+The local Codex agent uses this CLI. Cloud ChatGPT/dot access uses the private Fitness plugin below.
+
+## Cloud Fitness plugin
+
+The portable package lives in `plugin/`. Its MCP server is hosted by the `fitness-mcp` Supabase Edge Function, at:
+
+`https://esgexdlmpvwqpvinmmpm.supabase.co/functions/v1/fitness-mcp/mcp`
+
+The plugin exposes `read_fitness_entries` and `log_fitness_entry` (including revision-checked corrections). It has no model/API bill of its own and requires no always-on personal computer. Normal Supabase usage limits still apply.
+
+Deployment:
+
+1. Apply `supabase/migrations/002_fitness_plugin.sql` after the original migration.
+2. Deploy all files in `supabase/functions/fitness-mcp/`, entrypoint `index.ts`, import map `deno.json`, and gateway `verify_jwt=false`. The handler independently authenticates through PostgREST plus `fitness_plugin_access`; only OAuth discovery is public. Built-in `SUPABASE_URL` and `SUPABASE_ANON_KEY` are sufficient. No service-role key is used.
+3. Set Supabase Auth Site URL to `https://nirpechuk.github.io`, enable OAuth Server, set Authorization Path to `/fitness/`, and enable dynamic client registration. The project uses ES256 signing. Publish the updated viewer containing the consent screen.
+4. In ChatGPT Plugins, add a custom MCP server with the endpoint above and OAuth authentication. Complete the fitness-page sign-in with the existing admin password, inspect the requesting client, and explicitly connect the journal. Keep the plugin personal/private.
+5. Start a chat with Fitness selected. The package's skill is optional guidance; equivalent logging invariants are also in the server's tool descriptions and initialization instructions.
+
+OAuth authorization creates a revocable client allowlist entry for the verified journal owner. OAuth JWTs cannot use the website's direct table, photo storage, history, settings, or key-management permissions. The two text-entry RPCs require both that owner and an allowlisted client. Database validation, stable IDs, revision checks, and audit triggers are shared with the local agent. Disconnecting under website Settings removes access immediately, even before an existing OAuth access token expires; the UI also revokes the OAuth grant.
+
+The consent page intentionally displays the client name, return URL, account scopes, and journal permissions. New OAuth client registration alone does not grant journal access. No plaintext credentials or personal entries belong in the plugin archive.
+
+Validation includes mock-transport MCP initialization/list/call tests, OAuth metadata and unauthorized responses, schema rejection, and PostgreSQL tests proving OAuth isolation and immediate revocation. Live tests should read only; do not contaminate the real journal with example entries.
+
+Supabase's advisor reports the intentionally callable SECURITY DEFINER RPCs. Each has an explicit verified-owner/agent-key/client check and a fixed empty search path; execution is granted only to the intended roles. See the [Supabase RPC advisory guidance](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
 
 ## Verification
 

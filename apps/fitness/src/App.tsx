@@ -20,6 +20,7 @@ import { Photos } from "./Photos";
 import { Settings } from "./Settings";
 import config from "./config.json";
 import { Notebook } from "./Notebook";
+import { PluginConsent } from "./PluginConsent";
 const tabs = ["Overview", "Nutrition", "Training", "Photos", "Settings"] as const;
 type Tab = (typeof tabs)[number];
 function Metric({ label, value, unit, detail }: { label: string; value: string | number; unit?: string; detail: string }) {
@@ -86,6 +87,7 @@ function History({ entry, demo, onClose }: { entry: Entry; demo: boolean; onClos
   );
 }
 export default function App() {
+  const authorizationId = new URLSearchParams(location.search).get("authorization_id");
   const [unlocked, setUnlocked] = useState(false);
   const [demo, setDemo] = useState(false);
   const [owner, setOwner] = useState("");
@@ -155,7 +157,7 @@ export default function App() {
   }
   useEffect(() => {
     const p = savedPassword();
-    if (import.meta.env.DEV && new URLSearchParams(location.search).get("example") === "1") explore();
+    if (import.meta.env.DEV && !authorizationId && new URLSearchParams(location.search).get("example") === "1") explore();
     else if (p) void unlock(p);
     const listen = (e: StorageEvent) => {
       if (e.key === "admin-password" && !e.newValue) void lock();
@@ -371,6 +373,8 @@ export default function App() {
             </p>
           )}
         </main>
+      ) : authorizationId ? (
+        <PluginConsent authorizationId={authorizationId} />
       ) : (
         <>
           {demo && (
