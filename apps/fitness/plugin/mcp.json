@@ -3,18 +3,7 @@
   "mcpServers": {
     "fitness": {
       "type": "streamable-http",
-      "url": "https://esgexdlmpvwqpvinmmpm.supabase.co/functions/v1/fitness-mcp/mcp",
-      "extensions": {
-        "com.openai": {
-          "auth": {
-            "type": "oauth",
-            "client": { "mode": "dcr" },
-            "authorizationServerBase": "https://esgexdlmpvwqpvinmmpm.supabase.co/auth/v1",
-            "resource": "https://esgexdlmpvwqpvinmmpm.supabase.co/functions/v1/fitness-mcp/mcp",
-            "defaultScopes": []
-          }
-        }
-      }
+      "url": "https://esgexdlmpvwqpvinmmpm.supabase.co/functions/v1/fitness-mcp/mcp"
     }
   }
 }
