@@ -260,6 +260,11 @@ footer .page-views {
     font-size: 1.18rem;
     color: #a35e30;
   }
+  .frivolity-fitness {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.94rem;
+    color: #285c76;
+  }
   .frivolity-structs:hover > span,
   .frivolity-structs:focus-visible > span {
     animation: structs-align 0.65s steps(3, end) both;
@@ -270,6 +275,9 @@ footer .page-views {
   }
 }
 html[data-theme="dark"] .frivolities-links {
+  .frivolity-fitness {
+    color: #8cbed3;
+  }
   .frivolity-structs {
     color: #8ea6ff;
   }
