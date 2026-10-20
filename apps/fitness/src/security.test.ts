@@ -23,7 +23,7 @@ beforeAll(async () => {
  create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
  grant usage on schema auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;
  create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
- create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);
+ create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text,metadata jsonb,unique(bucket_id,name));
  alter table storage.objects enable row level security;
  grant usage on schema storage to authenticated; grant select,insert,delete on storage.objects to authenticated;
  create function storage.foldername(text) returns text[] language sql immutable as $$select string_to_array($1,'/')$$;
@@ -31,6 +31,7 @@ beforeAll(async () => {
   await pg.exec(readFileSync(new URL("../supabase/migrations/001_fitness.sql", import.meta.url), "utf8"));
   await pg.exec(readFileSync(new URL("../supabase/migrations/002_fitness_plugin.sql", import.meta.url), "utf8"));
   await pg.exec(readFileSync(new URL("../supabase/migrations/20261019182028_fitness_context.sql", import.meta.url), "utf8"));
+  await pg.exec(readFileSync(new URL("../supabase/migrations/20261020125949_fitness_photo_uploads.sql", import.meta.url), "utf8"));
   await pg.exec("insert into fitness_private.owner(email) values('owner@example.test')");
 }, 30000);
 afterAll(async () => {
@@ -179,4 +180,43 @@ test("OAuth text logging keeps retries and revision history, excludes photos, an
   await expect(save(body)).rejects.toThrow(/not authorized/);
   // First-party website access still works after OAuth revocation.
   expect((await as("authenticated", owner, "select public.fitness_is_owner() as allowed")).rows[0]).toEqual({ allowed: true });
+});
+
+test("photo uploads require explicit owner enablement, one reserved path, completed storage, and remain upload-only", async () => {
+  const client = "99999999-9999-4999-8999-999999999999";
+  const photo = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", day: "2026-10-20", title: "Front", view: "front" };
+  const oauth = (sql: string, params: unknown[] = []) => as("authenticated", owner, sql, params, client);
+  const reserve = (value = photo, hash = "a".repeat(64)) =>
+    oauth("select public.fitness_plugin_reserve_photo($1,$2,123) as receipt", [JSON.stringify(value), hash]);
+  const finish = () => oauth("select public.fitness_plugin_finish_photo($1) as saved", [photo.id]);
+  await as("authenticated", owner, "select public.fitness_allow_plugin_client($1,'Photo test')", [client]);
+  await expect(reserve()).rejects.toThrow(/not authorized/);
+  await expect(oauth("select public.fitness_enable_plugin_photos($1)", [client])).rejects.toThrow(/Not authorized/);
+  await as("authenticated", owner, "select public.fitness_enable_plugin_photos($1)", [client]);
+  await expect(
+    as("authenticated", stranger, "select public.fitness_plugin_reserve_photo($1,$2,123)", [JSON.stringify(photo), "a".repeat(64)], client)
+  ).rejects.toThrow(/not authorized/);
+  await reserve();
+  await reserve();
+  await expect(reserve({ ...photo, title: "Changed" })).rejects.toThrow(/already used/);
+  await expect(reserve(photo, "b".repeat(64))).rejects.toThrow(/already used/);
+  await expect(finish()).rejects.toThrow(/incomplete/);
+  const path = owner + "/" + photo.id + ".jpg";
+  await expect(
+    oauth("insert into storage.objects(bucket_id,name) values('fitness-photos',$1)", [stranger + "/" + photo.id + ".jpg"])
+  ).rejects.toThrow(/row-level security/);
+  await oauth("insert into storage.objects(bucket_id,name,metadata) values('fitness-photos',$1,$2)", [
+    path,
+    JSON.stringify({ mimetype: "image/jpeg", size: 123 }),
+  ]);
+  expect((await oauth("select * from storage.objects where name=$1", [path])).rows).toHaveLength(0);
+  await oauth("delete from storage.objects where name=$1", [path]);
+  expect((await pg.query("select * from storage.objects where name=$1", [path])).rows).toHaveLength(1);
+  expect(((await finish()).rows[0] as any).saved.kind).toBe("photo");
+  expect(((await finish()).rows[0] as any).saved.revision).toBe(1);
+  expect((await pg.query("select * from public.fitness_history where entry_id=$1", [photo.id])).rows).toHaveLength(1);
+  await expect(oauth("insert into storage.objects(bucket_id,name) values('fitness-photos',$1)", [path])).rejects.toThrow(/row-level security/);
+  await as("authenticated", owner, "select public.fitness_revoke_plugin_client($1)", [client]);
+  await expect(finish()).rejects.toThrow(/not authorized/);
+  expect((await pg.query("select * from public.fitness_entries where id=$1", [photo.id])).rows).toHaveLength(1);
 });

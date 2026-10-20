@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fitness",
-  "version": "1.0.0",
-  "description": "Read and log meals, workouts, and weight in your private fitness journal."
+  "version": "1.1.0",
+  "description": "Read and log meals, workouts, and weight, and upload private progress photos."
 }

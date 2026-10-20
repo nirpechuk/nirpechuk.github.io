@@ -1,6 +1,7 @@
 {
   "imports": {
     "@modelcontextprotocol/server": "npm:@modelcontextprotocol/server@2.3.1",
+    "imagescript": "npm:imagescript@3.3.0",
     "zod": "npm:zod@4.3.6"
   }
 }

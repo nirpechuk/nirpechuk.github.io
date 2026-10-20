@@ -29,6 +29,8 @@ export function PluginConsent({ authorizationId }: { authorizationId: string }) 
           p_name: details.client.name.slice(0, 100) || "Fitness plugin",
         });
         if (allowed.error) throw allowed.error;
+        const photos = await db.rpc("fitness_enable_plugin_photos", { p_client_id: details.client.id });
+        if (photos.error) throw photos.error;
       }
       const { data, error } = approve
         ? await db.auth.oauth.approveAuthorization(authorizationId, { skipBrowserRedirect: true })
@@ -50,7 +52,10 @@ export function PluginConsent({ authorizationId }: { authorizationId: string }) 
             <strong>{details.client.name}</strong> is asking to connect to your fitness journal.
           </p>
           <p>It can read and log meals, workouts, weigh-ins, and food-journal completion, and correct those entries with history retained.</p>
-          <p>Photos, preferences, deletion, and creating other connections are excluded. You can disconnect it in Settings.</p>
+          <p>
+            It can also upload new progress photos. Reading existing photos, preferences, deletion, and creating other connections are excluded. You
+            can disconnect it in Settings.
+          </p>
           <p className="hint">Return to: {details.redirect_uri}</p>
           {details.scope && <p className="hint">Account permissions requested: {details.scope}</p>}
           <div className="plugin-consent-actions">

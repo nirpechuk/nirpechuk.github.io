@@ -51,16 +51,20 @@ test("OAuth discovery is public; journal endpoints fail closed", async () => {
   const upstreamError = createHandler(config, async () => new Response("secret diagnostic", { status: 500 }));
   expect((await upstreamError(request("tools/list"))).status).toBe(401);
 });
-test("MCP initializes and advertises only two bounded tools with correct annotations", async () => {
+test("MCP initializes and advertises three bounded tools with correct annotations", async () => {
   const initialized = await decode(
     await handler(request("initialize", { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "test", version: "1" } }))
   );
   expect(initialized.result.serverInfo.name).toBe("fitness");
   expect(initialized.result.instructions).toContain("Example goal");
   const list = await decode(await handler(request("tools/list")));
-  expect(list.result.tools.map((t: any) => t.name)).toEqual(["read_fitness_entries", "log_fitness_entry"]);
+  expect(list.result.tools.map((t: any) => t.name)).toEqual(["read_fitness_entries", "log_fitness_entry", "log_fitness_photo"]);
   expect(list.result.tools[0].annotations.readOnlyHint).toBe(true);
   expect(list.result.tools[1].annotations.readOnlyHint).toBe(false);
+  const photo = list.result.tools[2];
+  expect(photo._meta["openai/fileParams"]).toEqual(["file"]);
+  expect(photo.inputSchema.properties.file.required).toEqual(["download_url", "file_id"]);
+  expect(Object.keys(photo.inputSchema.properties.file.properties).sort()).toEqual(["download_url", "file_id", "file_name", "mime_type"]);
 });
 test("tools round-trip structured entries, keep UUID/revision, and reject photo/invalid inputs", async () => {
   const entry = {

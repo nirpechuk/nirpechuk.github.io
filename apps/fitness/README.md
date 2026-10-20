@@ -82,7 +82,7 @@ The portable package lives in `plugin/`. Its MCP server is hosted by the `fitnes
 
 `https://esgexdlmpvwqpvinmmpm.supabase.co/functions/v1/fitness-mcp/mcp`
 
-The plugin exposes `read_fitness_entries` and `log_fitness_entry` (including revision-checked corrections). It has no model/API bill of its own and requires no always-on personal computer. Normal Supabase usage limits still apply.
+The plugin exposes `read_fitness_entries`, `log_fitness_entry` (including revision-checked corrections), and `log_fitness_photo`. It has no model/API bill of its own and requires no always-on personal computer. Normal Supabase usage limits still apply.
 
 Deployment:
 
@@ -92,7 +92,7 @@ Deployment:
 4. In ChatGPT Plugins, add a custom MCP server with the endpoint above and OAuth authentication. Complete the fitness-page sign-in with the existing admin password, inspect the requesting client, and explicitly connect the journal. Keep the plugin personal/private.
 5. Start a chat with Fitness selected. The package's skill is optional guidance; equivalent logging invariants are also in the server's tool descriptions and initialization instructions.
 
-OAuth authorization creates a revocable client allowlist entry for the verified journal owner. OAuth JWTs cannot use the website's direct table, photo storage, history, settings, or key-management permissions. The two text-entry RPCs require both that owner and an allowlisted client. Database validation, stable IDs, revision checks, and audit triggers are shared with the local agent. Disconnecting under website Settings removes access immediately, even before an existing OAuth access token expires; the UI also revokes the OAuth grant.
+OAuth authorization creates a revocable client allowlist entry for the verified journal owner. OAuth JWTs cannot use the website's direct table, gallery-reading, history, settings, or key-management permissions. The two text-entry RPCs require both that owner and an allowlisted client. Database validation, stable IDs, revision checks, and audit triggers are shared with the local agent. Disconnecting under website Settings removes access immediately, even before an existing OAuth access token expires; the UI also revokes the OAuth grant.
 
 The consent page intentionally displays the client name, return URL, account scopes, and journal permissions. New OAuth client registration alone does not grant journal access. No plaintext credentials or personal entries belong in the plugin archive.
 
@@ -106,8 +106,16 @@ The tests execute the SQL against PostgreSQL via PGlite with mocked Supabase aut
 
 ## Private context
 
-The approved Fitness connection loads `fitness_private.context` through the owner/client-checked `fitness_plugin_context` RPC on every authenticated MCP request. Initialization instructions and successful read/save responses include the latest context, revision, and update time. No personal values are included in source files, plugin packages, migrations, or public website assets. Context failure prevents a write with silently missing context. The plugin cannot edit this profile, access photos, or change settings. Profile updates are explicit owner-authorized backend changes; advance revision and updated_at when changing it.
+The approved Fitness connection loads `fitness_private.context` through the owner/client-checked `fitness_plugin_context` RPC on every authenticated MCP request. Initialization instructions and successful read/save responses include the latest context, revision, and update time. No personal values are included in source files, plugin packages, migrations, or public website assets. Context failure prevents a write with silently missing context. The plugin cannot edit this profile, read existing photos, or change settings. Profile updates are explicit owner-authorized backend changes; advance revision and updated_at when changing it.
 
 Agents should read entries at the start of each logging/advice conversation, distinguish plans from completed sessions, and preserve the difference between user-reported facts, tentative goals, and assistant assessments. Context delivery supplies information; it cannot guarantee every model will follow every preference.
 
 The private context table intentionally has no direct client grants or RLS policies (deny by default). Its security-definer RPC checks the verified owner and approved OAuth client before reading. These intentional restrictions can appear in the [no-policy advisory](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) and [authenticated-function advisory](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable); access and revocation are covered by the security tests.
+
+## Cloud photo uploads
+
+Apply `20261020125949_fitness_photo_uploads.sql`. New consent explicitly enables upload permission through the owner-only `fitness_enable_plugin_photos` RPC; existing connections remain text-only until the owner enables them. Revocation removes pending reservations and blocks further uploads/finalization without deleting saved photos.
+
+`log_fitness_photo` uses ChatGPT's `openai/fileParams` attachment delivery. It accepts JPEG/PNG/WebP up to 10 MiB and 16 million pixels, applies orientation, resizes to a 1600-pixel maximum dimension, and re-encodes JPEG without metadata. HEIC requires JPEG export. Only HTTPS OpenAI attachment hosts are fetched, with bounded redirects, byte limits and timeouts; journal credentials are sent only to the configured Supabase project.
+
+The server uses the caller's OAuth token, never a service-role key. A reservation binds the UUID, owner, approved client, metadata, sanitized-image hash and byte count. Storage grants INSERT only for that reserved owner path, without upsert, SELECT or DELETE. Finalization checks the stored MIME type and byte size before creating an audited photo entry. Identical retries return the original record; changed payloads cannot overwrite it. Gallery reads and photo changes remain website-only. Local tests use synthetic images and mocked storage; never seed test photos into the production journal.
