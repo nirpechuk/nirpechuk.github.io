@@ -271,8 +271,8 @@ export function App() {
   const byId = new Map(snapshot.players.map((player) => [player.id, player]));
   const visitedPlayer = visit ? (byId.get(visit.playerId) ?? null) : null;
 
-  const log = async () => {
-    const updated = await run(() => backend.logWorkout(session, day));
+  const log = async (workoutDay: string) => {
+    const updated = await run(() => backend.logWorkout(session, workoutDay));
     if (!updated) return;
     await run(() => refresh(session));
     playChime();
@@ -327,8 +327,8 @@ export function App() {
                     placeRequest={placeRequest}
                     onPlaceRequestHandled={() => setPlaceRequest(null)}
                     onLog={log}
-                    onSetType={async (type: WorkoutType) => {
-                      if (await run(() => backend.setWorkoutType(session, day, type))) await run(() => refresh(session));
+                    onSetType={async (type: WorkoutType, workoutDay: string) => {
+                      if (await run(() => backend.setWorkoutType(session, workoutDay, type))) await run(() => refresh(session));
                     }}
                     onSaveLayout={async (layout: Layout) => {
                       const updated = await run(() => backend.saveLayout(session, layout));

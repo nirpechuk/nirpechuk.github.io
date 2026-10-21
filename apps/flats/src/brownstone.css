@@ -1501,3 +1501,46 @@ dialog::backdrop {
 .street-footer.is-scrollable .more-floors {
   margin: 0;
 }
+
+/* Past workouts share the same quiet weekly calendar as today's check-in. */
+.workout-week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+.workout-week-nav .chip {
+  min-width: 36px;
+  font-size: 22px;
+  padding: 0 10px;
+}
+.workout-week-label {
+  background: none;
+  border: 0;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.home-panel .week-dots .week-dot {
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.home-panel .week-dot[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px #edc78c;
+}
+.home-panel .week-dot:disabled {
+  cursor: default;
+}
+.home-panel .week-dot:focus-visible {
+  outline: 2px solid #fff0d4;
+  outline-offset: 4px;
+}
+.workout-day-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+}

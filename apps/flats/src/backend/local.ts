@@ -142,7 +142,7 @@ export class LocalBackend implements Backend {
 
   logWorkout(session: Session, day: string, type?: WorkoutType): Promise<Player> {
     return this.update(session, (player) => {
-      if (hasLoggedOn(player, day)) throw new GameRuleError("Already logged today. See you tomorrow.");
+      if (hasLoggedOn(player, day)) throw new GameRuleError("A workout is already logged for that day.");
       player.workouts.push(type ? { day, type } : { day });
       return player;
     });
@@ -183,8 +183,7 @@ export class LocalBackend implements Backend {
   async react(session: Session, toPlayerId: string, kind: ReactionKind, day: string, variant?: number): Promise<Reaction> {
     if (toPlayerId === session.playerId) throw new GameRuleError("Reactions are for friends.");
     const duplicate = this.db.reactions.some(
-      (reaction) =>
-        reaction.from === session.playerId && reaction.to === toPlayerId && reaction.kind === kind && reaction.day === day,
+      (reaction) => reaction.from === session.playerId && reaction.to === toPlayerId && reaction.kind === kind && reaction.day === day
     );
     if (duplicate) throw new GameRuleError("You already sent that today.");
     const reaction: Reaction = { from: session.playerId, to: toPlayerId, kind, day, at: Date.now(), variant };
@@ -197,7 +196,7 @@ export class LocalBackend implements Backend {
     const memberIds = new Set(
       Object.values(this.db.players)
         .filter((player) => !player.demo)
-        .map((player) => player.id),
+        .map((player) => player.id)
     );
     return [...memberIds].map((playerId) => {
       const player = this.db.players[playerId];

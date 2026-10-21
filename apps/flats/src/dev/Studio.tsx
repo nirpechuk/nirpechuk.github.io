@@ -80,7 +80,7 @@ export function Studio() {
             treatKey={0}
             placeRequest={null}
             onPlaceRequestHandled={() => {}}
-            onLog={async () => setPlayer({ ...player, workouts: [...player.workouts, { day }] })}
+            onLog={async (workoutDay) => setPlayer({ ...player, workouts: [...player.workouts, { day: workoutDay }] })}
             onSetType={async () => {}}
             onSaveLayout={async (layout) => setPlayer({ ...player, layout })}
             onOpenPresent={() => {}}

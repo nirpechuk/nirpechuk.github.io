@@ -111,7 +111,7 @@ describe.skipIf(!live)("Live Supabase contract", () => {
   it("serializes duplicate workouts and only accepts an offered present", async () => {
     const results = await Promise.allSettled([alice.logWorkout(a, DAY), alice.logWorkout(a, DAY)]);
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
-    await expect(alice.logWorkout(a, addDays(DAY, -5))).rejects.toThrow("device date");
+    await expect(alice.logWorkout(a, addDays(DAY, 5))).rejects.toThrow("device date");
     const p = await alice.setWorkoutType(a, DAY, "walk");
     expect(p.workouts[0].type).toBe("walk");
     const choices = drawChoices(CATALOG, p, nextPresent(p)!, DAY);

@@ -13,7 +13,7 @@ import { RoomScene } from "../art/RoomScene";
 import { SurfaceThumb } from "../art/Surfaces";
 import { CATALOG, itemById, surfaceById } from "../game/catalog";
 import type { PetMood } from "../game/progression";
-import { addDays, weekStart } from "../game/dates";
+import { addDays, parseDay, weekStart } from "../game/dates";
 import { hasLoggedOn, presentsWaiting, nextPresent, workoutsInWeekOf } from "../game/progression";
 import type { Slot } from "../game/room";
 import { DEFAULT_FLOORING, DEFAULT_WALLPAPER, itemScale, placeItem, removeItem, slotById, roomSlots, ownedItemIds, slotOfItem } from "../game/room";
@@ -44,8 +44,8 @@ interface HomeProps {
   treatKey: number;
   placeRequest: string | null;
   onPlaceRequestHandled: () => void;
-  onLog: () => Promise<void>;
-  onSetType: (type: WorkoutType) => Promise<void>;
+  onLog: (day: string) => Promise<void>;
+  onSetType: (type: WorkoutType, day: string) => Promise<void>;
   onSaveLayout: (layout: Layout) => Promise<void>;
   onOpenPresent: () => void;
   onOpenSettings: () => void;
@@ -75,14 +75,37 @@ function slotCenterY(slot: Slot, item: ItemDef): number {
 }
 
 /** This week at a glance: one dot per day, lit on workout days, today ringed. */
-function WeekDots({ player, day, large = false }: { player: Player; day: string; large?: boolean }) {
-  const monday = weekStart(day);
+function WeekDots({
+  player,
+  day,
+  selectedDay,
+  onSelect,
+  disabled,
+  large = false,
+}: {
+  player: Player;
+  day: string;
+  selectedDay: string;
+  onSelect: (day: string) => void;
+  disabled: boolean;
+  large?: boolean;
+}) {
+  const monday = weekStart(selectedDay);
   const days = Array.from({ length: 7 }, (_, index) => addDays(monday, index));
   const count = days.filter((weekDay) => hasLoggedOn(player, weekDay)).length;
   return (
-    <div className={`week-dots${large ? " is-large" : ""}`} role="img" aria-label={`${count} workout${count === 1 ? "" : "s"} this week`}>
+    <div
+      className={`week-dots${large ? " is-large" : ""}`}
+      role="group"
+      aria-label={`${count} workout${count === 1 ? "" : "s"} in the selected week`}
+    >
       {days.map((weekDay, index) => (
-        <span
+        <button
+          type="button"
+          disabled={disabled || weekDay > day}
+          onClick={() => onSelect(weekDay)}
+          aria-pressed={weekDay === selectedDay}
+          aria-label={`${parseDay(weekDay).toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}${hasLoggedOn(player, weekDay) ? ", workout logged" : ""}`}
           key={weekDay}
           className={`week-dot${hasLoggedOn(player, weekDay) ? " is-done" : ""}${weekDay === day ? " is-today" : ""}${weekDay > day ? " is-future" : ""}`}
         >
@@ -90,7 +113,7 @@ function WeekDots({ player, day, large = false }: { player: Player; day: string;
             {hasLoggedOn(player, weekDay) ? "✓" : ""}
           </span>
           <small>{["M", "T", "W", "T", "F", "S", "S"][index]}</small>
-        </span>
+        </button>
       ))}
     </div>
   );
@@ -131,8 +154,11 @@ export function Home(props: HomeProps) {
   const hoverRef = useRef<string | null>(null);
 
   const slots = roomSlots(me.id);
-  const loggedToday = hasLoggedOn(me, day);
-  const todaysWorkout = me.workouts.find((workout) => workout.day === day);
+  const [selectedDay, setSelectedDay] = useState(day);
+  const loggedSelectedDay = hasLoggedOn(me, selectedDay);
+  const selectedWorkout = me.workouts.find((workout) => workout.day === selectedDay);
+  const dateLabel = parseDay(selectedDay).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const thisWeek = weekStart(selectedDay) === weekStart(day);
   const waiting = presentsWaiting(me);
   const furniture = ownedItemIds(CATALOG, me);
   const selectItem = (itemId: string) => {
@@ -501,24 +527,50 @@ export function Home(props: HomeProps) {
                 </div>
               </div>
               <div className="weekly-total">
-                <strong>{workoutsInWeekOf(me, day)}</strong>
-                <span>this week</span>
+                <strong>{workoutsInWeekOf(me, selectedDay)}</strong>
+                <span>{thisWeek ? "this week" : "that week"}</span>
               </div>
             </div>
-            <WeekDots player={me} day={day} large />
-            {loggedToday ? (
+            <div className="workout-week-nav">
+              <button
+                type="button"
+                className="chip"
+                aria-label="Previous week"
+                disabled={logging}
+                onClick={() => setSelectedDay(addDays(selectedDay, -7))}
+              >
+                ‹
+              </button>
+              <button type="button" className="workout-week-label" disabled={logging} onClick={() => setSelectedDay(day)}>
+                {thisWeek
+                  ? "This week"
+                  : `Week of ${parseDay(weekStart(selectedDay)).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
+              </button>
+              <button
+                type="button"
+                className="chip"
+                aria-label="Next week"
+                disabled={logging || thisWeek}
+                onClick={() => setSelectedDay(addDays(selectedDay, 7) > day ? day : addDays(selectedDay, 7))}
+              >
+                ›
+              </button>
+            </div>
+            <WeekDots player={me} day={day} selectedDay={selectedDay} onSelect={setSelectedDay} disabled={logging} large />
+            <p className="workout-day-hint">Tap a day to log a past workout.</p>
+            {loggedSelectedDay ? (
               <>
                 <div className="activity-complete">
-                  <span aria-hidden="true">✓</span> Logged today
+                  <span aria-hidden="true">✓</span> {selectedDay === day ? "Logged today" : `Logged · ${dateLabel}`}
                 </div>
-                {todaysWorkout && !todaysWorkout.type && typeDismissedDay !== day && (
+                {selectedWorkout && !selectedWorkout.type && typeDismissedDay !== selectedDay && (
                   <div className="type-row">
                     {WORKOUT_TYPES.map((option) => (
-                      <button key={option.type} type="button" className="type-chip" onClick={() => void onSetType(option.type)}>
+                      <button key={option.type} type="button" className="type-chip" onClick={() => void onSetType(option.type, selectedDay)}>
                         {option.label}
                       </button>
                     ))}
-                    <button type="button" className="type-chip type-dismiss" onClick={() => setTypeDismissedDay(day)} aria-label="Dismiss">
+                    <button type="button" className="type-chip type-dismiss" onClick={() => setTypeDismissedDay(selectedDay)} aria-label="Dismiss">
                       ✕
                     </button>
                   </div>
@@ -532,13 +584,13 @@ export function Home(props: HomeProps) {
                 onClick={async () => {
                   setLogging(true);
                   try {
-                    await onLog();
+                    await onLog(selectedDay);
                   } finally {
                     setLogging(false);
                   }
                 }}
               >
-                <span className="log-button-face">I worked out today</span>
+                <span className="log-button-face">{selectedDay === day ? "I worked out today" : `Log workout · ${dateLabel}`}</span>
               </button>
             )}
 
