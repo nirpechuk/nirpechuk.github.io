@@ -28,6 +28,7 @@ interface VisitProps {
   fromRect: DOMRect | null;
   onReact: (kind: ReactionKind, variant?: number) => Promise<boolean>;
   onClose: () => void;
+  onWatchHistory?: () => void;
   ownFlat?: (onBack: () => void) => ReactNode;
 }
 
@@ -244,6 +245,11 @@ export function Visit(props: VisitProps) {
             <aside className="neighbour-panel" aria-label="Neighbour's flat">
               <h2 className="neighbour-title">{player.name}’s flat</h2>
               <FlatProgress placed={Object.keys(player.layout.slots).length} />
+              {props.onWatchHistory && (
+                <button type="button" className="chip history-open" onClick={props.onWatchHistory}>
+                  <span aria-hidden="true">▷</span> Watch this flat grow
+                </button>
+              )}
               <div className="reaction-bar">
                 <p className="room-hint">Leave a little kindness</p>
                 <div className="reaction-buttons">

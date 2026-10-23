@@ -49,6 +49,7 @@ interface HomeProps {
   onSaveLayout: (layout: Layout) => Promise<void>;
   onOpenPresent: () => void;
   onOpenSettings: () => void;
+  onWatchHistory?: () => void;
   onBack: () => void;
 }
 
@@ -606,6 +607,11 @@ export function Home(props: HomeProps) {
                 <span className="parcel-arrow" aria-hidden="true">
                   ↗
                 </span>
+              </button>
+            )}
+            {props.onWatchHistory && (
+              <button type="button" className="chip history-open" onClick={props.onWatchHistory}>
+                <span aria-hidden="true">▷</span> Watch your flat grow
               </button>
             )}
             <div className="home-actions">

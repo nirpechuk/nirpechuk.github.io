@@ -1,6 +1,6 @@
 /** The storage contract the UI talks to. Implementations: LocalBackend (device-only) and SupabaseBackend (shared rooms). */
 
-import type { GroupSnapshot, Layout, PetKind, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
+import type { FlatSnapshot, GroupSnapshot, Layout, PetKind, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
 
 export interface Session {
   playerId: string;
@@ -34,6 +34,7 @@ export interface Backend {
   /** Name of the group with this invite code, or null if there is none. */
   groupName(groupCode: string): Promise<string | null>;
   fetchGroup(session: Session): Promise<GroupSnapshot>;
+  fetchHistory(session: Session, playerId: string): Promise<FlatSnapshot[]>;
   logWorkout(session: Session, day: string, type?: WorkoutType): Promise<Player>;
   setWorkoutType(session: Session, day: string, type: WorkoutType): Promise<Player>;
   unpack(session: Session, entryId: string, day: string): Promise<Player>;

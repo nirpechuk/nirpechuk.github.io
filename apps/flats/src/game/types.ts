@@ -171,3 +171,13 @@ export interface GroupSnapshot {
   players: Player[];
   reactions: Reaction[];
 }
+
+/** A full room state, captured when saved or explicitly reconstructed from dated records. */
+export interface FlatSnapshot {
+  id: string;
+  recordedAt: string;
+  day: string;
+  kind: "beginning" | "reconstructed" | "recording_started" | "moved_in" | "decorated" | "unpacked" | "workout" | "updated";
+  approximate: boolean;
+  player: Player;
+}

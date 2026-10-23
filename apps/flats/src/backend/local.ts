@@ -1,10 +1,11 @@
+import { captureSnapshot, reconstructHistory, historyChange } from "../game/history";
 /** Device-only backend: everything lives in localStorage, plus a few labelled demo neighbours. */
 
 import { CATALOG } from "../game/catalog";
 import { today } from "../game/dates";
 import { drawChoices, hasLoggedOn, nextPresent } from "../game/progression";
 import { emptyLayout } from "../game/room";
-import type { Group, GroupSnapshot, Layout, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
+import type { FlatSnapshot, Group, GroupSnapshot, Layout, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
 import { buildDemoNeighbours } from "./demo";
 import type { Backend, NewPlayerInput, ProfileSummary, Session } from "./types";
 import { GameRuleError } from "./types";
@@ -19,6 +20,7 @@ interface LocalDb {
   groups: Record<string, Group>;
   reactions: Reaction[];
   activePlayerId: string | null;
+  histories?: Record<string, FlatSnapshot[]>;
 }
 
 function emptyDb(): LocalDb {
@@ -56,6 +58,11 @@ export class LocalBackend implements Backend {
     const saved = store.getItem(STORAGE_KEY);
     this.db = saved ? (JSON.parse(saved) as LocalDb) : emptyDb();
     if (this.db.version !== 1) throw new Error(`Unsupported save version ${String(this.db.version)}.`);
+    this.db.histories ??= {};
+    for (const player of Object.values(this.db.players)) {
+      this.db.histories[player.id] ??= reconstructHistory(player);
+    }
+    this.persist();
   }
 
   private persist(): void {
@@ -75,7 +82,11 @@ export class LocalBackend implements Backend {
   }
 
   private async update(session: Session, change: (player: Player) => Player): Promise<Player> {
-    const updated = change(structuredClone(this.player(session)));
+    const before = this.player(session);
+    const updated = change(structuredClone(before));
+    if (JSON.stringify(before) !== JSON.stringify(updated)) {
+      (this.db.histories![updated.id] ??= reconstructHistory(before)).push(captureSnapshot(updated, historyChange(before, updated)));
+    }
     this.db.players[updated.id] = updated;
     this.persist();
     return structuredClone(updated);
@@ -104,6 +115,7 @@ export class LocalBackend implements Backend {
     };
     if (!player.name || !player.petName) throw new GameRuleError("Names can't be empty.");
     this.db.players[player.id] = player;
+    this.db.histories![player.id] = [captureSnapshot(player, "moved_in")];
 
     let group: Group;
     if (input.groupCode) {
@@ -138,6 +150,15 @@ export class LocalBackend implements Backend {
     const memberIds = new Set(group.memberIds);
     const reactions = this.db.reactions.filter((reaction) => memberIds.has(reaction.to));
     return structuredClone({ group, players, reactions });
+  }
+
+  async fetchHistory(session: Session, playerId: string): Promise<FlatSnapshot[]> {
+    this.player(session);
+    if (!this.db.groups[this.sessionFor(session.playerId).groupCode]?.memberIds.includes(playerId))
+      throw new GameRuleError("That flat is not in your building.");
+    const history = (this.db.histories![playerId] ??= reconstructHistory(this.db.players[playerId]));
+    this.persist();
+    return structuredClone(history);
   }
 
   logWorkout(session: Session, day: string, type?: WorkoutType): Promise<Player> {
@@ -221,7 +242,10 @@ export class LocalBackend implements Backend {
     if (!group) throw new Error(`Unknown group ${session.groupCode}.`);
     const demoIds = new Set(group.memberIds.filter((id) => this.db.players[id]?.demo));
     group.memberIds = group.memberIds.filter((id) => !demoIds.has(id));
-    for (const id of demoIds) delete this.db.players[id];
+    for (const id of demoIds) {
+      delete this.db.players[id];
+      delete this.db.histories![id];
+    }
     this.db.reactions = this.db.reactions.filter((reaction) => !demoIds.has(reaction.from) && !demoIds.has(reaction.to));
     this.persist();
   }

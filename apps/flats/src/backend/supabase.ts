@@ -1,6 +1,6 @@
 /** Online rooms use private capability keys; only the publishable project key ships publicly. */
 import { today } from "../game/dates";
-import type { Group, GroupSnapshot, Layout, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
+import type { FlatSnapshot, Group, GroupSnapshot, Layout, Player, Reaction, ReactionKind, WorkoutType } from "../game/types";
 import type { KeyValueStore } from "./local";
 import { normalizeGroupCode } from "./local";
 import type { Backend, NewPlayerInput, ProfileSummary, Session } from "./types";
@@ -203,6 +203,16 @@ export class SupabaseBackend implements Backend {
       }
     }
     return snapshot;
+  }
+  async fetchHistory(session: Session, playerId: string): Promise<FlatSnapshot[]> {
+    const frames: FlatSnapshot[] = [];
+    let after = "0";
+    while (true) {
+      const page = await this.rpc<FlatSnapshot[]>("rpc/flats_room_history", { ...this.credentials(session), p_target: playerId, p_after: after });
+      frames.push(...page);
+      if (page.length < 250) return frames;
+      after = page[page.length - 1].id;
+    }
   }
   private update(session: Session, action: string, day: string, value: unknown = null): Promise<Player> {
     return this.rpc("rpc/flats_update_player", { ...this.credentials(session), p_action: action, p_day: day, p_value: value });

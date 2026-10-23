@@ -70,7 +70,12 @@ describe("LocalBackend", () => {
     const first = await newPlayer(backend);
     const second = await backend.createPlayer({ name: "Sam", petKind: "duck", petName: "Bean", groupCode: first.groupCode });
     expect(second.groupCode).toBe(first.groupCode);
-    expect(backend.localProfiles().map((profile) => profile.name).sort()).toEqual(["Nir", "Sam"]);
+    expect(
+      backend
+        .localProfiles()
+        .map((profile) => profile.name)
+        .sort()
+    ).toEqual(["Nir", "Sam"]);
     expect(backend.switchProfile(first.playerId)).toEqual(first);
   });
 
@@ -81,6 +86,23 @@ describe("LocalBackend", () => {
     const snapshot = await backend.fetchGroup(session);
     expect(snapshot.players.map((player) => player.name)).toEqual(["Nir"]);
     expect(snapshot.reactions).toEqual([]);
+  });
+
+  it("records changes without rewriting earlier snapshots or duplicating unchanged saves", async () => {
+    const store = memoryStore();
+    const backend = new LocalBackend(store);
+    const session = await newPlayer(backend);
+    const initial = await backend.fetchHistory(session, session.playerId);
+    expect(initial).toHaveLength(1);
+    await backend.logWorkout(session, DAY);
+    await backend.setWorkoutType(session, DAY, "walk");
+    const current = (await backend.fetchGroup(session)).players.find((player) => player.id === session.playerId)!;
+    await backend.saveLayout(session, current.layout);
+    const history = await new LocalBackend(store).fetchHistory(session, session.playerId);
+    expect(history.map((frame) => frame.kind)).toEqual(["moved_in", "workout", "updated"]);
+    expect(history[0].player.workouts).toEqual([]);
+    expect(history[1].player.workouts[0].type).toBeUndefined();
+    expect(history[2].player.workouts[0].type).toBe("walk");
   });
 
   it("normalizes invite codes", () => {

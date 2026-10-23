@@ -15,6 +15,7 @@ import type { GroupSnapshot, Layout, ReactionKind, WorkoutType } from "./game/ty
 import { Building } from "./ui/Building";
 import type { ToastMessage } from "./ui/common";
 import { Embers, Toasts } from "./ui/common";
+import { FlatHistory } from "./ui/FlatHistory";
 import { Home } from "./ui/Home";
 import { readNumber, readString, useHour, useReducedMotion, writeValue } from "./ui/hooks";
 import { Onboarding } from "./ui/Onboarding";
@@ -44,6 +45,7 @@ export function App() {
   const syncFailed = useRef(false);
   const [snapshot, setSnapshot] = useState<GroupSnapshot | null>(null);
   const [visit, setVisit] = useState<{ playerId: string; fromRect: DOMRect | null; glow: number } | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [unpackPresent, setUnpackPresent] = useState<Present | null>(null);
   const [placeRequest, setPlaceRequest] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"settings" | "invite" | null>(null);
@@ -311,7 +313,11 @@ export function App() {
             await run(() => refresh(session));
             return true;
           }}
-          onClose={() => setVisit(null)}
+          onClose={() => {
+            setVisit(null);
+            setHistoryOpen(false);
+          }}
+          onWatchHistory={() => setHistoryOpen(true)}
           ownFlat={
             visitedPlayer.id === me.id
               ? (onBack) => (
@@ -340,11 +346,16 @@ export function App() {
                     }}
                     onOpenPresent={() => setUnpackPresent(nextPresent(me))}
                     onOpenSettings={() => setSheet("settings")}
+                    onWatchHistory={() => setHistoryOpen(true)}
                   />
                 )
               : undefined
           }
         />
+      )}
+
+      {historyOpen && visit && visitedPlayer && (
+        <FlatHistory key={visitedPlayer.id} backend={backend} session={session} player={visitedPlayer} onClose={() => setHistoryOpen(false)} />
       )}
 
       {unpackPresent && (
