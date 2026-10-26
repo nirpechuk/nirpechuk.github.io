@@ -71,8 +71,11 @@ export function LineChart({ points, unit, trend = false, label }: { points: Poin
   );
 }
 export function NutritionChart({ entries, end, metric }: { entries: Entry[]; end: string; metric: "calories" | "protein" }) {
-  const rows = days(end, 14).map((day) => ({ day, ...nutrition(entries, day) }));
-  const max = Math.max(1, ...rows.map((r) => r[metric]));
+  const rows = days(end, 14).map((day) => {
+    const data = nutrition(entries, day);
+    return { day, ...data, hasData: data.hasData && (metric === "calories" || data.proteinKnown) };
+  });
+  const max = Math.max(1, ...rows.filter((r) => r.hasData).map((r) => r[metric]));
   return (
     <div>
       <div
@@ -87,7 +90,7 @@ export function NutritionChart({ entries, end, metric }: { entries: Entry[]; end
               <div
                 className={`bar ${r.complete ? "" : "partial"}`}
                 style={{ height: `${r.hasData ? Math.max(2, (r[metric] / max) * 100) : 0}%` }}
-                title={`${displayDay(r.day)}: ${Math.round(r[metric])} ${metric === "calories" ? "kcal" : "g"}, ${r.complete ? "complete" : "incomplete"} journal`}
+                title={`${displayDay(r.day)}: ${r.hasData ? Math.round(r[metric]) : "unrecorded"} ${metric === "calories" ? "kcal" : "g"}, ${r.complete ? "complete" : "incomplete"} journal`}
               />
             </div>
             <span className="bar-date">{Number(r.day.slice(-2))}</span>

@@ -32,6 +32,7 @@ beforeAll(async () => {
   await pg.exec(readFileSync(new URL("../supabase/migrations/002_fitness_plugin.sql", import.meta.url), "utf8"));
   await pg.exec(readFileSync(new URL("../supabase/migrations/20261019182028_fitness_context.sql", import.meta.url), "utf8"));
   await pg.exec(readFileSync(new URL("../supabase/migrations/20261020125949_fitness_photo_uploads.sql", import.meta.url), "utf8"));
+  await pg.exec(readFileSync(new URL("../supabase/migrations/20261026142157_optional_meal_protein.sql", import.meta.url), "utf8"));
   await pg.exec("insert into fitness_private.owner(email) values('owner@example.test')");
 }, 30000);
 afterAll(async () => {
@@ -219,4 +220,20 @@ test("photo uploads require explicit owner enablement, one reserved path, comple
   await as("authenticated", owner, "select public.fitness_revoke_plugin_client($1)", [client]);
   await expect(finish()).rejects.toThrow(/not authorized/);
   expect((await pg.query("select * from public.fitness_entries where id=$1", [photo.id])).rows).toHaveLength(1);
+});
+
+test("calorie-only meals preserve unknown macros while rejecting invalid nutrient values", async () => {
+  const save = (data: unknown) =>
+    as(
+      "authenticated",
+      owner,
+      "insert into public.fitness_entries(owner_id,day,kind,title,data) values($1,'2026-10-24','meal','Estimated daily intake',$2) returning data",
+      [owner, JSON.stringify(data)]
+    );
+  const data = { calories: 3000, confidence: "estimated" };
+  expect((await save(data)).rows[0]).toEqual({ data });
+  for (const protein of [-1, null, "unknown", 20001]) {
+    await expect(save({ ...data, protein })).rejects.toThrow();
+  }
+  await expect(save({ confidence: "estimated" })).rejects.toThrow(/Calories are required/);
 });

@@ -9,7 +9,7 @@ const notes = z.string().max(4000).optional();
 const meal = z
   .object({
     calories: amount,
-    protein: amount,
+    protein: amount.optional().describe("Omit when unknown; zero means a known zero."),
     carbs: amount.optional(),
     fat: amount.optional(),
     confidence: z.enum(["estimated", "label", "weighed"]),

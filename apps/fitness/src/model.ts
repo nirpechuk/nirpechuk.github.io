@@ -65,6 +65,9 @@ export function nutrition(entries: Entry[], day: string) {
     protein: meals.reduce((s, e) => s + (e.data.protein ?? 0), 0),
     carbs: meals.reduce((s, e) => s + (e.data.carbs ?? 0), 0),
     fat: meals.reduce((s, e) => s + (e.data.fat ?? 0), 0),
+    proteinKnown: meals.length > 0 && meals.every((e) => e.data.protein !== undefined),
+    carbsKnown: meals.length > 0 && meals.every((e) => e.data.carbs !== undefined),
+    fatKnown: meals.length > 0 && meals.every((e) => e.data.fat !== undefined),
     complete: entries.some((e) => e.kind === "checkin" && e.day === day && e.data.complete && !e.archived_at),
     hasData: meals.length > 0,
     estimated: meals.some((e) => e.data.confidence === "estimated"),
@@ -101,7 +104,8 @@ export function strengthPoints(entries: Entry[], exercise: string, unit: Unit): 
   return [...values].map(([day, value]) => ({ day, value })).sort((a, b) => a.day.localeCompare(b.day));
 }
 export function description(e: Entry) {
-  if (e.kind === "meal") return `${Math.round(e.data.calories ?? 0).toLocaleString()} kcal · ${Math.round(e.data.protein ?? 0)} g protein`;
+  if (e.kind === "meal")
+    return `${Math.round(e.data.calories ?? 0).toLocaleString()} kcal · ${e.data.protein === undefined ? "protein unrecorded" : `${Math.round(e.data.protein)} g protein`}`;
   if (e.kind === "measurement") return `${e.data.weight?.toFixed(1)} ${e.data.unit}`;
   if (e.kind === "checkin") return e.data.complete ? "Food journal complete" : "Food journal reopened";
   if (e.kind === "photo") return `${e.data.view} view`;

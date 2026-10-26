@@ -188,7 +188,10 @@ export function Notebook({ entries, settings, end, onWeigh }: { entries: Entry[]
     last = weights.at(-1);
   const weightMap = new Map(weights.map((p) => [p.day, p.value]));
   const workouts = period.filter((e) => e.kind === "workout");
-  const mean = (key: "calories" | "protein") => (observed.length ? Math.round(observed.reduce((s, d) => s + d[key], 0) / observed.length) : null);
+  const mean = (key: "calories" | "protein") => {
+    const rows = observed.filter((d) => key === "calories" || d.proteinKnown);
+    return rows.length ? Math.round(rows.reduce((s, d) => s + d[key], 0) / rows.length) : null;
+  };
   const weekDates = [...new Set(dates.map(weekStart))];
   const weekly = weekDates.map((day) => ({ day, count: workouts.filter((e) => weekStart(e.day) === day).length }));
   const maxSessions = Math.max(settings.weekly_sessions, 1, ...weekly.map((w) => w.count));
@@ -197,12 +200,7 @@ export function Notebook({ entries, settings, end, onWeigh }: { entries: Entry[]
     return { label, n: rows.length, value: rows.length ? rows.reduce((s, d) => s + d.calories, 0) / rows.length : 0 };
   });
   const weekdayMax = Math.max(1, ...weekdays.map((d) => d.value));
-  const macroRows = daily.filter(
-    (d) =>
-      d.complete &&
-      d.hasData &&
-      entries.filter((e) => e.kind === "meal" && e.day === d.day).every((e) => e.data.carbs !== undefined && e.data.fat !== undefined)
-  );
+  const macroRows = daily.filter((d) => d.complete && d.proteinKnown && d.carbsKnown && d.fatKnown);
   const macros = macroRows.reduce((s, d) => ({ protein: s.protein + d.protein * 4, carbs: s.carbs + d.carbs * 4, fat: s.fat + d.fat * 9 }), {
     protein: 0,
     carbs: 0,
@@ -260,7 +258,7 @@ export function Notebook({ entries, settings, end, onWeigh }: { entries: Entry[]
             {mean("protein") ?? "—"}
             <small>g / day</small>
           </strong>
-          <em>Complete food journals only</em>
+          <em>Complete journals with protein recorded</em>
         </div>
         <div>
           <span>Training recorded</span>
@@ -301,9 +299,14 @@ export function Notebook({ entries, settings, end, onWeigh }: { entries: Entry[]
             target={settings.calorie_goal}
           />
         </Figure>
-        <Figure number="03" title="Protein intake" subtitle="A daily record, with the mean drawn from complete journals only." aside="g / day">
+        <Figure
+          number="03"
+          title="Protein intake"
+          subtitle="Unknown protein is left blank. Mean uses complete journals with protein recorded."
+          aside="g / day"
+        >
           <Plot
-            values={daily.map((d) => ({ day: d.day, value: d.hasData ? d.protein : null, complete: d.complete }))}
+            values={daily.map((d) => ({ day: d.day, value: d.proteinKnown ? d.protein : null, complete: d.complete }))}
             range={[start, end]}
             unit="g"
             zero

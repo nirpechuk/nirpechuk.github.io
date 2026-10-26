@@ -57,7 +57,7 @@ export function EntryForm({
         data = {
           ...data,
           calories: Number(calories),
-          protein: Number(protein),
+          ...(protein !== "" ? { protein: Number(protein) } : {}),
           ...(carbs !== "" ? { carbs: Number(carbs) } : {}),
           ...(fat !== "" ? { fat: Number(fat) } : {}),
           confidence,
@@ -150,8 +150,8 @@ export function EntryForm({
                 <input type="number" min="0" max="20000" step="any" required value={calories} onChange={(e) => setCalories(e.target.value)} />
               </label>
               <label>
-                Protein · g
-                <input type="number" min="0" max="20000" step="any" required value={protein} onChange={(e) => setProtein(e.target.value)} />
+                Protein · g (optional)
+                <input type="number" min="0" max="20000" step="any" value={protein} onChange={(e) => setProtein(e.target.value)} />
               </label>
               <label>
                 Carbs · g<input type="number" min="0" max="20000" step="any" value={carbs} onChange={(e) => setCarbs(e.target.value)} />

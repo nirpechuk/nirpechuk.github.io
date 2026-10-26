@@ -118,3 +118,22 @@ test("context refreshes each request and a failed context load cannot save", asy
   expect(await response.text()).not.toContain("private diagnostic");
   expect(calls.filter((c) => c.name === "fitness_plugin_save")).toHaveLength(before);
 });
+
+test("plugin accepts calorie-only totals and rejects invalid protein", async () => {
+  const entry = {
+    id: "12121212-1212-4121-8121-121212121212",
+    day: "2026-10-24",
+    kind: "meal",
+    title: "Estimated daily intake",
+    data: { calories: 3000, confidence: "estimated" },
+  };
+  const saved = await decode(await handler(request("tools/call", { name: "log_fitness_entry", arguments: { entry } })));
+  expect(saved.result.isError).not.toBe(true);
+  expect(calls.at(-1)?.args.p_entry.data).toEqual(entry.data);
+  for (const protein of [-1, null, "unknown"]) {
+    const response = await decode(
+      await handler(request("tools/call", { name: "log_fitness_entry", arguments: { entry: { ...entry, data: { ...entry.data, protein } } } }))
+    );
+    expect(Boolean(response.error || response.result?.isError)).toBe(true);
+  }
+});

@@ -494,12 +494,28 @@ export default function App() {
                   />
                   <Metric
                     label="Protein"
-                    value={Math.round(dayStats.protein)}
+                    value={dayStats.proteinKnown ? Math.round(dayStats.protein) : "—"}
                     unit="g"
-                    detail={settings.protein_goal ? `Your target: ${settings.protein_goal} g` : "Recorded protein"}
+                    detail={
+                      settings.protein_goal
+                        ? `Your target: ${settings.protein_goal} g`
+                        : dayStats.proteinKnown
+                          ? "Recorded protein"
+                          : "Protein not fully recorded"
+                    }
                   />
-                  <Metric label="Carbs" value={Math.round(dayStats.carbs)} unit="g" detail="From entries with carb values" />
-                  <Metric label="Fat" value={Math.round(dayStats.fat)} unit="g" detail="From entries with fat values" />
+                  <Metric
+                    label="Carbs"
+                    value={dayStats.carbsKnown ? Math.round(dayStats.carbs) : "—"}
+                    unit="g"
+                    detail={dayStats.carbsKnown ? "Recorded carbs" : "Carbs not fully recorded"}
+                  />
+                  <Metric
+                    label="Fat"
+                    value={dayStats.fatKnown ? Math.round(dayStats.fat) : "—"}
+                    unit="g"
+                    detail={dayStats.fatKnown ? "Recorded fat" : "Fat not fully recorded"}
+                  />
                 </div>
                 <p className="nutrition-status">
                   {dayStats.complete ? "Food journal marked complete." : "This journal is open; totals may be incomplete."}

@@ -10,7 +10,7 @@ Supabase RLS checks both the authenticated user ID and the verified email in the
 
 ## Features
 
-- Nutrition entries with calories, protein, optional carbs/fat, source labels, notes, recent-meal reuse, corrections, and explicit daily completion.
+- Nutrition entries with calories, optional protein/carbs/fat, source labels, notes, recent-meal reuse, corrections, and explicit daily completion.
 - Strength sessions with exercises, working weight, and reps per set; duration-based activities; weigh-ins with kg/lb conversion.
 - A scientist's notebook overview: body mass, energy intake, protein, macro energy composition, weekly sessions, weekday averages, and an observation ledger. Select 4, 8, or 12 weeks. Averages exclude incomplete food journals. Missing measurements are not replaced with zero.
 - Private progress photos, front/side/back/other views, dates/notes, and a comparison slider.
@@ -67,7 +67,7 @@ Corrections must first read the current entry, keep its ID/kind, and submit `{ "
 
 Kinds/data:
 
-- `meal`: calories, protein, optional carbs/fat, confidence (`estimated`, `label`, `weighed`), optional notes.
+- `meal`: calories, optional protein/carbs/fat, confidence (`estimated`, `label`, `weighed`), optional notes.
 - `workout`: exercises array of `{name,weight,unit,reps:[8,8,7]}`; optional minutes. An activity can use an empty exercises array and minutes.
 - `measurement`: weight and unit (`lb` or `kg`).
 - `checkin`: complete (boolean).
