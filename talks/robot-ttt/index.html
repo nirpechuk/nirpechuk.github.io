@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test-time training and memory for robot policies</title>
+<link rel="stylesheet" href="katex/katex.min.css">
+<link rel="stylesheet" href="deck.css?v=9">
+</head>
+<body>
+
+<nav id="crumbs" aria-label="Breadcrumb"></nav>
+<div id="keys"><kbd>←</kbd><kbd>→</kbd> prev / next &nbsp; <kbd>⇧</kbd><kbd>←</kbd><kbd>→</kbd> siblings &nbsp; <kbd>↑</kbd> parent &nbsp; <kbd>↓</kbd> child &nbsp; <kbd>1</kbd>–<kbd>9</kbd> n-th child &nbsp; <kbd>M</kbd> map &nbsp; <kbd>B</kbd> backup &nbsp; <kbd>K</kbd> hide this</div>
+<div id="index"></div>
+
+<!-- ================= 0 TITLE ================= -->
+<section class="slide" id="title">
+  <div>
+    <h1>Test-time training and memory for robot policies</h1>
+    <p class="sub">RoboTTT (Jiang et al., NVIDIA / Stanford / UT Austin, July 2026)<br>T²Mem (Liu et al., Stanford / NVIDIA / Michigan, September 2026)</p>
+    <p class="who">Nir Pechuk · Continual learning reading group</p>
+  </div>
+</section>
+
+<!-- ================= 1.1 INTRO: NESTED OPTIMIZATION ================= -->
+<section class="slide" id="intro-nested">
+  <h1 class="wide"><span class="q">How can we learn from our test-time experience?</span></h1>
+  <div class="cols" style="--cols: 1fr 1.2fr; align-items: center;">
+    <div class="loops">
+      <div class="outer">
+        <div class="lbl">Outer loop · slow weights $\theta$ and $W_0$ · gradient descent on $\mathcal{L}_{\text{outer}}$ over training sequences</div>
+        <div class="inner">
+          <div class="lbl">Inner loop · fast weights $W_t$ · gradient descent on $\mathcal{L}_{\text{inner}}$, at train <em>and</em> test time</div>
+          <div class="chain">$W_0 \to W_1 \to \cdots \to W_t \to \cdots$</div>
+        </div>
+      </div>
+    </div>
+    <div class="eqs">
+      <div class="row"><div>$$W_t \leftarrow W_{t-1} - \eta\,\nabla_W\,\mathcal{L}_{\text{inner}}\!\big(f_{W_{t-1}}(K_t),\,V_t\big)$$</div><span class="tag">(inner: what to remember)</span></div>
+      <div class="row"><div>$$O_t = f_{W_t}(Q_t)$$</div><span class="tag">(apply: what to retrieve)</span></div>
+      <div class="row"><div>$$\min_{\theta,\,W_0}\ \mathbb{E}\Big[\mathcal{L}_{\text{outer}}\big(\text{task};\ \theta,\ W_T(\theta, W_0)\big)\Big]$$</div><span class="tag">(outer: what memory is for)</span></div>
+      <p style="margin: 10px 0 0; font-size: 20px;">Choosing $\mathcal{L}_{\text{inner}}$ and $\mathcal{L}_{\text{outer}}$ <b>is</b> choosing how we hope to use test-time experience.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1.2 INTRO: THE LLM MENU ================= -->
+<section class="slide" id="intro-table">
+  <h1 class="wide">Past talks: ways LLMs use test-time experience</h1>
+  <div style="align-self: center;">
+    <table class="map">
+      <thead><tr><th>LLM paper</th><th>How we use past experience</th><th>Inner objective</th><th>Outer objective</th><th>Robotics challenge</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>TTT Layers / Titans</td><td>Remember context</td><td>Reconstruct the current token's features.</td><td rowspan="2">Use input and memory for NTP.</td><td rowspan="2">Non-Markovian or partially observed tasks.</td></tr>
+        <tr><td>In-Place TTT</td><td>Effectively use context for NTP</td><td>Reconstruct the next token's features.</td></tr>
+        <tr><td>Few-Shot TTT</td><td>Learn from examples</td><td>Predict the examples.</td><td>–</td><td>Few-shot learning and shifting tasks</td></tr>
+        <tr><td>FTTT</td><td>Learn from feedback</td><td>Predict the feedback.</td><td>Use feedback-prediction gradients to optimize solutions.</td><td>Adapting from failures</td></tr>
+        <tr><td>TTT-Discover</td><td>Increase probability of breakthroughs</td><td>Maximize $\mathbb{E}[\exp(\text{reward})]$.</td><td>–</td><td>Discovering a successful strategy through scoring</td></tr>
+      </tbody>
+    </table>
+    <p class="tcap">Highlighted: what today's papers look like mechanically.</p>
+  </div>
+</section>
+
+<!-- ================= 1.3 INTRO: ROBOTICS ================= -->
+<section class="slide" id="intro-robotics">
+  <h1 class="wide">In robotics, the feedback <span class="q">is</span> the context <span class="q">is</span> the examples.</h1>
+  <div class="cols" style="--cols: 1.4fr 1fr; align-items: center;">
+    <svg viewBox="0 0 900 360" style="width: 100%; height: auto; max-height: 100%;" role="img" aria-label="One trajectory stream whose segments are an example, context, and feedback, all feeding one fast-weight update">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1849C6"/></marker>
+      </defs>
+      <text x="0" y="40" font-size="18" fill="#5C5C57" font-family="Charter, Georgia, serif">one deployment, one stream of observations and actions</text>
+      <!-- the strip -->
+      <rect x="0" y="60" width="900" height="54" fill="none" stroke="#000" stroke-width="1.5"/>
+      <line x1="270" y1="60" x2="270" y2="114" stroke="#000" stroke-width="1.5"/>
+      <line x1="600" y1="60" x2="600" y2="114" stroke="#000" stroke-width="1.5"/>
+      <text x="135" y="93" text-anchor="middle" font-size="19" font-family="Charter, Georgia, serif">a human video of the task</text>
+      <text x="435" y="93" text-anchor="middle" font-size="19" font-family="Charter, Georgia, serif">the stages I already finished</text>
+      <text x="750" y="93" text-anchor="middle" font-size="19" font-family="Charter, Georgia, serif">my own failed attempt</text>
+      <text x="135" y="140" text-anchor="middle" font-size="17" fill="#5C5C57" font-style="italic" font-family="Charter, Georgia, serif">an example</text>
+      <text x="435" y="140" text-anchor="middle" font-size="17" fill="#5C5C57" font-style="italic" font-family="Charter, Georgia, serif">context</text>
+      <text x="750" y="140" text-anchor="middle" font-size="17" fill="#5C5C57" font-style="italic" font-family="Charter, Georgia, serif">feedback</text>
+      <!-- arrows into one box -->
+      <path d="M135,150 C135,210 450,200 450,250" fill="none" stroke="#1849C6" stroke-width="2" marker-end="url(#arr)"/>
+      <path d="M435,150 L450,250" fill="none" stroke="#1849C6" stroke-width="2" marker-end="url(#arr)"/>
+      <path d="M750,150 C750,210 450,200 450,250" fill="none" stroke="#1849C6" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="250" y="260" width="400" height="70" fill="#E6ECFA" stroke="#1849C6" stroke-width="2"/>
+      <text x="450" y="290" text-anchor="middle" font-size="20" fill="#1849C6" font-family="Charter, Georgia, serif">the same self-supervised fast-weight update</text>
+      <text x="450" y="316" text-anchor="middle" font-size="16" fill="#1849C6" font-family="Charter, Georgia, serif">no labels, no reward, no separate mechanism</text>
+    </svg>
+    <ul class="take">
+      <li><b>Mechanically,</b> we use the inner and outer objectives designed for history reconstruction.</li>
+      <li><b>Functionally,</b> this buys us learning-from-feedback and learning-from-examples as well.</li>
+      <li><b>Remaining design questions:</b> what to put in memory, and where in the model should memory be?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 1.4 INTRO: VLA PRELIMINARIES ================= -->
+<section class="slide" id="intro-vla">
+  <h1 class="wide">Preliminaries: a VLA with a flow-matching action head.</h1>
+  <div class="cols" style="--cols: 1.5fr 1fr; column-gap: 48px; align-items: center;">
+    <svg viewBox="0 0 780 540" style="width: 100%; height: auto; max-height: 100%;" role="img" aria-label="Two-tower VLA: images and instruction enter a vision-language transformer; its hidden states are attended by every layer of a separate flow-matching action expert, which takes the noised action chunk and proprioception and denoises over k steps; proprioception also enters the VLM as discrete tokens in pi 0.5">
+      <defs>
+        <marker id="va" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+        <marker id="vg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5C5C57"/></marker>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#B4722A" stroke-width="1.2"/></pattern>
+        <marker id="vp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2A7B76"/></marker>
+        <marker id="vn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#B4722A"/></marker>
+      </defs>
+      <g font-family="Charter, Georgia, serif" font-size="14" fill="#000">
+
+        <!-- inputs -->
+        <g fill="#DCDCD4" stroke="#5C5C57">
+          <rect x="34" y="104" width="13" height="13"/><rect x="50" y="104" width="13" height="13"/>
+          <rect x="34" y="120" width="13" height="13"/><rect x="50" y="120" width="13" height="13"/>
+          <rect x="24" y="194" width="16" height="11" rx="5"/><rect x="43" y="194" width="16" height="11" rx="5"/><rect x="62" y="194" width="16" height="11" rx="5"/>
+          <rect x="42" y="400" width="13" height="13"/>
+        </g>
+        <text x="48" y="154" text-anchor="middle" fill="#5C5C57">images o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <text x="48" y="226" text-anchor="middle" fill="#5C5C57">instruction l</text>
+        <text x="48" y="432" text-anchor="middle" fill="#5C5C57">proprio q<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <path d="M92,118 C130,118 130,180 168,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+        <path d="M92,200 C130,200 130,180 168,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+        <path d="M66,398 C100,370 150,350 206,324" fill="none" stroke="#5C5C57" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#vg)"/>
+        <line x1="66" y1="407" x2="516" y2="407" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+
+        <!-- VLM tower -->
+        <rect x="170" y="60" width="170" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="255" y="92" text-anchor="middle" font-size="20">VLM</text>
+        <text x="255" y="112" text-anchor="middle" font-size="13" fill="#5C5C57">one forward pass</text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="190" y="132" width="130" height="16" rx="4"/><rect x="190" y="158" width="130" height="16" rx="4"/><rect x="190" y="184" width="130" height="16" rx="4"/><rect x="190" y="210" width="130" height="16" rx="4"/><rect x="190" y="236" width="130" height="16" rx="4"/><rect x="190" y="262" width="130" height="16" rx="4"/><rect x="190" y="288" width="130" height="16" rx="4"/></g>
+
+        <!-- hidden states -->
+        <line x1="340" y1="190" x2="362" y2="190" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+        <g fill="#D9EBE9" stroke="#2A7B76"><rect x="366" y="183" width="13" height="13"/><rect x="383" y="183" width="13" height="13"/><rect x="400" y="183" width="13" height="13"/><rect x="417" y="183" width="13" height="13"/><rect x="434" y="183" width="13" height="13"/><rect x="451" y="183" width="13" height="13"/></g>
+        <text x="415" y="172" text-anchor="middle" fill="#2A7B76">hidden states Φ<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <text x="415" y="218" text-anchor="middle" fill="#5C5C57">keys and values for</text>
+        <text x="415" y="236" text-anchor="middle" fill="#5C5C57">every expert layer</text>
+
+        <!-- cross-attention fan -->
+        <path d="M466,190 C492,190 492,140 518,140" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#vp)"/>
+        <path d="M466,190 C492,190 492,218 518,218" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#vp)"/>
+        <path d="M466,190 C492,190 492,296 518,296" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#vp)"/>
+
+        <!-- action expert tower -->
+        <rect x="520" y="60" width="180" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="610" y="92" text-anchor="middle" font-size="20">action expert</text>
+        <text x="610" y="112" text-anchor="middle" font-size="13" fill="#2A7B76">cross-attends to Φ<tspan baseline-shift="sub" font-size="9">t</tspan></text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="540" y="132" width="140" height="16" rx="4"/><rect x="540" y="158" width="140" height="16" rx="4"/><rect x="540" y="184" width="140" height="16" rx="4"/><rect x="540" y="210" width="140" height="16" rx="4"/><rect x="540" y="236" width="140" height="16" rx="4"/><rect x="540" y="262" width="140" height="16" rx="4"/><rect x="540" y="288" width="140" height="16" rx="4"/></g>
+
+        <!-- suffix input row: noised chunk + proprio -->
+        <g fill="url(#hatch)" stroke="#B4722A"><rect x="546" y="400" width="15" height="15"/><rect x="565" y="400" width="15" height="15"/><rect x="584" y="400" width="15" height="15"/><rect x="603" y="400" width="15" height="15"/></g>
+        <rect x="520" y="400" width="15" height="15" fill="#DCDCD4" stroke="#5C5C57"/>
+        <text x="582" y="436" text-anchor="middle" fill="#5C5C57">proprio q<tspan baseline-shift="sub" font-size="10">t</tspan>, <tspan fill="#B4722A">noised chunk A<tspan baseline-shift="super" font-size="9">τ</tspan>, flow time τ</tspan></text>
+        <line x1="594" y1="396" x2="594" y2="324" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+
+        <!-- denoising loop -->
+        <path d="M640,60 L640,32 Q640,22 650,22 L742,22 Q752,22 752,32 L752,397 Q752,407 742,407 L646,407" fill="none" stroke="#B4722A" stroke-width="1.3" marker-end="url(#vn)"/>
+        <text x="696" y="14" text-anchor="middle" fill="#B4722A">velocity v<tspan baseline-shift="sub" font-size="10">θ</tspan></text>
+        <text x="768" y="230" text-anchor="middle" fill="#B4722A" transform="rotate(90 768 230)">k denoising steps, τ: 0 → 1</text>
+
+        <!-- output chunk below -->
+        <line x1="594" y1="444" x2="594" y2="474" stroke="#000" stroke-width="1.3" marker-end="url(#va)"/>
+        <text x="604" y="464" fill="#5C5C57" font-size="12">after k steps</text>
+        <g fill="#000"><rect x="546" y="478" width="15" height="15"/><rect x="565" y="478" width="15" height="15"/><rect x="584" y="478" width="15" height="15"/><rect x="603" y="478" width="15" height="15"/></g>
+        <text x="582" y="514" text-anchor="middle">A<tspan baseline-shift="sub" font-size="10">t</tspan> = [a<tspan baseline-shift="sub" font-size="10">t</tspan> … a<tspan baseline-shift="sub" font-size="10">t+H−1</tspan>]<tspan fill="#5C5C57">, execute (part of) it, observe o</tspan><tspan fill="#5C5C57" baseline-shift="sub" font-size="10">t+1</tspan></text>
+
+      </g>
+    </svg>
+    <div class="eqs under" style="font-size: 20px;">
+      <div class="row"><div>$$\pi_\theta\big(A_t \mid o_t, q_t, l\big),\quad A_t = [a_t,\dots,a_{t+H-1}]$$</div><span class="tag">(a chunk of H actions)</span></div>
+      <div class="row"><div>$$\textcolor{#B4722A}{A^{\tau}} = \tau A + (1-\tau)\,\epsilon,\qquad \epsilon\sim\mathcal N(0, I)$$</div><span class="tag">(noising; τ = 1 is clean data)</span></div>
+      <div class="row"><div>$$\mathcal L = \mathbb E_{\tau,\epsilon}\,\big\|\textcolor{#B4722A}{v_\theta}\big(\textcolor{#B4722A}{A^{\tau},\tau},\textcolor{#2A7B76}{\Phi_t},q_t\big) - (A-\epsilon)\big\|^2$$</div><span class="tag">(flow-matching loss: predict the velocity)</span></div>
+      <div class="row"><div>$$\textcolor{#B4722A}{A^{\tau+\delta} = A^{\tau} + \delta\, v_\theta(\cdot)},\qquad \tau: 0\to 1 \text{ in } k \text{ steps}$$</div><span class="tag">(inference, k ≈ 4–10 steps)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2 MAP ================= -->
+<section class="slide hub" id="map">
+  <div class="tree">
+    <div class="branch">
+      <h2><a href="#robottt">RoboTTT</a></h2>
+      <p>Make TTT-layers work for robot policies.</p>
+      <ul class="leaves">
+        <li><a href="#robottt-mechanism">Mechanism</a></li>
+        <li><a href="#robottt-recipe">Training recipe</a></li>
+        <li><a href="#robottt-decoupled">Decoupling fast and slow updates</a></li>
+        <li><a href="#robottt-results">Results</a>
+          <ul>
+            <li><a href="#robottt-context-main">Remembering context</a></li>
+            <li class="opt"><a href="#robottt-context-scaling">Context as a scaling axis</a></li>
+            <li><a href="#robottt-feedback">Learning from feedback</a></li>
+            <li><a href="#robottt-examples">Learning from examples</a></li>
+            <li><a href="#robottt-ablations">Ablations</a></li>
+          </ul>
+        </li>
+        <li><a href="#robottt-bridge">Two questions</a></li>
+      </ul>
+    </div>
+    <div class="branch">
+      <h2><a href="#t2mem">T²Mem</a></h2>
+      <p>Apply robotic inductive biases.</p>
+      <ul class="leaves">
+        <li class="opt"><a href="#t2mem-tasks">Memory-dependent tasks</a></li>
+        <li><a href="#t2mem-interface">Memory between VLM and AE</a></li>
+        <li><a href="#t2mem-adaptive">Surprise-gated updates</a></li>
+        <li class="opt"><a href="#t2mem-alternating">Alternating memory–policy learning</a></li>
+        <li><a href="#t2mem-results-bench">Results: RoboMME</a></li>
+        <li><a href="#t2mem-results-use">Results: is the memory used?</a></li>
+      </ul>
+    </div>
+    <div class="branch">
+      <h2><a href="#conclusions">Conclusions and my thoughts</a></h2>
+      <ul class="leaves" style="margin-top: 26px;">
+        <li class="muted"><a href="#backup">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3 ROBOTTT HUB ================= -->
+<section class="slide sechub" id="robottt">
+  <h1 class="wide">RoboTTT. <span class="q">Idea:</span> apply the TTT-layers objective to a robot policy, using gating so we can start from a pretrained policy.</h1>
+  <div class="body">
+    <ol>
+      <li><a href="#robottt-mechanism">Mechanism</a><small>gated fast weights in the action head</small></li>
+      <li><a href="#robottt-recipe">Training recipe</a><small>sequence action forcing, TBPTT, 8K context</small></li>
+      <li><a href="#robottt-decoupled">Decoupling fast and slow updates</a><small>DAgger distillation, in-context human video</small></li>
+      <li><a href="#robottt-results">Results</a><small>by the use of past experience</small></li>
+      <li><a href="#robottt-bridge">Two questions</a><small>on the way to T²Mem</small></li>
+    </ol>
+    <figure class="center"><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-teaser-loop.mp4" data-full="video/robottt-teaser-full.mp4"></video><figcaption>Project-page teaser (first 30 s; click for the full 2 min). GR00T N1.7 backbone, context scaled to 8K timesteps, constant inference cost. <span class="credit">Video: research.nvidia.com/labs/gear/robottt</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- ================= 3.1 MECHANISM ================= -->
+<section class="slide" id="robottt-mechanism">
+  <h1 class="wide">Mechanism: attention within a timestep, TTT across timesteps.</h1>
+  <div class="cols" style="--cols: 1.5fr 1fr; column-gap: 40px; align-items: center;">
+    <svg viewBox="0 0 770 500" style="width: 100%; height: auto; max-height: 100%;" role="img" aria-label="VLA diagram with RoboTTT additions in blue: register tokens enter the action expert, TTT layers sit after each attention layer, and their fast weights are carried from one timestep to the next">
+      <defs>
+        <marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+        <marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5C5C57"/></marker>
+        <marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2A7B76"/></marker>
+        <marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1849C6"/></marker>
+        <pattern id="mhatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#B4722A" stroke-width="1.2"/></pattern>
+      </defs>
+      <g font-family="Charter, Georgia, serif" font-size="14" fill="#000">
+        <!-- inputs -->
+        <g fill="#DCDCD4" stroke="#5C5C57">
+          <rect x="34" y="104" width="13" height="13"/><rect x="50" y="104" width="13" height="13"/>
+          <rect x="34" y="120" width="13" height="13"/><rect x="50" y="120" width="13" height="13"/>
+          <rect x="24" y="194" width="16" height="11" rx="5"/><rect x="43" y="194" width="16" height="11" rx="5"/><rect x="62" y="194" width="16" height="11" rx="5"/>
+          <rect x="42" y="400" width="13" height="13"/>
+        </g>
+        <text x="48" y="154" text-anchor="middle" fill="#5C5C57">images o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <text x="48" y="226" text-anchor="middle" fill="#5C5C57">instruction l</text>
+        <text x="48" y="432" text-anchor="middle" fill="#5C5C57">proprio q<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <path d="M92,118 C130,118 130,180 168,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ma)"/>
+        <path d="M92,200 C130,200 130,180 168,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ma)"/>
+        <line x1="66" y1="407" x2="516" y2="407" stroke="#000" stroke-width="1.3" marker-end="url(#ma)"/>
+
+        <!-- VLM tower -->
+        <rect x="170" y="60" width="170" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="255" y="92" text-anchor="middle" font-size="20">VLM</text>
+        <text x="255" y="112" text-anchor="middle" font-size="13" fill="#5C5C57">frozen</text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="190" y="132" width="130" height="16" rx="4"/><rect x="190" y="158" width="130" height="16" rx="4"/><rect x="190" y="184" width="130" height="16" rx="4"/><rect x="190" y="210" width="130" height="16" rx="4"/><rect x="190" y="236" width="130" height="16" rx="4"/><rect x="190" y="262" width="130" height="16" rx="4"/><rect x="190" y="288" width="130" height="16" rx="4"/></g>
+
+        <!-- hidden states -->
+        <line x1="340" y1="190" x2="362" y2="190" stroke="#000" stroke-width="1.3" marker-end="url(#ma)"/>
+        <g fill="#D9EBE9" stroke="#2A7B76"><rect x="366" y="183" width="13" height="13"/><rect x="383" y="183" width="13" height="13"/><rect x="400" y="183" width="13" height="13"/><rect x="417" y="183" width="13" height="13"/><rect x="434" y="183" width="13" height="13"/><rect x="451" y="183" width="13" height="13"/></g>
+        <text x="415" y="172" text-anchor="middle" fill="#2A7B76">hidden states Φ<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <path d="M466,190 C492,190 492,140 518,140" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#mp)"/>
+        <path d="M466,190 C492,190 492,192 518,192" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#mp)"/>
+        <path d="M466,190 C492,190 492,244 518,244" fill="none" stroke="#2A7B76" stroke-width="1.1" marker-end="url(#mp)"/>
+
+        <!-- action expert tower with TTT layers -->
+        <rect x="520" y="60" width="180" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="610" y="92" text-anchor="middle" font-size="20">action expert</text>
+        <text x="610" y="112" text-anchor="middle" font-size="13" fill="#5C5C57">attention within a timestep</text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="540" y="132" width="140" height="16" rx="4"/><rect x="540" y="184" width="140" height="16" rx="4"/><rect x="540" y="236" width="140" height="16" rx="4"/><rect x="540" y="288" width="140" height="16" rx="4"/></g>
+        <g fill="#E6ECFA" stroke="#1849C6"><rect x="540" y="158" width="140" height="16" rx="4"/><rect x="540" y="210" width="140" height="16" rx="4"/><rect x="540" y="262" width="140" height="16" rx="4"/></g>
+        <g fill="#1849C6" font-size="11" text-anchor="middle"><text x="610" y="170">TTT layer</text><text x="610" y="222">TTT layer</text><text x="610" y="274">TTT layer</text></g>
+
+        <!-- suffix input row: proprio, registers, noised chunk -->
+        <rect x="520" y="400" width="15" height="15" fill="#DCDCD4" stroke="#5C5C57"/>
+        <g fill="#E6ECFA" stroke="#1849C6"><rect x="546" y="400" width="15" height="15"/><rect x="565" y="400" width="15" height="15"/><rect x="584" y="400" width="15" height="15"/><rect x="603" y="400" width="15" height="15"/></g>
+        <g fill="url(#mhatch)" stroke="#B4722A"><rect x="629" y="400" width="15" height="15"/><rect x="648" y="400" width="15" height="15"/><rect x="667" y="400" width="15" height="15"/><rect x="686" y="400" width="15" height="15"/></g>
+        <text x="610" y="436" text-anchor="middle" fill="#5C5C57">proprio q<tspan baseline-shift="sub" font-size="10">t</tspan>, <tspan fill="#1849C6">16 register tokens R<tspan baseline-shift="sub" font-size="10">t</tspan></tspan>, <tspan fill="#B4722A">noised chunk A<tspan baseline-shift="super" font-size="9">τ</tspan></tspan></text>
+        <line x1="610" y1="396" x2="610" y2="324" stroke="#000" stroke-width="1.3" marker-end="url(#ma)"/>
+      </g>
+    </svg>
+    <div style="display: grid; grid-template-rows: auto auto; row-gap: 26px; min-height: 0;">
+      <div class="eqs under" style="font-size: 19px;">
+        <div class="row"><div>$$\textcolor{#1849C6}{W_t} \leftarrow \textcolor{#1849C6}{W_{t-1}} - \eta\,\nabla_W\big\|f_{W_{t-1}}(K_t) - V_t\big\|^2$$</div><span class="tag">(update, same as TTT layers)</span></div>
+        <div class="row"><div>$$O_t = f_{\textcolor{#1849C6}{W_t}}(Q_t)$$</div><span class="tag">(apply)</span></div>
+        <div class="row"><div>$$O = \tanh(\alpha)\odot O_{\text{TTT}} + O_{\text{attn}}$$</div><span class="tag">(gate, α init 0.001)</span></div>
+      </div>
+      <ul class="take tight" style="font-size: 19px;">
+        <li><b>Placement:</b> one TTT layer after each of GR00T N1.7's 16 DiT layers. Fast model is a 2-layer MLP, about 10M params per layer.</li>
+        <li><b>Gate starts near zero,</b> so the pretrained policy is untouched at step 0 and learns how much memory to use.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3.2 RECIPE ================= -->
+<section class="slide" id="robottt-recipe">
+  <h1 class="wide">Training recipe: how to make this work at 8K timesteps.</h1>
+  <div class="cols" style="--cols: 1fr 1.15fr; column-gap: 56px; align-items: start;">
+    <div style="display: grid; row-gap: 28px;">
+      <div style="border-top: 1px solid var(--rule); padding-top: 14px;">
+        <h2 style="font-size: 24px;">Sequence action forcing</h2>
+        <div class="eqs" style="font-size: 19px; gap: 8px;">
+          <div>$$\mathcal{L}_{\text{fm}} = \tfrac{1}{T}\textstyle\sum_{t}\ \mathbb{E}_{\tau_t,\epsilon}\big\|v_\theta(\,\cdot\,;W_{t-1}) - (A_t-\epsilon)\big\|^2$$</div>
+          <div>$$A_t^{\tau_t} = \tau_t A_t + (1-\tau_t)\,\epsilon,\qquad \tau_t \text{ drawn per chunk}$$</div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 18px;"><b>One noise level per chunk, not per sequence.</b> Shared noise makes whole sequences uniformly easy or hard; training is unstable without this.</p>
+      </div>
+      <div style="border-top: 1px solid var(--rule); padding-top: 14px;">
+        <h2 style="font-size: 24px;">Truncated BPTT</h2>
+        <figure><img class="fig" src="fig/robottt-fig4.png" alt="TBPTT: gradients cut at segment boundaries, fast weights carried across" style="max-height: 200px; width: auto;"></figure>
+        <p style="margin: 10px 0 0; font-size: 18px;"><b>Fast weights carry across segments, gradients are cut.</b> GPU memory scales with segment length, not context length. $W_0$ still gets gradient through segment 1.</p>
+      </div>
+    </div>
+    <svg viewBox="0 0 620 560" style="width: 100%; height: auto; max-height: 100%;" role="img" aria-label="Five-step flowchart of one RoboTTT training step">
+      <defs>
+        <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+        <marker id="fb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1849C6"/></marker>
+        <pattern id="fh1" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#B4722A" stroke-width="1"/></pattern>
+        <pattern id="fh2" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#B4722A" stroke-width="1.4"/></pattern>
+        <pattern id="fh3" patternUnits="userSpaceOnUse" width="3" height="3" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="#B4722A" stroke-width="2"/></pattern>
+      </defs>
+      <g font-family="Charter, Georgia, serif" font-size="14" fill="#000">
+        <text x="0" y="16" font-size="16" fill="#5C5C57">One training step, start to finish</text>
+
+        <!-- 1 sample -->
+        <rect x="0" y="30" width="620" height="78" rx="8" fill="#F3F3EE" stroke="#000" stroke-width="1.2"/>
+        <text x="16" y="56" font-size="17">1 · Sample a sequence</text>
+        <text x="16" y="78" fill="#5C5C57">T/H contiguous control steps, each with o<tspan baseline-shift="sub" font-size="10">t</tspan>, q<tspan baseline-shift="sub" font-size="10">t</tspan>, A<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <g fill="#DCDCD4" stroke="#5C5C57"><rect x="440" y="58" width="36" height="22"/><rect x="482" y="58" width="36" height="22"/><rect x="524" y="58" width="36" height="22"/></g>
+        <text x="570" y="74" font-size="13" fill="#5C5C57">…</text>
+        <text x="458" y="98" text-anchor="middle" font-size="11" fill="#5C5C57">t = 1</text><text x="500" y="98" text-anchor="middle" font-size="11" fill="#5C5C57">1+H</text><text x="542" y="98" text-anchor="middle" font-size="11" fill="#5C5C57">1+2H</text>
+        <line x1="310" y1="108" x2="310" y2="130" stroke="#000" stroke-width="1.3" marker-end="url(#fa)"/>
+
+        <!-- 2 noise -->
+        <rect x="0" y="132" width="620" height="78" rx="8" fill="#F3F3EE" stroke="#000" stroke-width="1.2"/>
+        <text x="16" y="158" font-size="17">2 · Noise every chunk at its own <tspan fill="#B4722A">τ<tspan baseline-shift="sub" font-size="11">t</tspan></tspan></text>
+        <text x="16" y="180" fill="#5C5C57">sequence action forcing: a sequence is never all-easy or all-hard</text>
+        <g stroke="#B4722A"><rect x="440" y="160" width="36" height="22" fill="url(#fh1)"/><rect x="482" y="160" width="36" height="22" fill="url(#fh3)"/><rect x="524" y="160" width="36" height="22" fill="url(#fh2)"/></g>
+        <text x="458" y="200" text-anchor="middle" font-size="11" fill="#B4722A">τ = 0.8</text><text x="500" y="200" text-anchor="middle" font-size="11" fill="#B4722A">τ = 0.2</text><text x="542" y="200" text-anchor="middle" font-size="11" fill="#B4722A">τ = 0.5</text>
+        <line x1="310" y1="210" x2="310" y2="232" stroke="#000" stroke-width="1.3" marker-end="url(#fa)"/>
+
+        <!-- 3 forward pass with inner sweep -->
+        <rect x="0" y="234" width="620" height="92" rx="8" fill="#F3F3EE" stroke="#000" stroke-width="1.2"/>
+        <text x="16" y="260" font-size="17">3 · One forward pass over the whole sequence</text>
+        <text x="16" y="282" fill="#5C5C57">attention per step; inside each TTT layer the fast weights sweep forward,</text>
+        <text x="16" y="300" fill="#5C5C57">one inner gradient step per chunk, chunk tokens as the mini-batch</text>
+        <g fill="#1849C6" font-size="14"><text x="438" y="316">W₀</text><text x="490" y="316">W₁</text><text x="542" y="316">W₂</text><text x="590" y="316">…</text></g>
+        <g stroke="#1849C6" stroke-width="1.3"><line x1="462" y1="311" x2="486" y2="311" marker-end="url(#fb)"/><line x1="514" y1="311" x2="538" y2="311" marker-end="url(#fb)"/><line x1="566" y1="311" x2="586" y2="311" marker-end="url(#fb)"/></g>
+        <line x1="310" y1="326" x2="310" y2="348" stroke="#000" stroke-width="1.3" marker-end="url(#fa)"/>
+
+        <!-- 4 one prediction per chunk -->
+        <rect x="0" y="350" width="620" height="78" rx="8" fill="#F3F3EE" stroke="#000" stroke-width="1.2"/>
+        <text x="16" y="376" font-size="17">4 · One velocity prediction per chunk</text>
+        <text x="16" y="398" fill="#5C5C57">flow loss ℓ<tspan baseline-shift="sub" font-size="10">t</tspan> at that chunk's τ<tspan baseline-shift="sub" font-size="10">t</tspan>, conditioned on W<tspan baseline-shift="sub" font-size="10">t−1</tspan>; no k-step denoising in training</text>
+        <text x="500" y="412" text-anchor="middle" fill="#B4722A" font-size="15">v<tspan baseline-shift="sub" font-size="11">θ</tspan> → ℓ<tspan baseline-shift="sub" font-size="11">1</tspan>, ℓ<tspan baseline-shift="sub" font-size="11">2</tspan>, ℓ<tspan baseline-shift="sub" font-size="11">3</tspan>, …</text>
+        <line x1="310" y1="428" x2="310" y2="450" stroke="#000" stroke-width="1.3" marker-end="url(#fa)"/>
+
+        <!-- 5 outer step -->
+        <rect x="0" y="452" width="620" height="92" rx="8" fill="#F3F3EE" stroke="#000" stroke-width="1.2"/>
+        <text x="16" y="478" font-size="17">5 · Average the losses, one outer step on the slow weights</text>
+        <text x="16" y="500" fill="#5C5C57">gradient flows back through the inner updates, so W₀ and η are meta-learned;</text>
+        <text x="16" y="518" fill="#5C5C57">TBPTT cuts that backward pass at segment boundaries while W carries across</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ================= 3.3 DECOUPLED ================= -->
+<section class="slide" id="robottt-decoupled" style="grid-template-rows: auto auto minmax(0,1fr);">
+  <h1 class="wide">Fast weights let us learn how to use heterogeneous data.</h1>
+  <svg viewBox="0 0 1200 250" style="width: 100%; height: 250px;" role="img" aria-label="Three tracks over one trajectory: fast-weight updates on every timestep; flow loss on DAgger data only on human corrections; flow loss on in-context video data only on the paired robot trajectory">
+    <g font-family="Charter, Georgia, serif" font-size="17">
+      <text x="0" y="22" fill="#1849C6">fast-weight update (inner loss, self-supervised): every timestep, whatever the data</text>
+      <rect x="0" y="32" width="1200" height="18" fill="#1849C6"/>
+
+      <text x="0" y="98" >flow-matching loss on DAgger data</text>
+      <rect x="0" y="108" width="1200" height="18" fill="none" stroke="#000" stroke-width="1.5"/>
+      <rect x="300" y="108" width="140" height="18" fill="#000"/>
+      <rect x="560" y="108" width="90" height="18" fill="#000"/>
+      <rect x="820" y="108" width="380" height="18" fill="#000"/>
+      <text x="150" y="146" text-anchor="middle" font-size="14" fill="#5C5C57">robot's own actions: in memory, no loss</text>
+      <text x="1010" y="146" text-anchor="middle" font-size="14" fill="#5C5C57">human corrections: in memory and supervised</text>
+
+      <text x="0" y="192">flow-matching loss on in-context human video data</text>
+      <rect x="0" y="202" width="1200" height="18" fill="none" stroke="#000" stroke-width="1.5"/>
+      <rect x="430" y="202" width="770" height="18" fill="#000"/>
+      <text x="215" y="240" text-anchor="middle" font-size="14" fill="#5C5C57">human video: no action labels, in memory only</text>
+      <text x="815" y="240" text-anchor="middle" font-size="14" fill="#5C5C57">paired robot trajectory of the same task: supervised</text>
+    </g>
+  </svg>
+  <div class="cols" style="align-items: start;">
+    <div>
+      <h2>Mixed quality: DAgger distillation</h2>
+      <ul class="take tight" style="font-size: 20px;">
+        <li>Remember the entire trajectory, but only update slow weights on the correction behavior.</li>
+        <li>Learn <i>when</i> to respond to a failure and the mapping failure → correction, not just the corrections in isolation. They position it as "Algorithm Distillation through meta-learning."</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Mixed modality: in-context human video</h2>
+      <ul class="take tight" style="font-size: 20px;">
+        <li>No action labels in a video, but the inner loss is self-supervised, so the video still updates $W$.</li>
+        <li>Prime the memory with the human video; at train time, use slow weight updates on a paired robot trajectory, and at test time, this will produce in-context learning.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3.4 RESULTS HUB ================= -->
+<section class="slide sechub" id="robottt-results">
+  <h1 class="wide">Results, grouped by the use of past experience.</h1>
+  <div class="body">
+    <ol>
+      <li><a href="#robottt-context-main">Remembering context</a><small>main evaluation, perturbations</small></li>
+      <li class="opt"><a href="#robottt-context-scaling">Context as a scaling axis</a><small>128 to 8K pretraining context</small></li>
+      <li><a href="#robottt-feedback">Learning from feedback</a><small>DAgger distillation</small></li>
+      <li><a href="#robottt-examples">Learning from examples</a><small>one-shot imitation from human video</small></li>
+      <li><a href="#robottt-ablations">Ablations</a><small>what the design decisions bought</small></li>
+    </ol>
+    <div style="display: grid; grid-template-rows: auto auto; row-gap: 14px; align-content: center; min-height: 0;">
+      <div class="vidrow">
+        <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-pupgocar-loop.mp4" data-full="video/robottt-pupgocar-full.mp4"></video><figcaption>Pup Go Car, 2 min</figcaption></figure>
+        <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-circuit1-loop.mp4" data-full="video/robottt-circuit1-full.mp4"></video><figcaption>Circuit, 1 min, 80 configs (20 train / 60 test)</figcaption></figure>
+        <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-gearbot-loop.mp4" data-full="video/robottt-gearbot-full.mp4"></video><figcaption>Gear Bot, 5 min, 10 stages</figcaption></figure>
+      </div>
+      <p class="tcap">Click a clip for the full sped-up rollout. YAM bimanual, 4 RGB cameras. Baselines: GR00T N1.7 (single step), GR00T N1.7 Hist. (one history frame), GDN (same placement and parameter count, Gated DeltaNet instead of TTT). Sequence models post-trained at 1K context. <span class="credit">Video: research.nvidia.com/labs/gear/robottt</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3.4a-i CONTEXT MAIN ================= -->
+<section class="slide" id="robottt-context-main">
+  <h1 class="wide">Past experience for remembering context</h1>
+  <div class="cols" style="--cols: 1.2fr 1fr;">
+    <div class="stack" style="--rows: auto auto; align-content: start; row-gap: 22px;">
+      <figure><img class="fig" src="fig/robottt-fig7.png" alt="Task completion score bars for RoboTTT, GR00T N1.7, GR00T N1.7 Hist., GDN on three tasks"><figcaption>Fig. 7. Rubric-based task completion, 20 trials per task (10 for Gear Bot).</figcaption></figure>
+            <div>
+        <table class="data shaded">
+          <thead>
+            <tr><th></th><th colspan="3" style="text-align: center; border-bottom: none;">fully successful trials, %</th><th colspan="2" style="text-align: center; border-bottom: none;">recovered after a human removes a part, %</th></tr>
+            <tr><th></th><th>Pup Go Car</th><th>Circuit</th><th>Gear Bot</th><th>roof</th><th>tire</th></tr>
+          </thead>
+          <tbody>
+              <tr class="ours"><td>RoboTTT</td><td style="background: rgba(24,73,198,0.34);">45</td><td style="background: rgba(24,73,198,0.34);">65</td><td style="background: rgba(24,73,198,0.34);">20</td><td style="background: rgba(24,73,198,0.34);">75</td><td style="background: rgba(24,73,198,0.34);">90</td></tr>
+              <tr><td>GR00T N1.7</td><td style="background: rgba(24,73,198,0.14);">15</td><td style="background: rgba(24,73,198,0.04);">15</td><td style="background: rgba(24,73,198,0.04);">0</td><td style="background: rgba(24,73,198,0.22);">50</td><td style="background: rgba(24,73,198,0.18);">55</td></tr>
+              <tr><td>GR00T N1.7 Hist.</td><td style="background: rgba(24,73,198,0.04);">0</td><td style="background: rgba(24,73,198,0.19);">40</td><td style="background: rgba(24,73,198,0.04);">0</td><td style="background: rgba(24,73,198,0.04);">15</td><td style="background: rgba(24,73,198,0.04);">25</td></tr>
+              <tr><td>GDN</td><td style="background: rgba(24,73,198,0.14);">15</td><td style="background: rgba(24,73,198,0.19);">40</td><td style="background: rgba(24,73,198,0.04);">0</td><td style="background: rgba(24,73,198,0.29);">65</td><td style="background: rgba(24,73,198,0.34);">90</td></tr>
+          </tbody>
+        </table>
+        <p class="tcap">Table 1 (20 trials, 10 for Gear Bot) and Table 3 (20 trials per condition, 30 min of perturbation data co-trained). Darker is better within a column.</p>
+        <button class="vidlink" data-full="video/robottt-perturbation-roof.mp4">▶ roof removed mid-episode</button>
+      </div>
+    </div>
+    <ul class="take vcenter">
+      <li><b>79% average</b> vs 42% single-step and 56% GDN. The only method with full Gear Bot successes.</li>
+      <li><b>Naive history hurts:</b> adding one history frame drops Pup Go Car from 57% to 39.5%. Spurious correlations, out-of-distribution at test time.</li>
+      <li><b>GDN has the same fixed-size state.</b> The difference is gradient descent on a nonlinear fast model vs a linear associative update.</li>
+      <li><b>Within-episode context too:</b> perturbation recovery 15/20 vs 13/20 GDN vs at most 10/20 for short context.</li>
+      <li><b>Qualitatively:</b> tracks stage progress under state aliasing, retries a missed screw, uses past views of now-occluded parts.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3.4a-ii CONTEXT SCALING ================= -->
+<section class="slide" id="robottt-context-scaling">
+  <h1 class="wide">Context length as a scaling axis</h1>
+  <div class="cols" style="--cols: 1.2fr 1fr;">
+    <figure><img class="fig" src="fig/robottt-fig8.png" alt="Average task completion vs pretraining context length from 128 to 8K: RoboTTT rises steadily, GDN flat"><figcaption>Fig. 8. Pretrain at each context length, post-train, evaluate closed-loop on all three tasks. Predates the DAgger training used in Fig. 7.</figcaption></figure>
+    <ul class="take vcenter">
+      <li><b>128 → 8K:</b> steady gains with no saturation. 71.5% at 8K vs 43.9% for the same model at 1K. <b>Gated Delta-Net doesn't collapse from context, but doesn't scale.</b></li>
+      <li><b>Their explanation:</b> $W_0$ and the update dynamics are meta-learned, and longer sequences give the outer loss more inner steps to shape. A linear associative state has nothing to meta-learn.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3.4b FEEDBACK ================= -->
+<section class="slide" id="robottt-feedback">
+  <h1 class="wide">Past experience for learning from feedback: DAgger distillation</h1>
+  <div class="cols" style="--cols: 1.25fr 1fr;">
+    <div class="stack">
+      <figure><img class="fig" src="fig/robottt-fig10.png" alt="Bar chart of task completion after four kinds of DAgger fine-tuning, for RoboTTT, GDN, GR00T N1.7 and GR00T N1.7 Hist."><figcaption>Fig. 10, Pup Go Car. 100 pooled DAgger trajectories (50 from RoboTTT, 50 from GR00T N1.7); four fine-tuning variants per model.</figcaption></figure>
+      <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-recovery-roof.mp4" data-clips="Roof screw=video/robottt-recovery-roof.mp4;Wheel=video/robottt-recovery-wheel.mp4"></video><figcaption>On-the-fly recovery (the event in Fig. 11): misses the roof screw, re-aligns, succeeds. No human in the loop. Click for the wheel case too. <span class="credit">Video: research.nvidia.com/labs/gear/robottt</span></figcaption></figure>
+    </div>
+    <ul class="take vcenter">
+      <li><b>Standard DAgger</b> (train on corrections only): +9% average, +13% on the sequence models.</li>
+      <li><b>DAgger distillation</b> (whole trajectory in memory, loss on corrections only): +36% RoboTTT, +29% GDN.</li>
+      <li><b>Robot actions are useless as targets</b> (GR00T: full trajectory = corrections only = 57%) <b>but useful as context.</b></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3.4c EXAMPLES ================= -->
+<section class="slide" id="robottt-examples">
+  <h1 class="wide">Past experience for learning from examples: one-shot imitation from human video</h1>
+  <div class="cols" style="--cols: 1.3fr 1fr;">
+    <div class="stack" style="--rows: auto auto; align-content: start; row-gap: 22px;">
+      <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robottt-circuit1-loop.mp4" data-clips="Config 1=video/robottt-circuit1-full.mp4;Config 2=video/robottt-circuit2-full.mp4;Config 3=video/robottt-circuit3-full.mp4;Config 4=video/robottt-circuit4-full.mp4"></video><figcaption>Human demo, reset, robot rollout on an unseen configuration. Same prompt in every clip; click for all four configurations. <span class="credit">Video: research.nvidia.com/labs/gear/robottt</span></figcaption></figure>
+      <div>
+        <table class="data">
+          <thead><tr><th>Circuit, unseen configuration</th><th>Completion</th><th>Successes</th></tr></thead>
+          <tbody>
+            <tr class="ours"><td>RoboTTT</td><td>65%</td><td>6 / 10</td></tr>
+            <tr><td>GDN</td><td>33%</td><td>0 / 10</td></tr>
+          </tbody>
+        </table>
+        <p class="tcap">Table 2. GR00T N1.7 cannot condition on context; its Hist. variant's window is far shorter than a video.</p>
+      </div>
+    </div>
+    <ul class="take vcenter">
+      <li><b>Setup:</b> 5–20 human videos per training configuration, concatenated with a robot trajectory, flow loss masked on the video. The prompt is always "assemble circuit", so the target lives only in the video.</li>
+      <li><b>6/10 vs 0/10.</b> GDN picks wrong components or assembles in the wrong order.</li>
+      <li><b>Their reading:</b> a recurrent state can encode context but the model struggles to use it effectively.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3.4d ABLATIONS ================= -->
+<section class="slide" id="robottt-ablations">
+  <h1 class="wide">Ablations: what the design decisions bought</h1>
+  <div class="cols" style="--cols: 1fr 1fr;">
+    <figure><img class="fig" src="fig/robottt-fig12.png" alt="Ablation bars on Pup Go Car: no sequence action forcing, TTT linear, state tokens, plus action tokens, plus register tokens, GR00T with register tokens"><figcaption>Fig. 12, Pup Go Car. GR00T N1.7 + register tokens is the matched-token control.</figcaption></figure>
+    <ul class="take vcenter">
+      <li><b>No sequence action forcing:</b> collapses. Inaccurate motions, no progress.</li>
+      <li><b>Linear fast model</b> beats GR00T but is 27% below the 2-layer MLP. Nonlinear compressors matter, as in the vision and language TTT results.</li>
+      <li><b>Roadmap:</b> state tokens only → <b>+ action tokens (+23%)</b>, the model knows its own past actions → <b>+ register tokens (+18%)</b>.</li>
+      <li><b>Registers do nothing for GR00T alone.</b> They only help when there is a temporal mechanism to carry them.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3.5 BRIDGE ================= -->
+<section class="slide" id="robottt-bridge">
+  <h1 class="wide">Two questions on the way to T²Mem</h1>
+  <div class="cols" style="align-items: center; column-gap: 72px;">
+    <div>
+      <p class="q" style="font-size: 32px; line-height: 1.25; margin: 0 0 18px;">Why are we putting memory into the action head? Would it be more useful to remember observations?</p>
+      <ul class="take" style="font-size: 19px;">
+        <li>RoboTTT keeps the VL tokens out of TTT "for computational efficiency"; 16 registers stand in for them.</li>
+        <li>Their own limitations section asks for robotics-oriented objectives for the TTT layers.</li>
+      </ul>
+    </div>
+    <div>
+      <p class="q" style="font-size: 32px; line-height: 1.25; margin: 0 0 18px;">Robot streams are strongly correlated with few surprising moments. Do we need to memorize each time step equally?</p>
+      <ul class="take" style="font-size: 19px;">
+        <li>The pitch is that TTT "retains salient features and discards redundant ones", but the update rule treats every step the same.</li>
+        <li>Titans already asked this for language with surprise-driven updates.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4 T2MEM HUB ================= -->
+<section class="slide sechub" id="t2mem">
+  <h1 class="wide"><span class="q">How do we make memory preserve information that matters for downstream robotic decisions?</span><br><span style="font-size: 28px;">T²Mem. Idea: tailor RoboTTT using inductive biases from robotics.</span></h1>
+  <div class="body">
+    <ol>
+      <li class="opt"><a href="#t2mem-tasks">Memory-dependent tasks</a><small>RoboMME</small></li>
+      <li><a href="#t2mem-interface">Memory between VLM and AE</a><small>visual features are more useful than those in the action head</small></li>
+      <li><a href="#t2mem-adaptive">Surprise-gated updates</a><small>observations are temporally correlated</small></li>
+      <li class="opt"><a href="#t2mem-alternating">Alternating memory–policy learning</a><small>learn to remember, then learn to act</small></li>
+      <li><a href="#t2mem-results-bench">Results: RoboMME</a> · <a href="#t2mem-results-use">is the memory used?</a></li>
+    </ol>
+    <figure class="center"><img class="fig" src="fig/t2mem-fig1.png" alt="T2Mem overview: memory-dependent tasks, single VLA policy with fast-weight memory interface, test-time rollout"><figcaption>Fig. 1. π0.5 backbone, memory between VLM and action expert, simulated RoboMME tasks.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ================= 4.1 TASKS ================= -->
+<section class="slide" id="t2mem-tasks" style="grid-template-rows: auto auto minmax(0,1fr); row-gap: 18px;">
+  <h1 class="wide">What counts as a memory-dependent task</h1>
+  <div class="eqs" style="font-size: 22px;">
+    <div class="row" style="grid-template-columns: auto auto; justify-content: start; column-gap: 28px;"><div>$$\sup_{\pi\in\Pi_{\text{hist}}} J(\pi)\ >\ \sup_{\pi\in\Pi_{\text{current}}} J(\pi)$$</div><span class="tag" style="max-width: none; white-space: nowrap; text-align: left;">(the current observation is not enough; RoboMME, 16 simulated tasks in four suites)</span></div>
+  </div>
+  <div class="carousel" data-n="3">
+    <figure class="citem on"><video class="vid nolb" muted loop playsinline preload="metadata" src="video/robomme-videounmask.mp4"></video><figcaption>1 / 3 · VideoUnmask: recall a hidden object (Permanence). Click for the next task. <span class="credit">Video: robomme.github.io</span></figcaption></figure>
+    <figure class="citem"><video class="vid nolb" muted loop playsinline preload="metadata" src="video/robomme-pickxtimes.mp4"></video><figcaption>2 / 3 · PickXtimes: count repeated actions (Counting). Click for the next task. <span class="credit">Video: robomme.github.io</span></figcaption></figure>
+    <figure class="citem"><video class="vid nolb" muted loop playsinline preload="metadata" src="video/robomme-patternlock.mp4"></video><figcaption>3 / 3 · PatternLock: reproduce a demonstrated sequence (Imitation). Click to start over. <span class="credit">Video: robomme.github.io</span></figcaption></figure>
+  </div>
+</section>
+
+
+
+<!-- ================= 4.3 INTERFACE ================= -->
+<section class="slide" id="t2mem-interface">
+  <h1 class="wide">Why not remember the observations themselves?</h1>
+  <div class="cols" style="--cols: 1.5fr 1fr; column-gap: 40px; align-items: center;">
+    <svg viewBox="0 0 710 500" style="width: 100%; height: auto; max-height: 100%;" role="img" aria-label="T2Mem diagram: hidden states from the VLM feed both the action expert directly and a memory interface stacked below them, whose learned queries attend to the hidden states, write to and read from per-layer fast weights, and pass a gated result to the action expert as keys and values">
+      <defs>
+        <marker id="ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker>
+        <marker id="ip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2A7B76"/></marker>
+        <marker id="ib" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1849C6"/></marker>
+        <pattern id="ihatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#B4722A" stroke-width="1.2"/></pattern>
+      </defs>
+      <g font-family="Charter, Georgia, serif" font-size="14" fill="#000">
+        <!-- inputs -->
+        <g fill="#DCDCD4" stroke="#5C5C57">
+          <rect x="24" y="128" width="13" height="13"/><rect x="40" y="128" width="13" height="13"/>
+          <rect x="24" y="144" width="13" height="13"/><rect x="40" y="144" width="13" height="13"/>
+          <rect x="14" y="218" width="16" height="11" rx="5"/><rect x="33" y="218" width="16" height="11" rx="5"/><rect x="52" y="218" width="16" height="11" rx="5"/>
+        </g>
+        <text x="38" y="178" text-anchor="middle" fill="#5C5C57">images o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <text x="40" y="250" text-anchor="middle" fill="#5C5C57">instruction l</text>
+        <path d="M72,142 C95,142 95,180 108,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ia)"/>
+        <path d="M80,224 C95,224 95,180 108,180" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ia)"/>
+
+        <!-- VLM tower -->
+        <rect x="110" y="60" width="150" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="185" y="92" text-anchor="middle" font-size="20">VLM</text>
+        <text x="185" y="112" text-anchor="middle" font-size="13" fill="#5C5C57">one forward pass</text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="128" y="132" width="114" height="16" rx="4"/><rect x="128" y="158" width="114" height="16" rx="4"/><rect x="128" y="184" width="114" height="16" rx="4"/><rect x="128" y="210" width="114" height="16" rx="4"/><rect x="128" y="236" width="114" height="16" rx="4"/><rect x="128" y="262" width="114" height="16" rx="4"/><rect x="128" y="288" width="114" height="16" rx="4"/></g>
+
+        <!-- hidden states, stacked above the interface -->
+        <path d="M260,112 C290,112 290,97 320,97" fill="none" stroke="#000" stroke-width="1.3" marker-end="url(#ia)"/>
+        <g fill="#D9EBE9" stroke="#2A7B76"><rect x="326" y="90" width="13" height="13"/><rect x="343" y="90" width="13" height="13"/><rect x="360" y="90" width="13" height="13"/><rect x="377" y="90" width="13" height="13"/><rect x="394" y="90" width="13" height="13"/><rect x="411" y="90" width="13" height="13"/></g>
+        <text x="375" y="80" text-anchor="middle" fill="#2A7B76">hidden states Φ<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <path d="M426,97 C480,97 505,150 538,150" fill="none" stroke="#2A7B76" stroke-width="1.2" marker-end="url(#ip)"/>
+        <text x="480" y="87" text-anchor="middle" fill="#2A7B76" font-size="11">direct path</text>
+        <line x1="375" y1="106" x2="375" y2="128" stroke="#2A7B76" stroke-width="1.2" marker-end="url(#ip)"/>
+
+        <!-- memory interface block -->
+        <rect x="280" y="130" width="190" height="200" rx="12" fill="#EEF2FC" stroke="#1849C6" stroke-width="1.5"/>
+        <text x="375" y="154" text-anchor="middle" fill="#1849C6" font-size="16">memory interface</text>
+        <g fill="#E6ECFA" stroke="#1849C6"><rect x="326" y="166" width="13" height="13"/><rect x="343" y="166" width="13" height="13"/><rect x="360" y="166" width="13" height="13"/><rect x="377" y="166" width="13" height="13"/><rect x="394" y="166" width="13" height="13"/><rect x="411" y="166" width="13" height="13"/></g>
+        <text x="375" y="194" text-anchor="middle" fill="#1849C6" font-size="12">16 learned queries over Φ<tspan baseline-shift="sub" font-size="9">t</tspan> → U<tspan baseline-shift="sub" font-size="9">t</tspan></text>
+        <line x1="375" y1="199" x2="375" y2="214" stroke="#1849C6" stroke-width="1.2" marker-end="url(#ib)"/>
+        <rect x="305" y="216" width="140" height="48" rx="8" fill="#E6ECFA" stroke="#1849C6" stroke-width="1.3"/>
+        <text x="375" y="236" text-anchor="middle" fill="#1849C6" font-size="14">fast weights W<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+        <text x="375" y="254" text-anchor="middle" fill="#1849C6" font-size="11">write K, V · read Q → R<tspan baseline-shift="sub" font-size="8">t</tspan></text>
+        <line x1="375" y1="264" x2="375" y2="286" stroke="#1849C6" stroke-width="1.2" marker-end="url(#ib)"/>
+        <g fill="#E6ECFA" stroke="#1849C6"><rect x="326" y="290" width="13" height="13"/><rect x="343" y="290" width="13" height="13"/><rect x="360" y="290" width="13" height="13"/><rect x="377" y="290" width="13" height="13"/><rect x="394" y="290" width="13" height="13"/><rect x="411" y="290" width="13" height="13"/></g>
+        <path d="M470,297 C505,297 505,250 538,250" fill="none" stroke="#1849C6" stroke-width="1.3" marker-end="url(#ib)"/>
+        <text x="375" y="352" text-anchor="middle" fill="#1849C6" font-size="12">queries see Φ<tspan baseline-shift="sub" font-size="9">t</tspan> only, never actions or proprio</text>
+
+        <!-- action expert tower -->
+        <rect x="540" y="60" width="150" height="260" rx="12" fill="#F3F3EE" stroke="#000" stroke-width="1.5"/>
+        <text x="615" y="92" text-anchor="middle" font-size="18">action expert</text>
+        <text x="615" y="112" text-anchor="middle" font-size="12" fill="#5C5C57">attends to Φ<tspan baseline-shift="sub" font-size="9">t</tspan> and Ũ<tspan baseline-shift="sub" font-size="9">t</tspan></text>
+        <g fill="#fff" stroke="#BDBDB5"><rect x="558" y="132" width="114" height="16" rx="4"/><rect x="558" y="158" width="114" height="16" rx="4"/><rect x="558" y="184" width="114" height="16" rx="4"/><rect x="558" y="210" width="114" height="16" rx="4"/><rect x="558" y="236" width="114" height="16" rx="4"/><rect x="558" y="262" width="114" height="16" rx="4"/><rect x="558" y="288" width="114" height="16" rx="4"/></g>
+
+        <!-- suffix inputs -->
+        <rect x="580" y="400" width="15" height="15" fill="#DCDCD4" stroke="#5C5C57"/>
+        <g fill="url(#ihatch)" stroke="#B4722A"><rect x="606" y="400" width="15" height="15"/><rect x="625" y="400" width="15" height="15"/><rect x="644" y="400" width="15" height="15"/><rect x="663" y="400" width="15" height="15"/></g>
+        <text x="629" y="436" text-anchor="middle" fill="#5C5C57">proprio q<tspan baseline-shift="sub" font-size="10">t</tspan>, <tspan fill="#B4722A">noised chunk A<tspan baseline-shift="super" font-size="9">τ</tspan></tspan></text>
+        <line x1="629" y1="396" x2="629" y2="324" stroke="#000" stroke-width="1.3" marker-end="url(#ia)"/>
+      </g>
+    </svg>
+    <div style="display: grid; grid-template-rows: auto auto; row-gap: 26px; min-height: 0;">
+      <div class="eqs under" style="font-size: 19px;">
+        <div class="row"><div>$$U_t = \operatorname{Attn}\big(Q_{\text{if}}(E_t),\ K_{\text{VL}}(\textcolor{#2A7B76}{\Phi_t}),\ V_{\text{VL}}(\textcolor{#2A7B76}{\Phi_t})\big)$$</div><span class="tag">(16 learned queries over the VL tokens only)</span></div>
+        <div class="row"><div>$$Q_t = U_t\theta_q,\qquad R_t = f_{\textcolor{#1849C6}{W_t}}(Q_t)$$</div><span class="tag">(read)</span></div>
+        <div class="row"><div>$$K_t = U_t\theta_k,\qquad V_t = U_t\theta_v$$</div><span class="tag">(bindings to write)</span></div>
+        <div class="row"><div>$$\tilde U_t = U_t + \tanh(\alpha)\odot R_t$$</div><span class="tag">(gated fusion → keys and values for the action expert)</span></div>
+      </div>
+      <figure><img class="fig" src="fig/t2mem-fig4a.png" alt="Ablation: memory on the VL path 84 and 71 percent vs the same memory inside the action expert 30 and 26 percent vs no memory 23 and 28 percent" style="max-height: 230px; width: auto;"><figcaption>Fig. 4(a), VideoUnmask and MoveCube: memory on the VL path vs the same memory inside the action expert (RoboTTT-style) vs none. Click to expand.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4.4 ADAPTIVE ================= -->
+<section class="slide foot" id="t2mem-adaptive">
+  <h1 class="wide">Do we need to memorize each time step equally?</h1>
+  <div class="cols" style="--cols: 1fr 1.25fr; column-gap: 48px;">
+    <svg viewBox="0 0 520 330" style="width: 100%; height: 100%;" role="img" aria-label="Weight-space sketch of the adaptive write rule">
+      <defs>
+        <marker id="ahf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1849C6"/></marker>
+        <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5C5C57"/></marker>
+      </defs>
+      <g font-family="Charter, Georgia, serif">
+        <line x1="30" y1="300" x2="500" y2="300" stroke="#D3D3CB" stroke-width="1"/>
+        <line x1="30" y1="300" x2="30" y2="20" stroke="#D3D3CB" stroke-width="1"/>
+        <text x="498" y="318" text-anchor="end" font-size="13" fill="#5C5C57">weight space</text>
+        <!-- path so far -->
+        <line x1="70" y1="275" x2="260" y2="165" stroke="#5C5C57" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ahg)"/>
+        <circle cx="70" cy="275" r="5" fill="#000"/>
+        <text x="70" y="297" text-anchor="middle" font-size="17" font-style="italic">W₀</text>
+        <circle cx="260" cy="165" r="5" fill="#000"/>
+        <text x="248" y="150" text-anchor="end" font-size="17" font-style="italic">W<tspan baseline-shift="sub" font-size="12">t</tspan></text>
+        <text x="130" y="245" text-anchor="start" font-size="14" fill="#5C5C57" font-style="italic">Δ = W<tspan baseline-shift="sub" font-size="10">t</tspan> − W₀, the path so far</text>
+        <!-- aligned candidate: short step -->
+        <line x1="260" y1="165" x2="400" y2="84" stroke="#1849C6" stroke-width="1.5" stroke-dasharray="3 4" marker-end="url(#ahf)"/>
+        <line x1="260" y1="165" x2="296" y2="144" stroke="#1849C6" stroke-width="4" stroke-linecap="round"/>
+        <text x="408" y="64" text-anchor="middle" font-size="15" fill="#1849C6">gradient aligned with Δ</text>
+        <text x="408" y="82" text-anchor="middle" font-size="15" fill="#1849C6">→ β ≈ 0.1, short step</text>
+        <!-- orthogonal candidate: full step -->
+        <line x1="260" y1="165" x2="340" y2="283" stroke="#1849C6" stroke-width="1.5" stroke-dasharray="3 4"/>
+        <line x1="260" y1="165" x2="336" y2="277" stroke="#1849C6" stroke-width="4" stroke-linecap="round" marker-end="url(#ahf)"/>
+        <text x="372" y="236" text-anchor="start" font-size="15" fill="#1849C6">gradient orthogonal to Δ</text>
+        <text x="372" y="254" text-anchor="start" font-size="15" fill="#1849C6">→ β ≈ 1, full step</text>
+        <!-- legend -->
+        <line x1="48" y1="36" x2="88" y2="36" stroke="#1849C6" stroke-width="1.5" stroke-dasharray="3 4"/>
+        <text x="96" y="41" font-size="14" fill="#5C5C57">descent direction −g</text>
+        <line x1="48" y1="58" x2="88" y2="58" stroke="#1849C6" stroke-width="4" stroke-linecap="round"/>
+        <text x="96" y="63" font-size="14" fill="#5C5C57">step taken −β·η·g</text>
+      </g>
+    </svg>
+    <div class="eqs">
+      <div class="row"><div>$$a_t = \cos\angle\big(-g_t,\ W_t - W_0\big)$$</div><span class="tag">(alignment with the path so far)</span></div>
+      <div class="row"><div>$$r_t = \frac{\lVert f_{W_t}(K_t) - V_t\rVert}{\lVert V_t\rVert}$$</div><span class="tag">(relative residual; normalization dropped)</span></div>
+      <div class="row"><div>$$\beta_t = \operatorname{smoothstep}\!\Big(\tfrac{1}{2}(1 - a_t)(1 + r_t)\Big)\ \in [0.1,\,1]$$</div><span class="tag">(write scale; clipping dropped)</span></div>
+      <div class="row"><div>$$W_{t+1} = W_t - \eta_t\,\beta_t\,g_t$$</div><span class="tag">(gated update)</span></div>
+    </div>
+  </div>
+  <div class="footline" style="--fcols: 340px 1fr; --fh: 205px;">
+    <figure><img class="fig" src="fig/t2mem-fig4c.png" alt="Early-memory key/value reconstruction error over 300 subsequent frames, adaptive vs fixed beta"><figcaption>Fig. 4(c). Replay 300 real frames after a shared demo prefix; measure error on the first bindings. 20 VideoUnmask Hard episodes.</figcaption></figure>
+    <ul class="take tight" style="font-size: 20px;">
+      <li><b>Early memories survive</b> with 19–47% less error. This is retention, not task success.</li>
+      <li><b>Not quite Titans:</b> no momentum, no forgetting. It only attenuates redundant writes. $\eta_t$ is curvature-calibrated with one learned multiplier per layer (backup).</li>
+      <li><b>Still a hard-coded heuristic</b> for a deeper nested optimization problem (→ conclusions).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 4.5 ALTERNATING ================= -->
+<section class="slide" id="t2mem-alternating">
+  <h1 class="wide">Alternating memory–policy learning</h1>
+  <div class="cols" style="--cols: 1.2fr 1fr;">
+    <div class="stack" style="--rows: minmax(0,1.1fr) minmax(0,1fr);">
+      <figure><img class="fig" src="fig/t2mem-fig3.png" alt="Training stages: pretrained VLA, memory-free adaptation, then alternate memory learning (policy frozen) and memory-conditioned policy learning (memory frozen)"><figcaption>Fig. 3. Freezing refers to slow parameters; the fast state keeps updating in every stage.</figcaption></figure>
+      <figure><img class="fig" src="fig/t2mem-fig4b.png" alt="Ablation: alternating 84 and 71 percent vs non-alternating 28 and 28 percent vs no memory 23 and 28 percent"><figcaption>Fig. 4(b). Same budget, same data, same initialization.</figcaption></figure>
+    </div>
+    <ul class="take vcenter">
+      <li><b>Stage 1:</b> adapt π0.5 to the tasks with no memory.</li>
+      <li><b>Stage 2A, learn to remember:</b> policy frozen. Action gradients flow through the frozen AE into the memory's slow parameters: interface, projections, $W_0$, step multipliers, gates.</li>
+      <li><b>Stage 2B, learn to act:</b> memory slow parameters frozen. The policy (and the VLM LoRA feeding the memory) adapts to the readouts. 500 steps each, repeated.</li>
+      <li><b>Joint training ≈ no memory</b> at the same budget. Each module keeps chasing the other's moving representation.</li>
+      <li><b>In our framing:</b> coordinate descent on the outer objective, each group with a fixed counterpart. The inner objective never changes.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 4.6-i RESULTS BENCH ================= -->
+<section class="slide" id="t2mem-results-bench" style="grid-template-rows: auto auto minmax(0,1fr);">
+  <h1 class="wide">Results on RoboMME</h1>
+  <div style="overflow: hidden;">
+    <table class="data small">
+      <thead>
+        <tr><th></th><th colspan="4" style="text-align: center; border-bottom: none;">Counting</th><th colspan="4" style="text-align: center; border-bottom: none;">Permanence</th><th colspan="4" style="text-align: center; border-bottom: none;">Reference</th><th colspan="4" style="text-align: center; border-bottom: none;">Imitation</th><th></th></tr>
+        <tr><th></th><th>BinFill</th><th>PickX</th><th>SwingX</th><th>StopCube</th><th>VidUmsk</th><th>BtnUmsk</th><th>VidUmskS</th><th>BtnUmskS</th><th>PickHighL</th><th>VidRepick</th><th>VidPlcBtn</th><th>VidPlcOrd</th><th>MoveCube</th><th>InsertPeg</th><th>PatternLock</th><th>RouteStick</th><th>Avg</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Human</td><td>96.0</td><td>100</td><td>80.0</td><td>78.0</td><td>90.0</td><td>92.0</td><td>92.0</td><td>90.0</td><td>92.0</td><td>92.0</td><td>98.0</td><td>90.0</td><td>90.0</td><td>98.0</td><td>84.0</td><td>86.0</td><td>90.5</td></tr>
+        <tr><td>GroundSG, oracle subgoals (privileged)</td><td>85.8</td><td>100</td><td>100</td><td>49.7</td><td>98.8</td><td>95.0</td><td>99.2</td><td>80.2</td><td>83.3</td><td>97.3</td><td>100</td><td>100</td><td>87.8</td><td>15.6</td><td>97.0</td><td>55.6</td><td>84.1</td></tr>
+        <tr><td>MemER (keyframes + VLM subgoals)</td><td>56.7</td><td>79.3</td><td>59.3</td><td>0.0</td><td>81.3</td><td>72.0</td><td>38.0</td><td>21.3</td><td>70.7</td><td>25.3</td><td>30.0</td><td>26.0</td><td>82.7</td><td>6.7</td><td>16.7</td><td>12.0</td><td>42.4</td></tr>
+        <tr><td>FrameSamp + Modul (best RoboMME)</td><td>39.6</td><td>87.3</td><td>92.0</td><td>42.0</td><td>32.7</td><td>25.1</td><td>24.4</td><td>18.2</td><td>22.9</td><td>30.4</td><td>60.0</td><td>32.0</td><td>77.8</td><td>7.6</td><td>53.6</td><td>66.7</td><td>44.5</td></tr>
+        <tr><td>TTT + Modul (RoboMME's naive TTT)</td><td>34.2</td><td>65.1</td><td>36.7</td><td>2.1</td><td>27.2</td><td>22.1</td><td>25.2</td><td>14.1</td><td>14.6</td><td>12.1</td><td>32.7</td><td>22.3</td><td>31.2</td><td>1.1</td><td>3.6</td><td>7.0</td><td>22.0</td></tr>
+        <tr><td>π0.5 (memory-free)</td><td>30.0</td><td>42.9</td><td>35.6</td><td>6.7</td><td>20.4</td><td>22.2</td><td>18.7</td><td>6.7</td><td>11.3</td><td>0.4</td><td>31.1</td><td>25.8</td><td>26.0</td><td>1.6</td><td>2.9</td><td>4.7</td><td>17.9</td></tr>
+        <tr><td>Stage 1 (their memory-free adaptation)</td><td>26.7</td><td>34.0</td><td>31.3</td><td>2.0</td><td>27.3</td><td>6.0</td><td>18.0</td><td>2.0</td><td>11.3</td><td>1.3</td><td>26.7</td><td>27.3</td><td>38.0</td><td>1.3</td><td>3.3</td><td>5.3</td><td>16.4</td></tr>
+        <tr class="ours"><td>T²Mem</td><td class="hi">60.7</td><td class="hi">91.3</td><td>90.7</td><td class="hi">70.0</td><td class="hi">88.0</td><td>59.3</td><td>29.3</td><td>20.0</td><td>50.7</td><td class="hi">38.7</td><td>35.3</td><td>30.0</td><td>80.7</td><td class="hi">36.0</td><td>50.0</td><td class="hi">78.7</td><td class="hi">56.8</td></tr>
+      </tbody>
+    </table>
+    <p class="tcap">Table 1, condensed (full table in backup). Success rate %, 50 episodes × 3 seeds per task. Blue: best among non-privileged methods. Baseline numbers are quoted from the RoboMME paper.</p>
+  </div>
+  <ul class="take vcenter" style="font-size: 20px;">
+    <li><b>17.9% → 56.8%</b> average over the memory-free base, above every recurrent and perceptual memory baseline in the benchmark. Best non-privileged on VideoRepick, InsertPeg, RouteStick.</li>
+    <li><b>Where it fails: the swap variants.</b> Tracking how a binding <i>changes</i> is reasoning over memory, not retention. π0.5's per-frame features have no cross-frame correspondence, and the memory does not add it.</li>
+    <li><b>InsertPeg:</b> finds the right target, fails the insertion. Memory and low-level control fail separately.</li>
+  </ul>
+</section>
+
+<!-- ================= 4.6-ii RESULTS USE ================= -->
+<section class="slide" id="t2mem-results-use">
+  <h1 class="wide">Does the policy actually use the memory, and what does it cost?</h1>
+  <div class="cols" style="--cols: 1.3fr 1fr;">
+    <div class="stack" style="--rows: minmax(0,1.1fr) minmax(0,0.9fr);">
+      <figure><img class="fig" src="fig/t2mem-fig5.png" alt="Interventions: disabling writes collapses success; conflicting memory is worse than empty; pre-occlusion writes match full demonstration"><figcaption>Fig. 5. Task-specific checkpoints. (a) writes disabled vs enabled, (b) correct / conflicting / empty demo memory, (c) which demo frames may write.</figcaption></figure>
+      <div style="display: grid; grid-template-rows: minmax(0,1fr) auto; row-gap: 6px; min-height: 0;">
+        <div class="vidrow" style="--n: 2;">
+          <figure><video class="vid" muted loop playsinline preload="metadata" src="video/t2mem-history-a.mp4"></video><figcaption>History A: blue cube hidden in the first location</figcaption></figure>
+          <figure><video class="vid" muted loop playsinline preload="metadata" src="video/t2mem-history-b.mp4"></video><figcaption>History B: blue and green exchanged</figcaption></figure>
+        </div>
+        <p class="tcap">The counterfactual pair behind (b): same instruction, same final scene, different history, different correct container. Expert demonstrations from the project page, not policy rollouts. <span class="credit">Video: yzliu84.github.io/T2MEM-project</span></p>
+      </div>
+    </div>
+    <ul class="take vcenter">
+      <li><b>Writes disabled</b> (keep $W_0$ and reads): −83 / −65 / −41 points on VideoUnmask / SwingXtimes / MoveCube.</li>
+      <li><b>Counterfactual memory</b> on VideoUnmask: correct 300/300, conflicting 1/300, empty 101/300. Empty is chance; wrong is worse than nothing.</li>
+      <li><b>Write timing:</b> 8 pre-occlusion writes match all 16 (77%); 8 post-occlusion writes get 21%. Memory forms while the evidence is visible.</li>
+      <li><b>Cost:</b> the memory stage adds 7.7 ms. End to end 3× faster than the best RoboMME method and 69× faster than MemER's external planner.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 5 CONCLUSIONS ================= -->
+<section class="slide concl" id="conclusions">
+  <h1 class="wide">Conclusions and my thoughts</h1>
+  <div class="cols">
+    <div>
+      <h2>What this says about TTT itself</h2>
+      <ul class="take">
+        <li>Adaptive updates seem like a hard-coded heuristic for just further nesting the optimization problem and having even more frequencies of weights that control deeper optimization problems; see <a href="https://arxiv.org/pdf/2512.24695" style="text-decoration: underline; text-underline-offset: 3px;">Nested Learning</a>.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Where else memory could live</h2>
+      <ul class="take">
+        <li>We know memory as context, layer, and gating, but what about as a separate expert with cross-attention?</li>
+      </ul>
+    </div>
+    <div>
+      <h2>How I would integrate it into robotics</h2>
+      <ul class="take">
+        <li>No new module or gating, In-Place TTT style.</li>
+        <li>We can also take the more tailored inner objective like In-Place TTT or any of the exploration papers.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= B BACKUP HUB ================= -->
+<section class="slide sechub" id="backup">
+  <h1 class="wide">Backup</h1>
+  <div class="body">
+    <ol>
+      <li><a href="#backup-robottt-tasks">RoboTTT tasks and rubrics</a></li>
+      <li><a href="#backup-robottt-training">RoboTTT training details</a></li>
+      <li><a href="#backup-t2mem-eta">T²Mem step-size calibration</a></li>
+      <li><a href="#backup-t2mem-recipe">T²Mem training and inference order</a></li>
+      <li><a href="#backup-t2mem-tasks">T²Mem task walkthroughs</a></li>
+      <li><a href="#backup-t2mem-table">Full RoboMME table</a></li>
+    </ol>
+    <div></div>
+  </div>
+</section>
+
+<section class="slide" id="backup-robottt-tasks">
+  <h1 class="wide">RoboTTT tasks and rubrics</h1>
+  <div class="stack" style="--rows: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); row-gap: 10px;">
+    <figure><img class="fig" src="fig/robottt-figA2.png" alt="Pup Go Car stages"><figcaption><b>Pup Go Car (2 min):</b> roof on, screw, drill, hand-off, flip, wheel in, drill, hand-off. Rubric 0.05 → 1.0 in 14 steps; at most two wheel attempts.</figcaption></figure>
+    <figure><img class="fig" src="fig/robottt-figA3.png" alt="Gear Bot stages"><figcaption><b>Gear Bot (5 min, 10 stages):</b> gear + two wheels per side, two chassis flips, head, drive with the remote. +0.1 per stage.</figcaption></figure>
+    <figure><img class="fig" src="fig/robottt-figA4.png" alt="Circuit configurations"><figcaption><b>Circuit (1 min, ~80 configs):</b> two or three components in a given order, switch or button turned on if present. Equal credit per component; no partial credit for a wrong order.</figcaption></figure>
+  </div>
+</section>
+
+<section class="slide" id="backup-robottt-training">
+  <h1 class="wide">RoboTTT training details (Appendix A)</h1>
+  <div class="cols" style="--cols: 1fr 1fr; align-items: start;">
+    <ul class="take" style="font-size: 19px;">
+      <li><b>Backbone:</b> GR00T N1.7 = Eagle VLM + 538M-param DiT. One TTT layer per DiT layer (16), ~10M each, 690M total.</li>
+      <li><b>Fast model:</b> 2-layer MLP with GeLU; plain gradient descent in the inner loop; learned inner learning rate on a base of 0.1; RoPE with θ = 10000.</li>
+      <li><b>Pretraining:</b> tabletop bimanual robot data + egocentric human video (EgoScale), curated for long trajectories. Only the new sequence layers train. 16 GB200, 30K steps, WSD schedule, peak LR 2e-5. Batch 64 up to 4K context, 16 above.</li>
+      <li><b>Post-training:</b> per task, 1K context, batch 1 per device, all parameters, 8 GPUs, 20K steps, cosine, peak LR 5e-5.</li>
+      <li><b>Deployment:</b> YAM bimanual, four RealSense D405 at 480p, RTX 5090, 30 Hz.</li>
+      <li><b>GDN baseline:</b> Gated DeltaNet from flash-linear-attention, same placement, gating and parameter count.</li>
+    </ul>
+    <figure><img class="fig" src="fig/robottt-figA1.png" alt="Trajectory length histogram of the pretraining mixture"><figcaption>Fig. A.1. Pretraining mixture by episode length.</figcaption></figure>
+  </div>
+</section>
+
+<section class="slide" id="backup-t2mem-eta">
+  <h1 class="wide">T²Mem: curvature-calibrated step size (Appendix A.1)</h1>
+  <div class="eqs" style="font-size: 22px;">
+    <div class="row"><div>$$G = \lVert g_t\rVert^2,\qquad C = \frac{2\,\lVert J_f\, g_t\rVert^2}{H_m N d}$$</div><span class="tag">(gradient norm, curvature proxy; per head)</span></div>
+    <div class="row"><div>$$q = \operatorname{clip}_{[10^{-12},\,10^{3}]}\big(G / \max(C, 10^{-30})\big)$$</div><span class="tag">(trial step)</span></div>
+    <div class="row"><div>$$b = \frac{L_h(W_t - q g_t) - L_h(W_t) + G q}{q^2}$$</div><span class="tag">(measured curvature along $g_t$)</span></div>
+    <div class="row"><div>$$\ell_t = \min\!\Big(10^3,\ \begin{cases} G/\max(2b,10^{-30}) & b>0\\ q & b\le 0\end{cases}\Big),\qquad \eta_t = \tfrac{1}{2}\operatorname{softplus}(\rho)\,\ell_t$$</div><span class="tag">(step size; one learned $\rho$ per layer, init so the multiplier is 1)</span></div>
+    <div class="row"><div>$$W_{t+1} = W_t - w_t\,\eta_t\,\beta_t\,g_t$$</div><span class="tag">(with $\beta_t$ from the surprise gate)</span></div>
+    <p class="muted" style="font-size: 18px; margin: 10px 0 0;">$\beta_t$ and the calibration are stop-gradient. Outer gradients still flow through the fast-state recurrence, $g_t$, the projections and $\rho$. The "fixed $\beta=1$" control keeps this calibration.</p>
+  </div>
+</section>
+
+<section class="slide" id="backup-t2mem-recipe">
+  <h1 class="wide">T²Mem: training and inference order</h1>
+  <div class="cols" style="--cols: 1.2fr 1fr; align-items: start;">
+    <figure><img class="fig" src="fig/t2mem-fig7.png" alt="Training: one alternating-phase update; Inference: one episode"><figcaption>Fig. 7. Reads precede writes at the same observation.</figcaption></figure>
+    <div>
+      <table class="data wrap" style="font-size: 16px;">
+        <thead><tr><th></th><th>Stage 1</th><th>Stage 2A</th><th>Stage 2B</th></tr></thead>
+        <tbody>
+          <tr><td>Purpose</td><td>memory-free adaptation</td><td>memory learning</td><td>memory-conditioned policy</td></tr>
+          <tr><td>Trains</td><td>VLM LoRA, AE</td><td>interface, projections, $W_0$, step multipliers, gates</td><td>VLM LoRA, AE, proprio proj.</td></tr>
+          <tr><td>Budget</td><td>20K steps</td><td>500 updates / cycle</td><td>500 updates / cycle</td></tr>
+          <tr><td>LR</td><td>2e-5</td><td>7.5e-5 (gates 5e-4)</td><td>3e-5</td></tr>
+          <tr><td>Batch</td><td>64 frames</td><td>32 sequences</td><td>32 sequences</td></tr>
+        </tbody>
+      </table>
+      <p class="tcap">Table 3. 32 H200 for 48 hours in total. Stride 16, predict 64 actions, execute 32.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="backup-t2mem-tasks">
+  <h1 class="wide">T²Mem task walkthroughs</h1>
+  <div class="grid2">
+    <figure><video class="vid" muted loop playsinline preload="metadata" src="video/robomme-videounmask.mp4"></video><figcaption>VideoUnmask (RoboMME demo): color–location bindings visible before the containers come down, occluded after. <span class="credit">Video: robomme.github.io</span></figcaption></figure>
+    <figure><img class="fig" src="fig/t2mem-fig9.png" alt="MoveCube frames"><figcaption>Fig. 9, MoveCube: reproduce the demonstrated <i>method</i> (push, pick-and-place, hook), not just the destination.</figcaption></figure>
+    <figure><img class="fig" src="fig/t2mem-fig10.png" alt="SwingXtimes frames"><figcaption>Fig. 10, SwingXtimes: count completed cycles, then stop.</figcaption></figure>
+    <figure><img class="fig" src="fig/t2mem-fig11.png" alt="Counterfactual histories"><figcaption>Fig. 11: identical observations after occlusion, different correct answers.</figcaption></figure>
+  </div>
+</section>
+
+<section class="slide" id="backup-t2mem-table">
+  <h1 class="wide">Full RoboMME table</h1>
+  <div style="overflow: hidden;">
+    <table class="data small" style="font-size: 12px;">
+      <thead>
+        <tr><th></th><th>BinFill</th><th>PickX</th><th>SwingX</th><th>StopCube</th><th>VidUmsk</th><th>BtnUmsk</th><th>VidUmskS</th><th>BtnUmskS</th><th>PickHighL</th><th>VidRepick</th><th>VidPlcBtn</th><th>VidPlcOrd</th><th>MoveCube</th><th>InsertPeg</th><th>PatternLock</th><th>RouteStick</th><th>Avg</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Human</td><td>96.00</td><td>100.0</td><td>80.00</td><td>78.00</td><td>90.00</td><td>92.00</td><td>92.00</td><td>90.00</td><td>92.00</td><td>92.00</td><td>98.00</td><td>90.00</td><td>90.00</td><td>98.00</td><td>84.00</td><td>86.00</td><td>90.50</td></tr>
+        <tr><td>SimpleSG · Oracle (privileged)</td><td>85.78</td><td>99.78</td><td>100.0</td><td>44.67</td><td>33.11</td><td>22.00</td><td>15.56</td><td>15.56</td><td>44.00</td><td>27.78</td><td>31.33</td><td>26.00</td><td>87.33</td><td>10.00</td><td>95.33</td><td>55.11</td><td>49.58</td></tr>
+        <tr><td>GroundSG · Oracle (privileged)</td><td>85.78</td><td>100.0</td><td>100.0</td><td>49.67</td><td>98.78</td><td>95.00</td><td>99.22</td><td>80.22</td><td>83.33</td><td>97.33</td><td>100.0</td><td>100.0</td><td>87.78</td><td>15.56</td><td>97.00</td><td>55.56</td><td>84.08</td></tr>
+        <tr><td>SimpleSG · Gemini</td><td>46.00</td><td>63.00</td><td>45.00</td><td>2.00</td><td>29.00</td><td>9.00</td><td>14.00</td><td>2.00</td><td>20.00</td><td>15.00</td><td>26.00</td><td>29.00</td><td>61.00</td><td>4.00</td><td>7.00</td><td>0.00</td><td>23.25</td></tr>
+        <tr><td>SimpleSG · QwenVL</td><td>77.56</td><td>95.33</td><td>5.11</td><td>0.44</td><td>34.22</td><td>19.33</td><td>15.33</td><td>9.56</td><td>17.11</td><td>25.33</td><td>33.33</td><td>25.11</td><td>82.00</td><td>3.78</td><td>12.67</td><td>7.78</td><td>29.00</td></tr>
+        <tr><td>GroundSG · Gemini</td><td>26.00</td><td>18.00</td><td>4.00</td><td>3.00</td><td>36.00</td><td>14.00</td><td>13.00</td><td>0.00</td><td>9.00</td><td>17.00</td><td>12.00</td><td>7.00</td><td>17.00</td><td>0.00</td><td>7.00</td><td>2.00</td><td>11.56</td></tr>
+        <tr><td>GroundSG · QwenVL</td><td>52.00</td><td>92.67</td><td>7.33</td><td>0.00</td><td>88.67</td><td>24.00</td><td>30.67</td><td>14.00</td><td>15.11</td><td>25.33</td><td>54.00</td><td>31.78</td><td>71.56</td><td>3.33</td><td>6.67</td><td>6.00</td><td>32.70</td></tr>
+        <tr><td>TokenDrop · Context</td><td>48.67</td><td>85.11</td><td>94.67</td><td>3.11</td><td>33.78</td><td>31.56</td><td>26.22</td><td>16.00</td><td>20.67</td><td>17.78</td><td>31.11</td><td>25.33</td><td>81.33</td><td>4.00</td><td>12.67</td><td>20.00</td><td>34.50</td></tr>
+        <tr><td>TokenDrop · Modul</td><td>34.44</td><td>83.56</td><td>86.00</td><td>5.33</td><td>28.22</td><td>29.33</td><td>28.44</td><td>21.33</td><td>21.33</td><td>22.00</td><td>59.56</td><td>36.00</td><td>62.00</td><td>7.11</td><td>32.44</td><td>51.56</td><td>38.04</td></tr>
+        <tr><td>TokenDrop · Expert</td><td>54.22</td><td>87.56</td><td>91.78</td><td>4.22</td><td>26.67</td><td>30.44</td><td>18.44</td><td>18.89</td><td>19.33</td><td>20.89</td><td>36.44</td><td>24.67</td><td>87.56</td><td>2.22</td><td>16.22</td><td>18.22</td><td>34.86</td></tr>
+        <tr><td>FrameSamp · Context</td><td>41.22</td><td>72.00</td><td>73.67</td><td>13.67</td><td>26.89</td><td>30.22</td><td>20.89</td><td>15.22</td><td>17.67</td><td>15.22</td><td>30.00</td><td>20.89</td><td>77.22</td><td>1.22</td><td>15.22</td><td>19.67</td><td>30.68</td></tr>
+        <tr><td>FrameSamp · Modul</td><td>39.56</td><td>87.33</td><td>92.00</td><td>42.00</td><td>32.67</td><td>25.11</td><td>24.44</td><td>18.22</td><td>22.89</td><td>30.44</td><td>60.00</td><td>32.00</td><td>77.78</td><td>7.56</td><td>53.56</td><td>66.67</td><td>44.51</td></tr>
+        <tr><td>FrameSamp · Expert</td><td>57.33</td><td>86.22</td><td>94.67</td><td>28.89</td><td>31.78</td><td>25.78</td><td>22.89</td><td>20.22</td><td>19.11</td><td>23.11</td><td>30.00</td><td>24.22</td><td>83.11</td><td>2.00</td><td>13.56</td><td>17.11</td><td>36.25</td></tr>
+        <tr><td>TTT · Context</td><td>35.56</td><td>62.89</td><td>42.44</td><td>3.33</td><td>29.78</td><td>22.89</td><td>18.44</td><td>14.44</td><td>20.44</td><td>13.11</td><td>34.22</td><td>20.22</td><td>32.44</td><td>1.11</td><td>1.56</td><td>3.56</td><td>22.28</td></tr>
+        <tr><td>TTT · Modul</td><td>34.22</td><td>65.11</td><td>36.67</td><td>2.11</td><td>27.22</td><td>22.11</td><td>25.22</td><td>14.11</td><td>14.56</td><td>12.11</td><td>32.67</td><td>22.33</td><td>31.22</td><td>1.11</td><td>3.56</td><td>7.00</td><td>21.96</td></tr>
+        <tr><td>TTT · Expert</td><td>34.89</td><td>63.78</td><td>41.33</td><td>4.00</td><td>31.78</td><td>22.44</td><td>19.56</td><td>18.00</td><td>12.22</td><td>9.56</td><td>34.00</td><td>22.89</td><td>33.56</td><td>0.89</td><td>3.11</td><td>5.56</td><td>22.35</td></tr>
+        <tr><td>RMT · Context</td><td>32.44</td><td>56.89</td><td>33.56</td><td>5.78</td><td>31.33</td><td>10.89</td><td>17.33</td><td>2.00</td><td>14.00</td><td>3.78</td><td>32.00</td><td>29.11</td><td>25.78</td><td>2.00</td><td>5.56</td><td>8.89</td><td>19.46</td></tr>
+        <tr><td>RMT · Modul</td><td>33.33</td><td>60.78</td><td>37.78</td><td>4.67</td><td>31.11</td><td>11.78</td><td>17.78</td><td>2.44</td><td>17.11</td><td>4.22</td><td>32.00</td><td>31.11</td><td>24.67</td><td>2.21</td><td>3.78</td><td>8.00</td><td>20.17</td></tr>
+        <tr><td>RMT · Expert</td><td>35.78</td><td>60.22</td><td>36.00</td><td>5.56</td><td>28.00</td><td>17.11</td><td>15.78</td><td>2.00</td><td>11.78</td><td>0.22</td><td>24.22</td><td>22.67</td><td>20.00</td><td>1.89</td><td>4.22</td><td>4.89</td><td>18.15</td></tr>
+        <tr><td>π0.5</td><td>30.00</td><td>42.89</td><td>35.56</td><td>6.67</td><td>20.44</td><td>22.22</td><td>18.67</td><td>6.67</td><td>11.33</td><td>0.44</td><td>31.11</td><td>25.78</td><td>26.00</td><td>1.56</td><td>2.89</td><td>4.67</td><td>17.93</td></tr>
+        <tr><td>π0.5 w/ past actions</td><td>26.67</td><td>58.33</td><td>26.67</td><td>4.67</td><td>30.67</td><td>23.67</td><td>20.67</td><td>16.00</td><td>12.33</td><td>8.67</td><td>24.00</td><td>18.67</td><td>34.00</td><td>1.00</td><td>4.00</td><td>5.67</td><td>19.73</td></tr>
+        <tr><td>SAM2Act+</td><td>40.00</td><td>76.00</td><td>25.33</td><td>0.00</td><td>27.33</td><td>32.00</td><td>18.00</td><td>26.67</td><td>17.33</td><td>5.33</td><td>24.67</td><td>20.00</td><td>29.33</td><td>0.00</td><td>0.00</td><td>0.00</td><td>21.37</td></tr>
+        <tr><td>MemER</td><td>56.67</td><td>79.33</td><td>59.33</td><td>0.00</td><td>81.33</td><td>72.00</td><td>38.00</td><td>21.33</td><td>70.67</td><td>25.33</td><td>30.00</td><td>26.00</td><td>82.67</td><td>6.67</td><td>16.67</td><td>12.00</td><td>42.38</td></tr>
+        <tr><td>Stage 1 (no memory)</td><td>26.67</td><td>34.00</td><td>31.33</td><td>2.00</td><td>27.33</td><td>6.00</td><td>18.00</td><td>2.00</td><td>11.33</td><td>1.33</td><td>26.67</td><td>27.33</td><td>38.00</td><td>1.33</td><td>3.33</td><td>5.33</td><td>16.38</td></tr>
+        <tr class="ours"><td>T²Mem</td><td>60.67</td><td>91.33</td><td>90.67</td><td>70.00</td><td>88.00</td><td>59.33</td><td>29.33</td><td>20.00</td><td>50.67</td><td>38.67</td><td>35.33</td><td>30.00</td><td>80.67</td><td>36.00</td><td>50.00</td><td>78.67</td><td>56.83</td></tr>
+      </tbody>
+    </table>
+    <p class="tcap">Table 1 of T²Mem; all baseline numbers quoted from the RoboMME paper. Context / Modul / Expert are three ways RoboMME integrates a memory representation: prepended tokens, adaptive LayerNorm modulation of the AE, or a separate memory transformer attended by the AE.</p>
+  </div>
+</section>
+
+<div id="lightbox" hidden><button id="lb-close" aria-label="Close">×</button><div id="lb-body"></div></div>
+
+<section class="slide placeholder" id="placeholder">
+  <div><h1 id="ph-title"></h1><p>Missing slide. Press <kbd>↑</kbd> or <kbd>M</kbd>.</p></div>
+</section>
+
+<script src="katex/katex.min.js"></script>
+<script src="katex/auto-render.min.js"></script>
+<script src="deck.js?v=7"></script>
+</body>
+</html>
