@@ -63,6 +63,8 @@ function Plot({
     .join(" ");
   const valid = present.filter((p) => p.complete !== false).map((p) => ({ day: p.day, value: p.value }));
   const mean = rollingWeek(valid);
+  const selectedMean = trend && selected ? mean.find((p) => p.day === selected.day) : undefined;
+  const meanReadout = selectedMean ? `${selectedMean.value.toFixed(2)} ${unit}` : "— (no plotted mean)";
   const meanPath = mean.map((p, i) => `${i ? "L" : "M"}${x(p.day)},${y(p.value)}`).join(" ");
   const ticks = Array.from({ length: 5 }, (_, i) => ymin + ((ymax - ymin) * i) / 4);
   function inspect(clientX: number, left: number) {
@@ -128,6 +130,7 @@ function Plot({
           </text>
         )}
         {selected && <line x1={x(selected.day)} x2={x(selected.day)} y1={t} y2={h - b} className="plot-cursor" />}
+        {selectedMean && <circle cx={x(selectedMean.day)} cy={y(selectedMean.value)} r={4} className="mean-highlight" />}
         <text x={l} y={h - 10}>
           {displayDay(range[0])}
         </text>
@@ -138,9 +141,19 @@ function Plot({
           {displayDay(range[1])}
         </text>
       </svg>
+      {selected && trend && (
+        <div className="plot-tooltip" style={{ left: Math.max(8, Math.min(x(selected.day) - 100, w - 208)) }}>
+          <strong>{displayDay(selected.day)}</strong>
+          <span>Daily: {selected.value === null ? "unrecorded" : `${selected.value.toFixed(2)} ${unit}`}</span>
+          {selected.complete === false && <span>Partial journal</span>}
+          <span>
+            7-day mean: <b>{meanReadout}</b>
+          </span>
+        </div>
+      )}
       <div className="plot-readout" aria-live="polite">
         {selected
-          ? `${displayDay(selected.day)} / ${selected.value === null ? "unrecorded" : `${selected.value.toFixed(unit === "lb" || unit === "kg" ? 1 : 0)} ${unit}${selected.complete === false ? " / partial journal" : ""}`}`
+          ? `${displayDay(selected.day)} / ${selected.value === null ? "unrecorded" : `${selected.value.toFixed(unit === "lb" || unit === "kg" ? 1 : 0)} ${unit}${selected.complete === false ? " / partial journal" : ""}`}${trend ? ` / 7-day mean: ${meanReadout}` : ""}`
           : trend
             ? "● observations   ━ 7-day mean   ○ partial day"
             : "● observations   ○ partial day"}

@@ -48,10 +48,19 @@ export function LineChart({ points, unit, trend = false, label }: { points: Poin
           {unit}
         </text>
         <path d={path} className="trend-line" />
+        {trend &&
+          smooth.map((p) => (
+            <circle key={`mean-${p.day}`} cx={x(p.day)} cy={y(p.value)} r={8} fill="transparent">
+              <title>
+                {displayDay(p.day)}: 7-day mean {p.value.toFixed(2)} {unit}
+              </title>
+            </circle>
+          ))}
         {points.map((p) => (
           <circle key={p.day} cx={x(p.day)} cy={y(p.value)} r={trend ? 3 : 4} className={trend ? "raw-point" : "point"}>
             <title>
               {displayDay(p.day)}: {p.value.toFixed(1)} {unit}
+              {trend ? ` · 7-day mean ${smooth.find((v) => v.day === p.day)!.value.toFixed(2)} ${unit}` : ""}
             </title>
           </circle>
         ))}

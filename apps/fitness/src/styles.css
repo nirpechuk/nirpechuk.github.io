@@ -1359,6 +1359,7 @@ button {
   max-width: 52ch;
 }
 .scientific-plot {
+  position: relative;
   width: 100%;
   min-width: 0;
 }
@@ -1410,6 +1411,33 @@ button {
   fill: none;
   stroke: var(--green);
   stroke-width: 1.8;
+}
+.mean-highlight {
+  fill: var(--paper);
+  stroke: var(--green);
+  stroke-width: 2;
+  pointer-events: none;
+}
+.plot-tooltip {
+  position: absolute;
+  top: 18px;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 200px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 3px 12px #0000000d;
+  color: var(--ink);
+  font: 10px/1.6 var(--mono);
+  pointer-events: none;
+}
+.plot-tooltip strong,
+.plot-tooltip span {
+  display: block;
+}
+.plot-tooltip b {
+  color: var(--green);
 }
 .observation-point {
   fill: var(--green);
