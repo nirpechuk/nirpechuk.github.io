@@ -18,4 +18,7 @@ ${file === "404.html" ? '<meta name="robots" content="noindex">' : `<link rel="c
 await writeFile(path.join(output, ".nojekyll"), "");
 await writeFile(path.join(output, "flats/migrate.html"), await readFile(path.join(root, "hosting/legacy-flats.html")));
 await writeFile(path.join(output, "flats/migration-crypto.js"), await readFile(path.join(root, "hosting/migration-crypto.mjs")));
+await mkdir(path.join(output, "research"), { recursive: true });
+await writeFile(path.join(output, "research/migrate.html"), await readFile(path.join(root, "hosting/legacy-research.html")));
+await writeFile(path.join(output, "research/migration-crypto.js"), await readFile(path.join(root, "assets/research/handoff.js")));
 console.log(`Built ${paths.length} redirects preserving paths, queries, and fragments.`);

@@ -7,6 +7,8 @@ on:
         "hosting/redirect-paths.json",
         "hosting/scripts/redirects.mjs",
         "hosting/legacy-flats.html",
+        "hosting/legacy-research.html",
+        "assets/research/handoff.js",
         "hosting/migration-crypto.mjs",
         ".github/workflows/deploy.yml",
       ]

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+  />
+  <title>Opening your research</title>
+  <style>
+    body {
+      font: 17px/1.6 system-ui;
+      max-width: 28rem;
+      margin: 15vh auto;
+      padding: 0 24px;
+    }
+    a {
+      color: inherit;
+    }
+  </style>
+  <h1>Opening your research…</h1>
+  <p id="status">Bringing your saved unlock to the new address.</p>
+  <p><a href="https://nir.pechuk.com/research/">Open research</a></p>
+  <script type="module">
+    import { sealHandoff } from "./migration-crypto.js";
+    const raw = location.hash.startsWith("#request=") ? location.hash.slice(9) : "";
+    history.replaceState(null, "", location.pathname);
+    window.opener = null;
+    try {
+      if (window.top !== window || !raw || raw.length > 4000) throw new Error("Invalid request");
+      const request = JSON.parse(decodeURIComponent(raw));
+      if (!/^[a-f0-9-]{36}$/.test(request.nonce)) throw new Error("Invalid request");
+      const value = {};
+      for (const name of ["research-password", "admin-password"]) {
+        for (const storageName of ["sessionStorage", "localStorage"]) {
+          try {
+            const saved = window[storageName].getItem(name);
+            if (saved && saved.length <= 4096) {
+              value[name] = saved;
+              break;
+            }
+          } catch {}
+        }
+      }
+      const packet = await sealHandoff(request.publicKey, value, request.nonce);
+      location.replace(
+        `https://nir.pechuk.com/research/#research-migrate=${encodeURIComponent(JSON.stringify({ ...packet, nonce: request.nonce }))}`
+      );
+    } catch {
+      document.getElementById("status").textContent = "Your saved unlock couldn’t transfer. Open research and enter your password once.";
+    }
+  </script>
+</html>
