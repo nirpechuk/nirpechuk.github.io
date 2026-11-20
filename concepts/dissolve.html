@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concept: dissolve · Nir Pechuk</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="demo.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+          "@sparkjsdev/spark": "https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@2.4.0/dist/spark.module.min.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <header class="intro">
+      <h1>Nir Pechuk</h1>
+      <p>Computer Science at Carnegie Mellon University</p>
+      <nav class="links">
+        <a href="/publications/">Papers</a>
+        <a href="/projects/">Projects</a>
+        <a href="/cv/">CV</a>
+        <a href="mailto:npechuk@andrew.cmu.edu">Email</a>
+      </nav>
+    </header>
+
+    <nav class="switch"></nav>
+    <script type="module" src="nav.mjs"></script>
+
+    <script type="module" src="dissolve.mjs"></script>
+  </body>
+</html>

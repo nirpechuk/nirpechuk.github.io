@@ -1,0 +1,196 @@
+:root {
+  --bg: #f6f5f1;
+  --ink: #161616;
+  --mute: #7a7872;
+  --accent: #d9452a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111214;
+    --ink: #e9e8e4;
+    --mute: #8b8a85;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    ui-sans-serif,
+    -apple-system,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+a {
+  color: inherit;
+  text-underline-offset: 4px;
+}
+
+/* Shared chrome */
+.switch {
+  position: fixed;
+  z-index: 2;
+  font-size: 0.8rem;
+  color: var(--mute);
+}
+.switch {
+  top: 1.25rem;
+  right: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem 1.1rem;
+}
+.switch a {
+  text-decoration: none;
+}
+.switch a[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-size: 0.95rem;
+}
+
+/* Attention lens: text on the left, object on the right */
+.intro {
+  position: fixed;
+  z-index: 1;
+  left: clamp(1.5rem, 8vw, 7rem);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 21rem;
+  pointer-events: none;
+}
+.intro a {
+  pointer-events: auto;
+}
+.intro h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.intro p {
+  margin: 0 0 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+/* Flow-field name: the canvas is the name, text sits underneath */
+.under {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 61%;
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  padding: 0 1.5rem;
+  text-align: center;
+  pointer-events: none;
+}
+.under a {
+  pointer-events: auto;
+}
+.under p {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--mute);
+}
+
+/* Tall viewports: object on top, text underneath. Matches `wide` in lens.js. */
+@media (max-aspect-ratio: 23/20) {
+  .intro {
+    top: auto;
+    bottom: 4rem;
+    transform: none;
+  }
+}
+
+/* Portrait variants of the particle demos: the name moves into the text block. */
+.under h1 {
+  display: none;
+  margin: 0;
+  font-family: "Atkinson Hyperlegible", inherit;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+body.portrait .under h1 {
+  display: block;
+}
+body.portrait .under {
+  gap: 0.7rem;
+}
+
+/* Landing page */
+html:has(body.index),
+body.index {
+  height: auto;
+  overflow: auto;
+}
+.index main {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 12vh, 7rem) 1.5rem 4rem;
+}
+.index h1 {
+  margin: 0 0 0.6rem;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+.index h2 {
+  margin: 2.2rem 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.index p {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--mute);
+}
+.index ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.index li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--mute) 30%, transparent);
+  line-height: 1.4;
+}
+.index li span {
+  color: var(--mute);
+}
