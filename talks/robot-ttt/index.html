@@ -1873,20 +1873,20 @@
       <h1 class="wide">RoboTTT tasks and rubrics</h1>
       <div class="stack" style="--rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); row-gap: 10px">
         <figure>
-          <img class="fig" src="fig/robottt-figA2.png" alt="Pup Go Car stages" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/robottt-figA2.png" alt="Pup Go Car stages" />
           <figcaption>
             <b>Pup Go Car (2 min):</b> roof on, screw, drill, hand-off, flip, wheel in, drill, hand-off. Rubric 0.05 → 1.0 in 14 steps; at most two
             wheel attempts.
           </figcaption>
         </figure>
         <figure>
-          <img class="fig" src="fig/robottt-figA3.png" alt="Gear Bot stages" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/robottt-figA3.png" alt="Gear Bot stages" />
           <figcaption>
             <b>Gear Bot (5 min, 10 stages):</b> gear + two wheels per side, two chassis flips, head, drive with the remote. +0.1 per stage.
           </figcaption>
         </figure>
         <figure>
-          <img class="fig" src="fig/robottt-figA4.png" alt="Circuit configurations" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/robottt-figA4.png" alt="Circuit configurations" />
           <figcaption>
             <b>Circuit (1 min, ~80 configs):</b> two or three components in a given order, switch or button turned on if present. Equal credit per
             component; no partial credit for a wrong order.
@@ -1913,7 +1913,7 @@
           <li><b>GDN baseline:</b> Gated DeltaNet from flash-linear-attention, same placement, gating and parameter count.</li>
         </ul>
         <figure>
-          <img class="fig" src="fig/robottt-figA1.png" alt="Trajectory length histogram of the pretraining mixture" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/robottt-figA1.png" alt="Trajectory length histogram of the pretraining mixture" />
           <figcaption>Fig. A.1. Pretraining mixture by episode length.</figcaption>
         </figure>
       </div>
@@ -1956,7 +1956,13 @@
       <h1 class="wide">T²Mem: training and inference order</h1>
       <div class="cols" style="--cols: 1.2fr 1fr; align-items: start">
         <figure>
-          <img class="fig" src="fig/t2mem-fig7.png" alt="Training: one alternating-phase update; Inference: one episode" />
+          <img
+            loading="lazy"
+            decoding="async"
+            class="fig"
+            src="fig/t2mem-fig7.png"
+            alt="Training: one alternating-phase update; Inference: one episode"
+          />
           <figcaption>Fig. 7. Reads precede writes at the same observation.</figcaption>
         </figure>
         <div>
@@ -2026,15 +2032,15 @@
           </figcaption>
         </figure>
         <figure>
-          <img class="fig" src="fig/t2mem-fig9.png" alt="MoveCube frames" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/t2mem-fig9.png" alt="MoveCube frames" />
           <figcaption>Fig. 9, MoveCube: reproduce the demonstrated <i>method</i> (push, pick-and-place, hook), not just the destination.</figcaption>
         </figure>
         <figure>
-          <img class="fig" src="fig/t2mem-fig10.png" alt="SwingXtimes frames" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/t2mem-fig10.png" alt="SwingXtimes frames" />
           <figcaption>Fig. 10, SwingXtimes: count completed cycles, then stop.</figcaption>
         </figure>
         <figure>
-          <img class="fig" src="fig/t2mem-fig11.png" alt="Counterfactual histories" />
+          <img loading="lazy" decoding="async" class="fig" src="fig/t2mem-fig11.png" alt="Counterfactual histories" />
           <figcaption>Fig. 11: identical observations after occlusion, different correct answers.</figcaption>
         </figure>
       </div>
