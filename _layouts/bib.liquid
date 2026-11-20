@@ -30,7 +30,20 @@
           class="publication-preview{% if entry.preview == 'spill-o-not.png' or entry.preview == 'container-guidance-patent.png' %} publication-preview-contain{% endif %}"
           href="{% if entry.website %}{{ entry.website }}{% else %}https://doi.org/{{ entry.doi }}{% endif %}"
         >
-          {% if entry.preview_static %}
+          {% if entry.preview_video %}
+            <video
+              class="publication-preview-video"
+              muted
+              loop
+              playsinline
+              preload="none"
+              data-src="{{ entry.preview_video }}"
+              poster="{{ entry.preview_static | prepend: '/assets/img/publication_preview/' | relative_url }}"
+              aria-label="{{ entry.preview_alt | escape }}"
+              width="960"
+              height="540"
+            ></video>
+          {% elsif entry.preview_static %}
             <picture>
               <source
                 media="(prefers-reduced-motion: reduce)"

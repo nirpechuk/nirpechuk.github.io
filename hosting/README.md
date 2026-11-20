@@ -55,6 +55,8 @@ Media names are immutable. The default uses a unique directory; supplying a key 
 
 The robot talk prioritizes active videos and warms one likely next clip. It starts with metadata, then allows prebuffering after visible playback has enough buffered video. Other hidden videos do not download. Reduced-motion/data-saving preferences are respected. General video includes accept `priority=true` to preload important clips eagerly. Existing `/talks/.../video/` and `/assets/video/` links are served from R2 with byte-range support for seeking. New links should use `media.pechuk.com` for direct CDN delivery.
 
+The GenPHRI and MeMoREval paper previews are 960×540, 30 fps MP4s made from the original videos. Visible previews play immediately; a 300px look-ahead prepares upcoming previews, and off-screen playback pauses. Reduced-motion/data-saving users see a poster and can explicitly play.
+
 Install ffmpeg once (`brew install ffmpeg` on macOS). No S3 credentials, rclone setup, or extra login is required for normal media uploads.
 
 ## Initial provisioning and recovery
@@ -66,7 +68,7 @@ Install ffmpeg once (`brew install ffmpeg` on macOS). No S3 credentials, rclone 
 5. Run `npm run hosting:check` against the preview and verify login, research unlocking, and video playback. Then unset `RESEARCH_SITE` and run `npm run deploy:site` to attach `nir.pechuk.com`.
 6. Update the Fitness Supabase Auth Site URL to `https://nir.pechuk.com`, retaining `/fitness/` as its OAuth authorization path. Deploy the origin-compatible `fitness-mcp` function. Test the existing plugin connection and new sign-in flow.
 7. Configure GitHub environment `cloudflare-production` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The token needs Workers Scripts edit, Workers R2 Storage edit for bindings, account read, zone read, and Workers Routes edit for the target account/zone. Enable repository variable `CLOUDFLARE_ENABLED=true` after the initial deployment succeeds.
-8. Publish old-site redirect pages only after the new domain is verified. Update the remote publisher installation on each machine. Browser storage is origin-specific, so unlock/reconnect once on the new domain; the databases and photo permissions do not move.
+8. Publish old-site redirect pages only after the new domain is verified. Update the remote publisher installation on each machine. Browser storage is origin-specific, so unlock Fitness once on the new domain. In Flats, choose **Already moved in? → Bring my room from the old website**, then select the saved room in the popup. The transfer checks both the exact old origin and popup window; it never puts room keys in a URL or sends them to a new backend. The databases and photo permissions do not move.
 
 `_config.yml` and `_config.cloudflare.yml` use the new canonical origin. GitHub Pages builds only redirect pages from `hosting/redirect-paths.json`, with a catch-all redirect for older deep links. `work/`, hosting source, credentials, app source, and build outputs are excluded from the public Jekyll output. Static builds also exclude research payloads, generated app folders, and videos.
 

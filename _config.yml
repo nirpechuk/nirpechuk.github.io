@@ -347,6 +347,7 @@ filtered_bibtex_keywords:
     poster,
     preview,
     preview_static,
+    preview_video,
     preview_alt,
     summary,
     selected,

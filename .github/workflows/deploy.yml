@@ -2,7 +2,7 @@ name: Redirect old GitHub Pages URLs
 on:
   push:
     branches: [main]
-    paths: ["hosting/redirect-paths.json", "hosting/scripts/redirects.mjs", ".github/workflows/deploy.yml"]
+    paths: ["hosting/redirect-paths.json", "hosting/scripts/redirects.mjs", "hosting/legacy-flats.html", ".github/workflows/deploy.yml"]
   workflow_dispatch:
 permissions:
   contents: read

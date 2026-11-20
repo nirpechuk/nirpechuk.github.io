@@ -1,6 +1,7 @@
 /** Under-a-minute onboarding: your name, your pet, its name, then straight into the empty flat. */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { legacyRoomKey } from "../backend/legacy-migration";
 
 import type { PetKind } from "../game/types";
 import { lightingForHour } from "../art/lighting";
@@ -31,6 +32,19 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
   const [petName, setPetName] = useState(() => PET_NAME_IDEAS[Math.floor(Math.random() * PET_NAME_IDEAS.length)]);
   const [roomKey, setRoomKey] = useState("");
   const [busy, setBusy] = useState(false);
+  const [migrationWindow, setMigrationWindow] = useState<Window | null>(null);
+  useEffect(() => {
+    if (!migrationWindow || !onRestore) return;
+    const receive = (event: MessageEvent) => {
+      const key = legacyRoomKey(event, migrationWindow);
+      if (!key) return;
+      window.removeEventListener("message", receive);
+      setBusy(true);
+      void onRestore(key).finally(() => { setBusy(false); migrationWindow.close(); setMigrationWindow(null); });
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, [migrationWindow, onRestore]);
   const hour = useHour();
   const reducedMotion = useReducedMotion();
   const showcaseFlat = useMemo(() => buildDemoNeighbours(today())[0], []);
@@ -69,6 +83,11 @@ export function Onboarding({ joinCode, joinGroupName, profiles, onSwitchProfile,
           {onRestore && (
             <details className="room-key-entry">
               <summary>Already moved in?</summary>
+              <p>
+                <button className="chip" type="button" disabled={busy} onClick={() =>
+                  setMigrationWindow(window.open("https://nirpechuk.github.io/flats/migrate.html", "flats-migration", "popup,width=520,height=620"))
+                }>Bring my room from the old website</button>
+              </p>
               <form
                 onSubmit={async (event) => {
                   event.preventDefault();

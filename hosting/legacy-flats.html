@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+  />
+  <title>Bring your room home — Flats</title>
+  <style>
+    body {
+      font: 17px/1.6 system-ui;
+      max-width: 28rem;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      color: #3d352c;
+      background: #faf6ee;
+    }
+    button,
+    a {
+      font: inherit;
+    }
+    button {
+      display: block;
+      margin: 1rem 0;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+    }
+    a {
+      color: inherit;
+    }
+  </style>
+  <h1>Bring your room home</h1>
+  <p>Flats has moved to nir.pechuk.com. Choose your existing room below to reconnect it. Your room and history stay intact.</p>
+  <div id="rooms"></div>
+  <p id="status" role="status"></p>
+  <p><a href="https://nir.pechuk.com/flats/">Open Flats at its new address</a></p>
+  <script>
+    const rooms = document.getElementById("rooms"),
+      status = document.getElementById("status");
+    try {
+      const saved = JSON.parse(localStorage.getItem("flats:online:v1") || "null");
+      const profiles = Object.values(saved?.profiles || {}).filter(
+        (p) => !p.pending && !p.unavailable && /^[a-f0-9-]{36}$/i.test(p.playerId) && /^[a-f0-9]{64}$/i.test(p.token)
+      );
+      if (!profiles.length)
+        status.textContent = "No saved room was found in this browser. Try the browser you used before, or use your saved room key on the new site.";
+      for (const p of profiles) {
+        const button = document.createElement("button");
+        button.textContent = `${p.name || "Your room"}${window.opener ? " — bring home" : " — copy room key"}`;
+        button.addEventListener("click", async () => {
+          const key = `${p.playerId}.${p.token}`;
+          if (window.opener) {
+            window.opener.postMessage({ type: "flats-room-migration", key }, "https://nir.pechuk.com");
+            status.textContent = "Reconnecting your room in the new Flats window…";
+          } else {
+            try {
+              await navigator.clipboard.writeText(key);
+              status.textContent = "Room key copied. Open the new Flats, choose Already moved in, and paste your key.";
+            } catch {
+              status.textContent = "Open the new Flats first and choose Bring my room from the old website.";
+            }
+          }
+        });
+        rooms.appendChild(button);
+      }
+    } catch {
+      status.textContent = "This browser couldn't read the old room key. Open this page in the browser you used before.";
+    }
+  </script>
+</html>
