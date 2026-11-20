@@ -1,8 +1,8 @@
 /** Apply the schema and refresh game metadata. Secrets are read from a private connection file. */
-import { readFile, writeFile, rename, readdir } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { randomBytes, createHash } from "node:crypto";
 import pg from "pg";
-import { encrypt, decrypt } from "../../../bin/research/crypto.mjs";
+import { editAdminVault } from "../../../hosting/scripts/vault.mjs";
 import { SLOTS } from "../src/game/room.ts";
 
 const root = new URL("../../../", import.meta.url);
@@ -15,9 +15,8 @@ const db = new pg.Client({
   connectionTimeoutMillis: 15000,
 });
 const config = JSON.parse(await readFile(new URL("../src/backend/config.json", import.meta.url), "utf8"));
-const adminPath = new URL("research/admin.json", root);
 const password = (await readFile(new URL(".admin-password", root), "utf8")).trim();
-const admin = await decrypt(JSON.parse(await readFile(adminPath, "utf8")), password);
+const { vault: admin, save } = await editAdminVault(password);
 const token = admin.flats?.url === config.url ? admin.flats.token : randomBytes(32).toString("hex");
 await db.connect();
 try {
@@ -45,8 +44,7 @@ try {
   ]);
   await db.query("commit");
   admin.flats = { ...config, token };
-  await writeFile(new URL("research/admin.json.tmp", root), JSON.stringify(await encrypt(admin, password), null, 2) + "\n");
-  await rename(new URL("research/admin.json.tmp", root), adminPath);
+  await save(admin);
   console.log("Supabase schema, catalogue, and encrypted admin access are ready.");
 } catch (error) {
   await db.query("rollback");

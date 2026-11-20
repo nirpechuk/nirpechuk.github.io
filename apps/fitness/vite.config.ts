@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { readFileSync } from "node:fs";
 export default defineConfig({
   base: "/fitness/",
   plugins: [
@@ -8,10 +7,17 @@ export default defineConfig({
     {
       name: "local-admin-vault",
       configureServer(server) {
-        server.middlewares.use("/research/admin.json", (_req, res) => {
+        server.middlewares.use("/research/admin.json", async (_req, res) => {
           res.setHeader("Content-Type", "application/json");
           res.setHeader("Cache-Control", "no-store");
-          res.end(readFileSync(new URL("../../research/admin.json", import.meta.url)));
+          try {
+            const upstream = await fetch("https://nir.pechuk.com/research/admin.json", { signal: AbortSignal.timeout(15000) });
+            res.statusCode = upstream.status;
+            res.end(await upstream.text());
+          } catch {
+            res.statusCode = 502;
+            res.end("Encrypted vault is unavailable.");
+          }
         });
       },
     },

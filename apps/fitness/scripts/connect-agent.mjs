@@ -1,9 +1,8 @@
-import { readFile, writeFile, rename } from "node:fs/promises";
-import { encrypt, decrypt } from "../../../bin/research/crypto.mjs";
-const root = new URL("../../../", import.meta.url),
-  path = new URL("research/admin.json", root);
+import { readFile } from "node:fs/promises";
+import { editAdminVault } from "../../../hosting/scripts/vault.mjs";
+const root = new URL("../../../", import.meta.url);
 const password = (await readFile(new URL(".admin-password", root), "utf8")).trim();
-const vault = await decrypt(JSON.parse(await readFile(path, "utf8")), password);
+const { vault, save } = await editAdminVault(password);
 const config = JSON.parse(await readFile(new URL("../src/config.json", import.meta.url), "utf8"));
 if (vault.fitness.agent) {
   console.log("The local agent is already connected.");
@@ -24,6 +23,5 @@ const r = await fetch(config.url + "/rest/v1/rpc/fitness_create_agent_key", {
 const result = await r.json();
 if (!r.ok) throw new Error(result.message ?? "Could not create agent connection.");
 vault.fitness.agent = result;
-await writeFile(new URL("research/admin.json.tmp", root), JSON.stringify(await encrypt(vault, password), null, 2) + "\n");
-await rename(new URL("research/admin.json.tmp", root), path);
+await save(vault);
 console.log("Local agent connected. Key stored only in the encrypted admin vault; expires in 90 days.");

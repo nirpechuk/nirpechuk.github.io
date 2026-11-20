@@ -39,7 +39,7 @@ The preview and production site deliberately share storage and app services. Thi
 
 `~/.config/nir-research/publish-token` is a private, random publishing credential (mode 600). The corresponding Worker secret is `PUBLISH_TOKEN`. The deployment scripts supply it through a temporary protected secrets file during local deployment, then remove that file. CI preserves the deployed secret. Never commit or paste token values into chat.
 
-The research password is separate: `RESEARCH_PASSWORD`, `--password-file`, or `~/.config/nir-research/password`. The repository wrapper also accepts the existing ignored `.research-password` file. The admin password remains separate and is required only for migration, restoration, and password rotation.
+The research password is separate: `RESEARCH_PASSWORD`, `--password-file`, or `~/.config/nir-research/password`. The repository wrapper also accepts the existing ignored `.research-password` file. The admin password remains separate. Fitness/Flats administration scripts read the live encrypted vault and save changes through the same conditional publishing API. The encrypted files retained in `research/` are migration snapshots, not live storage.
 
 Reports and the directory are encrypted locally using the existing AES-GCM/PBKDF2 format. Uploads go into immutable R2 objects; one conditional state update publishes the entire new revision. A concurrent update fails rather than overwriting another report. Failed staging uploads cannot change the live site. `--wait` checks the exact ciphertext online. Historical objects remain available for recovery and retain their original encryption; deletion or password rotation does not erase historical ciphertext.
 

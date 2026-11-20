@@ -1,12 +1,12 @@
 // Agent interface. Secrets stay in the existing encrypted admin vault, or environment.
 import { readFile } from "node:fs/promises";
-import { decrypt } from "../../../bin/research/crypto.mjs";
+import { readAdminVault } from "../../../hosting/scripts/vault.mjs";
 const config = JSON.parse(await readFile(new URL("../src/config.json", import.meta.url), "utf8"));
 let token = process.env.FITNESS_AGENT_KEY;
 if (!token) {
   const root = new URL("../../../", import.meta.url);
   const password = (await readFile(new URL(".admin-password", root), "utf8")).trim();
-  const vault = await decrypt(JSON.parse(await readFile(new URL("research/admin.json", root), "utf8")), password);
+  const vault = await readAdminVault(password);
   token = vault.fitness?.agent?.token;
 }
 if (!token) throw new Error("Connect an agent key first.");
