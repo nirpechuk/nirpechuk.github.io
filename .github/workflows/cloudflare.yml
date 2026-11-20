@@ -67,6 +67,8 @@ jobs:
       - run: npm ci
       - if: matrix.target != 'site'
         run: npm ci --prefix apps/${{ matrix.target }}
+      - if: matrix.target == 'flats'
+        run: npm test --prefix apps/flats -- src/backend/auto-migration.test.ts src/backend/legacy-migration.test.ts src/backend/supabase.test.ts
       - if: matrix.target == 'site'
         uses: ruby/setup-ruby@v1
         with:

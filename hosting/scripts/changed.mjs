@@ -3,6 +3,10 @@ import { execFileSync } from "node:child_process";
 export function affectedTargets(files) {
   const targets = new Set();
   for (const file of files) {
+    if (file.startsWith("hosting/migration-crypto.")) {
+      targets.add("flats");
+      continue;
+    }
     if (/^(?:work\/|dist\/|fitness\/|flats\/|research\/)/.test(file)) continue;
     if (/^apps\/(fitness|flats)\//.test(file)) {
       targets.add(file.split("/")[1]);

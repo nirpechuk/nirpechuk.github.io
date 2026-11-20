@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex" />
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
+    content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"
   />
   <title>Bring your room home — Flats</title>
   <style>
@@ -37,6 +37,35 @@
   <div id="rooms"></div>
   <p id="status" role="status"></p>
   <p><a href="https://nir.pechuk.com/flats/">Open Flats at its new address</a></p>
+  <script type="module">
+    import { sealHandoff } from "./migration-crypto.js";
+    if (location.hash.startsWith("#request=")) {
+      const raw = location.hash.slice(9);
+      history.replaceState(null, "", location.pathname);
+      document.querySelector("h1").textContent = "Opening your existing room…";
+      document.querySelector("h1 + p").textContent = "Your saved room is moving to the new address automatically.";
+      document.getElementById("rooms").hidden = true;
+      const status = document.getElementById("status");
+      try {
+        if (raw.length > 4000) throw new Error("Invalid transfer request");
+        const request = JSON.parse(decodeURIComponent(raw));
+        if (!/^[a-f0-9-]{36}$/.test(request.nonce)) throw new Error("Invalid transfer request");
+        const saved = JSON.parse(localStorage.getItem("flats:online:v1") || "null");
+        const profiles = Object.values(saved?.profiles || {}).filter(
+          (p) => !p.pending && !p.unavailable && /^[a-f0-9-]{36}$/i.test(p.playerId) && /^[a-f0-9]{64}$/i.test(p.token)
+        );
+        if (profiles.length > 100) throw new Error("Please use the room-key recovery option for this browser.");
+        const packet = await sealHandoff(
+          request.publicKey,
+          { keys: profiles.map((p) => `${p.playerId}.${p.token}`), active: saved?.activePlayerId || null },
+          request.nonce
+        );
+        location.replace(`https://nir.pechuk.com/flats/#flats-migrate=${encodeURIComponent(JSON.stringify({ ...packet, nonce: request.nonce }))}`);
+      } catch {
+        status.textContent = "The saved room couldn't transfer automatically. Return to Flats and retry, or use your room key.";
+      }
+    }
+  </script>
   <script>
     const rooms = document.getElementById("rooms"),
       status = document.getElementById("status");
