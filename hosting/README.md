@@ -4,7 +4,7 @@ The homepage, Fitness, Flats, research publishing, and public media are managed 
 
 ## Everyday commands
 
-Use Node 22.20+ (`.nvmrc`), then `npm ci`. Application development dependencies are installed with `npm ci --prefix apps/fitness` and `npm ci --prefix apps/flats`.
+Use Node 22.20+ (`.nvmrc`), then `npm ci`. Build/deploy commands automatically use a cached Node 22 runtime when the system Node is older; on this Mac they also find the installed Homebrew Ruby and local gems. Other projects’ runtime defaults are unchanged. Application development dependencies are installed with `npm ci --prefix apps/fitness` and `npm ci --prefix apps/flats`.
 
 | Task                            | Command                                                                     |
 | ------------------------------- | --------------------------------------------------------------------------- |

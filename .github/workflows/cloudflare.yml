@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: cloudflare-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: true
+
 jobs:
   changes:
     runs-on: ubuntu-latest
