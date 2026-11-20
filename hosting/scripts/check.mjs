@@ -34,4 +34,15 @@ for (const [route, options, expected] of [
     failed = true;
   }
 }
+if (origin === "https://nir.pechuk.com") {
+  try {
+    const response = await fetch("https://reports.pechuk.com/session", { headers: { Origin: origin }, signal: AbortSignal.timeout(30000) });
+    if (!response.ok || (await response.json()).authenticated !== false || response.headers.get("access-control-allow-origin") !== origin)
+      throw new Error("Protected report session routing or CORS is unavailable.");
+    console.log("OK protected report session (anonymous access stays locked)");
+  } catch (error) {
+    console.error(`FAIL protected reports: ${error.message}`);
+    failed = true;
+  }
+}
 process.exitCode = failed ? 1 : 0;
