@@ -168,6 +168,7 @@ test("deployment selection isolates apps while including content and shared infr
   assert.deepEqual(affectedTargets(["apps/fitness/src/App.tsx"]), ["fitness"]);
   assert.deepEqual(affectedTargets(["_pages/about.md"]), ["site"]);
   assert.deepEqual(affectedTargets(["hosting/worker.mjs"]), ["site"]);
-  assert.deepEqual(affectedTargets(["hosting/scripts/build.mjs"]), ["fitness", "flats", "site"]);
+  assert.deepEqual(affectedTargets(["hosting/scripts/build.mjs"]), ["family", "fitness", "flats", "site"]);
+  assert.deepEqual(affectedTargets(["hosting/family/public/index.html"]), ["family"]);
   assert.deepEqual(affectedTargets(["work/private-notes.md", "research/page/page.json"]), []);
 });

@@ -65,7 +65,7 @@ jobs:
             package-lock.json
             apps/${{ matrix.target }}/package-lock.json
       - run: npm ci
-      - if: matrix.target != 'site'
+      - if: matrix.target == 'fitness' || matrix.target == 'flats'
         run: npm ci --prefix apps/${{ matrix.target }}
       - if: matrix.target == 'flats'
         run: npm test --prefix apps/flats -- src/backend/auto-migration.test.ts src/backend/legacy-migration.test.ts src/backend/supabase.test.ts
@@ -79,9 +79,8 @@ jobs:
         with:
           python-version: "3.13"
       - if: matrix.target == 'site'
-        run: |
-          sudo apt-get update && sudo apt-get install -y imagemagick
-          pip3 install nbconvert
+        name: Install notebook renderer
+        run: pip3 install nbconvert
       - run: npm run build:${{ matrix.target }}
       - run: npm run deploy:${{ matrix.target }} -- --built
         env:

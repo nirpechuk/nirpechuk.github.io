@@ -6,12 +6,12 @@ import path from "node:path";
 const target = process.argv[2] || "all";
 const preview = process.argv.includes("--preview");
 const built = process.argv.includes("--built");
-const targets = target === "all" ? ["fitness", "flats", "site"] : [target];
+const targets = target === "all" ? ["fitness", "flats", "site", "family"] : [target];
 try {
   for (const name of targets) {
-    if (!["site", "fitness", "flats"].includes(name)) throw new Error("Choose site, fitness, flats, or all.");
+    if (!["site", "fitness", "flats", "family"].includes(name)) throw new Error("Choose site, fitness, flats, family, or all.");
     if (!built) await build(name);
-    const config = name === "site" ? "hosting/wrangler.jsonc" : `apps/${name}/wrangler.jsonc`;
+    const config = name === "site" ? "hosting/wrangler.jsonc" : name === "family" ? "hosting/family/wrangler.jsonc" : `apps/${name}/wrangler.jsonc`;
     let secretsDir;
     try {
       const token =

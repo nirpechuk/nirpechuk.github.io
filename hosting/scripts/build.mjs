@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdir, readdir, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -32,7 +32,7 @@ export async function checkAssets(directory) {
 export async function build(target) {
   const env = { ...process.env, NIR_CLOUDFLARE: "1", JEKYLL_ENV: "production" };
   if (target === "all") {
-    for (const name of ["fitness", "flats", "site"]) await build(name);
+    for (const name of ["fitness", "flats", "site", "family"]) await build(name);
     return;
   }
   if (target === "site") {
@@ -53,12 +53,15 @@ export async function build(target) {
       { env }
     );
     await writeFile(path.join(root, "dist/site/.assetsignore"), "**/.DS_Store\n**/*.map\n");
+  } else if (target === "family") {
+    await rm(path.join(root, "dist/family"), { recursive: true, force: true });
+    await cp(path.join(root, "hosting/family/public"), path.join(root, "dist/family"), { recursive: true });
   } else if (["fitness", "flats"].includes(target)) {
     await mkdir(path.join(root, "dist", target), { recursive: true });
     const cwd = path.join(root, "apps", target);
     run("npm", ["exec", "--", "tsc", "--noEmit"], { cwd, env });
     run("npm", ["exec", "--", "vite", "build"], { cwd, env });
-  } else throw new Error("Choose site, fitness, flats, or all.");
+  } else throw new Error("Choose site, fitness, flats, family, or all.");
   await checkAssets(path.join(root, "dist", target));
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

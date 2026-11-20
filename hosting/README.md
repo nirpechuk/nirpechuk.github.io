@@ -1,6 +1,6 @@
-# Hosting nir.pechuk.com
+# Hosting pechuk.com and nir.pechuk.com
 
-The homepage, Fitness, Flats, research publishing, and public media are managed from this repository. Cloudflare hosts the frontend and media; the existing Supabase projects still own application data, authentication, and private fitness photos.
+The family directory, homepage, Fitness, Flats, research publishing, and public media are managed from this repository. Cloudflare hosts the frontend and media; the existing Supabase projects still own application data, authentication, and private fitness photos.
 
 ## Everyday commands
 
@@ -9,6 +9,7 @@ Use Node 22.20+ (`.nvmrc`), then `npm ci`. Build/deploy commands automatically u
 | Task                            | Command                                                                     |
 | ------------------------------- | --------------------------------------------------------------------------- |
 | Deploy everything               | `npm run deploy`                                                            |
+| Deploy family directory         | `npm run deploy:family`                                                     |
 | Deploy homepage/research viewer | `npm run deploy:site`                                                       |
 | Deploy one app                  | `npm run deploy:fitness` / `npm run deploy:flats`                           |
 | Publish a report                | `npm run research:publish -- /path/report.html --slug report --wait`        |
@@ -27,9 +28,10 @@ The Finder shortcut `Publish Research.command` still works. On remote machines, 
 
 ## URLs and resources
 
+- `https://pechuk.com`: minimal family directory.
 - `https://nir.pechuk.com`: homepage and existing paths, including `/fitness/`, `/flats/`, `/research/`, and `/talks/`.
 - `https://media.pechuk.com`: public R2 media, including optimized MP4s and posters.
-- Workers: `nir-site`, `nir-fitness`, `nir-flats`. `nir-site-preview` is a bootstrap/checking deployment.
+- Workers: `pechuk-family`, `nir-site`, `nir-fitness`, `nir-flats`. `nir-site-preview` is a bootstrap/checking deployment.
 - R2: `nir-research` (private bucket of encrypted objects), `nir-media` (public via its media custom domain).
 - Cloudflare account: the account containing `pechuk.com`; identifiers are in the Wrangler configuration.
 
@@ -73,3 +75,19 @@ Install ffmpeg once (`brew install ffmpeg` on macOS). No S3 credentials, rclone 
 `_config.yml` and `_config.cloudflare.yml` use the new canonical origin. GitHub Pages builds only redirect pages from `hosting/redirect-paths.json`, with a catch-all redirect for older deep links. `work/`, hosting source, credentials, app source, and build outputs are excluded from the public Jekyll output. Static builds also exclude research payloads, generated app folders, and videos.
 
 Do not use the legacy Git publisher after cutover: it writes a separate copy. `npm run research:legacy` and `--backend github` exist only for pre-migration fallback. Worker code rollback does not roll back R2 state; restore an encrypted research snapshot separately when needed.
+
+## Family directory
+
+Edit `hosting/family/public/index.html` to add a family member’s name and live subdomain, then push to `main` or run `npm run deploy:family`. Changes confined to this directory deploy only the family page. It is a tiny static HTML page with no JavaScript or external fonts. Mail continues to use the existing Zoho DNS records. Only Nir currently has a website subdomain; media is infrastructure and is not listed.
+
+Copy this prompt to another family member’s agent, replacing `<name>`:
+
+```text
+Migrate my website to <name>.pechuk.com on Cloudflare Workers, with R2 for public media. Follow https://developers.cloudflare.com/agent-setup/prompt.md. Set up GitHub auto-deploys, one-command media uploads, fast video playback, and redirects from my old site. Keep my Workers, buckets, and credentials separate from other family members’. Complete and verify the migration, add my link to the family directory at pechuk.com (coordinate access to its repository), and leave a short guide. Ask only for missing access or required approvals.
+```
+
+## Page views
+
+The new Nir domain retains the original `nirpechuk.github.io` counter namespace and normalized paths, preserving existing lifetime totals and daily history, including restored reports. Each document records one view; repeated unlocks and counter displays do not add extra hits. History/listing requests only read counters. Preview domains, the family landing page, and 404 pages do not increment Nir’s counters. GitHub redirect pages do not track, so following an old link records only the destination visit.
+
+Daily and lifetime unique counts use browser-local markers, without sending a visitor identifier. Because browser storage is scoped to an origin, an existing visitor’s first visit on the new domain may count as a new unique visitor. Counts remain dependent on the existing CountAPI service and can be blocked by browser privacy tools. `npm run analytics:test` checks these behaviors; the live migration check confirmed a page visit incremented total and daily views once while leaving that browser’s unique counts unchanged.

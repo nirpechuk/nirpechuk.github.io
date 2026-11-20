@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "pechuk-family",
+  "compatibility_date": "2026-11-20",
+  "account_id": "f5542da2ba1d6b3830a7e089947a50f7",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "../../dist/family",
+    "not_found_handling": "404-page",
+  },
+  "routes": [
+    {
+      "pattern": "pechuk.com",
+      "custom_domain": true,
+    },
+  ],
+}
