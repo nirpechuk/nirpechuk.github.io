@@ -149,6 +149,41 @@ body.portrait .under {
   gap: 0.7rem;
 }
 
+/* Pixel-art desk scene: a small canvas scaled up in crisp steps. */
+body.desk main {
+  min-height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1.6rem;
+  padding: 3.5rem 1rem 2rem;
+}
+canvas.pixel {
+  position: static;
+  inset: auto;
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+.caption {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  text-align: center;
+}
+.caption h1 {
+  margin: 0;
+  font-family: "Atkinson Hyperlegible", inherit;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.caption p {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--mute);
+}
+
 /* Landing page */
 html:has(body.index),
 body.index {
