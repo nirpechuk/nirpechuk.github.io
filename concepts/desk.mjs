@@ -8,6 +8,8 @@
 
 const W = 620; // logical pixels; the canvas is scaled up to fit the page
 const H = 240;
+const PAD = 14; // spare columns either side, so the trees' outer boughs aren't clipped
+const FW = W + 2 * PAD; // full width of the frame, margins included
 const DESK = 174; // y of the desk top
 const FLOOR = 229;
 
@@ -92,22 +94,22 @@ const C = Object.fromEntries(
 // outline, then stamped onto the frame.
 class Layer {
   constructor() {
-    this.d = new Uint32Array(W * H);
+    this.d = new Uint32Array(FW * H);
   }
   clear() {
     this.d.fill(0);
     return this;
   }
   px(x, y, c) {
-    x = Math.round(x);
+    x = Math.round(x) + PAD;
     y = Math.round(y);
-    if (x >= 0 && x < W && y >= 0 && y < H) this.d[y * W + x] = c;
+    if (x >= 0 && x < FW && y >= 0 && y < H) this.d[y * FW + x] = c;
   }
   rect(x, y, w, h, c) {
-    x = Math.round(x);
+    x = Math.round(x) + PAD;
     y = Math.round(y);
     for (let j = Math.max(0, y); j < Math.min(H, y + h); j++) {
-      for (let i = Math.max(0, x); i < Math.min(W, x + w); i++) this.d[j * W + i] = c;
+      for (let i = Math.max(0, x); i < Math.min(FW, x + w); i++) this.d[j * FW + i] = c;
     }
   }
   ellipse(cx, cy, rx, ry, c) {
@@ -156,10 +158,10 @@ class Layer {
     const d = this.d;
     const edge = [];
     for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const k = y * W + x;
+      for (let x = 0; x < FW; x++) {
+        const k = y * FW + x;
         if (d[k]) continue;
-        const near = (x > 0 && d[k - 1]) || (x < W - 1 && d[k + 1]) || (y > 0 && d[k - W]) || (y < H - 1 && d[k + W]);
+        const near = (x > 0 && d[k - 1]) || (x < FW - 1 && d[k + 1]) || (y > 0 && d[k - FW]) || (y < H - 1 && d[k + FW]);
         if (near) edge.push(k, near);
       }
     }
@@ -1056,22 +1058,22 @@ life();
 
 // Canvas ------------------------------------------------------------------------
 const canvas = document.getElementById("scene");
-canvas.width = W;
+canvas.width = FW;
 canvas.height = H;
 const ctx = canvas.getContext("2d");
-const image = ctx.createImageData(W, H);
+const image = ctx.createImageData(FW, H);
 const pixels = new Uint32Array(image.data.buffer);
 
 function fit() {
   // A compact vignette in the middle of the page, not a full-width scene.
   // Scaled in quarter steps so it stays crisp; small screens scale smoothly.
   const cap = window.innerWidth >= 1800 ? 1.75 : 1.25;
-  const want = Math.min((window.innerWidth * 0.92) / W, (window.innerHeight * 0.5) / H, cap);
+  const want = Math.min((window.innerWidth * 0.92) / FW, (window.innerHeight * 0.5) / H, cap);
   const even = Math.floor(want * 4) / 4;
   const crisp = even >= want * 0.8;
   const scale = crisp ? even : want;
   canvas.style.imageRendering = crisp ? "pixelated" : "auto";
-  canvas.style.width = `${Math.round(W * scale)}px`;
+  canvas.style.width = `${Math.round(FW * scale)}px`;
   canvas.style.height = `${Math.round(H * scale)}px`;
 }
 window.addEventListener("resize", fit);
@@ -1082,7 +1084,7 @@ fit();
 canvas.addEventListener("pointerdown", (e) => {
   if (S.busy) return;
   const r = canvas.getBoundingClientRect();
-  const x = ((e.clientX - r.left) / r.width) * W;
+  const x = ((e.clientX - r.left) / r.width) * FW - PAD;
   if (x > BASE.L - 20 && x < BASE.R + 20) runTask(wave);
   else runTask(nextTask());
 });
