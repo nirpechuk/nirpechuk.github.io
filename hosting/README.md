@@ -22,7 +22,7 @@ Use Node 22.20+ (`.nvmrc`), then `npm ci`. Build/deploy commands automatically u
 | Verify live routes              | `npm run hosting:check`                                                     |
 | Run local integration tests     | `npm run hosting:test`                                                      |
 
-A push to `main` automatically deploys the affected components once `CLOUDFLARE_ENABLED=true` is set in GitHub. App changes do not rebuild Jekyll. Build outputs are ignored; there is no need to commit generated app bundles for Cloudflare.
+A push to `main` automatically deploys the affected components once `CLOUDFLARE_ENABLED=true` is set in GitHub. App changes do not rebuild Jekyll. Deployment selection compares against the last successful production workflow, so a newer push also carries forward changes from cancelled or failed deployments. Build outputs are ignored; there is no need to commit generated app bundles for Cloudflare.
 
 The Finder shortcut `Publish Research.command` still works. On remote machines, install `nir-research` with `bin/research/install-remote.sh`. It needs only Node, the research password, and a publishing token—not a Git checkout or GitHub credential.
 
@@ -88,6 +88,6 @@ Migrate my website to <name>.pechuk.com on Cloudflare Workers, with R2 for publi
 
 ## Page views
 
-The new Nir domain retains the original `nirpechuk.github.io` counter namespace and normalized paths, preserving existing lifetime totals and daily history, including restored reports. Each document records one view; repeated unlocks and counter displays do not add extra hits. History/listing requests only read counters. Preview domains, the family landing page, and 404 pages do not increment Nir’s counters. GitHub redirect pages do not track, so following an old link records only the destination visit.
+The new Nir domain retains the original `nirpechuk.github.io` counter namespace and normalized paths, preserving existing lifetime totals and daily history, including restored reports. Flats records only after automatic room recovery completes, so its temporary migration redirect does not add another view. Each document records one view; repeated unlocks and counter displays do not add extra hits. History/listing requests only read counters. Preview domains, the family landing page, and 404 pages do not increment Nir’s counters. GitHub redirect pages do not track, so following an old link records only the destination visit.
 
 Daily and lifetime unique counts use browser-local markers, without sending a visitor identifier. Because browser storage is scoped to an origin, an existing visitor’s first visit on the new domain may count as a new unique visitor. Counts remain dependent on the existing CountAPI service and can be blocked by browser privacy tools. `npm run analytics:test` checks these behaviors; the live migration check confirmed a page visit incremented total and daily views once while leaving that browser’s unique counts unchanged.
