@@ -1028,11 +1028,13 @@ async function runTask(task) {
 }
 
 // The long, slow loop: mostly ambient, with a task every half minute or so.
-let turn = 0;
+// Tasks come up in random order, never the same one twice running. The one
+// exception is the refill, which happens whenever the cup is nearly empty.
+let lastTask = null;
 function nextTask() {
-  if (S.boba.level < 0.3) return runRefill;
-  const cycle = [S.stacked ? runUnstack : runStack, runBoba, runGlobe, runBoba];
-  return cycle[turn++ % cycle.length];
+  const options = S.boba.level < 0.3 ? [runRefill] : [S.stacked ? runUnstack : runStack, runBoba, runGlobe].filter((task) => task !== lastTask);
+  lastTask = options[Math.floor(Math.random() * options.length)];
+  return lastTask;
 }
 async function life() {
   await sleep(5);
