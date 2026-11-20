@@ -1,4 +1,3 @@
-import "../../../assets/js/page-views.js";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -16,17 +15,29 @@ if (import.meta.env.DEV && new URLSearchParams(location.search).has("streetStudi
   void import("./dev/Studio").then(({ Studio }) => root.render(<Studio />));
 } else {
   container.textContent = "Opening your home…";
-  void migrateOldDomain().then(ready => { if (ready) root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  ); }).catch(error => {
-    container.textContent = error instanceof Error ? error.message : "Your room couldn't reconnect.";
-    const retry = document.createElement("button");
-    retry.textContent = "Try reconnecting again";
-    retry.onclick = () => { localStorage.removeItem("flats:domain-migration:v1"); location.replace("/flats/"); };
-    container.appendChild(retry);
-  });
+  void migrateOldDomain()
+    .then((ready) => {
+      if (!ready) return;
+      root.render(
+        <StrictMode>
+          <App />
+        </StrictMode>
+      );
+      // Count the completed visit, not the temporary trip through the old origin.
+      void import("./analytics").catch(() => {
+        /* Counting must never block the room. */
+      });
+    })
+    .catch((error) => {
+      container.textContent = error instanceof Error ? error.message : "Your room couldn't reconnect.";
+      const retry = document.createElement("button");
+      retry.textContent = "Try reconnecting again";
+      retry.onclick = () => {
+        localStorage.removeItem("flats:domain-migration:v1");
+        location.replace("/flats/");
+      };
+      container.appendChild(retry);
+    });
 }
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
