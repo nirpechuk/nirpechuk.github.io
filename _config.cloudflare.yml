@@ -1,3 +1,8 @@
 # Cloudflare build destination; canonical URL is also the default in _config.yml.
 url: https://nir.pechuk.com
 destination: dist/site
+
+# Apps that record views but are deployed as separate Workers.
+analytics_external_pages:
+  - path: /flats/
+    title: Flats

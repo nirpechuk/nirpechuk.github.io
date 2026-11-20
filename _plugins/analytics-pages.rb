@@ -5,7 +5,10 @@ Jekyll::Hooks.register :site, :post_render do |site|
     page.output && (page.output.include?('data-page-views') || page.output.include?('data-page-track')) && page.url != '/404.html'
   end.map do |page|
     { 'path' => page.url, 'title' => page.data['title'].to_s.empty? ? page.url : page.data['title'].to_s }
-  end.uniq { |page| page['path'] }.sort_by { |page| page['path'] }
+  end
+  # Independently deployed apps are absent from Jekyll's rendered page collection.
+  pages.concat(site.config.fetch('analytics_external_pages', []))
+  pages = pages.uniq { |page| page['path'] }.sort_by { |page| page['path'] }
   catalog = Jekyll::PageWithoutAFile.new(site, site.source, 'assets', 'analytics-pages.json')
   catalog.content = JSON.generate(pages)
   catalog.output = catalog.content
