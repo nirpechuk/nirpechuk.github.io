@@ -71,7 +71,8 @@ const C = Object.fromEntries(
     pineLight: "#4a8c70",
     pineDark: "#274f41",
     snow: "#eef4f7",
-    snowShade: "#cfdde5",
+    moss: "#5f7d52",
+    mossDark: "#4a6444",
     trunk: "#75523a",
     glass: "#d4ecf8",
     glassLight: "#f0f9fd",
@@ -250,12 +251,10 @@ const S = {
   ],
   stacked: false,
   plant: { leaves: 5 },
-  snow: [],
   says: null, // { who, text, until }
   busy: false,
 };
 for (let k = 0; k < 22; k++) S.globe.flakes.push({ x: rand(-10, 10), y: rand(-10, 6), vx: 0, vy: 0 });
-for (let k = 0; k < 34; k++) S.snow.push({ side: k % 2, x: rand(0, 70), y: rand(40, FLOOR), v: rand(5, 11), sway: rand(0, 6) });
 
 // Time: everything waits on the scene clock, so a hidden tab simply pauses.
 const sleepers = [];
@@ -313,37 +312,20 @@ function pine(x, h) {
     const w = half(y);
     if (f < 0.2 && y > tierH) frame.rect(x - w + 1, top + y, w * 2 - 1, 1, C.pineDark); // shadow under the tier above
     if (f > 0.35 && f < 0.6) frame.rect(x - w + 2, top + y, Math.max(1, Math.round(w * 0.5)), 1, C.pineLight);
-    if (f > 0.78) {
-      // Snow resting along the lower edge of each tier.
-      frame.rect(x - w, top + y, Math.min(5, w), 1, C.snow);
-      frame.rect(x + w - Math.min(4, w) + 1, top + y, Math.min(4, w), 1, C.snow);
-      if (f > 0.9) frame.rect(x - Math.round(w * 0.4), top + y, Math.round(w * 0.5), 1, C.snowShade);
-    }
+    if (f > 0.8) frame.rect(x - w + 1, top + y, Math.max(1, Math.round(w * 0.3)), 1, C.pineLight); // light catching the tips of the boughs
   }
-  frame.rect(x - 1, top - 2, 3, 3, C.snow);
 }
 
-function drawTrees(dt) {
-  // Snowy ground under the trees, either side of the desk.
-  frame.ellipse(34, FLOOR + 3, 44, 5, C.snowShade);
-  frame.ellipse(30, FLOOR + 2, 36, 4, C.snow);
-  frame.ellipse(W - 36, FLOOR + 3, 46, 5, C.snowShade);
-  frame.ellipse(W - 40, FLOOR + 2, 36, 4, C.snow);
+function drawTrees() {
+  // A low mossy mound under the trees, either side of the desk.
+  frame.ellipse(34, FLOOR + 3, 44, 5, C.mossDark);
+  frame.ellipse(30, FLOOR + 2, 36, 4, C.moss);
+  frame.ellipse(W - 36, FLOOR + 3, 46, 5, C.mossDark);
+  frame.ellipse(W - 40, FLOOR + 2, 36, 4, C.moss);
   pine(16, 100);
   pine(44, 160);
   pine(W - 46, 150);
   pine(W - 18, 96);
-  // A little snow drifting down among them.
-  for (const f of S.snow) {
-    f.y += f.v * dt;
-    if (f.y > FLOOR) {
-      f.y = 36;
-      f.x = rand(0, 70);
-    }
-    const x = (f.side ? W - 72 : 2) + f.x + Math.sin(S.t * 0.6 + f.sway) * 3;
-    frame.px(x, f.y, C.snow);
-    if (f.v > 9) frame.px(x + 1, f.y, C.snow);
-  }
 }
 
 function drawDesk() {
@@ -819,7 +801,7 @@ function drawSays() {
 
 function draw(dt) {
   frame.clear();
-  drawTrees(dt);
+  drawTrees();
   drawNir();
   drawCamera();
   drawDesk();
