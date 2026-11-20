@@ -143,7 +143,7 @@ export function createHandler(config: { supabaseUrl: string; publishableKey: str
     }
     if (path !== `${basePath}/mcp` && path !== basePath) return json({ error: "Not found" }, 404);
     // Clients outside the journal do not receive a browser CORS grant.
-    if (request.headers.has("origin") && request.headers.get("origin") !== "https://nirpechuk.github.io")
+    if (request.headers.has("origin") && !["https://nir.pechuk.com", "https://nirpechuk.github.io"].includes(request.headers.get("origin")!))
       return json({ error: "Origin not allowed" }, 403);
     const authorization = request.headers.get("authorization");
     if (!authorization?.match(/^Bearer [A-Za-z0-9._~-]+$/)) return unauthorized();

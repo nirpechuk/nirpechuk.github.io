@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Standalone uploader: Node.js 20+, no packages, Git checkout, or local Git required.
-import { webcrypto } from "node:crypto";
+import { webcrypto, randomUUID, createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -46,7 +46,7 @@ export async function unseal(value, password) {
   return JSON.parse(new TextDecoder().decode(data));
 }
 export function validateInput(html, slug) {
-  if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets"].includes(slug))
+  if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets", "admin"].includes(slug))
     throw new Error("Use a page slug with lowercase letters, numbers, and hyphens.");
   if (Buffer.byteLength(html) > 50 * 1024 * 1024) throw new Error("HTML must be at most 50 MiB. Compress embedded images first.");
   if (!/<(?:html|body|head|!doctype)\b/i.test(html) || html.startsWith("---"))
@@ -168,6 +168,125 @@ export async function waitForPage(
     `Commit ${result.commit} was published, but the live page was not confirmed within five minutes. Check https://github.com/${repository}/actions. Do not upload again just to retry this check.`
   );
 }
+
+export function cloudflareClient(token, origin = "https://nir.pechuk.com", fetcher = fetch) {
+  const url = new URL(origin);
+  if (
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash ||
+    (url.protocol !== "https:" && !(url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname)))
+  )
+    throw new Error("RESEARCH_SITE must be an HTTPS origin (or localhost for development).");
+  const request = async (route, method = "GET", body, extra = {}) => {
+    const endpoint = route.startsWith("media/") ? `/api/${route}` : `/api/publish/${route}`;
+    const response = await fetcher(`${url.origin}${endpoint}`, {
+      method,
+      redirect: "error",
+      signal: AbortSignal.timeout(180000),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        ...extra,
+        ...(body === undefined
+          ? {}
+          : {
+              "Content-Type": Buffer.isBuffer(body) ? "application/octet-stream" : "application/json",
+              "Content-Length": String(Buffer.byteLength(body)),
+            }),
+      },
+      body,
+    });
+    if (!response.ok) {
+      const message =
+        response.status === 412
+          ? "Research changed concurrently. Read the latest directory before retrying; nothing was overwritten."
+          : `Publishing returned HTTP ${response.status}. Check the account configuration and publishing token.`;
+      throw Object.assign(new Error(message), { status: response.status });
+    }
+    return response.json();
+  };
+  return {
+    origin: url.origin,
+    state: () => request("state"),
+    read: (key) => request(key),
+    media: (route, method, value) =>
+      request(`media/${route}`, method, value === undefined ? undefined : Buffer.isBuffer(value) ? value : JSON.stringify(value)),
+    async put(envelope) {
+      if (envelope?.version !== 1 || envelope.iterations !== rounds || !["salt", "iv", "data"].every((k) => typeof envelope[k] === "string"))
+        throw new Error("Only encrypted research envelopes can be uploaded.");
+      const key = `objects/${randomUUID()}`,
+        body = JSON.stringify(envelope);
+      await request(key, "PUT", body, { "X-Content-SHA256": createHash("sha256").update(body).digest("hex") });
+      return key;
+    },
+    async commit(state, etag) {
+      try {
+        return await request("state", "PUT", JSON.stringify(state), etag ? { "If-Match": etag } : { "If-None-Match": "*" });
+      } catch (error) {
+        if (error.status) throw error;
+        // The server may have committed even if its response was lost. Resolve
+        // by reading the immutable object pointers, never by blindly retrying.
+        const observed = await request("state").catch(() => null);
+        if (observed && JSON.stringify(observed.state) === JSON.stringify(state)) return { etag: observed.etag };
+        throw new Error("Publication result is uncertain. Inspect --list and the live page before retrying; do not force an update.");
+      }
+    },
+  };
+}
+
+export async function uploadDirect({ client, password, html, slug, title, replace = false, dryRun = false, list = false, remove = false }) {
+  if (!list && !remove) validateInput(html, slug);
+  if (remove) validateInput("<!doctype html>", slug);
+  const { state, etag } = await client.state();
+  if (!state) throw new Error("Research has not been migrated. Run the one-time research import first.");
+  let manifest;
+  try {
+    manifest = await unseal(await client.read(state.manifest), password);
+  } catch {
+    throw new Error("Could not unlock the research directory. No files were uploaded.");
+  }
+  if (manifest.kind !== "index" || !Array.isArray(manifest.pages)) throw new Error("Invalid research directory.");
+  if (list) return { pages: manifest.pages.map((page) => ({ ...page, url: `${client.origin}/research/${page.slug}/` })) };
+  const existing = Object.hasOwn(state.pages, slug);
+  if (remove && !existing) throw new Error("That report does not exist.");
+  if (existing && !replace && !remove) throw new Error(`Page ${slug} already exists. Use --replace to update it.`);
+  const url = `${client.origin}/research/${slug}/`;
+  title ||=
+    html
+      ?.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]
+      .replace(/<[^>]*>/g, "")
+      .trim() || slug;
+  if (dryRun) return { status: "validated", action: remove ? "delete" : existing ? "update" : "create", url, title };
+  const updated = new Date().toISOString().slice(0, 10);
+  const next = { ...state, pages: { ...state.pages } };
+  let payload;
+  if (remove) delete next.pages[slug];
+  else {
+    payload = await seal({ kind: "page", title, html, updated }, password);
+    next.pages[slug] = await client.put(payload);
+  }
+  const pages = manifest.pages.filter((page) => page.slug !== slug);
+  if (!remove) pages.unshift({ slug, title, updated });
+  next.manifest = await client.put(await seal({ ...manifest, pages }, password));
+  const revision = await client.commit(next, etag);
+  return { status: remove ? "deleted" : "published", url, revision: revision.etag, payload };
+}
+
+export async function waitForDirectPage(result, { fetcher = fetch } = {}) {
+  const response = await fetcher(`${result.url}page.json`, { cache: "no-store", redirect: "error", signal: AbortSignal.timeout(180000) });
+  if (!response.ok || (await response.json()).data !== result.payload.data)
+    throw new Error("Upload committed, but the exact live version could not be verified. Inspect the live URL; do not upload again just to check.");
+  return { ...result, status: "live" };
+}
+
+export async function configuredClient() {
+  const token =
+    process.env.RESEARCH_PUBLISH_TOKEN || (await readFile(path.join(homedir(), ".config/nir-research/publish-token"), "utf8").catch(() => "")).trim();
+  if (!token) throw new Error("Configure RESEARCH_PUBLISH_TOKEN or ~/.config/nir-research/publish-token (mode 600). Never paste tokens into chat.");
+  return cloudflareClient(token, process.env.RESEARCH_SITE || "https://nir.pechuk.com");
+}
 async function main() {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
@@ -180,15 +299,19 @@ async function main() {
       wait: { type: "boolean" },
       list: { type: "boolean" },
       help: { type: "boolean" },
+      backend: { type: "string", default: "cloudflare" },
+      delete: { type: "string" },
     },
   });
-  if (values.help || (!positionals.length && !values.list)) {
+  if (values.help || (!positionals.length && !values.list && !values.delete)) {
     console.log(
-      'node upload.mjs /path/to/report.html --slug experiment-notes [--title "Experiment notes"] [--replace] [--dry-run] [--wait]\nnode upload.mjs --list\nAuth: GH_TOKEN / GITHUB_TOKEN or gh auth login.\nPassword: RESEARCH_PASSWORD or --password-file PATH or ~/.config/nir-research/password.'
+      'node upload.mjs /path/to/report.html --slug experiment-notes [--title "Experiment notes"] [--replace] [--dry-run] [--wait]\nnode upload.mjs --list\nnode upload.mjs --delete experiment-notes [--dry-run]\nAuth: RESEARCH_PUBLISH_TOKEN or ~/.config/nir-research/publish-token.\nPassword: RESEARCH_PASSWORD or --password-file PATH or ~/.config/nir-research/password.\nLegacy GitHub publishing: --backend github (requires GH_TOKEN or gh auth login).'
     );
     return;
   }
-  if (positionals.length > 1 || (values.list && positionals.length)) throw new Error("Provide one HTML file, or --list alone.");
+  if (positionals.length > 1 || ((values.list || values.delete) && positionals.length) || (values.list && values.delete))
+    throw new Error("Provide one HTML file, --list, or --delete SLUG.");
+  if (!["cloudflare", "github"].includes(values.backend)) throw new Error("Choose --backend cloudflare or github.");
   const password =
     process.env.RESEARCH_PASSWORD ||
     (
@@ -197,20 +320,22 @@ async function main() {
       })
     ).trim();
   let token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-  if (!token) {
+  if (values.backend === "github" && !token) {
     try {
       token = execFileSync("gh", ["auth", "token", "--hostname", "github.com"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
     } catch {
       throw new Error("Set GH_TOKEN, or sign in with gh auth login on this machine.");
     }
   }
-  if (!token) throw new Error("GitHub authentication is empty.");
+  if (values.backend === "github" && !token) throw new Error("GitHub authentication is empty.");
+  if (values.backend === "github" && values.delete) throw new Error("Use the legacy local publisher to delete from GitHub.");
   const source = positionals[0];
-  let result = await upload({
-    api: githubClient(token),
+  let result = await (values.backend === "cloudflare" ? uploadDirect : upload)({
+    ...(values.backend === "cloudflare" ? { client: await configuredClient() } : { api: githubClient(token) }),
     password,
     html: source ? await readFile(source, "utf8") : undefined,
     slug:
+      values.delete ||
       values.slug ||
       (source &&
         path
@@ -222,8 +347,10 @@ async function main() {
     replace: values.replace,
     dryRun: values["dry-run"],
     list: values.list,
+    remove: Boolean(values.delete),
   });
   if (values.wait && result.status === "queued") result = await waitForPage(result);
+  if (values.wait && result.status === "published") result = await waitForDirectPage(result);
   const { payload, ...output } = result;
   console.log(JSON.stringify(output, null, 2));
 }

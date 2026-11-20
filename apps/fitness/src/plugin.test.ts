@@ -51,6 +51,14 @@ test("OAuth discovery is public; journal endpoints fail closed", async () => {
   const upstreamError = createHandler(config, async () => new Response("secret diagnostic", { status: 500 }));
   expect((await upstreamError(request("tools/list"))).status).toBe(401);
 });
+
+test("migration allows both journal origins while rejecting unrelated sites", async () => {
+  for (const origin of ["https://nir.pechuk.com", "https://nirpechuk.github.io", "https://evil.test"]) {
+    const incoming = request("tools/list", {}, false);
+    incoming.headers.set("Origin", origin);
+    expect((await handler(incoming)).status).toBe(origin === "https://evil.test" ? 403 : 401);
+  }
+});
 test("MCP initializes and advertises three bounded tools with correct annotations", async () => {
   const initialized = await decode(
     await handler(request("initialize", { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "test", version: "1" } }))

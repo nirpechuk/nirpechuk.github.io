@@ -20,7 +20,7 @@ Supabase RLS checks both the authenticated user ID and the verified email in the
 
 ## Develop and build
 
-Use Node 24+ (the desktop's bundled Node runtime is suitable):
+Use Node 22.20+:
 
 ```sh
 npm ci
@@ -29,7 +29,7 @@ npm test
 npm run build
 ```
 
-The build writes `../../fitness/` and adds Jekyll front matter. The dev server exposes only the encrypted admin envelope at `/research/admin.json` for the shared-password flow. It does not expose the password file.
+The build writes `../../dist/fitness/fitness/` for Cloudflare. The dev server exposes only the encrypted admin envelope at `/research/admin.json` for the shared-password flow. It does not expose the password file.
 
 ## Backend setup
 
@@ -88,7 +88,7 @@ Deployment:
 
 1. Apply `supabase/migrations/002_fitness_plugin.sql` after the original migration.
 2. Deploy all files in `supabase/functions/fitness-mcp/`, entrypoint `index.ts`, import map `deno.json`, and gateway `verify_jwt=false`. The handler independently authenticates through PostgREST plus `fitness_plugin_access`; only OAuth discovery is public. Built-in `SUPABASE_URL` and `SUPABASE_ANON_KEY` are sufficient. No service-role key is used.
-3. Set Supabase Auth Site URL to `https://nirpechuk.github.io`, enable OAuth Server, set Authorization Path to `/fitness/`, and enable dynamic client registration. The project uses ES256 signing. Publish the updated viewer containing the consent screen.
+3. Set Supabase Auth Site URL to `https://nir.pechuk.com`, enable OAuth Server, set Authorization Path to `/fitness/`, and enable dynamic client registration. The project uses ES256 signing. Publish the updated viewer containing the consent screen.
 4. In ChatGPT Plugins, add a custom MCP server with the endpoint above and OAuth authentication. Complete the fitness-page sign-in with the existing admin password, inspect the requesting client, and explicitly connect the journal. Keep the plugin personal/private.
 5. Start a chat with Fitness selected. The package's skill is optional guidance; equivalent logging invariants are also in the server's tool descriptions and initialization instructions.
 

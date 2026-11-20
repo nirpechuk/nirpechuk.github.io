@@ -14,7 +14,7 @@ Use the connected Fitness tools; no local computer or shell is needed.
 
 Meals use kcal and grams; preserve lb/kg for weights. Workout reps contain one number per set. Don't invent missing activity, weight, or completion. Never write synthetic test entries to the real journal.
 
-If the connection needs sign-in, use the private connection flow; don't request passwords or tokens in chat. Deletion, preferences, and creating other connections are outside this plugin. Progress photos can be managed at https://nirpechuk.github.io/fitness/. Do not claim a save if the connection failed.
+If the connection needs sign-in, use the private connection flow; don't request passwords or tokens in chat. Deletion, preferences, and creating other connections are outside this plugin. Progress photos can be managed at https://nir.pechuk.com/fitness/. Do not claim a save if the connection failed.
 
 ## Progress photos
 

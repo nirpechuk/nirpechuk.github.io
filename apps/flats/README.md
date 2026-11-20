@@ -2,7 +2,7 @@
 
 A cosy workout game for friends. Log a workout with one tap, unpack a present, furnish
 your flat, and watch your window glow brighter in the shared building. Live at
-[nirpechuk.github.io/flats](https://nirpechuk.github.io/flats/). Design notes are in
+[nir.pechuk.com/flats](https://nir.pechuk.com/flats/). Design notes are in
 [DESIGN.md](DESIGN.md); the implemented Brownstone direction is documented in
 [BROWNSTONE.md](BROWNSTONE.md).
 
@@ -43,7 +43,7 @@ room personalities, quiet weeks, all items and colour variants.
 
 ```bash
 cd apps/flats
-npm run build      # type-checks, builds into ../../flats/, adds Jekyll front matter
+npm run build      # type-checks, builds into ../../dist/flats/flats/ for Cloudflare
 ```
 
 Commit `apps/flats` and the rebuilt `flats/` folder and push to `main`; the site's

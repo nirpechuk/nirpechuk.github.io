@@ -1,11 +1,36 @@
 {
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "1.10.0",
-    "prettier": "^3.7.4"
+    "prettier": "^3.7.4",
+    "wrangler": "4.165.0",
+    "miniflare": "5.20261118.0-beta",
+    "purgecss": "8.0.0",
+    "esbuild": "0.28.2"
   },
   "scripts": {
     "research:publish": "node bin/research/cli.mjs",
     "research:test": "node --test bin/research/*.test.mjs",
-    "analytics:test": "node --test bin/page-views/*.test.mjs"
+    "analytics:test": "node --test bin/page-views/*.test.mjs",
+    "research:legacy": "node bin/research/legacy-cli.mjs",
+    "research:import": "node hosting/scripts/research-admin.mjs import",
+    "research:backup": "node hosting/scripts/research-admin.mjs backup",
+    "research:rotate": "node hosting/scripts/research-admin.mjs rotate",
+    "hosting:test": "node --test hosting/*.test.mjs",
+    "build:site": "node hosting/scripts/build.mjs site",
+    "build:fitness": "node hosting/scripts/build.mjs fitness",
+    "build:flats": "node hosting/scripts/build.mjs flats",
+    "build": "node hosting/scripts/build.mjs all",
+    "deploy": "node hosting/scripts/deploy.mjs all",
+    "deploy:site": "node hosting/scripts/deploy.mjs site",
+    "deploy:fitness": "node hosting/scripts/deploy.mjs fitness",
+    "deploy:flats": "node hosting/scripts/deploy.mjs flats",
+    "hosting:setup": "node hosting/scripts/setup.mjs",
+    "hosting:check": "node hosting/scripts/check.mjs",
+    "media:upload": "node hosting/scripts/media.mjs upload",
+    "media:migrate": "node hosting/scripts/media.mjs migrate",
+    "hosting:dev": "wrangler dev -c hosting/wrangler.jsonc -c apps/fitness/wrangler.jsonc -c apps/flats/wrangler.jsonc"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

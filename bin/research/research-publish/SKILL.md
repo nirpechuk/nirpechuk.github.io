@@ -1,54 +1,25 @@
 ---
 name: research-publish
-description: Publish standalone HTML research reports to Nir Pechuk’s password-protected website at nirpechuk.github.io/research from a local or headless remote machine, without a Git checkout.
+description: Publish standalone HTML research reports to Nir Pechuk's encrypted research site at nir.pechuk.com/research from local or headless machines without a Git checkout.
 ---
 
-Publish a user-requested HTML report using the bundled `scripts/upload.mjs`.
-Requires Node.js 20+ and network access to GitHub and the website.
+Use bundled `scripts/upload.mjs` for user-requested publication. Requires Node.js 20+ and network access to the site.
 
 ## Credentials
 
-Use existing `GH_TOKEN` / `GITHUB_TOKEN` or the machine’s `gh auth` login.
-The GitHub credential needs Contents read/write access to
-`nirpechuk/nirpechuk.github.io`. Read the research password from
-`RESEARCH_PASSWORD`, `~/.config/nir-research/password`, or `--password-file PATH`.
-If either credential is missing, ask the user to configure it on the machine;
-do not ask them to paste tokens into chat or print credentials in tool output.
+Read the publishing token from `RESEARCH_PUBLISH_TOKEN` or `~/.config/nir-research/publish-token` and the research password from `RESEARCH_PASSWORD`, `~/.config/nir-research/password`, or `--password-file PATH`. Credential files must be private (mode 600). If missing, ask the user to configure them locally; never request secrets in chat or print them.
 
 ## Publish
 
-1. Prepare one self-contained HTML file, up to 50 MiB. Embed images, styles, and scripts, or
-   use absolute HTTPS assets. External assets remain public. Reports run in a
-   sandboxed iframe: scripts work, but same-origin storage and backend services
-   are not available. Do not upload raw sensitive images separately.
-2. Choose a descriptive lowercase hyphenated slug. Slugs and commit messages
-   are public, so avoid sensitive information in the slug. Reuse an existing
-   slug only when the user intends to update that report.
-3. Validate without changing GitHub:
+1. Prepare a self-contained HTML export up to 50 MiB. Embed small assets or use absolute HTTPS URLs for public assets. Do not move private videos/images into public storage. Reports run in a sandboxed iframe.
+2. Choose a lowercase hyphenated slug. URLs are public, so avoid sensitive information in slugs. Use `--list` to inspect existing entries.
+3. Validate without publishing:
+   `node /path/to/this/skill/scripts/upload.mjs /path/report.html --slug experiment-notes --dry-run`
+4. When the user requested publication:
+   `node /path/to/this/skill/scripts/upload.mjs /path/report.html --slug experiment-notes --title "Experiment notes" --wait`
+   Add `--replace` only when the user intends to update that slug. `nir-research` is the installed shortcut.
+5. Return the URL and the verified status. `live` means the exact uploaded ciphertext was observed. `published` means the state commit succeeded but live verification was not requested.
 
-   ```sh
-   node /path/to/this/skill/scripts/upload.mjs /path/to/report.html --slug experiment-notes --dry-run
-   ```
+Encryption happens locally. Immutable R2 uploads are followed by one conditional state update; no Git commit or website build is required. A stale revision fails without overwriting other work. Inspect the latest directory before retrying a conflict once; do not add `--replace` unless replacement was intended. An ambiguous completion requires inspecting the live result, not blindly re-uploading. Deletion uses `--delete SLUG` only when explicitly requested; old encrypted versions remain for recovery.
 
-4. If the user has requested publication, publish and wait for the exact uploaded
-   payload to appear online:
-
-   ```sh
-   node /path/to/this/skill/scripts/upload.mjs /path/to/report.html --slug experiment-notes --title "Experiment notes" --wait
-   ```
-
-   Add `--replace` to both commands for an intended update of an existing page.
-   Resolve `/path/to/this/skill/` relative to this SKILL.md. If installed, the
-   `nir-research` command is an equivalent shortcut. Use `--list` to find pages.
-
-5. Return the URL and whether the JSON result says `live` or `queued`.
-   A commit is not proof that deployment finished. If the wait times out,
-   check GitHub Actions or fetch the live page; do not upload again just to wait.
-
-The uploader encrypts before sending data, updates only the four relevant
-research files, and uses a non-forced branch update. On a concurrent-change
-error, inspect the latest directory before retrying once. If another upload
-created the same slug, do not add `--replace` unless that update was intended.
-Stop and report repeated conflicts, branch permission errors, or an ambiguous
-network result after a commit was created. Do not force-update main or bypass
-branch rules. No browser, Git checkout, npm packages, or Ruby build is needed.
+`RESEARCH_SITE` overrides the origin for an explicitly selected preview/local environment. The legacy `--backend github` option is only for pre-migration fallback and must not be used after cutover.

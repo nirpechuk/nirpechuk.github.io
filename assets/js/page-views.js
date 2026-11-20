@@ -52,7 +52,7 @@
     else await record();
   }
   async function record() {
-    if (location.hostname !== hostname || normalize(location.pathname) === "/404.html") return null;
+    if (![hostname, "nir.pechuk.com"].includes(location.hostname) || normalize(location.pathname) === "/404.html") return null;
     const key = await keyFor(location.pathname);
     const day = new Date().toISOString().slice(0, 10);
     const total = request(key, true).catch(() => null);

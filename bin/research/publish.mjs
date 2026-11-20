@@ -5,7 +5,7 @@ import { encrypt, decrypt } from "./crypto.mjs";
 
 const templatePath = fileURLToPath(new URL("./page.html", import.meta.url));
 export function validateSlug(slug) {
-  if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets"].includes(slug)) {
+  if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets", "admin"].includes(slug)) {
     throw new Error("Use a short page name with lowercase letters, numbers, and hyphens.");
   }
   return slug;

@@ -23,5 +23,6 @@ for skills in "${CODEX_HOME:-$HOME/.codex}/skills" "$HOME/.claude/skills"; do
 done
 printf '%s\n' 'Installed nir-research and the research-publish skill for Codex and Claude.' \
   'Add ~/.local/bin to PATH if needed.' \
-  'Configure GitHub auth (GH_TOKEN or gh auth login) and the research password' \
+  'Configure the publishing token (~/.config/nir-research/publish-token, mode 600)' \
+  'and the research password' \
   '(RESEARCH_PASSWORD or ~/.config/nir-research/password, mode 600).'

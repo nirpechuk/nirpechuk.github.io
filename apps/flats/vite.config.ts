@@ -5,7 +5,7 @@ export default defineConfig({
   base: "/flats/",
   plugins: [react()],
   build: {
-    outDir: "../../flats",
+    outDir: "../../dist/flats/flats",
     emptyOutDir: true,
     rollupOptions: {
       output: {

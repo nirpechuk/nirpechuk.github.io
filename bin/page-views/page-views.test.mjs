@@ -67,6 +67,17 @@ test("normalizes URL variants and retains existing lifetime counter keys", async
   const hash = Buffer.from(await webcrypto.subtle.digest("SHA-256", new TextEncoder().encode("/projects/"))).toString("hex");
   assert.equal(a.calls[0].url, `https://countapi.mileshilliard.com/api/v1/hit/nirpechuk.github.io-page-${hash}`);
 });
+
+test("the new domain continues the existing analytics history", async () => {
+  const old = fixture(),
+    migrated = fixture({ hostname: "nir.pechuk.com" });
+  await old.api.track();
+  await migrated.api.track();
+  assert.deepEqual(
+    migrated.calls.map((call) => call.url),
+    old.calls.map((call) => call.url)
+  );
+});
 test("previews and 404s never record; blocked storage still counts views", async () => {
   for (const options of [{ hostname: "localhost" }, { pathname: "/404.html" }]) {
     const { api, calls } = fixture(options);

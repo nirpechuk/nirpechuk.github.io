@@ -4,7 +4,7 @@ A cosy, mobile-first workout game for adults. Friends each furnish a little flat
 shared building; every workout earns a present, presents hold furniture and decor, and
 a pet lives in the flat and reacts to how the week is going. Seen from the street, each
 friend's window glows brighter the more they moved that week. Served at
-`nirpechuk.github.io/flats/`.
+`nir.pechuk.com/flats/`.
 
 ## Priorities
 

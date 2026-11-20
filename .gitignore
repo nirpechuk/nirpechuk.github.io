@@ -18,3 +18,18 @@ vendor
 .admin-password
 .research-source/
 .fitness-setup.sql
+
+# Cloudflare build outputs and local credentials
+dist/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+
+# Cloudflare builds and public R2 media are no longer committed.
+/fitness/
+/flats/
+/assets/video/
+/talks/*/video/

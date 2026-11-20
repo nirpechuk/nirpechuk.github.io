@@ -4,7 +4,7 @@
 verify_jwt = false
 
 [auth]
-site_url = "https://nirpechuk.github.io"
+site_url = "https://nir.pechuk.com"
 
 [auth.oauth_server]
 enabled = true

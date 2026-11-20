@@ -16,5 +16,5 @@ export default defineConfig({
       },
     },
   ],
-  build: { outDir: "../../fitness", emptyOutDir: true },
+  build: { outDir: "../../dist/fitness/fitness", emptyOutDir: true },
 });

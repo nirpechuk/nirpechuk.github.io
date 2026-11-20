@@ -1,199 +1,32 @@
-# Publishing research pages
+# Publishing research
 
-Open **Publish Research.command** in the website folder, then choose an HTML file.
-The shortcut encrypts it, adds it to the research directory, commits, and pushes.
-GitHub Pages usually updates in a few minutes. The published address is printed
-in the window. Publishing the same filename again updates that page.
-
-The boba admin console lives at <https://nirpechuk.github.io/research/> and uses
-its own admin password. Direct report links use the separate shared research
-password. Both passwords are remembered in this browser across tabs and visits; **Lock** clears both saved passwords. Report pages may navigate the whole
-window when clicked, so links between reports keep the saved password.
-The 🧋 password page appears both at the directory and at direct links to individual
-pages. Once unlocked, individual reports display their own HTML edge to edge,
-without a website header, title bar, or controls. The admin console includes searchable public-page and research traffic graphs,
-daily views and unique-browser counts, CSV export, and report links. The console and Lock button
-remain available at `/research/`.
-
-## From a headless Linux machine (no checkout)
-
-Requires Node.js 20+ and `curl`. Download and run the installer:
+Research lives at **https://nir.pechuk.com/research/**. Publishing uploads encrypted content directly to R2 and makes it live with one revision-checked update. It does not commit to Git or rebuild the website.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/nirpechuk/nirpechuk.github.io/main/bin/research/install-remote.sh -o /tmp/install-nir-research.sh
-sh /tmp/install-nir-research.sh
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-This installs `nir-research` and the `research-publish` skill for both Codex and
-Claude. It does not clone the repository or install npm packages. Run the same
-installer again to update them. Agent sessions may need restarting to discover
-the new skill.
-
-Configure GitHub authentication with an existing `gh auth login`, or set
-`GH_TOKEN` using the machine’s secret manager. A fine-grained token needs access
-to this repository with **Contents: read and write**; no workflow-editing
-permission is needed. These are the permissions used by GitHub’s
-[Git tree](https://docs.github.com/en/rest/git/trees#create-a-tree) and
-[reference update](https://docs.github.com/en/rest/git/refs#update-a-reference) APIs.
-The research password alone does not grant publishing access.
-
-Save the shared password once on that machine (this prompts without echoing it):
-
-```bash
-read -rsp 'Research password: ' research_password; printf '\n'
-(umask 077; printf '%s\n' "$research_password" > "$HOME/.config/nir-research/password")
-unset research_password
-```
-
-Then publish from any working directory:
-
-```sh
-nir-research /path/to/report.html --slug experiment-notes --title "Experiment notes" --wait
-```
-
-The JSON result contains the URL and commit. `--wait` polls until that exact
-version is live, for up to five minutes. Without it, `queued` means committed
-but not yet verified online. If waiting times out, check GitHub Actions; the
-upload is already committed, so do not upload it again just to wait.
-
-- Add `--dry-run` to validate HTML, password, and remote state without writing.
-- Add `--replace` when you intend to update an existing slug.
-- Use `nir-research --list` to see the current research pages.
-- Override the password file with `--password-file PATH`, or use
-  `RESEARCH_PASSWORD` in the environment.
-
-For an agent, ask: “Use the research-publish skill to publish this HTML report
-under `/research/experiment-notes/` and return the live URL.” The portable
-[skill](research-publish/SKILL.md) includes the publishing workflow and script.
-
-The uploader encrypts locally, reads the latest remote manifest and template,
-and changes four research files in a single commit through GitHub’s API.
-It preserves unrelated files and directory entries. Concurrent changes cause
-an error instead of a forced update. It accepts self-contained HTML up to
-50 MiB. Large encrypted files use GitHub’s blob API with a longer upload timeout. Files referenced dynamically by scripts are not bundled automatically.
-
-## Preparing an HTML page
-
-Use a standalone HTML export, with images, styles, and scripts embedded in the
-file. Absolute HTTPS asset URLs also work, but those external assets are public.
-Keep the original file outside this repository, or in `.research-source/` (ignored
-by Git and excluded from the website). Local asset references are rejected.
-Embedded pages run in a sandbox, so scripts can render charts but cannot access
-the surrounding website’s storage. Pages needing cookies, same-origin fetches,
-or a backend may need adaptation.
-
-## Commands
-
-Run these from the website folder:
-
-```sh
-# Choose a file and publish it.
-npm run research:publish -- --choose --push
-
-# Choose the address and display title.
-npm run research:publish -- /path/to/report.html --slug experiment-notes --title "Experiment notes" --push
-
-# List published pages.
+npm run research:publish -- /path/to/report.html --slug experiment-notes --wait
+npm run research:publish -- /path/to/report.html --slug experiment-notes --replace --wait
 npm run research:publish -- --list
-
-# Remove a page and its directory listing.
-npm run research:publish -- --delete experiment-notes --push
+npm run research:publish -- --delete experiment-notes
 ```
 
-Omit `--push` to prepare changes for review without committing them. `--push`
-requires the main branch and no already staged changes; only the generated
-research files are staged. If a push fails, the local commit remains available;
-resolve the Git issue and push again.
+The Finder shortcut `Publish Research.command` opens a file chooser and creates or replaces the report with that filename. `--dry-run` validates without uploading.
 
-## Password and protection
+Use a self-contained HTML export up to 50 MiB. Embed small images/styles/scripts, or reference public files by absolute HTTPS URLs. Upload public video with `npm run media:upload -- /path/video.mp4` and embed the returned URL and poster with `preload="none"`. Do not put private footage in the public media bucket. Reports run in a sandboxed iframe; cookies and same-origin storage are unavailable inside them.
 
-The research password is configured locally in `.research-password`; the separate
-admin password is in `.admin-password`. Both files are ignored by Git and excluded
-from the built site. Report publishers continue to use only the research password.
-
-The console unlocks `research/admin.json` with the admin password. This encrypted
-file contains the research password, which lets it read the latest encrypted
-manifest and open reports. Knowing the research password does not unlock the
-admin console. Publishing updates the manifest without modifying admin access,
-so the console always picks up newly published reports. Older installed uploaders
-that label the index payload `manifest.json` remain compatible: the browser always
-uses `admin.json` to authenticate the console.
-
-To create or change admin access after saving `.admin-password`, run:
+On remote/headless machines, install `nir-research` using `bin/research/install-remote.sh`. This installs a standalone Node uploader plus the portable research-publish skill for Codex and Claude. The same command works without a Git checkout:
 
 ```sh
-npm run research:publish -- --configure-admin
+nir-research /path/report.html --slug experiment-notes --wait
 ```
 
-`ADMIN_PASSWORD` can override the local admin password file.
+Credentials:
 
-The shared research password is already configured locally in `.research-password`.
-That file is ignored by Git and excluded from the built site. On another machine,
-create it with the same password, or provide `RESEARCH_PASSWORD` in the environment.
-Do not simply change this file: existing pages still require their original
-password. To rotate all existing encrypted reports without needing their source
-files, save the new password in a temporary private file outside the repository:
+- Publishing token: `RESEARCH_PUBLISH_TOKEN` or `~/.config/nir-research/publish-token` (mode 600).
+- Research password: `RESEARCH_PASSWORD`, `--password-file PATH`, or `~/.config/nir-research/password` (mode 600). The local repository wrapper also uses `.research-password`.
+- The admin password is separate. The encrypted admin vault keeps existing fitness and research access intact.
 
-```sh
-npm run research:publish -- --rotate-password --new-password-file /path/to/new-password.txt
-```
+Never paste passwords/tokens into chat. A research password alone cannot publish. A publishing token alone cannot decrypt reports. Publishing credentials also authorize public media uploads.
 
-This verifies and re-encrypts every report and the manifest, refreshes all page
-shells, and updates the ignored local `.research-password`. When admin access is
-configured, it also needs `.admin-password` or `ADMIN_PASSWORD` to update the
-console’s encrypted report access. Add `--push` to publish.
-Update the saved password on other publishing machines too. Existing browser
-sessions must unlock again with the new password. The old password can still
-unlock historical encrypted versions in Git history.
+`--wait` verifies the exact encrypted payload online. If the response is ambiguous, inspect the live page or list the directory rather than blindly uploading again. Concurrent writes fail without overwriting another publisher. Old encrypted versions remain in R2 for recovery; removing a page does not erase historical ciphertext.
 
-HTML and the directory listing are encrypted with AES-GCM and a password-derived
-key (PBKDF2-SHA-256, 250,000 iterations). The published site contains encrypted
-payloads, not the original HTML or password. This is lightweight shared-password
-protection, not account-based access control. URLs and file sizes are public,
-and anyone who has the password can save or share the unlocked content. Removing
-a page does not erase older encrypted versions from Git history.
-
-## Maintenance
-
-### Deployment and retired reports
-
-The `Deploy site` workflow builds the site once and publishes `_site` directly
-with GitHub's Pages artifact actions. Repository Settings → Pages must use
-**GitHub Actions** as its publishing source. Production runs are serialized;
-an active deployment finishes while later pushes coalesce into the latest
-pending run. Pull requests build for validation without uploading or deploying.
-Publishing commands, credentials, and the `--wait` live-payload check are unchanged,
-including the installed uploader and Claude skill on pc0.
-
-The local branch `codex/research-archive-2026-10-17` preserves the full site at
-commit `dc865a3e1b212c604a78ad6e5484bd69a0c2fd78`, before retiring 17 reports.
-The active site keeps the October 9 and both October 16 progress reports, plus
-the four LoRA evaluation reports. Retired report directories and their encrypted
-manifest entries are removed from the active site. Their old URLs will stop
-working after deployment; the archive is a Git snapshot, not another website.
-Archive files remain encrypted with the research password used at that time.
-
-To retrieve a retired report without restoring it to the deployed site:
-
-```sh
-# Run from the repository; choose a retired slug and an output directory outside it.
-mkdir -p ../retired-reports
-git archive codex/research-archive-2026-10-17 research/REPORT-SLUG | tar -x -C ../retired-reports
-```
-
-For a fresh checkout after the archive branch has been pushed, fetch it and use
-`origin/codex/research-archive-2026-10-17` in that command. Do not merge the archive
-branch back into the active site to restore a single report. Recover and decrypt
-its payload locally, then publish the intended report through the normal uploader.
-
-Rollout order: push the archive branch first, set the Pages publishing source to
-GitHub Actions, then land the deployment and retirement changes on `main`. Neither
-the archive nor the implementation branch is published by the deployment workflow.
-The legacy `bin/deploy` helper and `Prettify gh-pages` workflow target the old
-branch-based pipeline; do not use them for the direct Pages deployment.
-
-The page shell is `bin/research/page.html`; the browser UI lives in
-`assets/research/`. Run `npm run research:test` to check encryption and publishing.
-After editing the shell, run `npm run research:publish -- --init` to update the
-research directory and re-publish existing pages to update their shells.
+See [the central hosting guide](../../hosting/README.md) for migration, deployments, backups, restoration, password rotation, and account setup. The old GitHub publisher is available only as `npm run research:legacy` or remote `--backend github` during migration; do not use it after cutover.

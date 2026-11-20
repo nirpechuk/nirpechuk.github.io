@@ -1,3 +1,15 @@
+# Nir Pechuk’s website
+
+Live at **[nir.pechuk.com](https://nir.pechuk.com)**. Public media lives at **[media.pechuk.com](https://media.pechuk.com)**.
+
+Push to `main` to deploy changed components automatically. Use `npm run deploy` for a manual deployment, `npm run research:publish -- report.html --slug my-report --wait` for encrypted reports, and `npm run media:upload -- video.mp4` for optimized public video uploads.
+
+See **[the hosting guide](hosting/README.md)** for setup, development, publishing, and recovery. Cloudflare serves the site and media; the existing Supabase projects keep Fitness and Flats data. GitHub Pages only redirects old links.
+
+---
+
+The site uses the al-folio theme. Its original documentation follows.
+
 # al-folio
 
 <div align="center">

@@ -1,0 +1,83 @@
+name: Cloudflare
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["work/**", "README.md", "hosting/README.md"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.select.outputs.targets }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - id: select
+        env:
+          BEFORE: ${{ github.event.before || github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: node hosting/scripts/changed.mjs >> "$GITHUB_OUTPUT"
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run hosting:test
+      - run: npm run research:test
+      - run: npm run analytics:test
+  deploy:
+    needs: [changes, checks]
+    if: github.event_name != 'pull_request' && vars.CLOUDFLARE_ENABLED == 'true' && needs.changes.outputs.targets != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.changes.outputs.targets) }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cloudflare-${{ matrix.target }}
+      cancel-in-progress: false
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/${{ matrix.target }}/package-lock.json
+      - run: npm ci
+      - if: matrix.target != 'site'
+        run: npm ci --prefix apps/${{ matrix.target }}
+      - if: matrix.target == 'site'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - if: matrix.target == 'site'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - if: matrix.target == 'site'
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pip3 install nbconvert
+      - run: npm run build:${{ matrix.target }}
+      - run: npm run deploy:${{ matrix.target }} -- --built
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

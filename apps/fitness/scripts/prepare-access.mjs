@@ -17,7 +17,7 @@ if (!vault.fitness) {
   await writeFile(new URL("research/admin.json.tmp", root), JSON.stringify(await encrypt(vault, password), null, 2) + "\n");
   await rename(new URL("research/admin.json.tmp", root), path);
 }
-const response = await fetch(`${config.url}/auth/v1/signup?redirect_to=${encodeURIComponent("https://nirpechuk.github.io/fitness/")}`, {
+const response = await fetch(`${config.url}/auth/v1/signup?redirect_to=${encodeURIComponent("https://nir.pechuk.com/fitness/")}`, {
   method: "POST",
   headers: { apikey: config.publishableKey, "Content-Type": "application/json" },
   body: JSON.stringify({ email, password: vault.fitness.password }),
