@@ -1,7 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import { configuredClient, seal, unseal } from "../../bin/research/research-publish/scripts/upload.mjs";
+import { contentKey, rotateContent } from "../../bin/research/research-publish/scripts/content.mjs";
 import { root } from "./build.mjs";
 
 async function password(kind) {
@@ -33,6 +35,15 @@ try {
     await mkdir(path.join(dir, "objects"), { recursive: true, mode: 0o700 });
     for (const key of new Set([current.state.manifest, current.state.admin, ...Object.values(current.state.pages)]))
       await writeFile(path.join(dir, key), JSON.stringify(await client.read(key)), { mode: 0o600, flag: "wx" });
+    const assets = [...new Set(Object.values(current.state.content || {}).flatMap((entry) => entry.assets))];
+    if (assets.length) await mkdir(path.join(dir, "assets"), { recursive: true, mode: 0o700 });
+    const assetTypes = {};
+    for (const key of assets) {
+      const asset = await client.readAsset(key);
+      assetTypes[key] = asset.type;
+      await writeFile(path.join(dir, key), asset.bytes, { mode: 0o600, flag: "wx" });
+    }
+    await writeFile(path.join(dir, "asset-types.json"), JSON.stringify(assetTypes), { mode: 0o600, flag: "wx" });
     await writeFile(path.join(dir, "state.json"), JSON.stringify(current.state, null, 2), { mode: 0o600, flag: "wx" });
     console.log("Saved an encrypted, consistent research backup. It contains no plaintext passwords or reports.");
   } else if (action === "import" || action === "restore") {
@@ -41,7 +52,8 @@ try {
     const pass = await password("research");
     let manifest,
       admin,
-      pages = {};
+      pages = {},
+      savedState;
     if (action === "import") {
       manifest = await jsonFile(path.join(root, "research/manifest.json"));
       admin = await jsonFile(path.join(root, "research/admin.json"));
@@ -52,6 +64,7 @@ try {
       }
     } else {
       const saved = await jsonFile(path.resolve(destination, "state.json"));
+      savedState = saved;
       const load = (key) => {
         if (!/^objects\/[a-f0-9-]{36}$/.test(key)) throw new Error("Invalid backup object path.");
         return jsonFile(path.resolve(destination, key));
@@ -70,10 +83,24 @@ try {
       throw new Error("Backup directory and manifest disagree.");
     const adminValue = await unseal(admin, await password("admin"));
     if (adminValue.kind !== "admin" || adminValue.researchPassword !== pass) throw new Error("Admin vault and research password disagree.");
-    for (const envelope of Object.values(pages)) if ((await unseal(envelope, pass)).kind !== "page") throw new Error("Invalid encrypted report.");
+    for (const envelope of Object.values(pages))
+      if ((await unseal(envelope, pass, decoded.contentKey)).kind !== "page") throw new Error("Invalid encrypted report.");
     // Validate every envelope before sending any data. Original bytes stay encrypted.
     const state = { version: 1, manifest: await client.put(manifest), admin: await client.put(admin), pages: {} };
-    for (const [slug, envelope] of Object.entries(pages)) state.pages[slug] = await client.put(envelope);
+    if (savedState?.content) {
+      const types = await jsonFile(path.resolve(destination, "asset-types.json"));
+      for (const key of new Set(Object.values(savedState.content).flatMap((entry) => entry.assets))) {
+        if (!/^assets\/[a-f0-9-]{36}$/.test(key)) throw new Error("Invalid backup asset path.");
+        await client.putAsset(key, await readFile(path.resolve(destination, key)), types[key]);
+      }
+      state.authEpoch = randomUUID();
+      state.content = {};
+    }
+    for (const [slug, envelope] of Object.entries(pages)) {
+      state.pages[slug] = await client.put(envelope);
+      if (savedState?.content?.[slug]?.page === savedState.pages[slug])
+        state.content[slug] = { ...savedState.content[slug], page: state.pages[slug] };
+    }
     await client.commit(state, current.etag);
     console.log(`${action === "import" ? "Imported" : "Restored"} ${Object.keys(pages).length} encrypted reports and the admin vault.`);
   } else {
@@ -85,13 +112,17 @@ try {
     const manifest = await unseal(await client.read(current.state.manifest), oldPassword);
     const admin = await unseal(await client.read(current.state.admin), adminPassword);
     if (admin.researchPassword !== oldPassword) throw new Error("Admin vault and research password disagree.");
-    const encrypted = {};
-    for (const [slug, key] of Object.entries(current.state.pages))
-      encrypted[slug] = await seal(await unseal(await client.read(key), oldPassword), nextPassword);
-    const state = { ...current.state, pages: {} };
-    state.manifest = await client.put(await seal(manifest, nextPassword));
+    const nextKey = manifest.contentKey ? Buffer.from(contentKey()).toString("base64") : null;
+    const rotated = nextKey
+      ? await rotateContent({ client, state: current.state, oldKey: manifest.contentKey, newKey: nextKey })
+      : { pages: {}, content: {} };
+    const state = { ...current.state, pages: { ...rotated.pages }, ...(nextKey ? { content: rotated.content, authEpoch: randomUUID() } : {}) };
+    for (const [slug, key] of Object.entries(current.state.pages)) {
+      if (Object.hasOwn(state.pages, slug)) continue;
+      state.pages[slug] = await client.put(await seal(await unseal(await client.read(key), oldPassword), nextPassword));
+    }
+    state.manifest = await client.put(await seal({ ...manifest, ...(nextKey ? { contentKey: nextKey } : {}) }, nextPassword));
     state.admin = await client.put(await seal({ ...admin, researchPassword: nextPassword }, adminPassword));
-    for (const [slug, value] of Object.entries(encrypted)) state.pages[slug] = await client.put(value);
     await client.commit(state, current.etag);
     console.log(
       "Password rotated atomically. Update saved passwords on each publishing machine. Old immutable objects and backups retain the old encryption."

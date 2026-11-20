@@ -651,3 +651,8 @@ td:first-child {
 .flats-admin td button {
   margin: 0.2rem;
 }
+
+/* Remembered sessions open directly without flashing the password form. */
+.research-page .gate.loading {
+  visibility: hidden;
+}

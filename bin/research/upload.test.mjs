@@ -117,6 +117,7 @@ test("the standalone CLI runs outside a checkout and through a symlink", async (
   try {
     const script = path.join(temp, "upload.mjs");
     await copyFile(new URL("./research-publish/scripts/upload.mjs", import.meta.url), script);
+    await copyFile(new URL("./research-publish/scripts/content.mjs", import.meta.url), path.join(temp, "content.mjs"));
     const link = path.join(temp, "linked.mjs");
     await symlink(script, link);
     for (const file of [script, link]) {

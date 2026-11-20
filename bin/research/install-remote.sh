@@ -7,10 +7,12 @@ node -e 'if (Number(process.versions.node.split(".")[0]) < 20) process.exit(1)' 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
 curl -fsSL "$base/research-publish/scripts/upload.mjs" -o "$tmp/upload.mjs"
+curl -fsSL "$base/research-publish/scripts/content.mjs" -o "$tmp/content.mjs"
 curl -fsSL "$base/research-publish/SKILL.md" -o "$tmp/SKILL.md"
 node "$tmp/upload.mjs" --help >/dev/null
 mkdir -p "$HOME/.local/share/nir-research" "$HOME/.local/bin" "$HOME/.config/nir-research"
 install -m 644 "$tmp/upload.mjs" "$HOME/.local/share/nir-research/upload.mjs"
+install -m 644 "$tmp/content.mjs" "$HOME/.local/share/nir-research/content.mjs"
 cat > "$tmp/nir-research" <<'WRAPPER'
 #!/bin/sh
 exec node "$HOME/.local/share/nir-research/upload.mjs" "$@"
@@ -20,6 +22,7 @@ for skills in "${CODEX_HOME:-$HOME/.codex}/skills" "$HOME/.claude/skills"; do
   mkdir -p "$skills/research-publish/scripts"
   install -m 644 "$tmp/SKILL.md" "$skills/research-publish/SKILL.md"
   install -m 644 "$tmp/upload.mjs" "$skills/research-publish/scripts/upload.mjs"
+  install -m 644 "$tmp/content.mjs" "$skills/research-publish/scripts/content.mjs"
 done
 printf '%s\n' 'Installed nir-research and the research-publish skill for Codex and Claude.' \
   'Add ~/.local/bin to PATH if needed.' \

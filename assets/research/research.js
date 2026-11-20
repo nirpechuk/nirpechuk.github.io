@@ -1,6 +1,10 @@
+import { migrateSavedUnlock, stopPasswordMigration } from "./migration.js";
+import { reportsOrigin, hasReportSession, createReportSession, clearReportSession } from "./session.js";
 (() => {
   const get = (id) => document.getElementById(id);
   const isReport = document.body.dataset.payload === "page.json";
+  const streaming = isReport && document.body.dataset.stream === "1";
+  let streamOpen = false;
   const sessionKey = isReport ? "research-password" : "admin-password";
   if (isReport) {
     document.body.classList.add("research-page");
@@ -146,6 +150,42 @@
       throw new Error("password");
     }
   }
+  function openStream(progress) {
+    const frame = get("research-frame");
+    streamOpen = true;
+    get("gate").classList.remove("loading");
+    // This separate origin can execute report scripts without access to the main
+    // site's saved passwords/admin vault. Never grant this to a srcdoc report.
+    frame.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups allow-downloads allow-top-navigation-by-user-activation");
+    frame.src = `${reportsOrigin}/r/${location.pathname.split("/")[2]}/`;
+    get("document").hidden = false;
+    get("gate").hidden = true;
+    get("lock").hidden = false;
+    document.body.classList.add("research-page", "document-open");
+    document.body.classList.remove("locked");
+    const ready = (event) => {
+      if (!streamOpen || event.source !== frame.contentWindow || event.origin !== reportsOrigin || event.data?.type !== "nir-report-ready") return;
+      window.removeEventListener("message", ready);
+      clearTimeout(timeout);
+      const title = typeof event.data.title === "string" ? event.data.title : "Research";
+      frame.title = title;
+      document.title = title;
+      get("document-title").textContent = title;
+      progress?.remove();
+      updateViewCounts("page");
+    };
+    window.addEventListener("message", ready);
+    const timeout = setTimeout(() => {
+      window.removeEventListener("message", ready);
+      progress?.remove();
+      if (streamOpen) {
+        get("error").textContent = "The report couldn’t open. Enter your password to retry.";
+        get("gate").hidden = false;
+        get("document").hidden = true;
+        document.body.classList.remove("document-open");
+      }
+    }, 30000);
+  }
   async function unlock(password) {
     get("error").textContent = "";
     const submit = get("unlock-form").querySelector("button");
@@ -153,6 +193,14 @@
     submit.textContent = "Unlocking…";
     const progress = isReport ? showProgress() : null;
     try {
+      if (streaming) {
+        progress?.set(0.25, "Unlocking");
+        await createReportSession(password);
+        remember(password);
+        get("password").value = "";
+        openStream(progress);
+        return;
+      }
       progress?.set(0.02, "Loading report");
       if (!payload) {
         // Old installed uploaders may still label the index as manifest.json.
@@ -240,7 +288,11 @@
     event.preventDefault();
     unlock(get("password").value);
   });
-  get("lock").addEventListener("click", () => {
+  function lockContent(notify = true) {
+    streamOpen = false;
+    get("gate").classList.remove("loading");
+    stopPasswordMigration();
+    void clearReportSession();
     remember(null, "admin-password");
     remember(null, "research-password");
     window.NirAdmin?.close();
@@ -258,10 +310,29 @@
     get("error").textContent = "";
     document.title = "Admin | Nir Pechuk";
     get("password").focus();
+    if (notify)
+      try {
+        localStorage.setItem("research:locked-at", String(Date.now()));
+      } catch {}
+  }
+  get("lock").addEventListener("click", () => lockContent());
+  window.addEventListener("storage", (event) => {
+    if (event.key === "research:locked-at") lockContent(false);
   });
   window.addEventListener("pageshow", (event) => {
     if (event.persisted && !get("directory").hidden) updateViewCounts("index");
   });
-  const password = savedPassword();
-  if (password) unlock(password);
+  async function start() {
+    get("gate").classList.add("loading");
+    // Check an existing session before any password work or migration round trip.
+    if (streaming && (await hasReportSession())) {
+      openStream();
+      return;
+    }
+    if (!(await migrateSavedUnlock(sessionKey))) return;
+    get("gate").classList.remove("loading");
+    const password = savedPassword();
+    if (password) unlock(password);
+  }
+  void start().catch(() => get("gate").classList.remove("loading"));
 })();

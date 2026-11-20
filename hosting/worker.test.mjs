@@ -5,6 +5,8 @@ import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 import { mkdtemp, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { runInNewContext } from "node:vm";
+import { webcrypto, randomUUID } from "node:crypto";
 import { uploadMedia } from "./scripts/media.mjs";
 import { affectedTargets } from "./scripts/changed.mjs";
 import { cloudflareClient, seal, unseal, uploadDirect, waitForDirectPage } from "../bin/research/research-publish/scripts/upload.mjs";
@@ -27,7 +29,7 @@ async function fixture(t) {
       script: bundle.outputFiles[0].text,
       compatibilityDate: "2026-11-20",
       r2Buckets: ["RESEARCH", "MEDIA"],
-      bindings: { PUBLISH_TOKEN: token },
+      bindings: { PUBLISH_TOKEN: token, RESEARCH_SESSION_SECRET: Buffer.alloc(32, 9).toString("base64") },
       serviceBindings: {
         ASSETS: () => new Response("homepage"),
         FITNESS: (request) => new Response(`fitness: ${new URL(request.url).pathname}`),
@@ -171,4 +173,131 @@ test("deployment selection isolates apps while including content and shared infr
   assert.deepEqual(affectedTargets(["hosting/scripts/build.mjs"]), ["family", "fitness", "flats", "site"]);
   assert.deepEqual(affectedTargets(["hosting/family/public/index.html"]), ["family"]);
   assert.deepEqual(affectedTargets(["work/private-notes.md", "research/page/page.json"]), []);
+});
+
+async function enableContent(client) {
+  const current = await client.state();
+  const manifest = await unseal(await client.read(current.state.manifest), password);
+  const raw = Buffer.alloc(32, 7).toString("base64");
+  await client.commit(
+    { ...current.state, authEpoch: randomUUID(), content: {}, manifest: await client.put(await seal({ ...manifest, contentKey: raw }, password)) },
+    current.etag
+  );
+  return raw;
+}
+async function sessionRequest(mf, options = {}) {
+  const response = await mf.dispatchFetch("https://nir.pechuk.com/research/manifest.json");
+  const envelope = await response.json();
+  const material = await webcrypto.subtle.importKey("raw", Buffer.from(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await webcrypto.subtle.deriveBits(
+    { name: "PBKDF2", salt: Buffer.from(envelope.salt, "base64"), iterations: envelope.iterations, hash: "SHA-256" },
+    material,
+    256
+  );
+  const body = JSON.stringify({ key: Buffer.from(bits).toString("base64"), etag: response.headers.get("etag"), ...options.body });
+  return mf.dispatchFetch("https://reports.pechuk.com/session", {
+    method: "POST",
+    headers: {
+      Origin: options.origin || "https://nir.pechuk.com",
+      "Content-Type": "application/json",
+      "Content-Length": String(Buffer.byteLength(body)),
+    },
+    body,
+  });
+}
+test("protected reports externalize media and enforce sessions before native HTML, ranges, and cache validation", async (t) => {
+  const { client, mf } = await fixture(t),
+    raw = await enableContent(client);
+  const bytes = Buffer.alloc(700000);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = i % 251;
+  const uri = "data:video/mp4;base64," + bytes.toString("base64");
+  const source = `<!doctype html><html><head><title>Private finding</title></head><body><video src="${uri}" controls></video><script>const duplicate="${uri}"</script></body></html>`;
+  const result = await uploadDirect({ client, password, html: source, slug: "streamed" });
+  const current = await client.state(),
+    entry = current.state.content.streamed;
+  assert.equal(entry.assets.length, 1);
+  const report = await unseal(result.payload, password, raw);
+  assert.ok(report.html.length < 1500);
+  assert.ok(!report.html.includes("base64,"));
+  const native = "https://reports.pechuk.com/r/streamed/",
+    asset = native + entry.assets[0];
+  for (const url of [native, asset]) assert.equal((await mf.dispatchFetch(url)).status, 401);
+  assert.equal((await sessionRequest(mf, { body: { key: Buffer.alloc(32).toString("base64") } })).status, 401);
+  assert.equal((await sessionRequest(mf, { origin: "https://evil.example" })).status, 403);
+  assert.equal((await sessionRequest(mf, { body: { etag: '"stale"' } })).status, 409);
+  const manifestResponse = await mf.dispatchFetch("https://nir.pechuk.com/research/manifest.json");
+  const login = await sessionRequest(mf, { body: { etag: "W/" + manifestResponse.headers.get("etag") } });
+  assert.equal(login.status, 200);
+  assert.match(login.headers.get("set-cookie"), /Secure; HttpOnly; SameSite=Strict/);
+  const Cookie = login.headers.get("set-cookie").split(";")[0];
+  const page = await mf.dispatchFetch(native, { headers: { Cookie } });
+  assert.equal(page.status, 200);
+  const nativeHtml = await page.text();
+  assert.match(nativeHtml, /Private finding/);
+  const events = {},
+    messages = [];
+  runInNewContext(nativeHtml.match(/<script>([\s\S]*?)<\/script>/)[1], {
+    matchMedia: () => ({ matches: false }),
+    navigator: {},
+    Element: class {},
+    IntersectionObserver: class {
+      observe() {}
+    },
+    MutationObserver: class {
+      observe() {}
+    },
+    document: { documentElement: {}, querySelectorAll: () => [], title: "Private finding" },
+    addEventListener: (name, callback) => {
+      events[name] = callback;
+    },
+    parent: { postMessage: (...args) => messages.push(args) },
+  });
+  events.DOMContentLoaded();
+  assert.deepEqual(JSON.parse(JSON.stringify(messages)), [[{ type: "nir-report-ready", title: "Private finding" }, "https://nir.pechuk.com"]]);
+  assert.equal((await mf.dispatchFetch("https://nir.pechuk.com/research/streamed/")).status, 200);
+  assert.match(await (await mf.dispatchFetch("https://nir.pechuk.com/research/streamed/")).text(), /data-stream="1"/);
+  const range = await mf.dispatchFetch(asset, { headers: { Cookie, Range: "bytes=260000-530000" } });
+  assert.equal(range.status, 206);
+  assert.equal(range.headers.get("content-range"), "bytes 260000-530000/700000");
+  assert.deepEqual(Buffer.from(await range.arrayBuffer()), bytes.subarray(260000, 530001));
+  const full = await mf.dispatchFetch(asset, { headers: { Cookie } });
+  assert.deepEqual(Buffer.from(await full.arrayBuffer()), bytes);
+  assert.equal(full.headers.get("cache-control"), "private, no-cache");
+  const etag = full.headers.get("etag");
+  assert.equal((await mf.dispatchFetch(asset, { headers: { Cookie, "If-None-Match": etag } })).status, 304);
+  assert.equal((await mf.dispatchFetch(asset, { headers: { "If-None-Match": etag } })).status, 401);
+  assert.equal((await mf.dispatchFetch(asset, { headers: { Cookie, Range: "bytes=700000-" } })).status, 416);
+  const suffix = await mf.dispatchFetch(asset, { headers: { Cookie, Range: "bytes=-10" } });
+  assert.deepEqual(Buffer.from(await suffix.arrayBuffer()), bytes.subarray(-10));
+  assert.equal((await mf.dispatchFetch(asset, { method: "HEAD", headers: { Cookie } })).headers.get("content-length"), "700000");
+  const other = await uploadDirect({ client, password, html, slug: "another" });
+  assert.ok(other);
+  assert.equal((await mf.dispatchFetch("https://reports.pechuk.com/r/another/" + entry.assets[0], { headers: { Cookie } })).status, 404);
+  const changed = await client.state();
+  await client.commit({ ...changed.state, authEpoch: randomUUID() }, changed.etag);
+  assert.equal((await mf.dispatchFetch(native, { headers: { Cookie } })).status, 401);
+  const logout = await mf.dispatchFetch("https://reports.pechuk.com/session", {
+    method: "DELETE",
+    headers: { Origin: "https://nir.pechuk.com", Cookie },
+  });
+  assert.match(logout.headers.get("set-cookie"), /Max-Age=0/);
+});
+
+test("protected media rejects ciphertext tampering", async (t) => {
+  const { client, mf } = await fixture(t);
+  await enableContent(client);
+  await uploadDirect({ client, password, html: '<!doctype html><img src="data:image/jpeg;base64,aGVsbG8gd29ybGQ=">', slug: "integrity" });
+  const current = await client.state(),
+    key = current.state.content.integrity.assets[0];
+  const login = await sessionRequest(mf),
+    Cookie = login.headers.get("set-cookie").split(";")[0];
+  const bucket = await mf.getR2Bucket("RESEARCH"),
+    stored = await bucket.get(key),
+    binary = new Uint8Array(await stored.arrayBuffer());
+  binary[binary.length - 1] ^= 1;
+  await bucket.put(key, binary, { customMetadata: { type: "image/jpeg" } });
+  await assert.rejects(async () => {
+    const response = await mf.dispatchFetch("https://reports.pechuk.com/r/integrity/" + key, { headers: { Cookie } });
+    await response.arrayBuffer();
+  });
 });

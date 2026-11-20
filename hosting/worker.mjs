@@ -1,8 +1,10 @@
+import { CONTENT_ORIGIN, protectedContent } from "./research-content.mjs";
 import shell from "../bin/research/page.html";
 import { mediaApi } from "./media-api.mjs";
 
 const STATE_KEY = "state.json";
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const assetPattern = /^assets\/[a-f0-9-]{36}$/;
 const objectPattern = /^objects\/[a-f0-9-]{36}$/;
 const noStore = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "X-Robots-Tag": "noindex, nofollow, noarchive" };
 const json = (value, status = 200, headers = {}) =>
@@ -35,7 +37,21 @@ function validState(state) {
     typeof state.pages === "object" &&
     !Array.isArray(state.pages) &&
     Object.keys(state.pages).length <= 1000 &&
-    Object.entries(state.pages).every(([slug, key]) => validSlug(slug) && objectPattern.test(key))
+    Object.entries(state.pages).every(([slug, key]) => validSlug(slug) && objectPattern.test(key)) &&
+    (!state.content ||
+      (typeof state.authEpoch === "string" &&
+        /^[a-f0-9-]{36}$/.test(state.authEpoch) &&
+        typeof state.content === "object" &&
+        !Array.isArray(state.content) &&
+        Object.keys(state.content).length <= 1000 &&
+        Object.entries(state.content).every(
+          ([slug, entry]) =>
+            validSlug(slug) &&
+            objectPattern.test(entry?.page) &&
+            Array.isArray(entry.assets) &&
+            entry.assets.length <= 2000 &&
+            entry.assets.every((key) => assetPattern.test(key))
+        )))
   );
 }
 
@@ -75,20 +91,39 @@ async function publishing(request, env, pathname) {
     return json({ etag: object.httpEtag });
   }
   const key = pathname.slice("/api/publish/".length);
-  if (!objectPattern.test(key)) return failure(404, "Not found.");
-  if (request.method === "GET") return objectResponse(await env.RESEARCH.get(key), request);
+  if (!objectPattern.test(key) && !assetPattern.test(key)) return failure(404, "Not found.");
+  if (request.method === "GET") {
+    const object = await env.RESEARCH.get(key);
+    if (assetPattern.test(key))
+      return object
+        ? new Response(object.body, {
+            headers: {
+              ...noStore,
+              "Content-Type": "application/octet-stream",
+              "X-Asset-Type": object.customMetadata?.type || "application/octet-stream",
+            },
+          })
+        : failure(404, "Not found.");
+    return objectResponse(object, request);
+  }
   if (request.method !== "PUT") return failure(405, "Method not allowed.");
   const length = Number(request.headers.get("content-length"));
   if (!Number.isSafeInteger(length) || length <= 0 || length > 80 * 1024 * 1024)
     return failure(413, "Encrypted uploads must be at most 80 MiB with a Content-Length.");
-  if (request.headers.get("content-type") !== "application/json") return failure(415, "Expected an encrypted JSON envelope.");
+  const binary = assetPattern.test(key);
+  if (request.headers.get("content-type") !== (binary ? "application/octet-stream" : "application/json"))
+    return failure(415, "Expected encrypted content.");
+  const assetType = request.headers.get("x-asset-type");
+  if (binary && !/^(?:(?:image|video|audio|font)\/[a-z0-9.+-]+|application\/(?:pdf|octet-stream|font-woff))$/.test(assetType || ""))
+    return failure(400, "Invalid media type.");
   const checksum = request.headers.get("x-content-sha256");
   if (!/^[a-f0-9]{64}$/.test(checksum || "")) return failure(400, "An upload checksum is required.");
   // Stream large encrypted payloads directly to R2, keeping them out of Worker memory.
   const object = await env.RESEARCH.put(key, request.body, {
     onlyIf: new Headers({ "If-None-Match": "*" }),
     sha256: checksum,
-    httpMetadata: { contentType: "application/json", cacheControl: "no-store" },
+    httpMetadata: { contentType: binary ? "application/octet-stream" : "application/json", cacheControl: "no-store" },
+    ...(binary ? { customMetadata: { type: assetType } } : {}),
   });
   return object ? json({ key, etag: object.httpEtag }, 201) : failure(412, "This immutable upload already exists.");
 }
@@ -121,9 +156,16 @@ async function research(request, env, pathname) {
     url.pathname = canonical;
     return new Response(null, { status: 308, headers: { ...noStore, Location: url.href } });
   }
-  return new Response(request.method === "HEAD" ? null : shell.replace("__PAYLOAD__", index ? "admin.json" : "page.json"), {
-    headers: { ...noStore, "Content-Type": "text/html; charset=utf-8" },
-  });
+  return new Response(
+    request.method === "HEAD"
+      ? null
+      : shell
+          .replace("__PAYLOAD__", index ? "admin.json" : "page.json")
+          .replace("__STREAM__", !index && state.content?.[page[1]]?.page === state.pages[page[1]] ? "1" : "0"),
+    {
+      headers: { ...noStore, "Content-Type": "text/html; charset=utf-8" },
+    }
+  );
 }
 
 async function media(request, env, pathname) {
@@ -167,7 +209,8 @@ async function media(request, env, pathname) {
 export default {
   async fetch(request, env) {
     try {
-      const { pathname } = new URL(request.url);
+      const { pathname, origin } = new URL(request.url);
+      if (origin === CONTENT_ORIGIN) return await protectedContent(request, env);
       if (pathname.startsWith("/api/media/")) {
         if (request.headers.has("origin") || !(await authorized(request, env))) return failure(401, "Publishing authentication required.");
         return await mediaApi(request, env.MEDIA);

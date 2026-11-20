@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Standalone uploader: Node.js 20+, no packages, Git checkout, or local Git required.
+import { packReport, openContent } from "./content.mjs";
 import { webcrypto, randomUUID, createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
@@ -39,7 +40,8 @@ export async function seal(value, password) {
     data: Buffer.from(data).toString("base64"),
   };
 }
-export async function unseal(value, password) {
+export async function unseal(value, password, rawContentKey) {
+  if (value?.version === 2) return openContent(value, rawContentKey);
   if (value.version !== 1 || value.iterations !== rounds) throw new Error("Unsupported research format.");
   const key = await keyFor(password, Buffer.from(value.salt, "base64"));
   const data = await webcrypto.subtle.decrypt({ name: "AES-GCM", iv: Buffer.from(value.iv, "base64") }, key, Buffer.from(value.data, "base64"));
@@ -180,7 +182,7 @@ export function cloudflareClient(token, origin = "https://nir.pechuk.com", fetch
     (url.protocol !== "https:" && !(url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname)))
   )
     throw new Error("RESEARCH_SITE must be an HTTPS origin (or localhost for development).");
-  const request = async (route, method = "GET", body, extra = {}) => {
+  const request = async (route, method = "GET", body, extra = {}, binary = false) => {
     const endpoint = route.startsWith("media/") ? `/api/${route}` : `/api/publish/${route}`;
     const response = await fetcher(`${url.origin}${endpoint}`, {
       method,
@@ -205,16 +207,35 @@ export function cloudflareClient(token, origin = "https://nir.pechuk.com", fetch
           : `Publishing returned HTTP ${response.status}. Check the account configuration and publishing token.`;
       throw Object.assign(new Error(message), { status: response.status });
     }
-    return response.json();
+    return binary ? { bytes: Buffer.from(await response.arrayBuffer()), type: response.headers.get("x-asset-type") } : response.json();
   };
   return {
     origin: url.origin,
     state: () => request("state"),
     read: (key) => request(key),
+    readAsset: (key) => request(key, "GET", undefined, {}, true),
+    async putAsset(key, bytes, type) {
+      if (!/^assets\/[a-f0-9-]{36}$/.test(key) || !Buffer.isBuffer(bytes) || bytes.subarray(0, 4).toString() !== "NIR2")
+        throw new Error("Only encrypted assets can be uploaded.");
+      try {
+        await request(key, "PUT", bytes, { "X-Content-SHA256": createHash("sha256").update(bytes).digest("hex"), "X-Asset-Type": type });
+      } catch (error) {
+        if (error.status !== 412) throw error;
+        const existing = await request(key, "GET", undefined, {}, true);
+        if (existing.type !== type || !existing.bytes.equals(bytes)) throw new Error("An immutable asset has different contents.");
+      }
+      return key;
+    },
     media: (route, method, value) =>
       request(`media/${route}`, method, value === undefined ? undefined : Buffer.isBuffer(value) ? value : JSON.stringify(value)),
     async put(envelope) {
-      if (envelope?.version !== 1 || envelope.iterations !== rounds || !["salt", "iv", "data"].every((k) => typeof envelope[k] === "string"))
+      if (
+        !(
+          (envelope?.version === 1 && envelope.iterations === rounds && typeof envelope.salt === "string") ||
+          (envelope?.version === 2 && envelope.algorithm === "AES-GCM" && envelope.encoding === "gzip")
+        ) ||
+        !["iv", "data"].every((k) => typeof envelope[k] === "string")
+      )
         throw new Error("Only encrypted research envelopes can be uploaded.");
       const key = `objects/${randomUUID()}`,
         body = JSON.stringify(envelope);
@@ -260,12 +281,23 @@ export async function uploadDirect({ client, password, html, slug, title, replac
       .trim() || slug;
   if (dryRun) return { status: "validated", action: remove ? "delete" : existing ? "update" : "create", url, title };
   const updated = new Date().toISOString().slice(0, 10);
-  const next = { ...state, pages: { ...state.pages } };
+  const next = { ...state, pages: { ...state.pages }, ...(state.content ? { content: { ...state.content } } : {}) };
   let payload;
-  if (remove) delete next.pages[slug];
-  else {
-    payload = await seal({ kind: "page", title, html, updated }, password);
-    next.pages[slug] = await client.put(payload);
+  if (remove) {
+    delete next.pages[slug];
+    if (next.content) delete next.content[slug];
+  } else {
+    if (manifest.contentKey) {
+      const packed = await packReport({ client, rawKey: manifest.contentKey, html, slug, title, updated });
+      payload = packed.payload;
+      next.pages[slug] = await client.put(payload);
+      next.content ||= {};
+      next.content[slug] = { page: next.pages[slug], assets: packed.assets };
+    } else {
+      payload = await seal({ kind: "page", title, html, updated }, password);
+      next.pages[slug] = await client.put(payload);
+      if (next.content) delete next.content[slug];
+    }
   }
   const pages = manifest.pages.filter((page) => page.slug !== slug);
   if (!remove) pages.unshift({ slug, title, updated });

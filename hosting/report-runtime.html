@@ -1,0 +1,50 @@
+<script>
+  (function () {
+    const managed = new WeakMap();
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches || navigator.connection?.saveData;
+    const near = new IntersectionObserver(
+      (entries) => {
+        for (const { target: video, isIntersecting } of entries) {
+          const state = managed.get(video);
+          if (!state) continue;
+          if (isIntersecting) {
+            video.preload = state.autoplay && !reduced ? "auto" : "metadata";
+            if (state.autoplay && !reduced) void video.play().catch(() => {});
+          } else {
+            video.pause();
+            // Preserve metadata events used by the reports' synchronized controls.
+            video.preload = "metadata";
+          }
+        }
+      },
+      { rootMargin: "120px" }
+    );
+    function scan(root) {
+      const nodes = root instanceof Element ? [root, ...root.querySelectorAll("video,img")] : [...document.querySelectorAll("video,img")];
+      for (const element of nodes) {
+        if (element.tagName === "IMG") {
+          if (!element.hasAttribute("loading")) element.loading = "lazy";
+          element.decoding = "async";
+        } else if (element.tagName === "VIDEO" && !managed.has(element)) {
+          const state = { autoplay: element.autoplay };
+          managed.set(element, state);
+          element.autoplay = false;
+          element.playsInline = true;
+          element.preload = "metadata";
+          if (reduced) element.controls = true;
+          near.observe(element);
+        }
+      }
+    }
+    new MutationObserver((records) => {
+      for (const record of records) for (const node of record.addedNodes) if (node instanceof Element) scan(node);
+    }).observe(document.documentElement, { childList: true, subtree: true });
+    addEventListener("DOMContentLoaded", () => {
+      scan(document);
+      parent.postMessage({ type: "nir-report-ready", title: document.title }, "https://nir.pechuk.com");
+    });
+    addEventListener("visibilitychange", () => {
+      if (document.hidden) document.querySelectorAll("video").forEach((video) => video.pause());
+    });
+  })();
+</script>
