@@ -213,15 +213,33 @@ const SHOULDER_Y = 138; // top of each arm's base column
 const UPPER = 36; // arm link lengths
 const FORE = 32;
 const REST = { L: [418, 124], R: [458, 124] }; // where the wrists hover when idle
+const TUCK = [16, 108]; // reach and height an arm pulls in to while its waist turns
+const TURN_SEC = 2.2; // the least time a waist turn takes
 const TOWER_X = 440; // middle of the workspace, under the camera
 const BOBA_X = 340;
 const KETTLE_X = 503;
 const GLOBE_X = 531;
 
+// An arm's state: which way its waist faces (yaw: 0 right, pi left), how far
+// out and how high the wrist is in the arm's own plane (r, z), and the gripper
+// opening. x, y and the elbow (ex, ey) are where that lands on screen.
+const makeArm = (base, [x, y]) => ({
+  base,
+  yaw: x < base ? Math.PI : 0,
+  r: Math.abs(x - base),
+  z: y,
+  gap: 16,
+  x,
+  y,
+  ex: base,
+  ey: SHOULDER_Y,
+  move: null,
+});
+
 const S = {
   t: 0,
   nir: { look: -1, blink: 0, typing: true, mouth: "smile", arm: null, stretch: 0, cheer: 0, sip: 0 },
-  robot: { L: { x: REST.L[0], y: REST.L[1], gap: 16 }, R: { x: REST.R[0], y: REST.R[1], gap: 16 }, recording: false, ok: 0 },
+  robot: { L: makeArm(BASE.L, REST.L), R: makeArm(BASE.R, REST.R), recording: false, ok: 0 },
   boba: { x: BOBA_X, base: DESK, level: 1, held: false, pearls: 0, pour: 0 },
   kettle: { x: KETTLE_X, base: DESK, tilt: 0 },
   globe: { x: GLOBE_X, base: DESK, energy: 0, flakes: [] },
@@ -262,6 +280,8 @@ function advance(dt) {
       tw.done();
     }
   }
+  pose(S.robot.L);
+  pose(S.robot.R);
   for (const { arm, thing, drop } of carried) {
     thing.x = arm.x;
     thing.base = arm.y + drop;
@@ -458,11 +478,36 @@ function ik(sx, sy, tx, ty, l1, l2, bend) {
     dy *= max / d;
     d = max;
   }
-  const aim = Math.atan2(dy, dx);
-  const fold = Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1));
-  // bend = 0 means "elbow up": take whichever of the two solutions is higher.
-  const a = bend ? aim + bend * fold : Math.sin(aim + fold) < Math.sin(aim - fold) ? aim + fold : aim - fold;
+  const a = Math.atan2(dy, dx) + bend * Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1));
   return [sx + Math.cos(a) * l1, sy + Math.sin(a) * l1, sx + dx, sy + dy];
+}
+
+// Each arm is a desk manipulator seen from the side: a waist joint turns the
+// whole arm about its base column, and the shoulder and elbow work in the
+// arm's own vertical plane with the elbow always up. Side-on, a waist turn
+// shows as the arm foreshortening, passing over its base, and opening out
+// again on the other side. Nothing ever flips between two ways of folding.
+function pose(arm) {
+  const m = arm.move;
+  if (m) {
+    let r = lerp(m.from.r, m.to.r, m.p);
+    let z = lerp(m.from.z, m.to.z, m.p);
+    if (m.turning) {
+      // Pull in and lift while the waist turns, so nothing is swung wide.
+      const tuck = Math.sin(Math.PI * m.p) * 0.8;
+      r += (TUCK[0] - r) * tuck;
+      z += Math.min(0, TUCK[1] - z) * tuck;
+    }
+    arm.r = r;
+    arm.z = z;
+    arm.yaw = lerp(m.from.yaw, m.to.yaw, m.p);
+  }
+  const facing = Math.cos(arm.yaw);
+  const [er, ez, wr, wz] = ik(0, SHOULDER_Y, arm.r, arm.z, UPPER, FORE, -1);
+  arm.ex = arm.base + er * facing;
+  arm.ey = ez;
+  arm.x = arm.base + wr * facing;
+  arm.y = wz;
 }
 
 function drawNir() {
@@ -608,9 +653,9 @@ function drawCamera() {
 
 // One arm: a base column bolted to the desk, an upper arm and forearm, and a
 // parallel gripper that always points down.
-function drawArm(arm, side) {
-  const sx = side < 0 ? BASE.L : BASE.R;
-  const [ex, ey, hx, hy] = ik(sx, SHOULDER_Y, arm.x, arm.y, UPPER, FORE, 0);
+function drawArm(arm) {
+  const sx = arm.base;
+  const { ex, ey, x: hx, y: hy } = arm;
   tmp.clear();
   tmp.rect(sx - 12, DESK - 4, 25, 4, C.joint); // base plate
   tmp.rect(sx - 7, SHOULDER_Y + 4, 15, DESK - SHOULDER_Y - 8, C.arm); // base column
@@ -785,8 +830,8 @@ function draw(dt) {
   drawGlobe(dt);
   drawBlocks();
   if (!S.boba.held) drawBoba();
-  drawArm(S.robot.L, -1);
-  drawArm(S.robot.R, 1);
+  drawArm(S.robot.L);
+  drawArm(S.robot.R);
   drawNirArms();
   if (S.boba.held) drawBoba(); // in his hand: the cup goes in front of his sleeve
   drawSays();
@@ -794,7 +839,17 @@ function draw(dt) {
 
 // Choreography --------------------------------------------------------------------
 const hands = S.robot;
-const reach = (arm, x, y, sec = 1.4) => tween(arm, { x, y }, sec);
+// Move a wrist to a point on screen. The wrist travels in a straight line
+// within the arm's plane; if the point is on the other side of the base, the
+// waist turns to face it and the move takes at least TURN_SEC.
+function reach(arm, x, y, sec = 1.4) {
+  const side = Math.abs(x - arm.base) < 6 ? (Math.cos(arm.yaw) < 0 ? -1 : 1) : Math.sign(x - arm.base);
+  const from = { r: arm.r, z: arm.z, yaw: arm.yaw };
+  const to = { r: (x - arm.base) * side, z: y, yaw: side < 0 ? Math.PI : 0 };
+  const turning = Math.abs(to.yaw - from.yaw) > 0.01;
+  arm.move = { p: 0, from, to, turning };
+  return tween(arm.move, { p: 1 }, turning ? Math.max(sec, TURN_SEC) : sec);
+}
 const grip = (arm, gap) => tween(arm, { gap }, 0.35);
 const home = (which, sec = 1.3) => reach(hands[which], REST[which][0], REST[which][1], sec);
 
