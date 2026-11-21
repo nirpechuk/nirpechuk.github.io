@@ -32,3 +32,6 @@ apps/fitness/node_modules/
 /work/
 /dist/
 /.wrangler/
+
+# Robot models baked for the concept pages (work/arms-bake): data, kept as written
+concepts/arms/

@@ -265,7 +265,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     let far = 0;
     for (let i = 0; i < goal.length; i++) far = Math.max(far, Math.abs(goal[i] - from[i]));
     const T = Math.max(floor, (far / rate) * 1.5) / hurry;
-    for (let t = 0; t < T; ) {
+    for (let t = 0; t < T;) {
       t += yield;
       const s = ease(Math.min(1, t / T));
       for (let i = 0; i < goal.length; i++) A.arm.q[i] = from[i] + (goal[i] - from[i]) * s;
@@ -278,7 +278,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     const T = seconds / hurry;
     const p = new THREE.Vector3();
     const q = new THREE.Quaternion();
-    for (let t = 0; t < T; ) {
+    for (let t = 0; t < T;) {
       t += yield;
       const s = ease(Math.min(1, t / T));
       p.lerpVectors(p0, pose.pos, s);
@@ -290,14 +290,14 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
   function* grip(A, gap, seconds) {
     const from = A.arm.gap;
     const T = seconds / hurry;
-    for (let t = 0; t < T; ) {
+    for (let t = 0; t < T;) {
       t += yield;
       A.arm.gap = from + (gap - from) * ease(Math.min(1, t / T));
     }
   }
 
   function* pause(seconds) {
-    for (let t = 0; t < seconds; ) t += yield;
+    for (let t = 0; t < seconds;) t += yield;
   }
 
   // Arms: holding -----------------------------------------------------------
@@ -487,7 +487,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         yield* moveL(A, plan.before, 0.26);
         // Hold it there until the other arm is clear of where it goes; not for ever.
         reserve(A);
-        for (let waited = 0; !lost() && waited < 2.5 && clash([plan.place], other); ) waited += yield;
+        for (let waited = 0; !lost() && waited < 2.5 && clash([plan.place], other);) waited += yield;
         reserve(A, plan.place);
         if (!lost()) yield* moveJ(A, plan.above.q);
         if (!lost()) yield* moveL(A, plan.set, 0.36);
