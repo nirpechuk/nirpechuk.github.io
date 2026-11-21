@@ -12,15 +12,25 @@ import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
 const CAMERA_DISTANCE = 2.6; // far enough that the page plane maps to pixels almost without perspective
 const CREASE = 0.7; // edges sharper than this stay sharp
+const BASE_HEIGHT = 0.12; // the model's own base sits this far above its origin
 
 // Looks -------------------------------------------------------------------
 
+// Three materials make an arm: the shell, the metal trim, and the dark gripper.
 function materialFor([r, g, b]) {
   const light = (r + g + b) / 3;
-  if (light > 0.85)
-    return new THREE.MeshPhysicalMaterial({ color: 0xf1f1ee, roughness: 0.42, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.4 });
-  if (light > 0.5) return new THREE.MeshStandardMaterial({ color: 0xb9bbbd, roughness: 0.35, metalness: 0.75 });
-  return new THREE.MeshStandardMaterial({ color: light > 0.2 ? 0x2f3134 : 0x1b1c1e, roughness: 0.55, metalness: 0.1 });
+  let material;
+  if (light > 0.85) {
+    material = new THREE.MeshPhysicalMaterial({ color: 0xf1f1ee, roughness: 0.42, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.4 });
+    material.name = "shell";
+  } else if (light > 0.5) {
+    material = new THREE.MeshStandardMaterial({ color: 0xb9bbbd, roughness: 0.35, metalness: 0.75 });
+    material.name = "trim";
+  } else {
+    material = new THREE.MeshStandardMaterial({ color: 0x1b1c1e, roughness: 0.55, metalness: 0.1 });
+    material.name = "grip";
+  }
+  return material;
 }
 
 // Loading -----------------------------------------------------------------
@@ -88,6 +98,23 @@ export class Arm {
       mesh.receiveShadow = true;
       moving[g.body].add(mesh);
     }
+
+    // What it stands on: a plain column with a plate on top, long enough to run
+    // out of the bottom of the window however high the arm is raised.
+    const metal = new THREE.MeshStandardMaterial({ color: 0x9a9da1, roughness: 0.5, metalness: 0.65 });
+    const column = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.046, 3, 40), metal);
+    column.rotation.x = Math.PI / 2;
+    column.position.z = BASE_HEIGHT - 0.014 - 1.5;
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.074, 0.074, 0.014, 48), metal);
+    plate.rotation.x = Math.PI / 2;
+    plate.position.z = BASE_HEIGHT - 0.007;
+    this.pedestal = new THREE.Group();
+    for (const mesh of [column, plate]) {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      this.pedestal.add(mesh);
+    }
+    this.root.add(this.pedestal);
 
     this.joints = new Map(spec.joints.map((j) => [j.name, { ...j, node: moving[j.body], axis: new THREE.Vector3().fromArray(j.axis) }]));
     this.chain = spec.armJoints.map((n) => this.joints.get(n));
@@ -249,7 +276,9 @@ export class Arm {
 
 // The rig -----------------------------------------------------------------
 
-export async function createRig({ canvas, robot = "xarm7" }) {
+// `pedestal` stands each arm on a visible column (for arms that rise and sink);
+// `soft` lights the scene nearly from the eye, for shorter, fainter shadows.
+export async function createRig({ canvas, robot = "xarm7", pedestal = false, soft = false }) {
   const spec = await loadRobot(robot);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
@@ -272,20 +301,29 @@ export async function createRig({ canvas, robot = "xarm7" }) {
   const key = new THREE.DirectionalLight(0xffffff, 2.1);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
-  key.shadow.radius = 7;
+  key.shadow.radius = soft ? 10 : 7;
   key.shadow.blurSamples = 16;
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.004;
   scene.add(key, key.target);
+  // A flat fill from all round, off unless asked for: it lifts the shaded side.
+  const fill = new THREE.HemisphereLight(0xffffff, 0xdcdcdc, 0);
+  scene.add(fill);
 
   // The page: nothing to see but the shadows that land on it.
-  const page = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShadowMaterial({ opacity: lightPage ? 0.2 : 0.45 }));
+  const page = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.ShadowMaterial({ opacity: soft ? (lightPage ? 0.13 : 0.4) : lightPage ? 0.2 : 0.45 })
+  );
   page.receiveShadow = true;
   scene.add(page);
 
   const camera = new THREE.PerspectiveCamera(20, 1, 0.1, 20);
   const arms = [new Arm(spec, -1), new Arm(spec, 1)];
-  for (const arm of arms) scene.add(arm.root);
+  for (const arm of arms) {
+    arm.pedestal.visible = pedestal;
+    scene.add(arm.root);
+  }
 
   const rig = {
     spec,
@@ -293,6 +331,22 @@ export async function createRig({ canvas, robot = "xarm7" }) {
     scene,
     camera,
     renderer,
+    key,
+    fill,
+    ground: page.material, // what the shadows are drawn with
+    materials: Object.fromEntries([...spec.materials.values()].map((m) => [m.name, m])),
+    // Where the key light shines from, in degrees: round the page (0 right, 90
+    // up) and up off it. Unset, it is placed for the window as below.
+    light: { azimuth: null, elevation: null },
+    aim() {
+      if (rig.light.azimuth === null) return;
+      const az = THREE.MathUtils.degToRad(rig.light.azimuth);
+      const el = THREE.MathUtils.degToRad(rig.light.elevation);
+      key.position
+        .set(Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el))
+        .multiplyScalar(2.2)
+        .add(key.target.position);
+    },
     K: 800, // pixels to the metre
     W: 0,
     H: 0,
@@ -305,8 +359,9 @@ export async function createRig({ canvas, robot = "xarm7" }) {
       const s = CAMERA_DISTANCE / (CAMERA_DISTANCE - v.z);
       return { x: rig.W / 2 + v.x * rig.K * s, y: rig.H / 2 - v.y * rig.K * s, scale: s };
     },
-    // Lay the stage out for a window: the scale, and where the two bases stand.
-    layout({ K, baseX, baseY, baseZ = 0.13 }) {
+    // Lay the stage out for a window: the scale, and where on screen the foot of
+    // each arm is (left, then right), `baseZ` metres in front of the page.
+    layout({ K, bases, baseZ = 0.22 }) {
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       if (!w || !h) return;
@@ -322,8 +377,15 @@ export async function createRig({ canvas, robot = "xarm7" }) {
       const halfW = w / K / 2;
       const halfH = h / K / 2;
       page.scale.set(halfW * 2.4, halfH * 2.4, 1);
-      key.position.set(-halfW * 0.5, halfH * 1.3, 1.9);
-      key.target.position.set(0, -halfH * 0.2, 0);
+      if (soft) {
+        // Nearly from the eye, so shadows stay close under what casts them.
+        key.position.set(-halfW * 0.22, halfH * 0.55, 2.3);
+        key.target.position.set(0, -halfH * 0.1, 0);
+      } else {
+        key.position.set(-halfW * 0.5, halfH * 1.3, 1.9);
+        key.target.position.set(0, -halfH * 0.2, 0);
+      }
+      rig.aim();
       const cam = key.shadow.camera;
       cam.left = -halfW * 1.4;
       cam.right = halfW * 1.4;
@@ -332,11 +394,10 @@ export async function createRig({ canvas, robot = "xarm7" }) {
       cam.near = 0.2;
       cam.far = 6;
       cam.updateProjectionMatrix();
-      for (const arm of arms) {
-        rig.toWorld(arm.side < 0 ? baseX : w - baseX, baseY, 0, arm.root.position);
-        arm.root.position.z = baseZ;
+      arms.forEach((arm, i) => {
+        rig.toWorld(bases[i][0], bases[i][1], baseZ, arm.root.position);
         arm.root.updateMatrixWorld(true);
-      }
+      });
     },
     render() {
       renderer.render(scene, camera);

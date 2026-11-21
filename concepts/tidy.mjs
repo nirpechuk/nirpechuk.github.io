@@ -1,7 +1,7 @@
 // Concept: two robot arms keep the page tidy.
 //
-// Parts of the page are loose pieces. Sweep the pointer through them, or click,
-// and they are knocked off and fall as rigid things, tumbling into a heap on
+// Parts of the page are loose pieces. Click on them, or hold the button and
+// drag through them, and they are knocked off and fall as rigid things onto
 // the bottom edge of the window. When it goes quiet the two arms get to work,
 // each on its own: reach for a piece, close on it, carry it back to where it
 // belongs, set it down straight, go for the next.
@@ -16,20 +16,35 @@ import { createRig } from "./rig.mjs";
 const { Engine, Bodies, Body, Composite, Sleeping } = Matter;
 
 const QUIET = 0.9; // seconds without new mess before an arm starts on a piece
-const SWEEP = 260; // px/s the pointer must be moving to knock something
-const BLAST = 170; // click blast radius, px
 const STEP_MS = 1000 / 60;
 
 const ease = (u) => u * u * u * (u * (u * 6 - 15) + 10); // minimum jerk
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
-// `rest` is where each gripper hangs when idle, in metres from its shoulder:
-// x towards the middle of the page, y up.
-export async function startTidy({ canvas, elements, robot = "xarm7", floorInset = 0, rest = { x: 0.2, y: 0.02 } }) {
-  const rig = await createRig({ canvas, robot });
-  const arms = rig.arms.map((arm) => ({ arm, side: arm.side, job: null, held: null, span: null, restQ: null, wait: 0 }));
-  // The joints that fold an arm up in its own plane, for the pose it rests in.
+// `blast` is how far around a click things are knocked off, in pixels.
+// `stage` is how the arms are set out. "corners": large, standing in the
+// bottom corners of the window, resting beside the text. "lifts": smaller,
+// standing just outside the pieces on lifts that sink until only an elbow
+// shows, and belonging to the top of the page: scroll down and they fade.
+// `rest` is where a gripper hangs when idle in the corners, in metres from its
+// shoulder: x towards the middle of the page, y up.
+export async function startTidy({ canvas, elements, robot = "xarm7", floorInset = 0, blast = 46, stage = "corners", rest = { x: 0.2, y: 0.02 } }) {
+  const lifts = stage === "lifts";
+  const hero = lifts;
+  const rig = await createRig({ canvas, robot, pedestal: lifts, soft: lifts });
+  // The joints that fold an arm up in its own plane.
   const PLANAR = robot === "xarm7" ? [1, 3, 5] : null;
+  const arms = rig.arms.map((arm) => ({
+    arm,
+    side: arm.side,
+    job: null,
+    held: null,
+    span: null,
+    restQ: null,
+    lift: 0,
+    baseY: 0,
+    sh0: new THREE.Vector3(),
+  }));
 
   // Pieces ----------------------------------------------------------------
 
@@ -141,9 +156,10 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   // The pointer -----------------------------------------------------------
 
-  const cursor = { x: 0, y: 0, px: 0, py: 0, vx: 0, vy: 0, present: false, t: 0 };
+  const cursor = { x: 0, y: 0, vx: 0, vy: 0, t: 0, down: false };
   let lastMess = -1e9;
   let now = 0;
+  let asleep = false; // scrolled away from the arms: they wait
 
   function knock(p, vx, vy, spin) {
     for (const a of arms) {
@@ -166,45 +182,54 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     return Math.hypot(Math.max(0, lx), Math.max(0, ly));
   }
 
-  addEventListener("pointermove", (e) => {
-    const t = performance.now() / 1000;
-    if (cursor.present) {
-      const dt = Math.max(1 / 240, t - cursor.t);
-      cursor.vx += ((e.clientX - cursor.x) / dt - cursor.vx) * 0.5;
-      cursor.vy += ((e.clientY - cursor.y) / dt - cursor.vy) * 0.5;
+  // Nothing moves until there is a click. A click knocks off what is under and
+  // just around it; holding the button and dragging knocks off what the pointer
+  // is dragged through.
+  function strike(x, y) {
+    for (const p of pieces) {
+      const gap = distanceTo(p, x, y);
+      if (gap > blast) continue;
+      const c = p.state === "home" ? homeOf(p) : p;
+      const dx = c.x - x;
+      const dy = c.y - y;
+      const d = Math.hypot(dx, dy);
+      const f = 1 - (gap / blast) * 0.6;
+      const kick = (260 + 380 * Math.random()) * f;
+      knock(p, (dx / (d + 12)) * kick, (dy / (d + 12)) * kick - 260 * f, (Math.random() - 0.5) * 0.4 * f);
     }
-    const fromX = cursor.present ? cursor.x : e.clientX;
-    const fromY = cursor.present ? cursor.y : e.clientY;
+  }
+  addEventListener("pointerdown", (e) => {
+    if (e.button || e.target.closest?.("a, button, input, textarea, select, nav, .lil-gui")) return;
+    cursor.down = true;
+    cursor.x = e.clientX;
+    cursor.y = e.clientY;
+    cursor.t = performance.now() / 1000;
+    cursor.vx = cursor.vy = 0;
+    strike(e.clientX, e.clientY);
+  });
+  addEventListener("pointermove", (e) => {
+    if (!cursor.down) return;
+    const t = performance.now() / 1000;
+    const dt = Math.max(1 / 240, t - cursor.t);
+    cursor.vx += ((e.clientX - cursor.x) / dt - cursor.vx) * 0.5;
+    cursor.vy += ((e.clientY - cursor.y) / dt - cursor.vy) * 0.5;
+    const fromX = cursor.x;
+    const fromY = cursor.y;
     cursor.x = e.clientX;
     cursor.y = e.clientY;
     cursor.t = t;
-    cursor.present = true;
     const speed = Math.hypot(cursor.vx, cursor.vy);
-    if (speed < SWEEP) return;
-    const k = Math.min(1, 1500 / speed);
-    // Everything along the stretch the pointer just crossed.
+    const k = Math.min(1, 1100 / (speed + 1));
+    // Everything along the stretch the pointer was just dragged across.
     const steps = Math.min(40, Math.ceil(Math.hypot(cursor.x - fromX, cursor.y - fromY) / 8)) || 1;
     for (const p of pieces) {
       let hit = false;
       for (let i = 1; i <= steps && !hit; i++)
-        hit = distanceTo(p, fromX + ((cursor.x - fromX) * i) / steps, fromY + ((cursor.y - fromY) * i) / steps) < 7;
-      if (hit) knock(p, cursor.vx * k * 0.55 + (Math.random() - 0.5) * 120, cursor.vy * k * 0.55 - 120, (Math.random() - 0.5) * 0.25);
+        hit = distanceTo(p, fromX + ((cursor.x - fromX) * i) / steps, fromY + ((cursor.y - fromY) * i) / steps) < 6;
+      if (hit) knock(p, cursor.vx * k * 0.5 + (Math.random() - 0.5) * 100, cursor.vy * k * 0.5 - 140, (Math.random() - 0.5) * 0.25);
     }
   });
-  document.documentElement.addEventListener("pointerleave", () => (cursor.present = false));
-  addEventListener("pointerdown", (e) => {
-    if (e.target.closest?.("a, button, input, textarea, select, nav")) return;
-    for (const p of pieces) {
-      const c = p.state === "home" ? homeOf(p) : p;
-      const dx = c.x - e.clientX;
-      const dy = c.y - e.clientY;
-      const d = Math.hypot(dx, dy);
-      if (distanceTo(p, e.clientX, e.clientY) > BLAST * 0.6 && d > BLAST) continue;
-      const f = Math.max(0.25, 1 - d / (BLAST * 1.6));
-      const kick = (500 + 700 * Math.random()) * f;
-      knock(p, (dx / (d + 8)) * kick, (dy / (d + 8)) * kick - 380 * f, (Math.random() - 0.5) * 0.5 * f);
-    }
-  });
+  for (const type of ["pointerup", "pointercancel", "blur"]) addEventListener(type, () => (cursor.down = false));
 
   // Arms: poses -------------------------------------------------------------
   // The gripper comes at the page from in front of it, the way an arm over a
@@ -232,17 +257,31 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     return { pos, quat: new THREE.Quaternion().setFromRotationMatrix(_mat.makeBasis(new THREE.Vector3().crossVectors(j, a), j, a)) };
   }
 
-  // The joints for a pose, found from the rest posture so the same pose always
-  // gives the same arm. Null when the arm cannot get there, or could only get
-  // there with an elbow through the page.
-  function jointsFor(A, pose, only = null) {
+  // Each arm stands on a lift. At rest it is lowered until little more than
+  // its shoulder shows above the bottom of the window; to work it rises until
+  // its shoulder is about level with what it is reaching for.
+  let liftMax = 1;
+  function setLift(A, lift) {
+    A.lift = lift;
+    A.arm.root.position.y = A.baseY + lift;
+  }
+  const liftFor = (A, py) => clamp(rig.toWorld(0, py).y + 0.03 - A.sh0.y, 0, liftMax);
+  const shoulderAt = (A, lift) => rig.toScreen(_x.copy(A.sh0).setY(A.sh0.y + lift));
+
+  // The joints for a pose with the lift at a given height, found from the rest
+  // posture so the same pose always gives the same arm. Null when the arm
+  // cannot get there, or could only get there with an elbow through the page.
+  function jointsFor(A, pose, lift, only = null) {
     const arm = A.arm;
     const keep = Float64Array.from(arm.q);
+    const was = A.lift;
+    setLift(A, lift);
     arm.q.set(A.restQ ?? arm.rest);
     arm.apply();
     const { posErr, rotErr } = arm.solve(pose.pos, pose.quat, { iterations: 70, stride: 0.3, posture: 0.08, only });
     let q = posErr < 0.004 && rotErr < 0.03 ? Float64Array.from(arm.q) : null;
     if (q) for (const joint of arm.chain) if (_x.setFromMatrixPosition(joint.node.matrixWorld).z < 0.04) q = null;
+    setLift(A, was);
     arm.q.set(keep);
     arm.apply();
     return q;
@@ -260,15 +299,18 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   let hurry = 1;
 
-  function* moveJ(A, goal, { rate = 3, floor = 0.36 } = {}) {
+  // Joints and lift together, each no faster than it should go.
+  function* moveJ(A, goal, lift, { rate = 3, climb = 0.75, floor = 0.36 } = {}) {
     const from = Float64Array.from(A.arm.q);
+    const low = A.lift;
     let far = 0;
     for (let i = 0; i < goal.length; i++) far = Math.max(far, Math.abs(goal[i] - from[i]));
-    const T = Math.max(floor, (far / rate) * 1.5) / hurry;
+    const T = Math.max(floor, (far / rate) * 1.5, (Math.abs(lift - low) / climb) * 1.5) / hurry;
     for (let t = 0; t < T;) {
       t += yield;
       const s = ease(Math.min(1, t / T));
       for (let i = 0; i < goal.length; i++) A.arm.q[i] = from[i] + (goal[i] - from[i]) * s;
+      setLift(A, low + (lift - low) * s);
     }
   }
 
@@ -350,7 +392,11 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
   function* planFor(A, p) {
     const open = A.arm.maxGap * rig.K;
     const h = homeOf(p);
-    const sh = rig.toScreen(A.arm.shoulder(_x));
+    // The lift brings the shoulder level with each end of the job.
+    const liftP = liftFor(A, p.y);
+    const liftH = liftFor(A, h.y);
+    const shP = { ...shoulderAt(A, liftP) };
+    const sh = { ...shoulderAt(A, liftH) };
     const grips = [];
     if (p.w <= open - 12) grips.push({ jaw: 0, width: p.w, free: p.h });
     if (p.h <= open - 12) grips.push({ jaw: Math.PI / 2, width: p.h, free: p.w });
@@ -365,8 +411,8 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
       if (g.jaw === null) {
         const rx = Math.max(0, p.w / 2 - 24);
         const ry = Math.max(0, p.h / 2 - 24);
-        const lx = (sh.x - p.x) * c + (sh.y - p.y) * s;
-        const ly = -(sh.x - p.x) * s + (sh.y - p.y) * c;
+        const lx = (shP.x - p.x) * c + (shP.y - p.y) * s;
+        const ly = -(shP.x - p.x) * s + (shP.y - p.y) * c;
         holds.push(
           [g, clamp(sh.x - h.x, -rx, rx) * 0.85, clamp(sh.y - h.y, -ry, ry) * 0.85],
           [g, clamp(lx, -rx, rx) * 0.85, clamp(ly, -ry, ry) * 0.85],
@@ -376,14 +422,14 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         const room = Math.max(0, g.free / 2 - 16) * 0.8;
         const along = g.jaw === 0 ? [0, 1] : [1, 0];
         const there = clamp((sh.x - h.x) * along[0] + (sh.y - h.y) * along[1], -room, room);
-        const here = clamp(((sh.x - p.x) * c + (sh.y - p.y) * s) * along[0] + (-(sh.x - p.x) * s + (sh.y - p.y) * c) * along[1], -room, room);
+        const here = clamp(((shP.x - p.x) * c + (shP.y - p.y) * s) * along[0] + (-(shP.x - p.x) * s + (shP.y - p.y) * c) * along[1], -room, room);
         for (const t of room > 20 ? [there, here, 0] : [0]) holds.push([g, along[0] * t, along[1] * t]);
       }
     }
     for (const [g, gx, gy] of holds) {
-      const pick = { x: p.x + gx * c - gy * s, y: p.y + gx * s + gy * c };
-      const place = { x: h.x + gx, y: h.y + gy };
-      for (const at of [pick, place]) at.natural = Math.atan2(at.y - sh.y, at.x - sh.x);
+      const pick = { x: p.x + gx * c - gy * s, y: p.y + gx * s + gy * c, lift: liftP, from: shP };
+      const place = { x: h.x + gx, y: h.y + gy, lift: liftH, from: sh };
+      for (const at of [pick, place]) at.natural = Math.atan2(at.y - at.from.y, at.x - at.from.x);
       if (g.jaw === null) {
         place.gamma = place.natural + Math.PI / 2;
         pick.gamma = place.gamma + p.angle;
@@ -401,7 +447,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         }
         at.tau = LEAN * align;
         // Leaning the wrong way costs a little; a long reach costs more.
-        cost += (1 - align) * 0.5 + Math.max(0, Math.hypot(at.x - sh.x, at.y - sh.y) / rig.K - 0.45) * 4;
+        cost += (1 - align) * 0.5 + Math.max(0, Math.hypot(at.x - at.from.x, at.y - at.from.y) / rig.K - 0.45) * 4;
       }
       options.push({ pick, place, pinch: g.jaw !== null, width: g.width, cost });
     }
@@ -415,11 +461,13 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         // Lean as planned if the arm can; straighten up if that is what it takes to reach.
         for (const tau of [at.tau, at.tau * 0.5, 0]) {
           const a = poseAt(at.x, at.y, at.gamma, at.heading, tau);
-          a.q = jointsFor(A, a);
+          a.lift = at.lift;
+          a.q = jointsFor(A, a, at.lift);
           yield; // spread the solving over frames
           if (!a.q) continue;
           const b = poseAt(at.x, at.y, at.gamma, at.heading, tau, BACK);
-          b.q = jointsFor(A, b);
+          b.lift = at.lift;
+          b.q = jointsFor(A, b, at.lift);
           yield;
           if (!b.q) continue;
           poses[near] = a;
@@ -478,7 +526,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
       // Pinching, it opens a little wider than the piece; pressing, it stays shut.
       const wide = plan.pinch ? Math.min(A.arm.maxGap, plan.width / K + 0.024) : 0.006;
 
-      yield* both(moveJ(A, plan.before.q), grip(A, wide, 0.3));
+      yield* both(moveJ(A, plan.before.q, plan.before.lift), grip(A, wide, 0.3));
       if (!lost() && !moved()) yield* moveL(A, plan.grasp, 0.34);
       if (!lost() && !moved()) {
         yield* grip(A, plan.pinch ? Math.max(0, plan.width / K - 0.002) : 0.006, plan.pinch ? 0.2 : 0.08);
@@ -489,7 +537,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         reserve(A);
         for (let waited = 0; !lost() && waited < 2.5 && clash([plan.place], other);) waited += yield;
         reserve(A, plan.place);
-        if (!lost()) yield* moveJ(A, plan.above.q);
+        if (!lost()) yield* moveJ(A, plan.above.q, plan.above.lift);
         if (!lost()) yield* moveL(A, plan.set, 0.36);
         if (!lost()) {
           // Open, and the piece is home.
@@ -532,13 +580,13 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   function* life(A) {
     for (;;) {
-      const quiet = now - lastMess > QUIET;
+      const quiet = now - lastMess > QUIET && !asleep;
       const did = quiet ? yield* work(A) : false;
       if (did) continue;
-      // Nothing to do: go and rest, but keep looking.
-      const away = A.restQ.some((v, i) => Math.abs(v - A.arm.q[i]) > 0.02);
-      if (away && quiet) {
-        const resting = both(moveJ(A, A.restQ, { rate: 1.6 }), grip(A, 0.02, 0.4));
+      // Nothing to do: fold up and sink back down, but keep looking.
+      const away = A.lift > 0.004 || A.restQ.some((v, i) => Math.abs(v - A.arm.q[i]) > 0.02);
+      if (away && (quiet || asleep)) {
+        const resting = both(moveJ(A, A.restQ, 0, { rate: 1.8, climb: 0.5 }), grip(A, 0.02, 0.4));
         for (let r = resting.next(); !r.done; r = resting.next(yield)) {
           if (pieces.some((p) => p.state === "loose" && !p.claim && p.still > 14 && now >= p.skipUntil) && now - lastMess > QUIET) break;
         }
@@ -550,42 +598,75 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   // Layout ------------------------------------------------------------------
 
+  const STAND = 0.16; // on lifts: how far outside the pieces each arm stands, metres
+  const REACH = 0.6; // on lifts: how far sideways an arm works comfortably, metres
+  const SUNK = 0.12; // on lifts: how far below the window a resting shoulder is, metres
+  const FOLDED = [0, 0.5, 0, 0, 0, -0.2, 0]; // on lifts: forearm doubled back, so an elbow is all that shows
+  const DEPTH = 0.22; // how far in front of the page the arms stand, metres
+
   function layout() {
     room();
     for (const p of pieces) if (p.state !== "home") settle(p);
     measure();
-    // Big enough for the window, and then big enough that between them the two
-    // arms can reach every piece's place: a tall narrow window needs longer arms.
-    let K = Math.min(1000, Math.max(330, W * 0.62));
-    for (let pass = 0; pass < 3; pass++) {
-      rig.layout({ K, baseX: 0.2 * K, baseY: H - floorInset + 0.1 * K, baseZ: 0.22 });
-      const shoulders = arms.map((A) => rig.toScreen(A.arm.shoulder(_x)));
-      let far = 0;
-      for (const p of pieces) {
-        const h = homeOf(p);
-        if (h.y < -20 || h.y > H) continue; // scrolled out of the window
-        far = Math.max(far, Math.min(...shoulders.map((s) => Math.hypot(h.x - s.x, h.y - s.y))));
+    const inView = pieces.map((p) => ({ p, h: homeOf(p) })).filter(({ h }) => h.y > -20 && h.y < H);
+    let K;
+    if (lifts) {
+      // The arms stand just outside the pieces, one each side, and are as small
+      // as will still let them meet in the middle.
+      let lo = Math.min(...inView.map(({ p, h }) => h.x - p.w / 2), W * 0.4);
+      let hi = Math.max(...inView.map(({ p, h }) => h.x + p.w / 2), W * 0.6);
+      const mid = (lo + hi) / 2;
+      K = 640;
+      let feet = [0, 0];
+      for (let pass = 0; pass < 6; pass++) {
+        feet = [Math.max(0.09 * K, lo - STAND * K), Math.min(W - 0.09 * K, hi + STAND * K)];
+        const need = (Math.max(mid - feet[0], feet[1] - mid) + 24) / REACH;
+        if (need <= K * 1.01) break;
+        K = Math.min(need, 1300);
       }
-      const need = far / 0.56;
-      if (need <= K) break;
-      K = Math.min(need, 1300);
+      // The shoulder is 0.387 m above the foot of the model.
+      rig.layout({ K, bases: feet.map((x) => [x, H - floorInset + (0.387 + SUNK) * K]), baseZ: DEPTH });
+      liftMax = H / K + SUNK;
+    } else {
+      // Big enough for the window, and then big enough that between them the
+      // two arms can reach every piece's place: a tall narrow window needs longer arms.
+      K = Math.min(1000, Math.max(330, W * 0.62));
+      for (let pass = 0; pass < 3; pass++) {
+        // (Feet given where they sit on the page plane, as this stage was first laid out.)
+        const s = rig.toScreen(new THREE.Vector3(0, 0, DEPTH)).scale;
+        const at = (x, y) => [W / 2 + (x - W / 2) * s, H / 2 + (y - H / 2) * s];
+        rig.layout({ K, bases: [at(0.2 * K, H - floorInset + 0.1 * K), at(W - 0.2 * K, H - floorInset + 0.1 * K)], baseZ: DEPTH });
+        const shoulders = arms.map((A) => rig.toScreen(A.arm.shoulder(_x)));
+        let far = 0;
+        for (const { h } of inView) far = Math.max(far, Math.min(...shoulders.map((sh) => Math.hypot(h.x - sh.x, h.y - sh.y))));
+        const need = far / 0.56;
+        if (need <= K) break;
+        K = Math.min(need, 1300);
+      }
+      liftMax = 0;
     }
     for (const A of arms) {
       A.held = null;
       A.span = null;
-      // Rest: folded up beside its own edge of the window, gripper hanging.
+      A.baseY = A.arm.root.position.y;
+      A.lift = 0;
       const home = rig.spec.home ?? new Array(A.arm.n).fill(0);
       A.arm.rest.set(home);
       A.restQ = null;
-      // (Found in the arm's own plane: only shoulder, elbow and wrist bend.)
-      const sh = A.arm.shoulder();
-      const down = new THREE.Vector3(0, -1, 0);
-      const across = new THREE.Vector3(0, 0, A.side);
-      const tuck = {
-        pos: new THREE.Vector3(sh.x - A.side * rest.x, sh.y + rest.y, sh.z),
-        quat: new THREE.Quaternion().setFromRotationMatrix(_mat.makeBasis(new THREE.Vector3().crossVectors(across, down), across, down)),
-      };
-      A.restQ = jointsFor(A, tuck, PLANAR) ?? Float64Array.from(home);
+      A.arm.shoulder(A.sh0);
+      if (lifts && PLANAR) {
+        A.restQ = Float64Array.from(FOLDED);
+      } else {
+        // Folded beside the text, gripper hanging: found in the arm's own
+        // plane, where only shoulder, elbow and wrist bend.
+        const down = new THREE.Vector3(0, -1, 0);
+        const across = new THREE.Vector3(0, 0, A.side);
+        const tuck = {
+          pos: new THREE.Vector3(A.sh0.x - A.side * rest.x, A.sh0.y + rest.y, A.sh0.z),
+          quat: new THREE.Quaternion().setFromRotationMatrix(_mat.makeBasis(new THREE.Vector3().crossVectors(across, down), across, down)),
+        };
+        A.restQ = jointsFor(A, tuck, 0, PLANAR) ?? Float64Array.from(home);
+      }
       A.arm.rest.set(A.restQ);
       A.arm.q.set(A.restQ);
       A.arm.gap = 0.02;
@@ -599,6 +680,15 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     clearTimeout(resizing);
     resizing = setTimeout(layout, 150);
   });
+  // With `hero`, the arms belong to the top of the page: scrolled away from it
+  // they fade out and stop work, and come back when it does.
+  function fade() {
+    if (!hero) return;
+    const gone = clamp(scrollY / (innerHeight * 0.45), 0, 1);
+    canvas.style.opacity = String(1 - gone);
+    asleep = gone > 0.5;
+  }
+  fade();
   // The page slides under the window: loose pieces go with it, and anything in hand is let go.
   let lastScroll = scrollY;
   addEventListener(
@@ -613,6 +703,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         Sleeping.set(p.body, false);
       }
       lastMess = now;
+      fade();
     },
     { passive: true }
   );
@@ -680,6 +771,30 @@ export function letters(el) {
       const span = document.createElement("span");
       span.className = "piece";
       span.textContent = ch;
+      frag.append(span);
+      out.push(span);
+    }
+    node.replaceWith(frag);
+  }
+  return out;
+}
+
+// Wrap each word of an element's text in a span of its own, so it can be a piece.
+export function words(el) {
+  const out = [];
+  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim()) nodes.push(n);
+  for (const node of nodes) {
+    const frag = document.createDocumentFragment();
+    for (const part of node.nodeValue.split(/(\s+)/)) {
+      if (!part || /^\s+$/.test(part)) {
+        frag.append(part);
+        continue;
+      }
+      const span = document.createElement("span");
+      span.className = "piece";
+      span.textContent = part;
       frag.append(span);
       out.push(span);
     }
