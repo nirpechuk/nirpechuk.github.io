@@ -22,7 +22,10 @@ const stage = await createStage({ parallax: 0.35, pinTagline: true });
 const { count, home, spacing, area, depth, cursor, put } = stage;
 
 // Floor: a line under the subject, and a height field so dots heap up on it.
-const FLOOR_Y = stage.floorY;
+// With `?room=screen` there is no floor: the window is the room, and the dots
+// fall all the way to its bottom edge.
+const ROOM = new URLSearchParams(location.search).get("room") === "screen";
+let floorY = stage.floorY;
 const FLOOR_X0 = -9; // the height field covers more floor than any screen shows
 const FLOOR_X1 = 9;
 const Z_WALL = 0.7; // front and back walls, so nothing flies at the camera
@@ -34,20 +37,7 @@ const heap = new Float32Array(BINS);
 const binOf = (x) => Math.min(BINS - 1, Math.max(0, Math.floor((x - FLOOR_X0) / BIN)));
 
 const line = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: stage.mute }));
-if (!stage.portrait) stage.scene.add(line); // the portrait fades out instead of standing on a line
-
-// The room is the window: walls at its left and right edges, a ceiling at the
-// top. Dots bounce off them instead of leaving the screen.
-let wallL = -3;
-let wallR = 3;
-let ceiling = 2;
-stage.onResize(() => {
-  const view = stage.view();
-  wallR = Math.min(FLOOR_X1 - 0.1, view.halfWidth - 0.06);
-  wallL = -wallR;
-  ceiling = view.top - 0.06;
-  line.geometry.setFromPoints([new THREE.Vector3(wallL, FLOOR_Y - 0.008, 0), new THREE.Vector3(wallR, FLOOR_Y - 0.008, 0)]);
-});
+if (!stage.portrait && !ROOM) stage.scene.add(line); // the portrait fades out instead of standing on a line
 
 const pos = new Float32Array(home);
 const vel = new Float32Array(count * 3);
@@ -60,6 +50,29 @@ const leaveAt = new Float32Array(count);
 const takes = new Float32Array(count);
 const seed = new Float32Array(count);
 for (let i = 0; i < count; i++) seed[i] = Math.random();
+
+// The room is the window: walls at its left and right edges, a ceiling at the
+// top. Dots bounce off them instead of leaving the screen.
+let wallL = -3;
+let wallR = 3;
+let ceiling = 2;
+stage.onResize(() => {
+  const view = stage.view();
+  wallR = Math.min(FLOOR_X1 - 0.1, view.halfWidth - 0.06);
+  wallL = -wallR;
+  ceiling = view.top - 0.06;
+  if (ROOM) {
+    // The floor is the bottom edge of the window; a resize carries the heap with it.
+    const next = 0.05 - view.top;
+    for (let i = 0; i < count; i++) {
+      if (state[i] !== PILE) continue;
+      pos[i * 3 + 1] += next - floorY;
+      put(i, pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2], 1, 1);
+    }
+    floorY = next;
+  }
+  line.geometry.setFromPoints([new THREE.Vector3(wallL, floorY - 0.008, 0), new THREE.Vector3(wallR, floorY - 0.008, 0)]);
+});
 
 // Come to rest on the heap: roll downhill to a stable bin, then sit on top.
 function settle(i, x, drift) {
@@ -77,7 +90,7 @@ function settle(i, x, drift) {
   }
   const j = i * 3;
   pos[j] = FLOOR_X0 + (b + Math.random()) * BIN;
-  pos[j + 1] = FLOOR_Y + heap[b] + (Math.random() - 0.5) * CELL * 0.6;
+  pos[j + 1] = floorY + heap[b] + (Math.random() - 0.5) * CELL * 0.6;
   pos[j + 2] = (Math.random() - 0.5) * depth;
   vel[j] = vel[j + 1] = vel[j + 2] = 0;
   heap[b] += CELL;
@@ -109,7 +122,7 @@ function rebuild(t) {
     const j = i * 3;
     const s = seed[i];
     const across = (home[j] - stage.minX) / SPAN; // 0 at the subject's left edge
-    const up = home[j + 1] - FLOOR_Y;
+    const up = home[j + 1] - floorY;
     heap[bin[i]] = Math.max(0, heap[bin[i]] - CELL);
     from[j] = pos[j];
     from[j + 1] = pos[j + 1];
@@ -207,7 +220,7 @@ function step(t, dt) {
         z = Z_WALL;
         vz = -Math.abs(vz) * 0.4;
       }
-      const surface = FLOOR_Y + heap[binOf(x)];
+      const surface = floorY + heap[binOf(x)];
       if (y <= surface && vy < 0) {
         if (-vy > 1.4 && bounces[i] < 2) {
           // A couple of dead bounces, like a grain rather than a ball.
@@ -262,12 +275,12 @@ function step(t, dt) {
       if (u < slide) {
         const e = ease(u / slide);
         x = from[j] + (hx - from[j]) * e;
-        y = from[j + 1] + (FLOOR_Y - from[j + 1]) * e;
+        y = from[j + 1] + (floorY - from[j + 1]) * e;
         z = from[j + 2] + (hz - from[j + 2]) * e;
       } else {
         const r = (u - slide) / (1 - slide);
         x = hx;
-        y = FLOOR_Y + (hy - FLOOR_Y) * (1 - Math.pow(1 - r, 3));
+        y = floorY + (hy - floorY) * (1 - Math.pow(1 - r, 3));
         z = hz;
       }
       heat = 1 - u;

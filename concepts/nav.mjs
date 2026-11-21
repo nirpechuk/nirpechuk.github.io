@@ -2,9 +2,11 @@
 const PAGES = [
   ["flow.html", "Name · flow"],
   ["floor.html", "Name · floor"],
+  ["floor.html?room=screen", "Name · edges"],
   ["shatter.html", "Name · shatter"],
   ["flow.html?of=photo", "Photo · flow"],
   ["floor.html?of=photo", "Photo · floor"],
+  ["floor.html?room=screen&of=photo", "Photo · edges"],
   ["shatter.html?of=photo", "Photo · shatter"],
   ["dissolve.html", "Photo · dissolve"],
   ["desk.html", "Desk · pixel"],
