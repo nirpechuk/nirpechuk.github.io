@@ -18,13 +18,15 @@ const FALL = 1;
 const PILE = 2;
 const BACK = 3;
 
-const stage = await createStage({ parallax: 0.35, pinTagline: true });
+// With `?room=screen` there is no floor: the window is the room, and the dots
+// fall all the way to its bottom edge. The camera holds still there, so the
+// edges of the room stay on the edges of the window.
+const ROOM = new URLSearchParams(location.search).get("room") === "screen";
+
+const stage = await createStage({ parallax: ROOM ? 0 : 0.35, pinTagline: true });
 const { count, home, spacing, area, depth, cursor, put } = stage;
 
 // Floor: a line under the subject, and a height field so dots heap up on it.
-// With `?room=screen` there is no floor: the window is the room, and the dots
-// fall all the way to its bottom edge.
-const ROOM = new URLSearchParams(location.search).get("room") === "screen";
 let floorY = stage.floorY;
 const FLOOR_X0 = -9; // the height field covers more floor than any screen shows
 const FLOOR_X1 = 9;
@@ -58,12 +60,13 @@ let wallR = 3;
 let ceiling = 2;
 stage.onResize(() => {
   const view = stage.view();
-  wallR = Math.min(FLOOR_X1 - 0.1, view.halfWidth - 0.06);
+  // In the room the heap runs right up to the window's edges, and a touch past them.
+  wallR = Math.min(FLOOR_X1 - 0.1, view.halfWidth + (ROOM ? 0.02 : -0.06));
   wallL = -wallR;
   ceiling = view.top - 0.06;
   if (ROOM) {
     // The floor is the bottom edge of the window; a resize carries the heap with it.
-    const next = 0.05 - view.top;
+    const next = -view.top - CELL;
     for (let i = 0; i < count; i++) {
       if (state[i] !== PILE) continue;
       pos[i * 3 + 1] += next - floorY;
@@ -91,7 +94,8 @@ function settle(i, x, drift) {
   const j = i * 3;
   pos[j] = FLOOR_X0 + (b + Math.random()) * BIN;
   pos[j + 1] = floorY + heap[b] + (Math.random() - 0.5) * CELL * 0.6;
-  pos[j + 2] = (Math.random() - 0.5) * depth;
+  // In the room, only towards the camera: a dot further back sits inside the window's edge.
+  pos[j + 2] = (ROOM ? Math.random() * 0.5 : Math.random() - 0.5) * depth;
   vel[j] = vel[j + 1] = vel[j + 2] = 0;
   heap[b] += CELL;
   bin[i] = b;
