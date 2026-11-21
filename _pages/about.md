@@ -23,7 +23,7 @@ I'm a researcher at the [AI & Reinforcement Learning (AIRe) Lab](https://cmu-air
 
 This fall, I'm a **15-213: Introduction to Computer Systems TA**, after TAing 15-122 in the spring. I love helping students build things from the ground up, from data structures to memory allocators and web proxies. I'm also the **Research Chair of ACM@CMU**.
 
-I've built infrastructure at **Palantir**, machine learning and database systems at **Firebolt**, and developer tools at **SDF Labs**. Before CMU, I co-founded **Extentek** and invented a patented device to help visually impaired people pour independently.
+I've built infrastructure at **Palantir**, machine learning and database systems at **Mongo DB** (aka Firebolt), and developer tools at **SDF Labs**. Before CMU, I co-founded **Extentek** and invented a patented device to help visually impaired people pour independently.
 
 Outside research, I enjoy hackathons and projects that connect software with the physical world. Recent builds include an autonomous bioreactor, a tool for understanding local elections, and an agentic fact-checking browser extension.
 

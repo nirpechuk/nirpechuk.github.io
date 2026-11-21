@@ -2,7 +2,7 @@
 //
 // The arms are the ones I work with: UFACTORY xArm7s with their grippers. The
 // joint tree and meshes are baked from the MuJoCo Menagerie model (see
-// arms/LICENSE.txt). The page is the plane z = 0, seen straight on, one metre
+// model/LICENSE.txt). The page is the plane z = 0, seen straight on, one metre
 // to `K` pixels; the arms stand in front of it at the bottom corners and reach
 // back to it. Everything here is in metres and radians.
 
@@ -36,7 +36,7 @@ function materialFor([r, g, b]) {
 // Loading -----------------------------------------------------------------
 
 export async function loadRobot(name) {
-  const base = new URL(`arms/${name}`, import.meta.url);
+  const base = new URL(`model/${name}`, import.meta.url);
   const [spec, bin] = await Promise.all([fetch(`${base}.json`).then((r) => r.json()), fetch(`${base}.bin`).then((r) => r.arrayBuffer())]);
   spec.geometries = spec.meshes.map((m) => {
     const q = new Int16Array(bin, m.vOff, m.vCount * 3);
@@ -453,6 +453,27 @@ export async function createRig({ canvas, robot = "xarm7", pedestal = false, sof
         rig.toWorld(bases[i][0], bases[i][1], baseZ, arm.root.position);
         arm.root.updateMatrixWorld(true);
       });
+    },
+    // Where an arm is on screen as it stands: a box round each of its parts, in pixels.
+    footprint(arm) {
+      const boxes = [];
+      arm.root.updateMatrixWorld(true);
+      arm.root.traverseVisible((part) => {
+        if (!part.isMesh) return;
+        if (!part.geometry.boundingBox) part.geometry.computeBoundingBox();
+        const { min, max } = part.geometry.boundingBox;
+        const box = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
+        for (let corner = 0; corner < 8; corner++) {
+          _v.set(corner & 1 ? max.x : min.x, corner & 2 ? max.y : min.y, corner & 4 ? max.z : min.z).applyMatrix4(part.matrixWorld);
+          const at = rig.toScreen(_v);
+          box.left = Math.min(box.left, at.x);
+          box.right = Math.max(box.right, at.x);
+          box.top = Math.min(box.top, at.y);
+          box.bottom = Math.max(box.bottom, at.y);
+        }
+        boxes.push(box);
+      });
+      return boxes;
     },
     render() {
       renderer.render(scene, camera);

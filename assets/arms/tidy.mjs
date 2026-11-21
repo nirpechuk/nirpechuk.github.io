@@ -1,4 +1,4 @@
-// Concept: two robot arms keep the page tidy.
+// Two robot arms keep the page tidy.
 //
 // Parts of the page are loose pieces. Click on them, or hold the button and
 // drag through them, and they are knocked off and fall as rigid things onto
@@ -31,9 +31,11 @@ const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 // shoulder: x towards the middle of the page, y up.
 // `hover` lists the pieces that a fast pass of the pointer knocks off without
 // a click. `look` is handed to the rig: how the arms are lit and finished.
-// `still` leaves the arms standing and nothing able to be knocked off. `shy`
-// takes the arms away altogether in a window too small for them to stand
-// clear of each other, leaving the page as plain text.
+// `still` leaves the arms standing and nothing able to be knocked off. `clear`
+// lists what the arms must never stand over (the pieces, and anything else
+// that has to stay readable): in a window where, at rest, they would, or
+// where they cannot stand clear of each other, the arms are taken away
+// altogether and the page is left as plain text.
 export async function startTidy({
   canvas,
   elements,
@@ -45,8 +47,9 @@ export async function startTidy({
   hover = [],
   look = null,
   still = false,
-  shy = false,
+  clear = null,
 }) {
+  const shy = clear !== null;
   const lifts = stage === "lifts";
   const hero = lifts;
   const rig = await createRig({ canvas, robot, pedestal: lifts, soft: lifts, look });
@@ -972,48 +975,43 @@ export async function startTidy({
   const SUNK = 0.12; // on lifts: how far below the window a resting shoulder is, metres
   const FOLDED = [0, 0.5, 0, 0, 0, -0.2, 0]; // on lifts: forearm doubled back, so an elbow is all that shows
   const DEPTH = 0.22; // how far in front of the page the arms stand, metres
+  const TALLEST = 1.4; // in the corners: the most metres of arm to a window's height
 
-  function layout() {
-    room();
-    for (const p of pieces) if (p.state !== "home") settle(p);
-    measure();
-    const inView = pieces.map((p) => ({ p, h: homeOf(p) })).filter(({ h }) => h.y > -20 && h.y < H);
-    let K;
-    if (lifts) {
-      // The arms stand just outside the pieces, one each side, and are as small
-      // as will still let them meet in the middle.
-      let lo = Math.min(...inView.map(({ p, h }) => h.x - p.w / 2), W * 0.4);
-      let hi = Math.max(...inView.map(({ p, h }) => h.x + p.w / 2), W * 0.6);
-      const mid = (lo + hi) / 2;
-      K = 640;
-      let feet = [0, 0];
-      for (let pass = 0; pass < 6; pass++) {
-        feet = [Math.max(0.09 * K, lo - STAND * K), Math.min(W - 0.09 * K, hi + STAND * K)];
-        const need = (Math.max(mid - feet[0], feet[1] - mid) + 24) / REACH;
-        if (need <= K * 1.01) break;
-        K = Math.min(need, 1300);
-      }
-      // The shoulder is 0.387 m above the foot of the model.
-      rig.layout({ K, bases: feet.map((x) => [x, H - floorInset + (0.387 + SUNK) * K]), baseZ: DEPTH });
-      liftMax = H / K + SUNK;
-    } else {
-      // Big enough for the window, and then big enough that between them the
-      // two arms can reach every piece's place: a tall narrow window needs longer arms.
-      K = Math.min(1000, Math.max(330, W * 0.62));
-      for (let pass = 0; pass < 3; pass++) {
-        // (Feet given where they sit on the page plane, as this stage was first laid out.)
-        const s = rig.toScreen(new THREE.Vector3(0, 0, DEPTH)).scale;
-        const at = (x, y) => [W / 2 + (x - W / 2) * s, H / 2 + (y - H / 2) * s];
-        rig.layout({ K, bases: [at(0.2 * K, H - floorInset + 0.1 * K), at(W - 0.2 * K, H - floorInset + 0.1 * K)], baseZ: DEPTH });
-        const shoulders = arms.map((A) => rig.toScreen(A.arm.shoulder(_x)));
-        let far = 0;
-        for (const { h } of inView) far = Math.max(far, Math.min(...shoulders.map((sh) => Math.hypot(h.x - sh.x, h.y - sh.y))));
-        const need = far / 0.56;
-        if (need <= K) break;
-        K = Math.min(need, 1300);
-      }
-      liftMax = 0;
-    }
+  // Is an arm, standing at rest, over (or within a breath of) anything that
+  // is to be kept clear?
+  const BREATH = 20; // pixels
+  function covering() {
+    const kept = (clear ?? []).flatMap((el) => [...el.getClientRects()]).filter((r) => r.width && r.height);
+    return arms.some((A) =>
+      rig
+        .footprint(A.arm)
+        .some((box) =>
+          kept.some((r) => box.left < r.right + BREATH && box.right > r.left - BREATH && box.top < r.bottom + BREATH && box.bottom > r.top - BREATH)
+        )
+    );
+  }
+
+  // Ways of standing at rest in a window with little room, to be tried in
+  // turn: how far in the gripper hangs, as a share of `rest.x`, and how far
+  // lower than `rest.y`, in metres.
+  const STANCES = [
+    [1, 0],
+    [0.85, 0],
+    [0.7, 0],
+    [0.6, 0],
+    [1, 0.08],
+    [0.75, 0.08],
+    [1, 0.15],
+    [0.75, 0.15],
+    [1, 0.22],
+    [0.75, 0.22],
+    [0.6, 0.22],
+  ];
+  // Put the arms at rest, each gripper hanging `reach` metres in from its
+  // shoulder and `sunk` lower than usual, and say whether like that they are
+  // clear of each other and of all that is to be kept clear.
+  function fold(reach, sunk = 0) {
+    let found = true;
     for (const A of arms) {
       A.held = null;
       A.exit = null;
@@ -1032,10 +1030,12 @@ export async function startTidy({
         const down = new THREE.Vector3(0, -1, 0);
         const across = new THREE.Vector3(0, 0, A.side);
         const tuck = {
-          pos: new THREE.Vector3(A.sh0.x - A.side * rest.x, A.sh0.y + rest.y, A.sh0.z),
+          pos: new THREE.Vector3(A.sh0.x - A.side * reach, A.sh0.y + rest.y - sunk, A.sh0.z),
           quat: new THREE.Quaternion().setFromRotationMatrix(_mat.makeBasis(new THREE.Vector3().crossVectors(across, down), across, down)),
         };
-        A.restQ = jointsFor(A, tuck, 0, PLANAR) ?? Float64Array.from(home);
+        A.restQ = jointsFor(A, tuck, 0, PLANAR);
+        found &&= A.restQ !== null;
+        A.restQ ??= Float64Array.from(home);
       }
       A.arm.rest.set(A.restQ);
       A.arm.q.set(A.restQ);
@@ -1046,7 +1046,100 @@ export async function startTidy({
     for (const A of arms) A.claim = shapeNow(A);
     crowded = false;
     crowded = hits(arms[0].claim, arms[1].claim);
-    away = shy && crowded;
+    return found && !crowded && !covering();
+  }
+
+  function layout() {
+    room();
+    for (const p of pieces) if (p.state !== "home") settle(p);
+    measure();
+    const inView = pieces.map((p) => ({ p, h: homeOf(p) })).filter(({ h }) => h.y > -20 && h.y < H);
+    let K;
+    let fits = true; // at rest the arms are clear of each other and of all they must not stand over
+    let reachable = true; // and between them can reach wherever a piece belongs
+    if (lifts) {
+      // The arms stand just outside the pieces, one each side, and are as small
+      // as will still let them meet in the middle.
+      let lo = Math.min(...inView.map(({ p, h }) => h.x - p.w / 2), W * 0.4);
+      let hi = Math.max(...inView.map(({ p, h }) => h.x + p.w / 2), W * 0.6);
+      const mid = (lo + hi) / 2;
+      K = 640;
+      let feet = [0, 0];
+      for (let pass = 0; pass < 6; pass++) {
+        feet = [Math.max(0.09 * K, lo - STAND * K), Math.min(W - 0.09 * K, hi + STAND * K)];
+        const need = (Math.max(mid - feet[0], feet[1] - mid) + 24) / REACH;
+        if (need <= K * 1.01) break;
+        K = Math.min(need, 1300);
+      }
+      // The shoulder is 0.387 m above the foot of the model.
+      rig.layout({ K, bases: feet.map((x) => [x, H - floorInset + (0.387 + SUNK) * K]), baseZ: DEPTH });
+      liftMax = H / K + SUNK;
+      fits = fold(rest.x);
+    } else {
+      // (Feet given where they sit on the page plane, as this stage was first laid out.)
+      const s = rig.toScreen(new THREE.Vector3(0, 0, DEPTH)).scale;
+      const at = (x, y) => [W / 2 + (x - W / 2) * s, H / 2 + (y - H / 2) * s];
+      // Stand the arms at a scale, `inset` pixels in from the sides, and say what
+      // scale would put every piece's place within a comfortable reach of one.
+      const stand = (K, inset = 0.2 * K) => {
+        const floor = H - floorInset + 0.1 * K;
+        rig.layout({ K, bases: [at(inset, floor), at(W - inset, floor)], baseZ: DEPTH });
+        const shoulders = arms.map((A) => rig.toScreen(A.arm.shoulder(_x)));
+        let far = 0;
+        for (const { h } of inView) far = Math.max(far, Math.min(...shoulders.map((sh) => Math.hypot(h.x - sh.x, h.y - sh.y))));
+        return far / 0.56;
+      };
+      // Big enough for the window, and then big enough that between them the
+      // two arms can reach every piece's place: a tall narrow window needs
+      // longer arms. But never so big that their elbows leave the top of it.
+      const tallest = TALLEST * H;
+      K = Math.min(1000, Math.max(330, W * 0.62), tallest);
+      let cornered = true; // standing in the corners, as against brought in from them
+      for (let pass = 0; pass < 4; pass++) {
+        const need = stand(K);
+        if (need <= K) break;
+        if (K < tallest) {
+          K = Math.min(need, tallest);
+          continue;
+        }
+        // As big as the window lets them be and the middle is still out of
+        // reach: a wide window. They come in from the corners, as little as
+        // lets them reach.
+        cornered = false;
+        let out = 0.2 * K;
+        let inn = W / 2 - 0.1 * K;
+        reachable = inn > out && stand(K, inn) <= K;
+        for (let i = 0; reachable && i < 9; i++) {
+          const mid = (out + inn) / 2;
+          if (stand(K, mid) <= K) inn = mid;
+          else out = mid;
+        }
+        stand(K, reachable ? inn : 0.2 * K);
+        break;
+      }
+      fits = fold(rest.x);
+      if (shy && !fits) {
+        // No room for them like that. Then no bigger than they must be to reach,
+        // and after that with their grippers drawn in beside them, or hung
+        // lower, under what they must keep clear of.
+        if (cornered) {
+          let small = K * 0.6;
+          let big = K;
+          for (let i = 0; i < 8; i++) {
+            const mid = (small + big) / 2;
+            if (stand(mid) <= mid) big = mid;
+            else small = mid;
+          }
+          stand(big);
+        }
+        for (const [drawn, sunk] of STANCES) {
+          fits = fold(rest.x * drawn, sunk);
+          if (fits) break;
+        }
+      }
+      liftMax = 0;
+    }
+    away = shy && !(fits && reachable);
     canvas.style.visibility = away ? "hidden" : "visible";
     idleFrames = 0;
   }
@@ -1155,7 +1248,7 @@ export async function startTidy({
   };
   // Draw again after a change made from outside (a colour, say) while all is at rest.
   const wake = () => (idleFrames = 0);
-  return { rig, arms, pieces, knock, tick, log, relayout: layout, clearance, wake };
+  return { rig, arms, pieces, knock, tick, log, relayout: layout, clearance, wake, away: () => away };
 }
 
 // Wrap each letter of an element's text in a span of its own, so it can be a piece.
