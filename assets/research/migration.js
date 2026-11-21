@@ -10,7 +10,7 @@ export async function migrateSavedUnlock(kind) {
         saved = sessionStorage.getItem(pendingKey);
       const pending = saved ? JSON.parse(saved) : null;
       const path = pending?.returnPath;
-      history.replaceState(null, "", typeof path === "string" && /^\/research\//.test(path) ? path : "/research/");
+      history.replaceState(null, "", typeof path === "string" && /^\/(?:research|admin)\//.test(path) ? path : "/research/");
       sessionStorage.removeItem(pendingKey);
       if (!pending || Date.now() - pending.created > 5 * 60000 || encoded.length > 30000) throw new Error("Expired transfer");
       const packet = JSON.parse(decodeURIComponent(encoded));
@@ -23,7 +23,7 @@ export async function migrateSavedUnlock(kind) {
         }
       }
       localStorage.setItem(doneKey, "1");
-      location.replace(typeof path === "string" && /^\/research\//.test(path) ? path : "/research/");
+      location.replace(typeof path === "string" && /^\/(?:research|admin)\//.test(path) ? path : "/research/");
       return false;
     }
     if (localStorage.getItem(doneKey) || localStorage.getItem(kind) || sessionStorage.getItem(kind)) return true;

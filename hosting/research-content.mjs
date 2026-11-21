@@ -101,6 +101,18 @@ export async function openReport(envelope, raw) {
   const compressed = await crypto.subtle.decrypt({ name: "AES-GCM", iv: decode(envelope.iv) }, await keyFor(raw), decode(envelope.data));
   return JSON.parse(await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
 }
+// Report documents are immutable, so each one's decrypted file map can be reused by this isolate.
+const fileMaps = new Map();
+async function reportFiles(bucket, pageKey, raw) {
+  if (!fileMaps.has(pageKey)) {
+    const object = await bucket.get(pageKey);
+    if (!object) return null;
+    const report = await openReport(await object.json(), raw);
+    if (fileMaps.size >= 100) fileMaps.delete(fileMaps.keys().next().value);
+    fileMaps.set(pageKey, report.files && typeof report.files === "object" ? report.files : {});
+  }
+  return fileMaps.get(pageKey);
+}
 function byteRange(header, size) {
   if (!header) return { start: 0, end: size - 1, status: 200 };
   const match = /^bytes=(\d*)-(\d*)$/.exec(header);
@@ -125,13 +137,16 @@ async function assetResponse(request, bucket, objectKey, raw) {
     object.size !== 32 + size + 16 * Math.ceil(size / chunkSize)
   )
     throw new Error("format");
+  const type = object.customMetadata?.type || "application/octet-stream";
   const headers = new Headers({
     ...noStore,
     "Cache-Control": "private, no-cache",
-    "Content-Type": object.customMetadata?.type || "application/octet-stream",
+    "Content-Type": /^(?:text\/|application\/json$)/.test(type) ? `${type}; charset=utf-8` : type,
     "Accept-Ranges": "bytes",
     ETag: object.httpEtag,
     "Cross-Origin-Resource-Policy": "same-origin",
+    // Pages inside a report folder may be framed by the report itself.
+    ...(type === "text/html" ? { "Content-Security-Policy": `frame-ancestors 'self' ${VIEWER_ORIGIN}; base-uri 'self'; object-src 'none'` } : {}),
   });
   if (request.headers.get("If-None-Match") === object.httpEtag) return new Response(null, { status: 304, headers });
   const wanted =
@@ -203,15 +218,27 @@ export async function protectedContent(request, env) {
   const state = await stored.json();
   if (url.pathname === "/session") return sessionEndpoint(request, env, state);
   if (!["GET", "HEAD"].includes(request.method)) return error(405, "Method not allowed.");
-  const match = /^\/r\/([a-z0-9-]+)\/(?:assets\/([a-f0-9-]{36}))?$/.exec(url.pathname);
+  const match = /^\/r\/([a-z0-9-]+)\/(.*)$/.exec(url.pathname);
   if (!match) return error(404, "Not found.");
   const entry = state.content?.[match[1]];
   if (!entry || entry.page !== state.pages[match[1]]) return error(404, "Not found.");
   const session = await readSession(request, env.RESEARCH_SESSION_SECRET, state.authEpoch);
   if (!session) return error(401, "Open this report through nir.pechuk.com to unlock it.");
+  if (/^assets\/[a-f0-9-]{36}$/.test(match[2])) {
+    if (!entry.assets.includes(match[2])) return error(404, "Not found.");
+    return assetResponse(request, env.RESEARCH, match[2], session.key);
+  }
   if (match[2]) {
-    const key = `assets/${match[2]}`;
-    if (!entry.assets.includes(key)) return error(404, "Not found.");
+    let file;
+    try {
+      file = decodeURIComponent(match[2]);
+    } catch {
+      return error(404, "Not found.");
+    }
+    const files = await reportFiles(env.RESEARCH, entry.page, session.key);
+    const name = file.endsWith("/") ? `${file}index.html` : file;
+    const key = files && Object.hasOwn(files, name) ? files[name] : null;
+    if (!key || !entry.assets.includes(key)) return error(404, "Not found.");
     return assetResponse(request, env.RESEARCH, key, session.key);
   }
   const object = await env.RESEARCH.get(entry.page);

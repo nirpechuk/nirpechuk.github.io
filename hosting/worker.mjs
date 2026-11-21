@@ -1,5 +1,6 @@
 import { CONTENT_ORIGIN, protectedContent } from "./research-content.mjs";
 import shell from "../bin/research/page.html";
+import directory from "./research-directory.html";
 import { mediaApi } from "./media-api.mjs";
 
 const STATE_KEY = "state.json";
@@ -114,7 +115,14 @@ async function publishing(request, env, pathname) {
   if (request.headers.get("content-type") !== (binary ? "application/octet-stream" : "application/json"))
     return failure(415, "Expected encrypted content.");
   const assetType = request.headers.get("x-asset-type");
-  if (binary && !/^(?:(?:image|video|audio|font)\/[a-z0-9.+-]+|application\/(?:pdf|octet-stream|font-woff))$/.test(assetType || ""))
+  // Folder reports also carry pages, scripts, styles, and data. They are served only to
+  // unlocked sessions on the isolated reports origin, alongside the report's own scripts.
+  if (
+    binary &&
+    !/^(?:(?:image|video|audio|font)\/[a-z0-9.+-]+|application\/(?:pdf|octet-stream|font-woff|json|wasm)|text\/(?:html|css|javascript|plain|csv))$/.test(
+      assetType || ""
+    )
+  )
     return failure(400, "Invalid media type.");
   const checksum = request.headers.get("x-content-sha256");
   if (!/^[a-f0-9]{64}$/.test(checksum || "")) return failure(400, "An upload checksum is required.");
@@ -151,21 +159,27 @@ async function research(request, env, pathname) {
   const index = ["/research", "/research/", "/research/index.html"].includes(pathname);
   if (!index && (!page || !Object.hasOwn(state.pages, page[1]))) return failure(404, "Not found.");
   const canonical = index ? "/research/" : `/research/${page[1]}/`;
-  if (pathname !== canonical) {
-    const url = new URL(request.url);
-    url.pathname = canonical;
-    return new Response(null, { status: 308, headers: { ...noStore, Location: url.href } });
-  }
-  return new Response(
-    request.method === "HEAD"
-      ? null
-      : shell
-          .replace("__PAYLOAD__", index ? "admin.json" : "page.json")
-          .replace("__STREAM__", !index && state.content?.[page[1]]?.page === state.pages[page[1]] ? "1" : "0"),
-    {
-      headers: { ...noStore, "Content-Type": "text/html; charset=utf-8" },
-    }
+  if (pathname !== canonical) return canonicalRedirect(request, canonical);
+  if (index) return htmlResponse(request, directory);
+  return htmlResponse(
+    request,
+    shell.replace("__PAYLOAD__", "page.json").replace("__STREAM__", state.content?.[page[1]]?.page === state.pages[page[1]] ? "1" : "0")
   );
+}
+
+function canonicalRedirect(request, pathname) {
+  const url = new URL(request.url);
+  url.pathname = pathname;
+  return new Response(null, { status: 308, headers: { ...noStore, Location: url.href } });
+}
+const htmlResponse = (request, html) =>
+  new Response(request.method === "HEAD" ? null : html, { headers: { ...noStore, "Content-Type": "text/html; charset=utf-8" } });
+
+// The admin console unlocks the encrypted admin vault, which holds the research password.
+function admin(request, pathname) {
+  if (!["GET", "HEAD"].includes(request.method)) return failure(405, "Method not allowed.");
+  if (pathname !== "/admin/") return canonicalRedirect(request, "/admin/");
+  return htmlResponse(request, shell.replace("__PAYLOAD__", "admin.json").replace("__STREAM__", "0"));
 }
 
 async function media(request, env, pathname) {
@@ -217,6 +231,7 @@ export default {
       }
       if (pathname.startsWith("/api/publish/")) return await publishing(request, env, pathname);
       if (pathname === "/research" || pathname.startsWith("/research/")) return await research(request, env, pathname);
+      if (["/admin", "/admin/", "/admin/index.html"].includes(pathname)) return admin(request, pathname);
       for (const [prefix, service] of [
         ["fitness", "FITNESS"],
         ["flats", "FLATS"],

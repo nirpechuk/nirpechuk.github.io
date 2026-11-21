@@ -2,7 +2,7 @@
 // Standalone uploader: Node.js 20+, no packages, Git checkout, or local Git required.
 import { packReport, openContent } from "./content.mjs";
 import { webcrypto, randomUUID, createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir, realpath, stat } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { homedir } from "node:os";
@@ -47,7 +47,104 @@ export async function unseal(value, password, rawContentKey) {
   const data = await webcrypto.subtle.decrypt({ name: "AES-GCM", iv: Buffer.from(value.iv, "base64") }, key, Buffer.from(value.data, "base64"));
   return JSON.parse(new TextDecoder().decode(data));
 }
-export function validateInput(html, slug) {
+// Folder reports may also reference these from scripts; anything else is served as binary.
+const fileTypes = {
+  mp4: "video/mp4",
+  m4v: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+  mp3: "audio/mpeg",
+  m4a: "audio/mp4",
+  wav: "audio/wav",
+  ogg: "audio/ogg",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  avif: "image/avif",
+  svg: "image/svg+xml",
+  ico: "image/x-icon",
+  woff: "font/woff",
+  woff2: "font/woff2",
+  ttf: "font/ttf",
+  otf: "font/otf",
+  pdf: "application/pdf",
+  html: "text/html",
+  htm: "text/html",
+  css: "text/css",
+  js: "text/javascript",
+  mjs: "text/javascript",
+  json: "application/json",
+  txt: "text/plain",
+  csv: "text/csv",
+  wasm: "application/wasm",
+};
+const maxFileBytes = 80 * 1024 * 1024;
+// A folder report is DIRECTORY/index.html plus every other file in the folder, at the same
+// relative paths. Hidden files and local helper scripts (such as serve.py) are not published.
+export async function readReportFolder(directory) {
+  const html = await readFile(path.join(directory, "index.html"), "utf8").catch(() => {
+    throw new Error(`A report folder needs an index.html: ${directory}`);
+  });
+  const files = [],
+    visited = new Set();
+  async function visit(dir, prefix) {
+    const real = await realpath(dir);
+    if (visited.has(real)) return;
+    visited.add(real);
+    for (const item of (await readdir(dir, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (item.name.startsWith(".") || ["__pycache__", "node_modules"].includes(item.name)) continue;
+      const file = path.join(dir, item.name),
+        relative = prefix + item.name,
+        info = await stat(file);
+      if (info.isDirectory()) await visit(file, `${relative}/`);
+      // Encrypted media cannot be empty, so empty files are left out.
+      else if (info.isFile() && info.size > 0 && relative !== "index.html" && !/\.(?:py|pyc|sh)$/i.test(item.name)) {
+        if (info.size > maxFileBytes) throw new Error(`${relative} is larger than 80 MiB. Re-encode it before publishing.`);
+        const source = await realpath(file);
+        files.push({
+          path: relative,
+          source,
+          size: info.size,
+          type: fileTypes[path.extname(item.name).slice(1).toLowerCase()] || "application/octet-stream",
+          read: () => readFile(source),
+        });
+      }
+    }
+  }
+  await visit(directory, "");
+  return { html, files };
+}
+// Optional directory details: the report's own date (rather than its upload date), a section
+// such as "progress", topic chips, and a parent report it is listed under.
+export function listingInfo({ date, section, topics, parent } = {}) {
+  const info = {};
+  if (date !== undefined) {
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("Use --date YYYY-MM-DD.");
+    info.date = date;
+  }
+  if (section !== undefined) {
+    if (section && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(section)) throw new Error("Use a lowercase hyphenated --section.");
+    info.section = section;
+  }
+  if (topics !== undefined) {
+    info.topics = topics.map((topic) => topic.trim()).filter(Boolean);
+    if (info.topics.length > 12 || info.topics.some((topic) => topic.length > 80)) throw new Error("Use at most 12 topics of up to 80 characters.");
+  }
+  if (parent !== undefined) info.parent = parent;
+  return info;
+}
+function applyInfo(entry, info, slugs) {
+  const next = { ...entry };
+  for (const [field, value] of Object.entries(info)) {
+    if (field === "parent" && value && (value === entry.slug || !slugs.has(value))) throw new Error(`--parent must name another existing report.`);
+    if (value === "" || (Array.isArray(value) && !value.length)) delete next[field];
+    else next[field] = value;
+  }
+  return next;
+}
+export function validateInput(html, slug, folderFiles) {
   if (typeof slug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || ["index", "manifest", "assets", "admin"].includes(slug))
     throw new Error("Use a page slug with lowercase letters, numbers, and hyphens.");
   if (Buffer.byteLength(html) > 50 * 1024 * 1024) throw new Error("HTML must be at most 50 MiB. Compress embedded images first.");
@@ -59,8 +156,21 @@ export function validateInput(html, slug) {
     if (href) refs.push(href[1] ?? href[2] ?? href[3]);
   }
   for (const match of html.matchAll(/url\(\s*["']?([^\s"')]+)["']?\s*\)/gi)) refs.push(match[1]);
-  const local = refs.find((ref) => !/^(https?:|data:|blob:|\/\/|#)/i.test(ref));
-  if (local !== undefined) throw new Error(`Embed local asset ${JSON.stringify(local)} in the HTML, or use an absolute HTTPS URL.`);
+  const locals = refs.filter((ref) => !/^(https?:|data:|blob:|\/\/|#)/i.test(ref));
+  if (folderFiles) {
+    // These patterns also match script text, so unresolved references are reported rather than fatal.
+    const resolve = (ref) => {
+      try {
+        return path.posix.normalize(decodeURI(ref.replace(/[?#].*$/, "")));
+      } catch {
+        return ref;
+      }
+    };
+    return [...new Set(locals.filter((ref) => !folderFiles.has(resolve(ref))))];
+  }
+  if (locals.length)
+    throw new Error(`Embed local asset ${JSON.stringify(locals[0])} in the HTML, use an absolute HTTPS URL, or publish the report's folder.`);
+  return [];
 }
 export function githubClient(token, fetcher = fetch) {
   return async (route, method = "GET", body) => {
@@ -257,9 +367,22 @@ export function cloudflareClient(token, origin = "https://nir.pechuk.com", fetch
   };
 }
 
-export async function uploadDirect({ client, password, html, slug, title, replace = false, dryRun = false, list = false, remove = false }) {
-  if (!list && !remove) validateInput(html, slug);
-  if (remove) validateInput("<!doctype html>", slug);
+export async function uploadDirect({
+  client,
+  password,
+  html,
+  slug,
+  title,
+  files,
+  info = {},
+  replace = false,
+  dryRun = false,
+  list = false,
+  remove = false,
+  setInfo = false,
+}) {
+  const unresolved = !list && !remove && !setInfo ? validateInput(html, slug, files && new Set(files.map((file) => file.path))) : [];
+  if (remove || setInfo) validateInput("<!doctype html>", slug);
   const { state, etag } = await client.state();
   if (!state) throw new Error("Research has not been migrated. Run the one-time research import first.");
   let manifest;
@@ -271,16 +394,29 @@ export async function uploadDirect({ client, password, html, slug, title, replac
   if (manifest.kind !== "index" || !Array.isArray(manifest.pages)) throw new Error("Invalid research directory.");
   if (list) return { pages: manifest.pages.map((page) => ({ ...page, url: `${client.origin}/research/${page.slug}/` })) };
   const existing = Object.hasOwn(state.pages, slug);
-  if (remove && !existing) throw new Error("That report does not exist.");
-  if (existing && !replace && !remove) throw new Error(`Page ${slug} already exists. Use --replace to update it.`);
+  if ((remove || setInfo) && !existing) throw new Error("That report does not exist.");
+  if (existing && !replace && !remove && !setInfo) throw new Error(`Page ${slug} already exists. Use --replace to update it.`);
+  if (files?.length && !manifest.contentKey) throw new Error("Report folders need the protected streaming format.");
   const url = `${client.origin}/research/${slug}/`;
+  const slugs = new Set(manifest.pages.map((page) => page.slug));
+  const previous = manifest.pages.find((page) => page.slug === slug);
+  if (setInfo) {
+    const entry = applyInfo({ ...previous, ...(title ? { title } : {}) }, info, slugs);
+    if (dryRun) return { status: "validated", action: "set", url, entry };
+    const pages = manifest.pages.map((page) => (page.slug === slug ? entry : page));
+    const revision = await client.commit({ ...state, manifest: await client.put(await seal({ ...manifest, pages }, password)) }, etag);
+    return { status: "updated", url, entry, revision: revision.etag };
+  }
   title ||=
     html
       ?.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]
       .replace(/<[^>]*>/g, "")
       .trim() || slug;
-  if (dryRun) return { status: "validated", action: remove ? "delete" : existing ? "update" : "create", url, title };
-  const updated = new Date().toISOString().slice(0, 10);
+  const folder = files ? { files: files.length, bytes: files.reduce((sum, file) => sum + file.size, 0), unresolved } : {};
+  const entry = remove ? null : applyInfo({ ...previous, slug, title, updated: new Date().toISOString().slice(0, 10) }, info, slugs);
+  if (dryRun)
+    return { status: "validated", action: remove ? "delete" : existing ? "update" : "create", url, title, ...(entry ? { entry } : {}), ...folder };
+  const updated = entry?.updated;
   const next = { ...state, pages: { ...state.pages }, ...(state.content ? { content: { ...state.content } } : {}) };
   let payload;
   if (remove) {
@@ -288,7 +424,7 @@ export async function uploadDirect({ client, password, html, slug, title, replac
     if (next.content) delete next.content[slug];
   } else {
     if (manifest.contentKey) {
-      const packed = await packReport({ client, rawKey: manifest.contentKey, html, slug, title, updated });
+      const packed = await packReport({ client, rawKey: manifest.contentKey, html, slug, title, updated, files });
       payload = packed.payload;
       next.pages[slug] = await client.put(payload);
       next.content ||= {};
@@ -300,10 +436,10 @@ export async function uploadDirect({ client, password, html, slug, title, replac
     }
   }
   const pages = manifest.pages.filter((page) => page.slug !== slug);
-  if (!remove) pages.unshift({ slug, title, updated });
+  if (!remove) pages.unshift(entry);
   next.manifest = await client.put(await seal({ ...manifest, pages }, password));
   const revision = await client.commit(next, etag);
-  return { status: remove ? "deleted" : "published", url, revision: revision.etag, payload };
+  return { status: remove ? "deleted" : "published", url, revision: revision.etag, payload, ...folder };
 }
 
 export async function waitForDirectPage(result, { fetcher = fetch } = {}) {
@@ -333,16 +469,31 @@ async function main() {
       help: { type: "boolean" },
       backend: { type: "string", default: "cloudflare" },
       delete: { type: "string" },
+      set: { type: "string" },
+      date: { type: "string" },
+      section: { type: "string" },
+      topic: { type: "string", multiple: true },
+      parent: { type: "string" },
     },
   });
-  if (values.help || (!positionals.length && !values.list && !values.delete)) {
+  if (values.help || (!positionals.length && !values.list && !values.delete && !values.set)) {
     console.log(
-      'node upload.mjs /path/to/report.html --slug experiment-notes [--title "Experiment notes"] [--replace] [--dry-run] [--wait]\nnode upload.mjs --list\nnode upload.mjs --delete experiment-notes [--dry-run]\nAuth: RESEARCH_PUBLISH_TOKEN or ~/.config/nir-research/publish-token.\nPassword: RESEARCH_PASSWORD or --password-file PATH or ~/.config/nir-research/password.\nLegacy GitHub publishing: --backend github (requires GH_TOKEN or gh auth login).'
+      [
+        'node upload.mjs /path/to/report.html --slug experiment-notes [--title "Experiment notes"] [--replace] [--dry-run] [--wait]',
+        "node upload.mjs /path/to/report-folder --slug weekly-notes ...   (publishes index.html with the folder's other files)",
+        "node upload.mjs --list",
+        "node upload.mjs --delete experiment-notes [--dry-run]",
+        'node upload.mjs --set experiment-notes [--title "..."] [--date YYYY-MM-DD] [--section progress] [--topic "..."]... [--parent other-slug]',
+        'Directory details (also accepted when publishing; "" clears one): --date is the report date, --topic repeats for each chip.',
+        "Auth: RESEARCH_PUBLISH_TOKEN or ~/.config/nir-research/publish-token.",
+        "Password: RESEARCH_PASSWORD or --password-file PATH or ~/.config/nir-research/password.",
+        "Legacy GitHub publishing: --backend github (requires GH_TOKEN or gh auth login).",
+      ].join("\n")
     );
     return;
   }
-  if (positionals.length > 1 || ((values.list || values.delete) && positionals.length) || (values.list && values.delete))
-    throw new Error("Provide one HTML file, --list, or --delete SLUG.");
+  if (positionals.length > 1 || [values.list, values.delete, values.set].filter(Boolean).length > (positionals.length ? 0 : 1))
+    throw new Error("Provide one HTML file or report folder, --list, --delete SLUG, or --set SLUG.");
   if (!["cloudflare", "github"].includes(values.backend)) throw new Error("Choose --backend cloudflare or github.");
   const password =
     process.env.RESEARCH_PASSWORD ||
@@ -362,12 +513,20 @@ async function main() {
   if (values.backend === "github" && !token) throw new Error("GitHub authentication is empty.");
   if (values.backend === "github" && values.delete) throw new Error("Use the legacy local publisher to delete from GitHub.");
   const source = positionals[0];
+  const folder = source && (await stat(source)).isDirectory() ? await readReportFolder(source) : null;
+  const info = listingInfo({ date: values.date, section: values.section, topics: values.topic, parent: values.parent });
+  if (values.backend === "github" && (folder || values.set || Object.keys(info).length))
+    throw new Error("Report folders and directory details need the Cloudflare backend.");
   let result = await (values.backend === "cloudflare" ? uploadDirect : upload)({
     ...(values.backend === "cloudflare" ? { client: await configuredClient() } : { api: githubClient(token) }),
     password,
-    html: source ? await readFile(source, "utf8") : undefined,
+    html: folder ? folder.html : source ? await readFile(source, "utf8") : undefined,
+    ...(folder ? { files: folder.files } : {}),
+    info,
+    setInfo: Boolean(values.set),
     slug:
       values.delete ||
+      values.set ||
       values.slug ||
       (source &&
         path

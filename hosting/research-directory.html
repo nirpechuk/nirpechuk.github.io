@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Research | Nir Pechuk</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧋%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #fbfbf9;
+        --panel: #f2f2ee;
+        --fg: #16181c;
+        --fg2: #4e525a;
+        --muted: #858a93;
+        --rule: #dcdcd6;
+        --acc: #2a78d6;
+        --font: "Helvetica Neue", Arial, system-ui, sans-serif;
+        --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #17181a;
+          --panel: #212226;
+          --fg: #f2f2ef;
+          --fg2: #c3c2b7;
+          --muted: #8e9199;
+          --rule: #34363b;
+          --acc: #3987e5;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #17181a;
+        --panel: #212226;
+        --fg: #f2f2ef;
+        --fg2: #c3c2b7;
+        --muted: #8e9199;
+        --rule: #34363b;
+        --acc: #3987e5;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 15px/1.5 var(--font);
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 16px 60px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 26px;
+      }
+      .tools a {
+        font-size: 13px;
+        color: var(--fg2);
+        text-decoration: none;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        padding: 3px 12px;
+        background: var(--panel);
+      }
+      .tools a:hover {
+        border-color: var(--acc);
+        color: var(--acc);
+      }
+      .top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 36px 0 12px;
+      }
+      .sub {
+        color: var(--muted);
+        font: 12.5px var(--mono);
+        margin: 0 0 28px;
+      }
+      button.quiet {
+        font: 13px var(--font);
+        color: var(--muted);
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+      button.quiet:hover {
+        color: var(--acc);
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card {
+        display: flex;
+        gap: 22px;
+        padding: 16px 18px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        background: var(--panel);
+        color: inherit;
+        text-decoration: none;
+      }
+      .card:hover {
+        border-color: var(--acc);
+      }
+      .when {
+        width: 120px;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        font: 13px var(--mono);
+      }
+      .when span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .t {
+        font-weight: 600;
+        font-size: 17px;
+        margin-bottom: 6px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chips span {
+        font-size: 12.5px;
+        color: var(--fg2);
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        padding: 1px 9px;
+        background: var(--bg);
+      }
+      .extra {
+        display: inline-block;
+        margin: 4px 0 0 160px;
+        font-size: 13px;
+        color: var(--acc);
+        text-decoration: none;
+      }
+      .gate {
+        min-height: 60vh;
+        display: grid;
+        place-items: center;
+      }
+      .gate form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .gate input {
+        width: min(280px, 80vw);
+        font: 15px var(--font);
+        color: var(--fg);
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .gate input:focus {
+        outline: none;
+        border-color: var(--acc);
+      }
+      .gate p {
+        min-height: 1.5em;
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 600px) {
+        .card {
+          flex-direction: column;
+          gap: 6px;
+        }
+        .extra {
+          margin-left: 18px;
+        }
+      }
+    </style>
+    <script src="/assets/research/directory.js?v=1" type="module"></script>
+  </head>
+  <body>
+    <main>
+      <section id="gate" class="gate" aria-label="Password required" hidden>
+        <form id="unlock-form" aria-label="Unlock research">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            aria-label="Password"
+            placeholder="Password"
+            autocomplete="current-password"
+            enterkeyhint="go"
+            required
+          />
+          <button type="submit" hidden>Unlock</button>
+          <p id="error" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <noscript>JavaScript is needed to unlock this page.</noscript>
+      <section id="directory" aria-labelledby="directory-title" hidden>
+        <nav class="tools" aria-label="Lab tools">
+          <a href="http://aviralpc0.pc.cs.cmu.edu:7891/analysis/" target="_blank" rel="noopener noreferrer">Robot Run Viewer ↗</a>
+          <a href="http://aviralpc0.pc.cs.cmu.edu:7889/" target="_blank" rel="noopener noreferrer">Model Compare ↗</a>
+          <a href="http://aviralpc0.pc.cs.cmu.edu:7897/" target="_blank" rel="noopener noreferrer">Decision Planner Benchmark ↗</a>
+        </nav>
+        <div class="top">
+          <h1 id="directory-title">Nir's Research</h1>
+          <button id="lock" class="quiet" type="button">Lock</button>
+        </div>
+        <p id="summary" class="sub"></p>
+        <h2 id="progress-title">Progress reports</h2>
+        <ul id="progress" aria-labelledby="progress-title"></ul>
+        <h2 id="other-title">Other reports</h2>
+        <ul id="other" aria-labelledby="other-title"></ul>
+      </section>
+    </main>
+  </body>
+</html>

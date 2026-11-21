@@ -36,9 +36,13 @@ export async function encryptAsset(bytes, raw, objectKey) {
   }
   return Buffer.concat(parts);
 }
-export async function packReport({ client, rawKey, html, slug, title, updated, registry = new Map() }) {
+// Report folders keep relative URLs working, including paths that scripts build at
+// runtime: each file is served at its own path from an encrypted asset, and the
+// path map stays inside the encrypted report document.
+export async function packReport({ client, rawKey, html, slug, title, updated, files = [], registry = new Map() }) {
   const jobs = [],
-    assets = new Set();
+    assets = new Set(),
+    fileMap = {};
   // Replaces data URLs in markup AND script/JSON data tables. Native report code
   // can keep assigning these URLs to img/video elements without a new API.
   function register(mime, bytes) {
@@ -73,18 +77,32 @@ export async function packReport({ client, rawKey, html, slug, title, updated, r
     rewritten = rewritten.replace(blobHelper, (match) => match + ' if (typeof b64 === "string" && b64.startsWith("/r/")) return b64; ');
     rewritten = rewritten.replace(dataHelper, (_whole, _quote, value) => `((v)=>v.startsWith("/r/")?v:"data:video/mp4;base64,"+v)(${value})`);
   }
+  for (const file of files) {
+    // Symlinked copies of one file share an asset. Files are read when uploaded, one per worker.
+    let objectKey = registry.get(`file:${file.source}`);
+    if (!objectKey) {
+      objectKey = `assets/${randomUUID()}`;
+      registry.set(`file:${file.source}`, objectKey);
+      jobs.push({ objectKey, read: file.read, mime: file.type });
+    }
+    assets.add(objectKey);
+    fileMap[file.path] = objectKey;
+  }
+  if (assets.size > 2000) throw new Error("A report can include at most 2000 media files.");
   // A bounded upload queue avoids multiplying memory use and network contention.
   let cursor = 0;
   await Promise.all(
     Array.from({ length: Math.min(3, jobs.length) }, async () => {
       while (cursor < jobs.length) {
         const job = jobs[cursor++];
-        await client.putAsset(job.objectKey, await encryptAsset(job.bytes, rawKey, job.objectKey), job.mime, job.bytes.length);
+        const bytes = job.bytes ?? (await job.read());
+        await client.putAsset(job.objectKey, await encryptAsset(bytes, rawKey, job.objectKey), job.mime, bytes.length);
       }
     })
   );
+  const report = { kind: "page", title, html: rewritten, updated, ...(files.length ? { files: fileMap } : {}) };
   return {
-    payload: await sealContent({ kind: "page", title, html: rewritten, updated }, rawKey),
+    payload: await sealContent(report, rawKey),
     assets: [...assets],
     sourceBytes: Buffer.byteLength(html),
     documentBytes: Buffer.byteLength(rewritten),
@@ -131,6 +149,7 @@ export async function rotateContent({ client, state, oldKey, newKey }) {
       assets.push(next);
       report.html = report.html.replaceAll(old, next);
     }
+    if (report.files) report.files = Object.fromEntries(Object.entries(report.files).map(([file, key]) => [file, mapping.get(key)]));
     pages[slug] = await client.put(await sealContent(report, newKey));
     content[slug] = { page: pages[slug], assets };
   }

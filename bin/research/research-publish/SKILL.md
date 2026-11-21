@@ -18,6 +18,8 @@ Read the publishing token from `RESEARCH_PUBLISH_TOKEN` or `~/.config/nir-resear
 4. When the user requested publication:
    `node /path/to/this/skill/scripts/upload.mjs /path/report.html --slug experiment-notes --title "Experiment notes" --wait`
    Add `--replace` only when the user intends to update that slug. `nir-research` is the installed shortcut.
+   A report folder (its `index.html` plus media, nested pages, scripts, or JSON referenced by relative path) is published by passing the folder instead of an HTML file. Each file must be at most 80 MiB; the dry run reports the file count and unresolved references.
+   Directory listing details: `--date YYYY-MM-DD` (report date), `--section progress` for weekly progress reports, `--topic "..."` once per chip, `--parent SLUG` to list it under another report. Change them later with `--set SLUG` plus those flags.
 5. Return the URL and the verified status. `live` means the exact uploaded ciphertext was observed. `published` means the state commit succeeded but live verification was not requested.
 
 Encryption happens locally. Immutable R2 uploads are followed by one conditional state update; no Git commit or website build is required. A stale revision fails without overwriting other work. Inspect the latest directory before retrying a conflict once; do not add `--replace` unless replacement was intended. An ambiguous completion requires inspecting the live result, not blindly re-uploading. Deletion uses `--delete SLUG` only when explicitly requested; old encrypted versions remain for recovery.

@@ -72,3 +72,22 @@ test("password rotation replaces the content key and ciphertext so the old key c
   assert.equal((await decryptAsset(encrypted, newKey, key)).toString(), "hello");
   await assert.rejects(decryptAsset(encrypted, oldKey, key));
 });
+test("folder files keep their paths through password rotation", async () => {
+  const client = storage(),
+    oldKey = contentKey(),
+    newKey = contentKey();
+  const read = async () => Buffer.from('{"moments":[]}');
+  const files = [
+    { path: "media/a.json", source: "/report/media/a.json", size: 14, type: "application/json", read },
+    { path: "media/link.json", source: "/report/media/a.json", size: 14, type: "application/json", read },
+  ];
+  const packed = await packReport({ client, rawKey: oldKey, html: "<!doctype html>", slug: "folder", title: "Folder", updated: "2026-11-20", files });
+  assert.equal(packed.assets.length, 1);
+  const page = await client.put(packed.payload),
+    state = { pages: { folder: page }, content: { folder: { page, assets: packed.assets } } };
+  const rotated = await rotateContent({ client, state, oldKey, newKey });
+  const report = await openContent(await client.read(rotated.pages.folder), newKey);
+  const [key] = rotated.content.folder.assets;
+  assert.deepEqual(report.files, { "media/a.json": key, "media/link.json": key });
+  assert.equal((await decryptAsset((await client.readAsset(key)).bytes, newKey, key)).toString(), '{"moments":[]}');
+});

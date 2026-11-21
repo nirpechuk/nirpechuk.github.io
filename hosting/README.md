@@ -14,6 +14,8 @@ Use Node 22.20+ (`.nvmrc`), then `npm ci`. Build/deploy commands automatically u
 | Deploy one app                  | `npm run deploy:fitness` / `npm run deploy:flats`                           |
 | Publish a report                | `npm run research:publish -- /path/report.html --slug report --wait`        |
 | Replace a report                | Same command with `--replace`                                               |
+| Publish a report folder         | `npm run research:publish -- /path/report-folder --slug report --wait`      |
+| Edit a directory entry          | `npm run research:publish -- --set report --topic "..." --date YYYY-MM-DD`  |
 | List reports                    | `npm run research:publish -- --list`                                        |
 | Delete a report                 | `npm run research:publish -- --delete report`                               |
 | Upload public media             | `npm run media:upload -- /path/video.mp4`                                   |
@@ -29,7 +31,7 @@ The Finder shortcut `Publish Research.command` still works. On remote machines, 
 ## URLs and resources
 
 - `https://pechuk.com`: minimal family directory.
-- `https://nir.pechuk.com`: homepage and existing paths, including `/fitness/`, `/flats/`, `/research/`, and `/talks/`.
+- `https://nir.pechuk.com`: homepage and existing paths, including `/fitness/`, `/flats/`, `/research/`, and `/talks/`. `/research/` is the report directory (research password); the admin console (traffic, Flats residents, report view counts) is at `/admin/` (admin password).
 - `https://reports.pechuk.com`: isolated, authenticated delivery for research HTML and private media. Visitors continue using the existing `nir.pechuk.com/research/...` links.
 - `https://media.pechuk.com`: public R2 media, including optimized MP4s and posters.
 - Workers: `pechuk-family`, `nir-site`, `nir-fitness`, `nir-flats`. `nir-site-preview` is a bootstrap/checking deployment.
@@ -49,6 +51,10 @@ The directory and admin vault retain the AES-GCM/PBKDF2 format. Optimized report
 `npm run research:rotate -- /private/new-password-file` rotates current reports and updates the encrypted admin vault in one commit. It creates a fresh content key, re-encrypts protected media, and revokes existing report sessions; the old content key cannot decrypt future content. Update saved passwords on all publishing machines afterward. Take an encrypted backup first. Large imports/rotations with more than about 40 reports need Workers Paid because each new report object is checked before the commit. Media is staged through authenticated immutable uploads; the state switch remains small. The state format supports up to 1,000 reports.
 
 Standalone reports support up to 50 MiB of HTML. The current publisher automatically separates embedded image, video, audio, and font data URLs into protected files, and handles the older VIDEO_DATA and clipBlobLink video tables. Private report media stays in the private research bucket; do not upload it to the public media bucket. For public videos, use the public media uploader. Update installed publishers on other machines with `bin/research/install-remote.sh`; its uploader now includes the accompanying `content.mjs` module.
+
+A report can also be a folder: `index.html` plus files it references by relative path (videos, images, nested pages, scripts, JSON). Every other non-hidden file in the folder is published except `*.py`, `*.sh`, and empty files; each must be at most 80 MiB, with up to 2,000 per report. Each file becomes an independently encrypted asset, and the path-to-asset map is stored inside the encrypted report document, so `reports.pechuk.com/r/<slug>/<path>` serves it to unlocked sessions with byte ranges. Relative URLs therefore keep working, including query strings and paths that scripts build at runtime. `--dry-run` lists the file count and any `src`/`href` references that do not resolve.
+
+The `/research/` directory groups reports by optional entry details stored in the encrypted directory: `--date` (the report's own date; otherwise its upload date), `--section progress` (the progress-report list, with a "Week of" label), repeated `--topic` chips, and `--parent SLUG` (listed as a link under another report). Pass them when publishing or change them later with `--set SLUG`; an empty value clears one. Replacing a report keeps its details.
 
 ## Media performance
 

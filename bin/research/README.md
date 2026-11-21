@@ -7,7 +7,11 @@ npm run research:publish -- /path/to/report.html --slug experiment-notes --wait
 npm run research:publish -- /path/to/report.html --slug experiment-notes --replace --wait
 npm run research:publish -- --list
 npm run research:publish -- --delete experiment-notes
+npm run research:publish -- /path/to/report-folder --slug weekly-notes --date 2026-11-20 --section progress --topic "Planner" --wait
+npm run research:publish -- --set weekly-notes --topic "Planner" --topic "YAM bugs"
 ```
+
+A folder publishes its `index.html` with the folder's other files at their relative paths (see the hosting guide). `--date`, `--section progress`, `--topic` (repeatable), and `--parent SLUG` control how the report is listed at `/research/`; `--set SLUG` edits them without uploading.
 
 The Finder shortcut `Publish Research.command` opens a file chooser and creates or replaces the report with that filename. `--dry-run` validates without uploading.
 

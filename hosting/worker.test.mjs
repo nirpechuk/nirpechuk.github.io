@@ -2,14 +2,21 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { build } from "esbuild";
 import { Miniflare, convertV4MiniflareOptions } from "miniflare";
-import { mkdtemp, writeFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { runInNewContext } from "node:vm";
 import { webcrypto, randomUUID } from "node:crypto";
 import { uploadMedia } from "./scripts/media.mjs";
 import { affectedTargets } from "./scripts/changed.mjs";
-import { cloudflareClient, seal, unseal, uploadDirect, waitForDirectPage } from "../bin/research/research-publish/scripts/upload.mjs";
+import {
+  cloudflareClient,
+  seal,
+  unseal,
+  uploadDirect,
+  waitForDirectPage,
+  readReportFolder,
+} from "../bin/research/research-publish/scripts/upload.mjs";
 
 const token = "test-token-".repeat(8),
   password = "only-a-test-password";
@@ -300,4 +307,97 @@ test("protected media rejects ciphertext tampering", async (t) => {
     const response = await mf.dispatchFetch("https://reports.pechuk.com/r/integrity/" + key, { headers: { Cookie } });
     await response.arrayBuffer();
   });
+});
+
+test("the admin console moves to /admin/ and /research/ becomes the research directory", async (t) => {
+  const { mf } = await fixture(t);
+  for (const route of ["/admin", "/admin/index.html"])
+    assert.equal(
+      (await mf.dispatchFetch(`https://nir.pechuk.com${route}`, { redirect: "manual" })).headers.get("location"),
+      "https://nir.pechuk.com/admin/"
+    );
+  const console = await mf.dispatchFetch("https://nir.pechuk.com/admin/");
+  assert.equal(console.headers.get("cache-control"), "no-store");
+  assert.match(await console.text(), /data-payload="admin.json"/);
+  assert.equal((await mf.dispatchFetch("https://nir.pechuk.com/admin/", { method: "POST" })).status, 405);
+  const directory = await (await mf.dispatchFetch("https://nir.pechuk.com/research/")).text();
+  assert.match(directory, /directory\.js/);
+  assert.doesNotMatch(directory, /admin\.json/);
+});
+
+test("folder reports serve their files at relative paths only to unlocked sessions", async (t) => {
+  const { client, mf } = await fixture(t);
+  await enableContent(client);
+  const folder = await mkdtemp(path.join(tmpdir(), "nir-report-folder-"));
+  t.after(() => rm(folder, { recursive: true, force: true }));
+  const video = Buffer.alloc(600000);
+  for (let i = 0; i < video.length; i++) video[i] = i % 241;
+  await mkdir(path.join(folder, "media/viewer"), { recursive: true });
+  await writeFile(path.join(folder, "media/clip one.mp4"), video);
+  await symlink(path.join(folder, "media/clip one.mp4"), path.join(folder, "media/same.mp4"));
+  await writeFile(
+    path.join(folder, "media/viewer/index.html"),
+    "<!doctype html><script>fetch(new URLSearchParams(location.search).get('m'))</script>"
+  );
+  await writeFile(path.join(folder, "media/viewer/moments.json"), '{"moments":["ünïcode"]}');
+  await writeFile(path.join(folder, "media/empty.txt"), "");
+  await writeFile(path.join(folder, "serve.py"), "print('local only')");
+  await writeFile(path.join(folder, ".hidden"), "secret");
+  await writeFile(
+    path.join(folder, "index.html"),
+    '<!doctype html><title>Folder</title><video src="media/clip%20one.mp4"></video><iframe src="media/viewer/index.html?m=moments.json"></iframe><img src="media/missing.png">'
+  );
+  const { html: source, files } = await readReportFolder(folder);
+  assert.deepEqual(
+    files.map((file) => [file.path, file.type]),
+    [
+      ["media/clip one.mp4", "video/mp4"],
+      ["media/same.mp4", "video/mp4"],
+      ["media/viewer/index.html", "text/html"],
+      ["media/viewer/moments.json", "application/json"],
+    ]
+  );
+  const dry = await uploadDirect({ client, password, html: source, files, slug: "folder", dryRun: true });
+  assert.deepEqual([dry.files, dry.unresolved], [4, ["media/missing.png"]]);
+  await uploadDirect({ client, password, html: source, files, slug: "folder" });
+  const entry = (await client.state()).state.content.folder;
+  assert.equal(entry.assets.length, 3);
+  const base = "https://reports.pechuk.com/r/folder/";
+  assert.equal((await mf.dispatchFetch(base + "media/viewer/moments.json")).status, 401);
+  const login = await sessionRequest(mf),
+    Cookie = login.headers.get("set-cookie").split(";")[0];
+  const page = await mf.dispatchFetch(base + "media/viewer/index.html?m=moments.json", { headers: { Cookie } });
+  assert.equal(page.headers.get("content-type"), "text/html; charset=utf-8");
+  assert.match(page.headers.get("content-security-policy"), /frame-ancestors 'self' https:\/\/nir\.pechuk\.com/);
+  assert.match(await page.text(), /URLSearchParams/);
+  assert.match(await (await mf.dispatchFetch(base + "media/viewer/", { headers: { Cookie } })).text(), /URLSearchParams/);
+  const data = await mf.dispatchFetch(base + "media/viewer/moments.json", { headers: { Cookie } });
+  assert.equal(data.headers.get("content-type"), "application/json; charset=utf-8");
+  assert.deepEqual(await data.json(), { moments: ["ünïcode"] });
+  const range = await mf.dispatchFetch(base + "media/clip%20one.mp4", { headers: { Cookie, Range: "bytes=300000-300009" } });
+  assert.equal(range.status, 206);
+  assert.deepEqual(Buffer.from(await range.arrayBuffer()), video.subarray(300000, 300010));
+  for (const missing of ["media/missing.png", "serve.py", ".hidden", "media/empty.txt", "constructor", "media/%E0%A4%A"])
+    assert.equal((await mf.dispatchFetch(base + missing, { headers: { Cookie } })).status, 404, missing);
+  await uploadDirect({ client, password, html, slug: "plain" });
+  assert.equal((await mf.dispatchFetch("https://reports.pechuk.com/r/plain/media/viewer/moments.json", { headers: { Cookie } })).status, 404);
+});
+
+test("directory details are validated, survive replacement, and can be edited without uploading", async (t) => {
+  const { client } = await fixture(t);
+  await uploadDirect({ client, password, html, slug: "weekly", info: { date: "2026-11-20", section: "progress", topics: ["Planner", " "] } });
+  await assert.rejects(uploadDirect({ client, password, html, slug: "attached", info: { parent: "missing" } }), /--parent/);
+  await uploadDirect({ client, password, html, slug: "attached", info: { parent: "weekly" } });
+  await uploadDirect({ client, password, html: html + "v2", slug: "weekly", replace: true });
+  const before = await client.state();
+  const updated = await uploadDirect({ client, password, slug: "weekly", setInfo: true, title: "Weekly 11/20", info: { topics: [], section: "" } });
+  assert.equal(updated.status, "updated");
+  const after = await client.state();
+  assert.deepEqual(after.state.pages, before.state.pages);
+  const pages = (await uploadDirect({ client, password, list: true })).pages.map(({ url, updated, ...page }) => page);
+  assert.deepEqual(pages, [
+    { slug: "weekly", title: "Weekly 11/20", date: "2026-11-20" },
+    { slug: "attached", title: "Private report", parent: "weekly" },
+  ]);
+  await assert.rejects(uploadDirect({ client, password, slug: "absent", setInfo: true, info: {} }), /does not exist/);
 });

@@ -205,7 +205,9 @@ import { reportsOrigin, hasReportSession, createReportSession, clearReportSessio
       if (!payload) {
         // Old installed uploaders may still label the index as manifest.json.
         // The directory always authenticates against the separate admin envelope.
-        payload = await fetchPayload(isReport ? "page.json" : "admin.json", (fraction, text) => progress?.set(0.02 + 0.83 * fraction, text));
+        payload = await fetchPayload(isReport ? "page.json" : "/research/admin.json", (fraction, text) =>
+          progress?.set(0.02 + 0.83 * fraction, text)
+        );
       }
       progress?.set(0.88, "Decrypting");
       let content = await decrypt(payload, password);
@@ -213,7 +215,7 @@ import { reportsOrigin, hasReportSession, createReportSession, clearReportSessio
       if (!isReport) {
         if (content.kind !== "admin" || typeof content.researchPassword !== "string") throw new Error("load");
         const researchPassword = content.researchPassword;
-        const response = await fetch("manifest.json", { cache: "no-store" });
+        const response = await fetch("/research/manifest.json", { cache: "no-store" });
         if (!response.ok) throw new Error("load");
         try {
           content = await decrypt(await response.json(), researchPassword);

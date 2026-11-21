@@ -15,6 +15,8 @@
       "/r/*",
       "/research",
       "/research/*",
+      "/admin",
+      "/admin/*",
       "/api/publish/*",
       "/fitness",
       "/fitness/*",
