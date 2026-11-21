@@ -184,37 +184,37 @@ canvas.pixel {
   color: var(--mute);
 }
 
-/* Spider: an ordinary scrolling page of text, with a quiet machine walking under it. */
+/* Dog: an ordinary scrolling page of text, with a quiet robot dog walking under it. */
 :root {
-  --spider-body: #e5e2d9;
-  --spider-leg: #dfdcd2;
-  --spider-detail: #d0ccc0;
-  --spider-box: rgba(110, 100, 80, 0.2);
+  --dog-body: #e5e2d9;
+  --dog-leg: #dfdcd2;
+  --dog-detail: #d0ccc0;
+  --dog-box: rgba(110, 100, 80, 0.2);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --spider-body: #202227;
-    --spider-leg: #24262b;
-    --spider-detail: #303238;
-    --spider-box: rgba(200, 205, 215, 0.14);
+    --dog-body: #202227;
+    --dog-leg: #24262b;
+    --dog-detail: #303238;
+    --dog-box: rgba(200, 205, 215, 0.14);
   }
 }
-canvas#spider {
+canvas#dog {
   z-index: 0;
   pointer-events: none;
   transition: opacity 1.2s ease;
 }
-canvas#spider.idle {
+canvas#dog.idle {
   opacity: 0.5;
 }
-body.spider main {
+body.dog main {
   position: relative;
   z-index: 1;
   max-width: 36rem;
   margin: 0 auto;
   padding: clamp(5rem, 16vh, 9rem) 1.5rem 6rem;
 }
-body.spider h1 {
+body.dog h1 {
   margin: 0 0 0.6rem;
   font-family: "Atkinson Hyperlegible", inherit;
   font-size: clamp(2.2rem, 4.6vw, 3.2rem);
@@ -222,27 +222,27 @@ body.spider h1 {
   letter-spacing: -0.02em;
   line-height: 1;
 }
-body.spider main p {
+body.dog main p {
   margin: 0 0 1.1rem;
   font-size: 1.05rem;
   line-height: 1.65;
 }
-body.spider main p.tagline {
+body.dog main p.tagline {
   margin-bottom: 2rem;
   color: var(--mute);
 }
-body.spider .links {
+body.dog .links {
   margin-top: 2rem;
 }
-body.spider .switch {
+body.dog .switch {
   position: absolute;
 }
 
 /* Pages that scroll */
 html:has(body.index),
-html:has(body.spider),
+html:has(body.dog),
 body.index,
-body.spider {
+body.dog {
   height: auto;
   overflow: auto;
 }
