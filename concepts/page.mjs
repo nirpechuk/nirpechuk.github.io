@@ -7,6 +7,8 @@
 // of the photograph, on the rules between sections, and the edges of the window
 // hold the rest in.
 
+import { loadPage } from "./livepage.mjs";
+
 const GRAVITY = 1700; // px/s^2
 const CELL = 2; // collision grid, CSS px
 const DOT = 1; // spacing of the name's grains: one per pixel, so at rest it is the type
@@ -19,49 +21,6 @@ const HOME = 0;
 const FALL = 1;
 const PILE = 2;
 const BACK = 3;
-
-// The page ---------------------------------------------------------------
-
-// Bring in the live homepage: its stylesheets, its body, its markup untouched.
-// Its own scripts are left out — nothing here needs them — and so is the mail
-// link, which does not belong on a page that is handed around.
-async function loadPage() {
-  const res = await fetch("/", { headers: { Accept: "text/html" } });
-  if (!res.ok) throw new Error(`homepage: ${res.status}`);
-  const doc = new DOMParser().parseFromString(await res.text(), "text/html");
-
-  const waits = [];
-  for (const node of doc.head.querySelectorAll('link[rel~="stylesheet"], style')) {
-    const clone = document.importNode(node, true);
-    if (clone.tagName === "LINK") waits.push(new Promise((done) => ((clone.onload = done), (clone.onerror = done))));
-    document.head.append(clone);
-  }
-
-  for (const el of doc.body.querySelectorAll('script, a[href^="mailto:"]')) el.remove();
-  document.body.className = doc.body.className;
-  document.body.prepend(...doc.body.children);
-
-  // Theme: the site keeps light and dark in a script of its own.
-  const theme = doc.head.querySelector('script[src*="theme.js"]');
-  if (theme) {
-    await new Promise((done) => {
-      const s = document.createElement("script");
-      s.src = theme.getAttribute("src");
-      s.onload = s.onerror = done;
-      document.head.append(s);
-    });
-    try {
-      initTheme(); // a top-level `let` in that script, so it is a global binding, not a window property
-    } catch {
-      /* no theme script: the stylesheets' own default stands */
-    }
-  }
-
-  await Promise.all(waits);
-  await document.fonts.ready;
-  await Promise.all([...document.images].map((img) => (img.complete ? null : new Promise((done) => ((img.onload = done), (img.onerror = done))))));
-  await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
-}
 
 await loadPage();
 

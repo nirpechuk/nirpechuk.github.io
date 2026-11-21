@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concept: arms · Nir Pechuk</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="demo.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@700&display=swap" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+          "matter-js": "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm"
+        }
+      }
+    </script>
+  </head>
+  <body class="arms">
+    <main>
+      <h1>Nir Pechuk</h1>
+      <p class="piece">Computer Science at Carnegie Mellon University</p>
+      <nav class="links">
+        <a class="piece" href="/publications/">Papers</a>
+        <a class="piece" href="/projects/">Projects</a>
+        <a class="piece" href="/cv/">CV</a>
+      </nav>
+    </main>
+    <canvas id="c" aria-hidden="true"></canvas>
+
+    <nav class="switch"></nav>
+    <script type="module" src="nav.mjs"></script>
+
+    <script type="module" src="arms.mjs"></script>
+  </body>
+</html>

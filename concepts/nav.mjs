@@ -12,6 +12,8 @@ const PAGES = [
   ["desk.html", "Desk · pixel"],
   ["dog.html", "Text · dog"],
   ["page.html", "Page · sand"],
+  ["arms.html", "Arms · minimal"],
+  ["arms-page.html", "Arms · page"],
 ];
 // The host may serve a page with or without its .html, so compare without it.
 const bare = (href) => href.replace(".html", "");
