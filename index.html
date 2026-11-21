@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nir Pechuk</title>
+    <meta
+      name="description"
+      content="Nir Pechuk is a computer science undergraduate at Carnegie Mellon University working on reinforcement learning, robotics, and systems."
+    />
+    <meta name="author" content="Nir Pechuk" />
+    <link rel="canonical" href="https://nir.pechuk.com/" />
+    <meta name="theme-color" content="#12312b" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:site_name" content="Nir Pechuk" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Nir Pechuk" />
+    <meta
+      property="og:description"
+      content="Nir Pechuk is a computer science undergraduate at Carnegie Mellon University working on reinforcement learning, robotics, and systems."
+    />
+    <meta property="og:url" content="https://nir.pechuk.com/" />
+    <meta property="og:image" content="https://nir.pechuk.com/assets/img/nir-pechuk.jpg" />
+    <meta property="og:locale" content="en" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nir Pechuk" />
+    <meta
+      name="twitter:description"
+      content="Nir Pechuk is a computer science undergraduate at Carnegie Mellon University working on reinforcement learning, robotics, and systems."
+    />
+    <meta name="twitter:image" content="https://nir.pechuk.com/assets/img/nir-pechuk.jpg" />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%A7%8B&lt;/text&gt;&lt;/svg&gt;"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Nir Pechuk",
+        "url": "https://nir.pechuk.com/",
+        "image": "https://nir.pechuk.com/assets/img/nir-pechuk.jpg",
+        "affiliation": { "@type": "CollegeOrUniversity", "name": "Carnegie Mellon University" },
+        "sameAs": ["https://github.com/nirpechuk", "https://www.linkedin.com/in/nirpechuk/"]
+      }
+    </script>
+
+    <style>
+      /* Dartmouth's Forest Green and Snow White. */
+      :root {
+        --bg: #12312b;
+        --ink: #ffffff;
+        --link: var(--ink);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Atkinson Hyperlegible",
+          ui-sans-serif,
+          -apple-system,
+          "Helvetica Neue",
+          Helvetica,
+          Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 1.1rem;
+        padding: 0 1.5rem 8vh;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.4rem, 4.6vw, 4.2rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1.1rem;
+        font-size: 0.95rem;
+      }
+      nav a {
+        color: var(--link);
+        text-underline-offset: 4px;
+        text-decoration-thickness: 1px;
+        border-radius: 2px;
+      }
+      nav a:hover {
+        text-decoration-thickness: 2px;
+      }
+      nav a:focus-visible {
+        outline: 2px solid var(--link);
+        outline-offset: 4px;
+      }
+
+      /* The arms are drawn over the page and never take a click from it. They
+         come in once they are ready, so the text is never waiting on them. */
+      #arms {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+      body.ready #arms {
+        opacity: 1;
+      }
+      /* A piece of the page the arms can pick up. */
+      .piece {
+        display: inline-block;
+        position: relative;
+        will-change: transform;
+        user-select: none;
+      }
+      .piece.loose,
+      .piece.held {
+        z-index: 2;
+      }
+      .piece.held {
+        filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.25));
+      }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+          "matter-js": "https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="/concepts/home.mjs" />
+    <link rel="modulepreload" href="/concepts/tidy.mjs" />
+    <link rel="modulepreload" href="/concepts/rig.mjs" />
+    <link rel="modulepreload" href="/concepts/look.mjs" />
+  </head>
+  <body>
+    <main>
+      <h1>Nir Pechuk</h1>
+      <nav aria-label="Work and profiles">
+        <a href="/about/">About</a>
+        <a href="/publications/">Papers</a>
+        <a href="/projects/">Projects</a>
+        <a href="/talks/">Talks</a>
+        <a href="https://github.com/nirpechuk" rel="me noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/nirpechuk/" rel="me noopener">LinkedIn</a>
+      </nav>
+    </main>
+    <canvas id="arms" aria-hidden="true"></canvas>
+
+    <script type="module" src="/concepts/home.mjs"></script>
+  </body>
+</html>

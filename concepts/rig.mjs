@@ -278,7 +278,8 @@ export class Arm {
 
 // `pedestal` stands each arm on a visible column (for arms that rise and sink);
 // `soft` lights the scene nearly from the eye, for shorter, fainter shadows.
-export async function createRig({ canvas, robot = "xarm7", pedestal = false, soft = false }) {
+// `look` sets the lighting and the finish of the arms: see `dress` below.
+export async function createRig({ canvas, robot = "xarm7", pedestal = false, soft = false, look = null }) {
   const spec = await loadRobot(robot);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
@@ -289,7 +290,8 @@ export async function createRig({ canvas, robot = "xarm7", pedestal = false, sof
 
   // White arms on a light page need a dimmer room to keep their shape.
   const [r, g, b] = (getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g) ?? [255, 255, 255]).map(Number);
-  const lightPage = (r + g + b) / 3 > 140;
+  let lightPage = (r + g + b) / 3 > 140;
+  let shade = null; // the shadow darkness last asked for
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -338,6 +340,59 @@ export async function createRig({ canvas, robot = "xarm7", pedestal = false, sof
     // Where the key light shines from, in degrees: round the page (0 right, 90
     // up) and up off it. Unset, it is placed for the window as below.
     light: { azimuth: null, elevation: null },
+    // Light, shadow and finish from one flat list of settings; anything left
+    // out stays as it is.
+    dress(to) {
+      const tones = {
+        ACES: THREE.ACESFilmicToneMapping,
+        Neutral: THREE.NeutralToneMapping,
+        AgX: THREE.AgXToneMapping,
+        Plain: THREE.LinearToneMapping,
+      };
+      const redo = () => scene.traverse((o) => o.material && (o.material.needsUpdate = true));
+      if (to.tone && renderer.toneMapping !== tones[to.tone]) {
+        renderer.toneMapping = tones[to.tone];
+        redo();
+      }
+      if (to.exposure != null) renderer.toneMappingExposure = to.exposure;
+      if (to.key != null) key.intensity = to.key;
+      if (to.keyColor) key.color.set(to.keyColor);
+      if (to.azimuth != null) Object.assign(rig.light, { azimuth: to.azimuth, elevation: to.elevation ?? 70 });
+      rig.aim();
+      if (to.room != null) scene.environmentIntensity = to.room;
+      if (to.fill != null) fill.intensity = to.fill;
+      if (to.blur != null) {
+        // Blurred shadows need the other kind of shadow map.
+        const kind = to.blur > 0 ? THREE.VSMShadowMap : THREE.PCFSoftShadowMap;
+        if (renderer.shadowMap.type !== kind) {
+          renderer.shadowMap.type = kind;
+          key.shadow.map?.dispose();
+          key.shadow.map = null;
+          redo();
+        }
+        key.shadow.radius = Math.max(1, to.blur);
+        key.shadow.blurSamples = Math.round(Math.min(25, Math.max(8, to.blur * 1.2)));
+      }
+      if (to.shadow != null) shade = to.shadow;
+      if (shade != null) page.material.opacity = lightPage ? shade : Math.max(shade, 0.4);
+      const { shell, trim, grip } = rig.materials;
+      if (to.shell) shell.color.set(to.shell);
+      if (to.shellRough != null) shell.roughness = to.shellRough;
+      if (to.shellCoat != null) shell.clearcoat = to.shellCoat;
+      if (to.shellCoatRough != null) shell.clearcoatRoughness = to.shellCoatRough;
+      if (to.shellSheen != null) Object.assign(shell, { sheen: to.shellSheen, sheenRoughness: 0.7 });
+      if (to.trim) trim.color.set(to.trim);
+      if (to.trimRough != null) trim.roughness = to.trimRough;
+      if (to.trimMetal != null) trim.metalness = to.trimMetal;
+      if (to.grip) grip.color.set(to.grip);
+      if (to.gripRough != null) grip.roughness = to.gripRough;
+    },
+    // Tell the rig whether the page behind it is light or dark: shadows have
+    // to be heavier to show on a dark one.
+    backdrop(light) {
+      lightPage = light;
+      if (shade != null) page.material.opacity = lightPage ? shade : Math.max(shade, 0.4);
+    },
     aim() {
       if (rig.light.azimuth === null) return;
       const az = THREE.MathUtils.degToRad(rig.light.azimuth);
@@ -403,5 +458,6 @@ export async function createRig({ canvas, robot = "xarm7", pedestal = false, sof
       renderer.render(scene, camera);
     },
   };
+  if (look) rig.dress(look);
   return rig;
 }

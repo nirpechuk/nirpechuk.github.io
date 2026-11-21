@@ -302,6 +302,22 @@ body.dog {
 .piece.held {
   filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.25));
 }
+/* The minimal arms page has its own palette and type, set from tune.mjs. */
+body.arms {
+  /* Dartmouth's Forest Green and Snow White. */
+  --bg: #12312b;
+  --ink: #ffffff;
+  --mute: #ffffff;
+  --link: #ffffff;
+  font-family:
+    "Atkinson Hyperlegible",
+    ui-sans-serif,
+    -apple-system,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
 body.arms main {
   position: fixed;
   inset: 0;
@@ -314,7 +330,7 @@ body.arms main {
 }
 body.arms h1 {
   margin: 0;
-  font-family: "Atkinson Hyperlegible", inherit;
+  font-family: inherit;
   font-size: clamp(2.4rem, 4.6vw, 4.2rem);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -324,6 +340,9 @@ body.arms main p {
   margin: 0;
   font-size: 1.05rem;
   color: var(--mute);
+}
+body.arms .links a {
+  color: var(--link);
 }
 body.arms canvas {
   z-index: 3;

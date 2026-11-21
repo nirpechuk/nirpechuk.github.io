@@ -15,6 +15,7 @@ import { createRig } from "./rig.mjs";
 
 const { Engine, Bodies, Body, Composite, Sleeping } = Matter;
 
+const SWEEP = 260; // px/s the pointer must be moving for a hover to knock something
 const QUIET = 0.9; // seconds without new mess before an arm starts on a piece
 const STEP_MS = 1000 / 60;
 
@@ -28,10 +29,28 @@ const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 // shows, and belonging to the top of the page: scroll down and they fade.
 // `rest` is where a gripper hangs when idle in the corners, in metres from its
 // shoulder: x towards the middle of the page, y up.
-export async function startTidy({ canvas, elements, robot = "xarm7", floorInset = 0, blast = 46, stage = "corners", rest = { x: 0.2, y: 0.02 } }) {
+// `hover` lists the pieces that a fast pass of the pointer knocks off without
+// a click. `look` is handed to the rig: how the arms are lit and finished.
+// `still` leaves the arms standing and nothing able to be knocked off. `shy`
+// takes the arms away altogether in a window too small for them to stand
+// clear of each other, leaving the page as plain text.
+export async function startTidy({
+  canvas,
+  elements,
+  robot = "xarm7",
+  floorInset = 0,
+  blast = 46,
+  stage = "corners",
+  rest = { x: 0.2, y: 0.02 },
+  hover = [],
+  look = null,
+  still = false,
+  shy = false,
+}) {
   const lifts = stage === "lifts";
   const hero = lifts;
-  const rig = await createRig({ canvas, robot, pedestal: lifts, soft: lifts });
+  const rig = await createRig({ canvas, robot, pedestal: lifts, soft: lifts, look });
+  const hovered = new Set(hover);
   // The joints that fold an arm up in its own plane.
   const PLANAR = robot === "xarm7" ? [1, 3, 5] : null;
   const arms = rig.arms.map((arm) => ({
@@ -39,7 +58,8 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     side: arm.side,
     job: null,
     held: null,
-    span: null,
+    claim: null, // everywhere it has spoken for: its shape along the path it is on
+    exit: null, // the way it backs off whatever it last set down
     restQ: null,
     lift: 0,
     baseY: 0,
@@ -49,7 +69,19 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
   // Pieces ----------------------------------------------------------------
 
   const probe = document.createElement("canvas").getContext("2d");
-  const pieces = elements.map((el) => ({ el, state: "home", body: null, x: 0, y: 0, angle: 0, claim: null, still: 0, gaveUp: {}, skipUntil: 0 }));
+  const pieces = elements.map((el) => ({
+    el,
+    hover: hovered.has(el),
+    state: "home",
+    body: null,
+    x: 0,
+    y: 0,
+    angle: 0,
+    claim: null,
+    still: 0,
+    gaveUp: {},
+    skipUntil: 0,
+  }));
 
   // Where each piece lives, and the box that stands for it once it is loose:
   // for a line of text, the ink of the letters rather than the tall line box.
@@ -156,12 +188,16 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   // The pointer -----------------------------------------------------------
 
-  const cursor = { x: 0, y: 0, vx: 0, vy: 0, t: 0, down: false };
+  const cursor = { x: 0, y: 0, vx: 0, vy: 0, t: 0, down: false, seen: false };
   let lastMess = -1e9;
   let now = 0;
   let asleep = false; // scrolled away from the arms: they wait
+  let away = false; // no room for the arms in this window: they are not shown
+  let idleFrames = 0; // frames with nothing loose and both arms at rest
 
   function knock(p, vx, vy, spin) {
+    if (still || away) return;
+    idleFrames = 0;
     for (const a of arms) {
       if (a.held === p) drop(a);
     }
@@ -182,9 +218,9 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     return Math.hypot(Math.max(0, lx), Math.max(0, ly));
   }
 
-  // Nothing moves until there is a click. A click knocks off what is under and
-  // just around it; holding the button and dragging knocks off what the pointer
-  // is dragged through.
+  // A click knocks off what is under and just around it; holding the button and
+  // dragging knocks off what the pointer is dragged through. Pieces listed in
+  // `hover` also go when the pointer merely passes over them quickly.
   function strike(x, y) {
     for (const p of pieces) {
       const gap = distanceTo(p, x, y);
@@ -201,34 +237,36 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
   addEventListener("pointerdown", (e) => {
     if (e.button || e.target.closest?.("a, button, input, textarea, select, nav, .lil-gui")) return;
     cursor.down = true;
-    cursor.x = e.clientX;
-    cursor.y = e.clientY;
-    cursor.t = performance.now() / 1000;
-    cursor.vx = cursor.vy = 0;
     strike(e.clientX, e.clientY);
   });
   addEventListener("pointermove", (e) => {
-    if (!cursor.down) return;
     const t = performance.now() / 1000;
-    const dt = Math.max(1 / 240, t - cursor.t);
-    cursor.vx += ((e.clientX - cursor.x) / dt - cursor.vx) * 0.5;
-    cursor.vy += ((e.clientY - cursor.y) / dt - cursor.vy) * 0.5;
-    const fromX = cursor.x;
-    const fromY = cursor.y;
+    const fromX = cursor.seen ? cursor.x : e.clientX;
+    const fromY = cursor.seen ? cursor.y : e.clientY;
+    if (cursor.seen) {
+      const dt = Math.max(1 / 240, t - cursor.t);
+      cursor.vx += ((e.clientX - cursor.x) / dt - cursor.vx) * 0.5;
+      cursor.vy += ((e.clientY - cursor.y) / dt - cursor.vy) * 0.5;
+    }
     cursor.x = e.clientX;
     cursor.y = e.clientY;
     cursor.t = t;
+    cursor.seen = true;
     const speed = Math.hypot(cursor.vx, cursor.vy);
-    const k = Math.min(1, 1100 / (speed + 1));
-    // Everything along the stretch the pointer was just dragged across.
+    // With the button down, whatever the pointer is dragged across goes. With
+    // it up, only the pieces that give way to a hover, and only to a quick pass.
+    if (!cursor.down && speed < SWEEP) return;
+    const k = Math.min(1, (cursor.down ? 1100 : 1500) / (speed + 1));
     const steps = Math.min(40, Math.ceil(Math.hypot(cursor.x - fromX, cursor.y - fromY) / 8)) || 1;
     for (const p of pieces) {
+      if (!cursor.down && !p.hover) continue;
       let hit = false;
       for (let i = 1; i <= steps && !hit; i++)
-        hit = distanceTo(p, fromX + ((cursor.x - fromX) * i) / steps, fromY + ((cursor.y - fromY) * i) / steps) < 6;
-      if (hit) knock(p, cursor.vx * k * 0.5 + (Math.random() - 0.5) * 100, cursor.vy * k * 0.5 - 140, (Math.random() - 0.5) * 0.25);
+        hit = distanceTo(p, fromX + ((cursor.x - fromX) * i) / steps, fromY + ((cursor.y - fromY) * i) / steps) < 7;
+      if (hit) knock(p, cursor.vx * k * 0.55 + (Math.random() - 0.5) * 120, cursor.vy * k * 0.55 - 120, (Math.random() - 0.5) * 0.25);
     }
   });
+  document.documentElement.addEventListener("pointerleave", () => (cursor.seen = false));
   for (const type of ["pointerup", "pointercancel", "blur"]) addEventListener(type, () => (cursor.down = false));
 
   // Arms: poses -------------------------------------------------------------
@@ -295,38 +333,100 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
   };
 
   // Arms: motion ------------------------------------------------------------
-  // Each move is a generator that is handed the frame time until it is done.
+  // An arm's whole configuration is one list of numbers: its joints, then the
+  // height of its lift. A move is a path through a few such lists, and the arm
+  // does not stop at the ones in the middle: the corner at each is rounded
+  // off, and a single easing runs over the whole path. A reach, a carry or a
+  // retreat is then one sweep that starts and ends at rest.
 
   let hurry = 1;
+  const LIFT_WEIGHT = 3; // a metre of lift counts as this many radians along a path
+  const stateOf = (A) => Float64Array.of(...A.arm.q, A.lift);
+  const stateFor = (pose) => Float64Array.of(...pose.q, pose.lift);
+  const restState = (A) => Float64Array.of(...A.restQ, 0);
+  function setState(A, v) {
+    A.arm.q.set(v.subarray(0, A.arm.n));
+    setLift(A, v[A.arm.n]);
+  }
+  const blend = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const apart = (a, b) => {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) sum += ((a[i] - b[i]) * (i === a.length - 1 ? LIFT_WEIGHT : 1)) ** 2;
+    return Math.sqrt(sum);
+  };
 
-  // Joints and lift together, each no faster than it should go.
-  function* moveJ(A, goal, lift, { rate = 3, climb = 0.75, floor = 0.36 } = {}) {
-    const from = Float64Array.from(A.arm.q);
-    const low = A.lift;
-    let far = 0;
-    for (let i = 0; i < goal.length; i++) far = Math.max(far, Math.abs(goal[i] - from[i]));
-    const T = Math.max(floor, (far / rate) * 1.5, (Math.abs(lift - low) / climb) * 1.5) / hurry;
-    for (let t = 0; t < T;) {
-      t += yield;
-      const s = ease(Math.min(1, t / T));
-      for (let i = 0; i < goal.length; i++) A.arm.q[i] = from[i] + (goal[i] - from[i]) * s;
-      setLift(A, low + (lift - low) * s);
+  // The path through some points with its corners rounded: a run of closely
+  // spaced configurations, and how far along the path each one is.
+  function route(points) {
+    const ROUND = 0.45; // how much of each leg a corner takes up
+    const dense = [points[0]];
+    let from = points[0];
+    for (let i = 1; i < points.length; i++) {
+      const p = points[i];
+      if (i === points.length - 1) {
+        for (let k = 1; k <= 8; k++) dense.push(blend(from, p, k / 8));
+        break;
+      }
+      const enter = blend(p, points[i - 1], ROUND);
+      const leave = blend(p, points[i + 1], ROUND);
+      for (let k = 1; k <= 6; k++) dense.push(blend(from, enter, k / 6));
+      for (let k = 1; k <= 8; k++) dense.push(blend(blend(enter, p, k / 8), blend(p, leave, k / 8), k / 8));
+      from = leave;
     }
+    const along = [0];
+    for (let i = 1; i < dense.length; i++) along.push(along[i - 1] + apart(dense[i - 1], dense[i]));
+    const total = along.at(-1);
+    return {
+      dense,
+      total,
+      at(length) {
+        if (length <= 0 || total === 0) return dense[0];
+        if (length >= total) return dense.at(-1);
+        let i = 1;
+        while (along[i] < length) i++;
+        return blend(dense[i - 1], dense[i], (length - along[i - 1]) / (along[i] - along[i - 1] || 1));
+      },
+    };
   }
 
-  function* moveL(A, pose, seconds) {
-    const p0 = A.arm.toolPosition();
-    const q0 = A.arm.toolQuaternion();
-    const T = seconds / hurry;
-    const p = new THREE.Vector3();
-    const q = new THREE.Quaternion();
-    for (let t = 0; t < T;) {
-      t += yield;
-      const s = ease(Math.min(1, t / T));
-      p.lerpVectors(p0, pose.pos, s);
-      q.slerpQuaternions(q0, pose.quat, s);
-      A.arm.solve(p, q, { iterations: 6, posture: 0.05 });
+  // How long a path should take: each leg at the pace its furthest-turning
+  // joint (or the lift) allows, and a little saved for not stopping between legs.
+  function timeFor(points, rate, climb) {
+    let T = 0;
+    for (let i = 1; i < points.length; i++) {
+      let far = 0;
+      const n = points[i].length - 1;
+      for (let j = 0; j < n; j++) far = Math.max(far, Math.abs(points[i][j] - points[i - 1][j]));
+      T += Math.max(0.24, (far / rate) * 1.5, (Math.abs(points[i][n] - points[i - 1][n]) / climb) * 1.5);
     }
+    return Math.max(0.36, T * (points.length > 2 ? 0.92 : 1));
+  }
+
+  // Sweep an arm along a path. If `stopIf` comes true on the way it slows to a
+  // halt where it is, and the sweep says so by returning false.
+  // `pace` stretches it: 1.5 takes half as long again.
+  function* sweep(A, points, { rate = 3, climb = 0.75, pace = 1, stopIf = null } = {}) {
+    const path = route(points);
+    const T = (timeFor(points, rate, climb) * pace) / hurry;
+    let was = 0;
+    for (let t = 0; t < T;) {
+      const dt = yield;
+      t += dt;
+      const s = ease(Math.min(1, t / T)) * path.total;
+      if (stopIf?.()) {
+        const speed = (s - was) / Math.max(dt, 1e-3);
+        const brake = 0.16;
+        for (let tau = 0; tau < brake;) {
+          tau = Math.min(brake, tau + (yield));
+          setState(A, path.at(was + speed * (tau - (tau * tau) / (2 * brake))));
+        }
+        return false;
+      }
+      was = s;
+      setState(A, path.at(s));
+    }
+    setState(A, points.at(-1));
+    return true;
   }
 
   function* grip(A, gap, seconds) {
@@ -340,6 +440,176 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   function* pause(seconds) {
     for (let t = 0; t < seconds;) t += yield;
+  }
+
+  // Arms: keeping clear of each other ---------------------------------------
+  // A light touch, because an arm that keeps stopping for the other looks worse
+  // than two that now and then pass close. Only the working end of each arm is
+  // watched, from the elbow down, taken for a chain of fat line segments. A
+  // sweep lays claim to where that will be and when, and a sweep that would
+  // put its hand where the other's is at the same moment is not refused, only
+  // slowed until it would not.
+
+  const BONE = 0.04; // half the thickness of a forearm, metres
+  const HAND = 0.032; // and of a gripper
+  const GAP = 0; // the air kept between them: none, they may brush
+
+  // The arm's segments, in the world, were it in configuration `v`: from the
+  // elbow down, or (`whole`) all of it.
+  function shapeAt(A, v, whole = false) {
+    const keep = stateOf(A);
+    setState(A, v);
+    A.arm.apply();
+    const chain = whole ? A.arm.chain : A.arm.chain.slice(Math.min(3, A.arm.chain.length - 2));
+    const points = [
+      ...(whole ? [A.arm.root.position.clone()] : []),
+      ...chain.map((joint) => new THREE.Vector3().setFromMatrixPosition(joint.node.matrixWorld)),
+      A.arm.toolPosition(),
+    ];
+    setState(A, keep);
+    A.arm.apply();
+    const shape = points.slice(1).map((b, i) => ({ a: points[i], b, r: i >= points.length - 3 ? HAND : BONE }));
+    // A ball round the lot, for telling quickly that two shapes are nowhere near.
+    shape.middle = points.reduce((sum, p) => sum.add(p), new THREE.Vector3()).divideScalar(points.length);
+    shape.reach = Math.max(...points.map((p) => p.distanceTo(shape.middle))) + BONE;
+    return shape;
+  }
+  // Standing still, an arm holds its place for good.
+  function shapeNow(A) {
+    const shape = shapeAt(A, stateOf(A));
+    shape.from = -Infinity;
+    shape.until = Infinity;
+    return [shape];
+  }
+  // How far through a sweep's time it is when it is a fraction `f` along its path.
+  function unease(f) {
+    let lo = 0;
+    let hi = 1;
+    for (let i = 0; i < 18; i++) {
+      const mid = (lo + hi) / 2;
+      if (ease(mid) < f) lo = mid;
+      else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+  // Everywhere a sweep takes the arm's working end, and when: its shape at
+  // steps along the path, each with the seconds after setting off (at an
+  // unhurried pace of 1) that it is about there. Worked out a few shapes a
+  // frame, so it never makes a frame late.
+  const NEAR = 0.2; // seconds either side of a moment that count as that moment
+  const LINGER = 0.45; // seconds an arm is taken to stay where a sweep ends
+  function* claimOf(A, points, { rate = 3, climb = 0.75 } = {}) {
+    const path = route(points);
+    const T = timeFor(points, rate, climb) / hurry;
+    const steps = Math.min(50, Math.max(2, Math.ceil(path.total / 0.1)));
+    const shapes = [];
+    for (let i = 0; i <= steps; i++) {
+      const shape = shapeAt(A, path.at((path.total * i) / steps));
+      const at = unease(i / steps) * T;
+      // (At the far end it stays a moment, to grip or let go, and is then taken to have left.)
+      shape.rel = [at, i < steps ? at : at + LINGER];
+      shape.early = i < steps * 0.2; // where it is setting off from, and cannot help being
+      shapes.push(shape);
+      if (i % 8 === 7) yield;
+    }
+    return shapes;
+  }
+  // Take a claim, as of setting off now at a given pace.
+  function commit(A, claim, pace = 1) {
+    for (const shape of claim) {
+      shape.from = now + shape.rel[0] * pace - NEAR;
+      shape.until = now + shape.rel[1] * pace + NEAR;
+    }
+    A.claim = claim;
+  }
+
+  // The least distance between two segments.
+  const _d1 = new THREE.Vector3();
+  const _d2 = new THREE.Vector3();
+  const _r = new THREE.Vector3();
+  function between(p, q) {
+    _d1.subVectors(p.b, p.a);
+    _d2.subVectors(q.b, q.a);
+    _r.subVectors(p.a, q.a);
+    const a = _d1.dot(_d1);
+    const e = _d2.dot(_d2);
+    const f = _d2.dot(_r);
+    let s = 0;
+    let t = 0;
+    if (a > 1e-9 && e > 1e-9) {
+      const b = _d1.dot(_d2);
+      const c = _d1.dot(_r);
+      const denom = a * e - b * b;
+      s = denom > 1e-9 ? clamp((b * f - c * e) / denom, 0, 1) : 0;
+      t = (b * s + f) / e;
+      if (t < 0) {
+        t = 0;
+        s = clamp(-c / a, 0, 1);
+      } else if (t > 1) {
+        t = 1;
+        s = clamp((b - c) / a, 0, 1);
+      }
+    } else if (a > 1e-9) {
+      s = clamp(-_d1.dot(_r) / a, 0, 1);
+    } else if (e > 1e-9) {
+      t = clamp(f / e, 0, 1);
+    }
+    return _r.addScaledVector(_d1, s).addScaledVector(_d2, -t).length();
+  }
+  // Would a sweep setting off now come too near where the other arm will be
+  // at the same moment? (A claim already taken can be asked about too.)
+  // How much of a sweep setting off now, at this pace, would bring the arm's
+  // working end too near where the other's will be at the same moment: the
+  // number of steps along it that would. None is what is wanted.
+  let crowded = false; // a window too small for the two arms even to rest apart: then they are not kept apart
+  function touching(mine, theirs, pace = 1, enough = Infinity) {
+    if (!theirs || crowded) return 0;
+    let count = 0;
+    for (const shape of mine) {
+      // Where a sweep starts is where the arm already is: nothing to decide there.
+      if (shape.rel && shape.early) continue;
+      const from = shape.rel ? now + shape.rel[0] * pace - NEAR : shape.from;
+      const until = shape.rel ? now + shape.rel[1] * pace + NEAR : shape.until;
+      let hit = false;
+      for (const other of theirs) {
+        if (hit) break;
+        if (until < other.from || other.until < from) continue;
+        if (shape.middle.distanceTo(other.middle) > shape.reach + other.reach + GAP) continue;
+        for (const p of shape) {
+          if (hit) break;
+          for (const q of other) {
+            if (between(p, q) < p.r + q.r + GAP) {
+              hit = true;
+              break;
+            }
+          }
+        }
+      }
+      if (hit && ++count >= enough) return count;
+    }
+    return count;
+  }
+  const hits = (mine, theirs, pace = 1) => touching(mine, theirs, pace, 1) > 0;
+
+  // The pace to take a sweep at: as it is if that keeps clear, else the slower
+  // one that does. If none does and the other arm is on the move, it goes
+  // anyway, gently: better two arms that pass close than one that stands and
+  // waits. Only an arm standing in the way is waited for, a moment, having
+  // been asked to move.
+  function* paceFor(A, claim, other) {
+    for (let waited = 0; ; waited += yield) {
+      for (const pace of [1, 1.3, 1.7, 2.3]) {
+        if (hits(claim, other.claim, pace)) continue;
+        if (pace > 1 || waited > 0) note(A, `paced ${pace}`);
+        return pace;
+      }
+      const standing = other.claim?.length === 1;
+      if (standing) other.asked = now;
+      if (!standing || waited > 0.25) {
+        note(A, "went-anyway");
+        return 1.5;
+      }
+    }
   }
 
   // Arms: holding -----------------------------------------------------------
@@ -481,21 +751,25 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     return null;
   }
 
-  // What an arm has spoken for: where its gripper is and where it is headed.
-  // The other arm keeps its own gripper and goals a clear distance from those.
-  const reserve = (A, ...targets) => (A.span = [toolScreen(A), ...targets]);
-  const clash = (points, other) => {
-    if (!other.span) return false;
-    const clear = 0.19 * rig.K;
-    return points.some((a) => other.span.some((b) => Math.hypot(a.x - b.x, a.y - b.y) < clear));
-  };
+  const waiting = () => pieces.some((p) => p.state === "loose" && !p.claim && p.still > 14 && now >= p.skipUntil);
 
-  function* work(A) {
-    const other = arms.find((o) => o !== A);
+  // Pick a piece for this arm and plan the whole of fetching it, setting off
+  // from `from` (by way of `exit`, if it has just put something down there).
+  // The piece is spoken for from the moment it is chosen.
+  function* choose(A, from, exit) {
     // Nearest its own side first: the two arms rebuild from the outside in.
+    // And not, if there is a choice, a piece that lies or belongs right beside
+    // the one the other arm is on: two hands in one spot is what makes them wait.
+    const other = arms.find((o) => o !== A);
+    const close = 0.11 * rig.K;
+    const beside = (p) => {
+      if (!other.target) return 0;
+      const h = homeOf(p);
+      return other.target.some((at) => Math.hypot(p.x - at.x, p.y - at.y) < close || Math.hypot(h.x - at.x, h.y - at.y) < close) ? 1e6 : 0;
+    };
     const todo = pieces
       .filter((p) => p.state === "loose" && !p.claim && p.still > 14 && now >= p.skipUntil)
-      .sort((a, b) => (homeOf(a).x - homeOf(b).x) * -A.side + (a.y - b.y) * 0.15);
+      .sort((a, b) => beside(a) - beside(b) + (homeOf(a).x - homeOf(b).x) * -A.side + (a.y - b.y) * 0.15);
     for (const p of todo.slice(0, 3)) {
       const plan = yield* planFor(A, p);
       if (p.state !== "loose" || p.claim) continue;
@@ -513,61 +787,128 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
         p.skipUntil = now + 0.5;
         continue;
       }
-      if (clash([plan.pick], other)) continue;
-      note(A, `go ${plan.pinch ? "pinch" : "press"}`, p);
-      reserve(A, plan.pick);
       p.claim = A;
-      A.abort = false;
-      const lost = () => A.abort || p.claim !== A;
-      const moved = () =>
-        p.state !== "loose" || Math.hypot(p.x - plan.pick0.x, p.y - plan.pick0.y) > 5 || Math.abs(wrap(p.angle - plan.pick0.angle)) > 0.06;
       plan.pick0 = { x: p.x, y: p.y, angle: p.angle };
-      const K = rig.K;
-      // Pinching, it opens a little wider than the piece; pressing, it stays shut.
-      const wide = plan.pinch ? Math.min(A.arm.maxGap, plan.width / K + 0.024) : 0.006;
-
-      yield* both(moveJ(A, plan.before.q, plan.before.lift), grip(A, wide, 0.3));
-      if (!lost() && !moved()) yield* moveL(A, plan.grasp, 0.34);
-      if (!lost() && !moved()) {
-        yield* grip(A, plan.pinch ? Math.max(0, plan.width / K - 0.002) : 0.006, plan.pinch ? 0.2 : 0.08);
-        take(A, p);
-        note(A, "took", p);
-        yield* moveL(A, plan.before, 0.26);
-        // Hold it there until the other arm is clear of where it goes; not for ever.
-        reserve(A);
-        for (let waited = 0; !lost() && waited < 2.5 && clash([plan.place], other);) waited += yield;
-        reserve(A, plan.place);
-        if (!lost()) yield* moveJ(A, plan.above.q, plan.above.lift);
-        if (!lost()) yield* moveL(A, plan.set, 0.36);
-        if (!lost()) {
-          // Open, and the piece is home.
-          const from = { x: p.x, y: p.y, angle: p.angle };
-          const h = homeOf(p);
-          A.held = null;
-          const opening = grip(A, wide, 0.22);
-          let u = 0;
-          for (let r = opening.next(); !r.done; r = opening.next(yield)) {
-            u = Math.min(1, u + 0.12);
-            p.x = from.x + (h.x - from.x) * u;
-            p.y = from.y + (h.y - from.y) * u;
-            p.angle = from.angle * (1 - u);
-          }
-          if (p.state === "held") settle(p);
-          note(A, "home", p);
-          yield* moveL(A, plan.above, 0.24);
-        }
-      } else {
-        note(A, "missed", p);
-        if (p.claim === A) p.claim = null;
-      }
-      if (A.held) drop(A);
-      A.span = null;
-      return true;
+      A.target = [plan.pick, plan.place]; // where its hand will be, for the other arm to steer clear of
+      // One sweep: back off whatever it last set down, over to the piece, and in onto it.
+      const reach = [from, ...(exit ? [exit] : []), stateFor(plan.before), stateFor(plan.grasp)];
+      const claim = yield* claimOf(A, reach);
+      return { p, plan, reach, claim };
     }
-    return false;
+    return null;
+  }
+  const shifted = (job) =>
+    job.p.state !== "loose" ||
+    Math.hypot(job.p.x - job.plan.pick0.x, job.p.y - job.plan.pick0.y) > 5 ||
+    Math.abs(wrap(job.p.angle - job.plan.pick0.angle)) > 0.06;
+
+  // While an arm carries one piece home it is already choosing the next, a
+  // little each frame, so that it can set off again the moment it lets go.
+  function scout(A) {
+    const s = A.scout;
+    if (!s || s.done) return;
+    const r = s.gen.next();
+    if (r.done) Object.assign(s, { done: true, job: r.value });
+  }
+  function* along(A, move) {
+    let r = move.next();
+    while (!r.done) {
+      scout(A);
+      r = move.next(yield);
+    }
+    return r.value;
   }
 
-  // Run two moves at once.
+  function* work(A) {
+    const other = arms.find((o) => o !== A);
+    // What was lined up during the last carry, if it is still as it was.
+    let job = null;
+    if (A.scout) {
+      while (!A.scout.done) {
+        scout(A);
+        if (!A.scout.done) yield;
+      }
+      job = A.scout.job;
+      A.scout = null;
+      if (job && (job.p.claim !== A || shifted(job))) {
+        if (job.p.claim === A) job.p.claim = null;
+        job = null;
+      }
+    }
+    if (!job) {
+      const since = now;
+      job = yield* choose(A, stateOf(A), A.exit);
+      if (job && A.exit) note(A, `late-choice ${(now - since).toFixed(2)}`);
+    }
+    if (!job) return false;
+    const { p, plan } = job;
+    // (If the arm is not where the plan supposed it would be, the way there is drawn again.)
+    if (apart(stateOf(A), job.reach[0]) > 0.02) {
+      job.reach = [stateOf(A), stateFor(plan.before), stateFor(plan.grasp)];
+      job.claim = yield* claimOf(A, job.reach);
+    }
+    A.abort = false;
+    const lost = () => A.abort || p.claim !== A;
+    const moved = () => shifted(job);
+    const K = rig.K;
+    // Pinching, it opens a little wider than the piece; pressing, it stays shut.
+    const wide = plan.pinch ? Math.min(A.arm.maxGap, plan.width / K + 0.024) : 0.006;
+
+    let pace = yield* paceFor(A, job.claim, other);
+    let there = false;
+    if (!lost() && !moved()) {
+      note(A, `go ${plan.pinch ? "pinch" : "press"}`, p);
+      commit(A, job.claim, pace);
+      A.exit = null;
+      [there] = yield* both(sweep(A, job.reach, { pace, stopIf: () => lost() || moved() }), grip(A, wide, 0.3));
+    }
+    if (there && !lost() && !moved()) {
+      // Close on it; and while the gripper closes, work out the way home: up
+      // off the pile, across, and down into place.
+      const home = [stateFor(plan.grasp), stateFor(plan.before), stateFor(plan.above), stateFor(plan.set)];
+      const [, homeClaim] = yield* both(grip(A, plan.pinch ? Math.max(0, plan.width / K - 0.002) : 0.006, plan.pinch ? 0.2 : 0.08), claimOf(A, home));
+      take(A, p);
+      note(A, "took", p);
+      A.claim = shapeNow(A);
+      pace = yield* paceFor(A, homeClaim, other);
+      let placed = false;
+      if (!lost()) {
+        commit(A, homeClaim, pace);
+        A.scout = { gen: choose(A, stateFor(plan.set), stateFor(plan.above)), done: false, job: null };
+        placed = yield* along(A, sweep(A, home, { pace, stopIf: lost }));
+      }
+      if (placed && !lost()) {
+        // Open, and the piece is home.
+        // (Whatever is left to straighten is taken the short way round: an
+        // upright piece can come in a whole turn out by the numbers.)
+        const from = { x: p.x, y: p.y, angle: wrap(p.angle) };
+        const h = homeOf(p);
+        A.held = null;
+        const opening = grip(A, wide, 0.22);
+        let u = 0;
+        for (let r = opening.next(); !r.done; r = opening.next(yield)) {
+          scout(A);
+          u = Math.min(1, u + 0.12);
+          p.x = from.x + (h.x - from.x) * u;
+          p.y = from.y + (h.y - from.y) * u;
+          p.angle = from.angle * (1 - u);
+        }
+        if (p.state === "held") settle(p);
+        note(A, "home", p);
+        // It backs off this way as the first leg of whatever it does next.
+        A.exit = stateFor(plan.above);
+      }
+    } else {
+      note(A, "missed", p);
+      if (p.claim === A) p.claim = null;
+    }
+    if (A.held) drop(A);
+    A.claim = shapeNow(A);
+    if (!A.scout) A.target = null;
+    return true;
+  }
+
+  // Run two moves at once; the results of both come back.
   function* both(a, b) {
     let ra = a.next();
     let rb = b.next();
@@ -576,20 +917,48 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
       if (!ra.done) ra = a.next(dt);
       if (!rb.done) rb = b.next(dt);
     }
+    return [ra.value, rb.value];
   }
 
   function* life(A) {
+    const other = arms.find((o) => o !== A);
+    let idle = 0;
     for (;;) {
       const quiet = now - lastMess > QUIET && !asleep;
       const did = quiet ? yield* work(A) : false;
-      if (did) continue;
-      // Nothing to do: fold up and sink back down, but keep looking.
-      const away = A.lift > 0.004 || A.restQ.some((v, i) => Math.abs(v - A.arm.q[i]) > 0.02);
-      if (away && (quiet || asleep)) {
-        const resting = both(moveJ(A, A.restQ, 0, { rate: 1.8, climb: 0.5 }), grip(A, 0.02, 0.4));
-        for (let r = resting.next(); !r.done; r = resting.next(yield)) {
-          if (pieces.some((p) => p.state === "loose" && !p.claim && p.still > 14 && now >= p.skipUntil) && now - lastMess > QUIET) break;
+      if (did) {
+        idle = 0;
+        continue;
+      }
+      const out = A.lift > 0.004 || A.restQ.some((v, i) => Math.abs(v - A.arm.q[i]) > 0.02);
+      const pending = pieces.some((p) => p.state !== "home");
+      const asked = now - (A.asked ?? -9) < 0.3;
+      // Still work about, only none this arm can get at just now (a piece yet
+      // to settle, say): it stays where it is, ready, and does not go back to
+      // rest for that. Unless the other arm is waiting on it to move.
+      if (out && quiet && pending && !asked && idle < 6) {
+        for (let t = 0; t < 0.1;) {
+          const dt = yield;
+          t += dt;
+          idle += dt;
         }
+        continue;
+      }
+      // Nothing left to do, or in the way: fold up and go back to rest, but keep looking.
+      if (out && (quiet || asleep)) {
+        const path = [stateOf(A), ...(A.exit ? [A.exit] : []), restState(A)];
+        const claim = yield* claimOf(A, path, { rate: 1.8, climb: 0.5 });
+        const pace = yield* paceFor(A, claim, other);
+        idle = 0;
+        commit(A, claim, pace);
+        A.exit = null;
+        // Only a fresh mess calls it back before it has got there.
+        const began = now;
+        yield* both(
+          sweep(A, path, { rate: 1.8, climb: 0.5, pace, stopIf: () => lastMess > began && waiting() && now - lastMess > QUIET && !asleep }),
+          grip(A, 0.02, 0.4)
+        );
+        A.claim = shapeNow(A);
       } else {
         yield* pause(0.12);
       }
@@ -647,7 +1016,8 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     }
     for (const A of arms) {
       A.held = null;
-      A.span = null;
+      A.exit = null;
+      A.scout = null;
       A.baseY = A.arm.root.position.y;
       A.lift = 0;
       const home = rig.spec.home ?? new Array(A.arm.n).fill(0);
@@ -673,6 +1043,12 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
       A.arm.apply();
       A.job = life(A);
     }
+    for (const A of arms) A.claim = shapeNow(A);
+    crowded = false;
+    crowded = hits(arms[0].claim, arms[1].claim);
+    away = shy && crowded;
+    canvas.style.visibility = away ? "hidden" : "visible";
+    idleFrames = 0;
   }
   layout();
   let resizing = 0;
@@ -696,6 +1072,7 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     () => {
       const dy = scrollY - lastScroll;
       lastScroll = scrollY;
+      idleFrames = 0;
       for (const A of arms) if (A.held) drop(A);
       for (const p of pieces) {
         if (!p.body) continue;
@@ -712,6 +1089,13 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
 
   let owed = 0;
   function tick(dt) {
+    if (away) return;
+    // With everything in its place and both arms at rest there is nothing to
+    // work out or draw, until something is knocked off again.
+    const settled =
+      pieces.every((p) => p.state === "home") && arms.every((A) => A.lift < 0.004 && A.restQ.every((v, i) => Math.abs(v - A.arm.q[i]) < 0.02));
+    idleFrames = settled ? idleFrames + 1 : 0;
+    if (idleFrames > 40) return;
     now += dt;
     owed = Math.min(owed + dt * 1000, STEP_MS * 3);
     for (; owed >= STEP_MS - 0.01; owed -= STEP_MS) Engine.update(engine, STEP_MS);
@@ -752,7 +1136,26 @@ export async function startTidy({ canvas, elements, robot = "xarm7", floorInset 
     requestAnimationFrame(frame);
   });
 
-  return { rig, arms, pieces, knock, tick, log };
+  // The air between the two arms right now, in metres (negative if they overlap).
+  const clearance = () => {
+    const [mine, theirs] = arms.map((A) => shapeAt(A, stateOf(A), true));
+    let least = Infinity;
+    let which = null;
+    mine.forEach((p, i) =>
+      theirs.forEach((q, j) => {
+        const gap = between(p, q) - p.r - q.r;
+        if (gap < least) {
+          least = gap;
+          which = [i, j];
+        }
+      })
+    );
+    clearance.which = which;
+    return least;
+  };
+  // Draw again after a change made from outside (a colour, say) while all is at rest.
+  const wake = () => (idleFrames = 0);
+  return { rig, arms, pieces, knock, tick, log, relayout: layout, clearance, wake };
 }
 
 // Wrap each letter of an element's text in a span of its own, so it can be a piece.

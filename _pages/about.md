@@ -1,7 +1,7 @@
 ---
 layout: about
 title: about
-permalink: /
+permalink: /about/
 subtitle: Computer Science at Carnegie Mellon University
 profile:
   align: right
@@ -19,7 +19,7 @@ latest_posts:
 
 Hi, I'm Nir! I'm a computer science undergraduate at **Carnegie Mellon University**, interested in reinforcement learning, robot learning, and building systems that make a difference in people's lives.
 
-I recently joined the [AI & Reinforcement Learning (AIRe) Lab](https://cmu-aire.github.io/) under [Prof. Aviral Kumar](https://aviralkumar2907.github.io/). I also work with [Prof. Zackory Erickson](https://zackory.com/) in the [Robot Caregiving and Human Interaction (RCHI) Lab](https://rchi-lab.github.io/), where we turn text prompts into simulated human–robot interactions and policies that run on real robots.
+I'm a researcher at the [AI & Reinforcement Learning (AIRe) Lab](https://cmu-aire.github.io/) under [Prof. Aviral Kumar](https://aviralkumar2907.github.io/). I also work with [Prof. Zackory Erickson](https://zackory.com/) in the [Robot Caregiving and Human Interaction (RCHI) Lab](https://rchi-lab.github.io/), where we turn text prompts into simulated human–robot interactions and policies that run on real robots.
 
 This fall, I'm a **15-213: Introduction to Computer Systems TA**, after TAing 15-122 in the spring. I love helping students build things from the ground up, from data structures to memory allocators and web proxies. I'm also the **Research Chair of ACM@CMU**.
 
