@@ -3,6 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // This page is the arms. A window with no room for them (a phone, say)
+      // goes straight to the About page instead. (A window that is only nearly
+      // big enough is sent on by home.mjs, once it has measured the arms.)
+      if (!matchMedia("(min-width: 480px) and (min-height: 400px)").matches) location.replace("/about/");
+      // The name and the arms come in together. Should the arms be slow, or
+      // never come, the name does not wait for them long.
+      document.documentElement.classList.add("waiting");
+      setTimeout(() => document.documentElement.classList.remove("waiting"), 2500);
+    </script>
     <title>Nir Pechuk</title>
     <meta
       name="description"
@@ -88,6 +98,10 @@
         gap: 1.1rem;
         padding: 0 1.5rem 8vh;
         text-align: center;
+        transition: opacity 0.25s ease;
+      }
+      .waiting main {
+        opacity: 0;
       }
       h1 {
         margin: 0;
@@ -118,7 +132,7 @@
       }
 
       /* The arms are drawn over the page and never take a click from it. They
-         come in once they are ready, so the text is never waiting on them. */
+         and the text come in together, as soon as the arms are ready. */
       #arms {
         position: fixed;
         inset: 0;
@@ -127,7 +141,7 @@
         z-index: 3;
         pointer-events: none;
         opacity: 0;
-        transition: opacity 0.6s ease;
+        transition: opacity 0.25s ease;
       }
       body.ready #arms {
         opacity: 1;
@@ -157,7 +171,18 @@
         }
       }
     </script>
+    <!-- Everything the arms need, asked for at once rather than as each file finds out about the next. -->
     <link rel="modulepreload" href="/assets/arms/home.mjs" />
+    <link rel="modulepreload" href="/assets/arms/tidy.mjs" />
+    <link rel="modulepreload" href="/assets/arms/rig.mjs" />
+    <link rel="modulepreload" href="/assets/arms/look.mjs" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.core.js" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/environments/RoomEnvironment.js" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/utils/BufferGeometryUtils.js" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/+esm" />
+    <link rel="preload" as="fetch" crossorigin href="/assets/arms/model/xarm7.json" />
+    <link rel="preload" as="fetch" crossorigin href="/assets/arms/model/xarm7.bin" />
   </head>
   <body>
     <main>
@@ -173,6 +198,6 @@
     </main>
     <canvas id="arms" aria-hidden="true"></canvas>
 
-    <script type="module" src="/assets/arms/home.mjs"></script>
+    <script type="module" src="/assets/arms/home.mjs" onerror="document.documentElement.classList.remove('waiting')"></script>
   </body>
 </html>

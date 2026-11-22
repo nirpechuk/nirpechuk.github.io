@@ -210,6 +210,54 @@ export async function startTidy({
     lastMess = now;
   }
 
+  // A piece comes off one of the two pins that hold it up: it swings down on
+  // the other (`side`: 1 the right-hand one, -1 the left), hangs there askew
+  // for a moment, and then that one gives as well and it falls. Nobody did it;
+  // it shows that the pieces are only pinned up, and what the arms are for.
+  const HANG = 1.9; // seconds on one pin
+  const SWING = 0.25; // how soon the swinging dies down: 1 would be no swing at all
+  const HEFT = 0.5; // a piece swings as if this much of gravity had hold of it: slower, like a bigger thing
+  function slip(p, side = 1) {
+    if (still || away || p.state !== "home") return false;
+    const h = homeOf(p);
+    p.x = h.x;
+    p.y = h.y;
+    p.angle = 0;
+    p.state = "slipping";
+    p.slip = { side, turn: 0, t: 0 };
+    p.el.classList.add("loose");
+    idleFrames = 0;
+    lastMess = now;
+    return true;
+  }
+  // Hung by a top corner, a piece is a pendulum about it, and comes to rest
+  // with its middle straight below the pin.
+  function swing(p, dt) {
+    const s = p.slip;
+    const g = engine.gravity.y * engine.gravity.scale * 1e6; // pixels a second, a second
+    const pull = (3 * g * HEFT) / (2 * Math.hypot(p.w, p.h));
+    const hung = -s.side * Math.atan2(p.w, p.h);
+    s.turn += (-pull * Math.sin(p.angle - hung) - 2 * SWING * Math.sqrt(pull) * s.turn) * dt;
+    p.angle += s.turn * dt;
+    s.t += dt;
+    // The pin stays where it is; the middle of the piece goes round it.
+    const h = homeOf(p);
+    const ax = (-s.side * p.w) / 2;
+    const ay = p.h / 2;
+    const c = Math.cos(p.angle);
+    const sn = Math.sin(p.angle);
+    p.x = h.x - ax + ax * c - ay * sn;
+    p.y = h.y - ay + ax * sn + ay * c;
+    lastMess = now;
+    if (s.t < HANG) return;
+    // The other pin. It falls as it was moving, with a little turn to it.
+    const vx = -s.turn * (p.y - (h.y - ay));
+    const vy = s.turn * (p.x - (h.x - ax));
+    loosen(p);
+    Body.setVelocity(p.body, { x: (vx * STEP_MS) / 1000, y: (vy * STEP_MS) / 1000 });
+    Body.setAngularVelocity(p.body, (s.turn * STEP_MS) / 1000 - s.side * 0.012);
+  }
+
   // Distance from a point to a piece's box, in the piece's own frame.
   function distanceTo(p, x, y) {
     const c = p.state === "home" ? homeOf(p) : p;
@@ -1208,6 +1256,7 @@ export async function startTidy({
       }
     }
     hurry = 1 + Math.min(0.9, loose / 14);
+    for (const p of pieces) if (p.state === "slipping") swing(p, dt);
 
     for (const A of arms) {
       A.job.next(dt);
@@ -1248,7 +1297,7 @@ export async function startTidy({
   };
   // Draw again after a change made from outside (a colour, say) while all is at rest.
   const wake = () => (idleFrames = 0);
-  return { rig, arms, pieces, knock, tick, log, relayout: layout, clearance, wake, away: () => away };
+  return { rig, arms, pieces, knock, slip, tick, log, relayout: layout, clearance, wake, away: () => away };
 }
 
 // Wrap each letter of an element's text in a span of its own, so it can be a piece.
